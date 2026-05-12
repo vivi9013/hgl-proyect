@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital - Iniciar Sesión</title>
-    @vite(['resources/css/app.css'])
-</head>
-<body class="login-container">
+@extends('layouts.loginstyle')
 
-   
+@section('title', 'Hospital - Iniciar Sesión')
 
+@section('content')
     <div class="login-card">
-
- <div class="login-title flex justify-center">
-        <img src="{{ asset('images/avatar.webp') }}" alt="Logo de mi App" class="w-32 h-auto">
-    </div>
+        <div class="login-title flex justify-center">
+            <img src="{{ asset('images/avatar.webp') }}" alt="Logo de mi App" class="w-32 h-auto">
+        </div>
         
         <form action="#" method="POST">
             @csrf
@@ -46,10 +38,6 @@
                     Ingresar
                 </button>
             </div>
-                       
         </form>
-
-        
     </div>
-</body>
-</html>
+@endsection
