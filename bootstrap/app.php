@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SyncLegacySession::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'actualizar-password'
+        ]);
+
         $middleware->redirectUsersTo('/inicio');
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
