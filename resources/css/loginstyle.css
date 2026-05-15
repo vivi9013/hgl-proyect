@@ -1,5 +1,4 @@
 /* Estilos específicos para la página de Login */
-
 body,
 html {
   margin: 0;
@@ -77,7 +76,7 @@ html {
 }
 
 .login-button {
-  margin-left: 30%;
+  margin-left: 35%;
   width: 25%;
   background-color: #1c3977;
   color: white;

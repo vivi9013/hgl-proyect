@@ -2,12 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\IndexController;
+use App\Http\Middleware\EvitarRetrocesoMiddleware;
 
-/* Route::get('/', function () {
-    return view('index');
-})->name('dashboard'); */
+// Grupo para invitados (Solo pueden ver el Login)
+Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
+    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+    Route::post('/validar-login', [LoginController::class, 'login'])->name('login.post');
+});
 
-Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+// Grupo para usuarios autenticados (No pueden volver al Login)
+Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function () {
+    Route::get('/inicio', [IndexController::class, 'index'])->name('inicio');
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+});
 
-// Placeholder para rutas del sidebar
-Route::get('/citas', function() { return "Página de Citas en construcción"; })->name('citas.index');
+// Redirección por defecto
+Route::get('/', function () {
+    return redirect()->route('inicio');
+});

@@ -37,7 +37,8 @@
   <!--end::Sidebar Wrapper-->
 
   <div class="sidebar-logout p-3 border-top bg-white" style="position: absolute; bottom: 0; width: 100%;">
-    <a href="{{ route('login') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
+    <a href="{{ route('logout') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
+
       <i class="bi bi-box-arrow-right me-2"></i>
       <span>Cerrar Sesión</span>
     </a>
