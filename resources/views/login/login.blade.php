@@ -30,8 +30,8 @@
 
         <div class="login-checkbox">
             <div style="display: flex; align-items: center;">
-                <input type="checkbox" id="cc" name="cc">
-                <label for="cc">Cambiar Contraseña</label>
+                <input type="checkbox" id="cambio" name="cambio">
+                <label for="cambio">Cambiar Contraseña</label>
             </div>
 
             <button type="submit" class="login-button">
@@ -47,6 +47,9 @@
 
 <script>
 $(document).ready(function() {
+    // Forzar que el check empiece desmarcado siempre
+    $('#cambio').prop('checked', false);
+
     $('form').submit(function(e) {
         e.preventDefault();
 
@@ -54,8 +57,9 @@ $(document).ready(function() {
             _token: "{{ csrf_token() }}",
             user: $('#user').val(),
             password: $('#password').val(),
-            cc: $('#cc').is(':checked')
+            cambio: $('#cambio').prop('checked') ? 1 : 0
         };
+
 
         $.ajax({
             type: 'POST',
@@ -65,12 +69,65 @@ $(document).ready(function() {
                 const parts = res.resultado.split('|');
                 const opcion = parseInt(parts[0]);
 
-                if (opcion !== 2) {
-                    window.location.href = "{{ url('/inicio') }}";
-                } else {
-                    Swal.fire('Error', 'Usuario o contraseña incorrectos', 'error');
+                switch(opcion) {
+                    case 1: // OBLIGATORIO (Sistema 1)
+                    case 4: // VOLUNTARIO (Sistema 1)
+                        Swal.fire({
+                            title: opcion == 1 ? 'Cambio Obligatorio' : 'Cambio de Contraseña',
+                            text: opcion == 1 ? 'Debes actualizar tu contraseña para continuar' : 'Has solicitado cambiar tu contraseña',
+                            input: 'password',
+                            inputAttributes: { autocomplete: 'new-password' },
+                            inputPlaceholder: 'Ingresa tu nueva contraseña',
+                            showCancelButton: true,
+                            confirmButtonText: 'Actualizar y Entrar',
+                            cancelButtonText: 'Cancelar',
+                            inputValidator: (value) => {
+                                if (!value || value.length < 4) {
+                                    return 'Mínimo 4 caracteres'
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{{ route('password.update') }}",
+                                    data: {
+                                        _token: "{{ csrf_token() }}",
+                                        pass: result.value
+                                    },
+                                    success: function(response) {
+                                        if(response.success) {
+                                            Swal.fire('¡Éxito!', 'Contraseña actualizada', 'success').then(() => {
+                                                window.location.href = "{{ url('/inicio') }}";
+                                            });
+                                        } else {
+                                            Swal.fire('Error', response.message, 'error');
+                                        }
+                                    }
+                                });
+                            } else {
+                                // Si cancela el cambio voluntario (opcion 4), entra igual al dashboard
+                                // Si es obligatorio (opcion 1), lo sacamos
+                                if (opcion == 4) {
+                                    window.location.href = "{{ url('/inicio') }}";
+                                } else {
+                                    window.location.href = "{{ route('logout') }}";
+                                }
+                            }
+                        });
+
+                        break;
+
+                    case 3: // EXITO DIRECTO (Sistema 1)
+                        window.location.href = "{{ url('/inicio') }}";
+                        break;
+
+                    case 2: // FALLO (Sistema 1)
+                        Swal.fire('Error', 'Usuario o contraseña incorrectos', 'error');
+                        break;
                 }
             },
+
 
             error: function() {
                 Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');

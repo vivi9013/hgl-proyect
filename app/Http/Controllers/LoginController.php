@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -15,7 +17,13 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Si ya está autenticado (evita el error de conexión por redirección)
+        if (Auth::check()) {
+            return response()->json(['resultado' => '3|' . Auth::id()]);
+        }
+
         $request->validate([
+
             'user' => 'required',
             'password' => 'required'
         ]);
@@ -25,7 +33,7 @@ class LoginController extends Controller
         $authenticated = false;
 
         if ($user) {
-            // Validación Bcrypt o MD5 (migrando a Bcrypt al entrar)
+            // Intentar con Bcrypt o MD5 (migración automática)
             if (password_verify($password, $user->contra)) {
                 $authenticated = true;
             } else if (md5($password) === $user->contra) {
@@ -37,12 +45,54 @@ class LoginController extends Controller
 
         if ($authenticated) {
             Auth::login($user);
-            // Retornamos éxito directo (Código 3 en tu lógica original)
-            return response()->json(['resultado' => '3|' . $user->id]);
+
+            // LOGICA CONSISTENTE: Solo si el usuario lo pide con el Check
+            $conta = 3; // Por defecto: entrar directo
+            
+            if ($request->cambio) {
+                $conta = 4; // Cambio voluntario (Check marcado)
+            }
+
+            // Log discreto para que sepamos qué valor tiene la DB sin molestar al usuario
+            Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | Valor primera en DB: {$user->primera}");
+
+
+            return response()->json([
+                'resultado' => $conta . '|' . $user->id
+            ]);
         }
 
-        // Retornamos fallo (Código 2)
+
         return response()->json(['resultado' => '2|0']);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate(['pass' => 'required|min:4']);
+
+        // Obtenemos al usuario autenticado (Seguridad de Sistema 2)
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Sesión no válida']);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Actualización atómica
+            $user->contra = bcrypt($request->pass);
+            $user->primera = 0;
+            $user->save();
+
+            DB::commit();
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error al actualizar contraseña: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error en la base de datos']);
+        }
     }
 
     public function logout()

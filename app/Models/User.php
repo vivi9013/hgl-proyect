@@ -13,7 +13,11 @@ class User extends Authenticatable
     // 1. Definimos el nombre real de tu tabla
     protected $table = 'usuarios';
 
+    // Definimos la llave primaria explícitamente
+    protected $primaryKey = 'id';
+
     // Desactivamos timestamps porque la tabla legacy no los tiene
+
     public $timestamps = false;
 
 

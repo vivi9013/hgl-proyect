@@ -11,10 +11,13 @@ Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function (
     Route::post('/validar-login', [LoginController::class, 'login'])->name('login.post');
 });
 
-// Grupo para usuarios autenticados (No pueden volver al Login)
+// Grupo para usuarios autenticados (Protección total)
 Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function () {
     Route::get('/inicio', [IndexController::class, 'index'])->name('inicio');
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+    
+    // Ruta de cambio de contraseña (Consistent with Sistema 1)
+    Route::post('/actualizar-password', [LoginController::class, 'updatePassword'])->name('password.update');
 });
 
 // Redirección por defecto
