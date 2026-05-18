@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="login-card">
-    <div class="login-title flex justify-center">
-        <img src="{{ asset('images/avatar.webp') }}" alt="Logo de mi App" class="w-32 h-auto">
+    <div class="login-title">
+        <img src="{{ asset('images/avatar.webp') }}" alt="Logo de mi App" class="login-logo-img">
     </div>
     
     <form id="loginForm" action="{{ route('login.post') }}" method="POST" 

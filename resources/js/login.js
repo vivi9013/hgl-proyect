@@ -6,6 +6,11 @@ $(document).ready(function () {
         e.preventDefault();
 
         const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+
+        // Deshabilitar botón para evitar doble envío y errores de CSRF por peticiones concurrentes
+        submitBtn.prop('disabled', true).html('Ingresando');
+
         const loginUrl = form.attr('action');
         const updatePasswordUrl = form.data('update-url');
         const dashboardUrl = form.data('dashboard-url');
@@ -38,6 +43,7 @@ $(document).ready(function () {
                             showCancelButton: true,
                             confirmButtonText: 'Actualizar y Entrar',
                             cancelButtonText: 'Cancelar',
+                            allowOutsideClick: false,
                             inputValidator: (value) => {
                                 if (!value || value.length < 4) {
                                     return 'Mínimo 4 caracteres'
@@ -59,7 +65,12 @@ $(document).ready(function () {
                                             });
                                         } else {
                                             Swal.fire('Error', response.message, 'error');
+                                            submitBtn.prop('disabled', false).html('Ingresar');
                                         }
+                                    },
+                                    error: function () {
+                                        Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+                                        submitBtn.prop('disabled', false).html('Ingresar');
                                     }
                                 });
                             } else {
@@ -81,11 +92,13 @@ $(document).ready(function () {
 
                     case 2: // FALLO (Sistema 1)
                         Swal.fire('Error', 'Usuario o contraseña incorrectos', 'error');
+                        submitBtn.prop('disabled', false).html('Ingresar');
                         break;
                 }
             },
             error: function () {
                 Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+                submitBtn.prop('disabled', false).html('Ingresar');
             }
         });
     });

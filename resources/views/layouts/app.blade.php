@@ -8,6 +8,9 @@
     <!-- Bootstrap & Icons (Via Vite/NPM) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- FontAwesome 4.7 CDN for legacy module icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
     <style>
         :root {
             --sidebar-width: 280px;
