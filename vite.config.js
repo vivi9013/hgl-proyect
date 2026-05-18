@@ -8,7 +8,8 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/loginstyle.css',
                 'resources/css/indexstyle.css',
-                'resources/js/app.js'
+                'resources/js/app.js',
+                'resources/js/login.js'
             ],
             refresh: true,
         }),

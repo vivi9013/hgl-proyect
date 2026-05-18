@@ -45,6 +45,7 @@ class LoginController extends Controller
 
         if ($authenticated) {
             Auth::login($user);
+            $request->session()->regenerate();
 
             // LOGICA CONSISTENTE: Solo si el usuario lo pide con el Check
             $conta = 3; // Por defecto: entrar directo
@@ -58,7 +59,8 @@ class LoginController extends Controller
 
 
             return response()->json([
-                'resultado' => $conta . '|' . $user->id
+                'resultado' => $conta . '|' . $user->id,
+                'new_token' => csrf_token()
             ]);
         }
 
