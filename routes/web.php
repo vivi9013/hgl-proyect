@@ -24,4 +24,4 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
 Route::get('/', function () {
     return redirect()->route('inicio');
 });
-//
+//adsasdsa
