@@ -1,6 +1,7 @@
 <nav class="app-header navbar navbar-expand bg-white border-bottom shadow-sm px-4" style="height: var(--header-height);">
   <div class="container-fluid">
-    <!-- Botón para colapsar sidebar (móvil) -->
+    
+    <!-- Botón para colapsar sidebar -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link text-dark" data-lte-toggle="sidebar" href="#" role="button">
@@ -14,7 +15,7 @@
       <!-- Buscador -->
       <li class="nav-item d-none d-md-block me-3">
         <div class="input-group input-group-sm">
-          <input type="text" class="form-control border-0 bg-light" placeholder="Buscar..." style="width: 200px; border-radius: 20px;">
+          <input type="text" id="global-search" class="form-control border-0 bg-light" placeholder="Buscar..." style="width: 200px; border-radius: 20px;">
           <span class="input-group-text border-0 bg-light" style="border-radius: 20px;"><i class="bi bi-search"></i></span>
         </div>
       </li>
@@ -42,4 +43,3 @@
     </ul>
   </div>
 </nav>
-

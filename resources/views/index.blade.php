@@ -49,7 +49,7 @@
                 // Se expande la primera categoría por defecto, o según lo guardado en el campo "colapsado" de la DB
                 $isOpen = ($index == 0 || $categoria->colapsado == 'no');
             @endphp
-            <div class="accordion-item border-0 shadow-sm mb-3 rounded-3 overflow-hidden">
+            <div class="accordion-item category-item border-0 shadow-sm mb-3 rounded-3 overflow-hidden">
                 <h2 class="accordion-header" id="heading-{{ $categoria->id_CategoriaModulo }}">
                     <button class="accordion-button fw-bold bg-dark text-white {{ $isOpen ? '' : 'collapsed' }}" 
                             type="button" 
@@ -75,7 +75,7 @@
                                         $colorClass = 'bg-' . $colorClass;
                                     }
                                 @endphp
-                                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                <div class="col-12 col-sm-6 col-md-4 col-lg-3 module-container">
                                     <div class="card {{ $colorClass }} text-white h-100 border-0 shadow-sm position-relative overflow-hidden module-card" style="min-height: 120px;">
                                         <div class="card-body d-flex flex-column justify-content-between p-3">
                                             <!-- Ícono decorativo de fondo -->
@@ -85,10 +85,10 @@
                                             
                                             <!-- Contenido del texto -->
                                             <div class="pe-5">
-                                                <h6 class="fw-bold mb-1 text-white" style="font-size: 0.95rem; line-height: 1.3;">
+                                                <h6 class="fw-bold mb-1 text-white module-title" style="font-size: 0.95rem; line-height: 1.3;">
                                                     {{ $modulo->nombre }}
                                                 </h6>
-                                                <p class="mb-0 text-white-50" style="font-size: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                <p class="mb-0 text-white-50 module-desc" style="font-size: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                                     {{ $modulo->descripcion }}
                                                 </p>
                                             </div>
@@ -113,6 +113,11 @@
                 <i class="fa fa-exclamation-triangle me-2"></i> No tienes ningún módulo asignado a tu perfil de usuario actualmente.
             </div>
         @endforelse
+    </div>
+
+    <!-- Mensaje cuando no hay resultados de búsqueda -->
+    <div id="no-results-message" class="alert alert-info border-0 shadow-sm text-center d-none my-4">
+        <i class="bi bi-search me-2"></i> No se encontraron resultados para "<strong id="search-term-placeholder"></strong>"
     </div>
 </div>
 
