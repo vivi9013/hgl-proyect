@@ -42,6 +42,7 @@ Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inco
 - [x] **Autenticación:** Login seguro con redirección inteligente y control de historial (`EvitarRetrocesoMiddleware`).
 - [x] **Panel de Inicio (/inicio):** Carga dinámica de módulos y categorías dependientes del perfil asignado (`id_perfil`).
 - [x] **Cambio de Contraseña:** Flujo seguro para la actualización de password de usuarios autenticados.
+- [x] **Buscador de Archivos (mBuscaArchivos):** Buscador de formatos asíncrono con filtrado AJAX, permisos dinámicos y reportes listos para impresión.
 
 ### En Desarrollo Actual
 - [ ] **Módulo de Citas / Pacientes:** Desarrollo de CRUD dinámico (usando modales AJAX y JS desacoplado).
@@ -61,6 +62,7 @@ Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inco
 | **2026-05-25** | Antigravity AI | Creación e inicialización del archivo `PROJECT_MEMORY.md` para sincronización de contexto inter-máquinas y equipos. | `PROJECT_MEMORY.md`, `GEMINI.md` | Completado |
 | **2026-05-25** | Antigravity AI | Creación del enlace simbólico al Sistema Legacy 1 y configuración local de `.gitignore`. | `legacy-system-1`, `.gitignore` | Completado |
 | **2026-05-25** | Antigravity AI | Integración de las bases y normas de la Filosofía de Modernización (Sistema 1 -> Sistema 2). | `PROJECT_MEMORY.md` | Completado |
+| **2026-05-26** | Antigravity AI | Migración del módulo "Buscador de Archivos" (mBuscaArchivos) a Laravel con arquitectura modular, AJAX y descargas seguras. | `app/Models/BuscadorArchivos/*`, `app/Http/Controllers/BuscadorArchivos/*`, `resources/views/buscador_archivos/*`, `resources/js/buscador_archivos/*`, `resources/css/buscador_archivos/*`, `routes/web.php`, `vite.config.js` | Completado |
 
 ---
 

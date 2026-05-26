@@ -1,0 +1,86 @@
+/* Estilos y Gradientes Premium (Evitamos colores aburridos y planos) */
+.btn-primary-gradient {
+    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary-gradient:hover {
+    background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%);
+    color: #fff;
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 10px rgba(49, 130, 206, 0.35);
+}
+
+.btn-primary-gradient:active {
+    transform: translateY(0);
+}
+
+.btn-danger-gradient {
+    background: linear-gradient(135deg, #e53e3e 0%, #9b2c2c 100%);
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-danger-gradient:hover {
+    background: linear-gradient(135deg, #c53030 0%, #742a2a 100%);
+    color: #fff;
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 10px rgba(229, 62, 62, 0.35);
+}
+
+.bg-primary-gradient {
+    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
+    color: #fff !important;
+}
+
+/* Transiciones de Filas de la Tabla */
+.table-hover tbody tr {
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f7fafc !important;
+}
+
+/* Clases de Utilidad */
+.min-w-200 {
+    min-width: 200px;
+}
+
+.font-size-xs {
+    font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 0.05em;
+}
+
+/* Estilo para las pilas de FontAwesome */
+.fa-stack {
+    display: inline-block;
+    height: 2em;
+    line-height: 2em;
+    position: relative;
+    vertical-align: middle;
+    width: 2.5em;
+}
+
+.fa-stack-1x, .fa-stack-2x {
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}
+
+.fa-stack-1x {
+    line-height: inherit;
+}
+
+.fa-stack-2x {
+    font-size: 1.5em;
+}
