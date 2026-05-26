@@ -1,11 +1,11 @@
-# 🧠 MEMORIA DEL PROYECTO (PROJECT MEMORY)
+# MEMORIA DEL PROYECTO (PROJECT MEMORY)
 
 > [!IMPORTANT]
 > **INSTRUCCIÓN PARA LA IA / ASISTENTE:** Este es el archivo de memoria viva de este proyecto. Léelo completo en tu primer análisis para entender el contexto, las reglas de desarrollo, el estado del proyecto y el historial de cambios. Al terminar una tarea, actualiza este archivo con los cambios realizados para que tu sucesor tenga contexto inmediato.
 
 ---
 
-## 📋 1. Información General del Proyecto
+## 1. Información General del Proyecto
 *   **Nombre del Proyecto:** HGL Proyecto (Sistema de Gestión Hospitalaria - Estadías)
 *   **Tecnologías Principales:**
     *   **Backend:** Laravel (PHP)
@@ -16,7 +16,7 @@
 
 ---
 
-## 🛠️ 2. Normas de Trabajo y Convenciones (Cómo Desarrollar Aquí)
+## 2. Normas de Trabajo y Convenciones (Cómo Desarrollar Aquí)
 Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inconsistencias en bases de datos compartidas:
 
 *   **Filosofía de Modernización (Sistema 1 -> Sistema 2):**
@@ -33,10 +33,16 @@ Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inco
     *   Toda modificación a la base de datos debe ser gestionada mediante migraciones de Laravel. **No hagas modificaciones directas** en Mysql que no estén documentadas en código.
 *   **Seguridad y Sesiones:**
     *   Las rutas protegidas deben usar los middlewares adecuados (ej. `auth` y `EvitarRetrocesoMiddleware` para seguridad de historial).
+    *   **Eficiencia de Contexto:** No escanees ni abras archivos de todo el proyecto de forma automática. Si necesitas conocer la estructura de una tabla o de un modelo previo, pídemelo en el chat o solicita que yo abra el archivo en el editor.
 
----
+##  2.5 Configuración de Skills del Agente (Control de Cuota)
+El proyecto cuenta con el framework de automatización en la carpeta `/skills/`. Para proteger la cuota del plan gratuito, se aplican las siguientes restricciones:
 
-## 🚀 3. Estado Actual del Proyecto y Roadmap
+* **Prohibición de Sub-Agentes:** No utilices los flujos de `subagent-driven-development` ni `dispatching-parallel-agents`. Toda tarea debe ser resuelta de forma lineal por ti (el agente principal) en el chat.
+* **Modo de Trabajo Permitido:** Utiliza únicamente `writing-plans` (escribir el plan en el chat) y `systematic-debugging` si hay un error, pero hazlo de forma teórica en el chat antes de tocar archivos.
+* **Ejecución Manual:** Ignora la carpeta `/skills/` para ejecuciones automáticas en segundo plano. Yo gobernaré el flujo de trabajo basándome en tus respuestas del chat.
+
+## 3. Estado Actual del Proyecto y Roadmap
 
 ### Módulos Implementados 100%
 - [x] **Autenticación:** Login seguro con redirección inteligente y control de historial (`EvitarRetrocesoMiddleware`).
@@ -53,7 +59,7 @@ Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inco
 
 ---
 
-## 📈 4. Historial de Cambios y Decisiones (Living Changelog)
+## 4. Historial de Cambios y Decisiones (Living Changelog)
 *(Por favor, registra aquí cada cambio significativo indicando la fecha, el autor o número de chat de IA y una breve descripción de los archivos afectados).*
 
 | Fecha (AAAA-MM-DD) | Autor / Rol | Cambios Realizados y Motivación | Archivos Afectados | Estado |
