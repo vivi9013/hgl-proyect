@@ -69,6 +69,7 @@ El proyecto cuenta con el framework de automatización en la carpeta `/skills/`.
 | **2026-05-25** | Antigravity AI | Creación del enlace simbólico al Sistema Legacy 1 y configuración local de `.gitignore`. | `legacy-system-1`, `.gitignore` | Completado |
 | **2026-05-25** | Antigravity AI | Integración de las bases y normas de la Filosofía de Modernización (Sistema 1 -> Sistema 2). | `PROJECT_MEMORY.md` | Completado |
 | **2026-05-26** | Antigravity AI | Migración del módulo "Buscador de Archivos" (mBuscaArchivos) a Laravel con arquitectura modular, AJAX y descargas seguras. | `app/Models/BuscadorArchivos/*`, `app/Http/Controllers/BuscadorArchivos/*`, `resources/views/buscador_archivos/*`, `resources/js/buscador_archivos/*`, `resources/css/buscador_archivos/*`, `routes/web.php`, `vite.config.js` | Completado |
+| **2026-05-27** | Antigravity AI | Resolución de colisión de clases en CambiarFotoController y modernización interactiva del módulo de fotografía (Bootstrap 5 y cabecera dinámica). | `app/Http/Controllers/CambiarFoto/*`, `app/Models/User.php`, `resources/views/layouts/header.blade.php`, `resources/views/layouts/CambiarFoto/*` | Completado |
 
 ---
 

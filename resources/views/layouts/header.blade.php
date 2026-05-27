@@ -31,12 +31,27 @@
       <!-- Perfil Usuario -->
       <li class="nav-item">
         <a class="nav-link d-flex align-items-center" href="#">
-          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
-            <span class="fw-bold">JD</span>
-          </div>
+          @php
+            $user = Auth::user();
+            $hasPhoto = false;
+            if ($user && $user->id_persona) {
+                $hasPhoto = \Illuminate\Support\Facades\Storage::disk('public')->exists('fotos/' . $user->id_persona . '.jpg');
+            }
+          @endphp
+          @if($hasPhoto)
+            <img src="{{ $user->foto_url }}" class="rounded-circle me-2 object-fit-cover" style="width: 35px; height: 35px; border: 1.5px solid #0d6efd;" alt="User Image">
+          @else
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 35px; height: 35px; font-size: 0.85rem;">
+              {{ $user ? $user->initials : 'US' }}
+            </div>
+          @endif
           <div class="d-none d-sm-block">
-            <p class="mb-0 fw-bold" style="font-size: 0.85rem; line-height: 1;">Juan Pérez</p>
-            <small class="text-muted" style="font-size: 0.75rem;">Administrador</small>
+            <p class="mb-0 fw-bold" style="font-size: 0.85rem; line-height: 1;">
+              {{ $user && $user->persona ? $user->persona->nombre . ' ' . $user->persona->ap_paterno : ($user ? $user->nombre_usuario : 'Usuario') }}
+            </p>
+            <small class="text-muted" style="font-size: 0.75rem;">
+              {{ $user && $user->perfil ? $user->perfil->perfil : 'Colaborador' }}
+            </small>
           </div>
         </a>
       </li>

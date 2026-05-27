@@ -30,7 +30,7 @@
 
 
         <li class="nav-item mb-2">
-          <a href="#" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('cambiar_foto.index') }}" class="nav-link d-flex align-items-center p-3 text-dark">
             <i class="bi bi-image-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cambiar Fotografia</span>
           </a>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -67,5 +68,41 @@ class User extends Authenticatable
     public function perfil()
     {
         return $this->belongsTo(Perfil::class, 'id_perfil');
+    }
+
+    /**
+     * Obtener las iniciales del usuario a partir de sus datos reales o de usuario
+     */
+    public function getInitialsAttribute()
+    {
+        if ($this->persona) {
+            $nombre = trim($this->persona->nombre);
+            $apellido = trim($this->persona->ap_paterno);
+            $in1 = !empty($nombre) ? mb_substr($nombre, 0, 1) : '';
+            $in2 = !empty($apellido) ? mb_substr($apellido, 0, 1) : '';
+            $initials = $in1 . $in2;
+            return !empty($initials) ? mb_strtoupper($initials) : 'U';
+        }
+        return mb_strtoupper(mb_substr($this->nombre_usuario, 0, 2));
+    }
+
+    /**
+     * Obtener la URL de la fotografía del usuario.
+     * Retorna la foto personalizada si existe en storage, de lo contrario un avatar por defecto.
+     */
+    public function getFotoUrlAttribute()
+    {
+        $idPersona = $this->id_persona;
+        if (!$idPersona) {
+            return asset('images/avatar.png');
+        }
+
+        $path = "fotos/{$idPersona}.jpg";
+        if (Storage::disk('public')->exists($path)) {
+            // Añadimos un query param timestamp para evitar almacenamiento en caché en el navegador al actualizar la foto
+            return asset("storage/" . $path) . '?t=' . time();
+        }
+
+        return asset('images/avatar.png');
     }
 }
