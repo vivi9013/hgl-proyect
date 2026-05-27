@@ -4,9 +4,9 @@ namespace App\Http\Controllers\MisDatos;
 
 use App\Http\Controllers\Controller;
 use App\Models\Persona;
+use App\Models\Sepomex;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MisDatosController extends Controller
 {
@@ -29,12 +29,7 @@ class MisDatosController extends Controller
         }
 
         // Consultar los estados de manera óptima desde sepomex
-        $estados = DB::table('sepomex')
-            ->select('d_estado')
-            ->where('d_codigo', '<>', 0)
-            ->groupBy('d_estado')
-            ->orderBy('d_estado')
-            ->pluck('d_estado');
+        $estados = Sepomex::estadosUnicos();
 
         return view('mis_datos.index', compact('persona', 'estados'));
     }
