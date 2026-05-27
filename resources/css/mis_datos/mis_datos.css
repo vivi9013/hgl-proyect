@@ -1,0 +1,56 @@
+/* Estilos personalizados para el módulo de Mis Datos */
+
+
+
+.section-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    border-color: #f1f5f9 !important;
+}
+
+/* Estilos refinados de los campos y controles */
+.form-control, .form-select {
+    padding: 0.6rem 0.95rem;
+    border-color: #e2e8f0;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.input-group-text {
+    border-color: #e2e8f0;
+    border-radius: 8px;
+}
+
+/* Efectos visuales interactivos */
+#btnActualizar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#btnActualizar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+}
+
+#btnActualizar:active {
+    transform: translateY(0);
+}
+
+/* Validaciones personalizadas de Bootstrap */
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: #ef4444;
+}
+
+.invalid-feedback {
+    font-size: 0.8rem;
+    color: #ef4444;
+    margin-top: 4px;
+}
+
+

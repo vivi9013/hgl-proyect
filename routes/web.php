@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\BuscadorArchivos\BuscadorArchivosController;
+use App\Http\Controllers\CargarArchivos\CargaArchivosController;
+use App\Http\Controllers\MisDatos\MisDatosController;
 use App\Http\Middleware\EvitarRetrocesoMiddleware;
 use App\Http\Controllers\CambiarFoto\CambiarFotoController;
 
@@ -33,6 +35,24 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     // Cambiar Fotografía
     Route::get('/cambiar-foto', [CambiarFotoController::class, 'index'])->name('cambiar_foto.index');
     Route::post('/cambiar-foto', [CambiarFotoController::class, 'store'])->name('cambiar_foto.store');
+
+    // Subgrupo de Carga de Archivos (mCargaArchivos)
+    Route::prefix('mCargaArchivos')->name('carga_archivos.')->group(function () {
+        Route::get('/', [CargaArchivosController::class, 'index'])->name('index');                        // URL: /mCargaArchivos
+        Route::post('/guardar', [CargaArchivosController::class, 'guardar'])->name('store');                // URL: /mCargaArchivos/guardar
+        Route::get('/verificar-nombre', [CargaArchivosController::class, 'revisarexistencia'])->name('check_availability'); // URL: /mCargaArchivos/verificar-nombre
+        Route::get('/status/{id}', [CargaArchivosController::class, 'toggleStatus'])->name('status');       // URL: /mCargaArchivos/status/{id}
+        Route::get('/editar/{id}', [CargaArchivosController::class, 'editar'])->name('edit');               // URL: /mCargaArchivos/editar/{id}
+        Route::post('/actualizar/{id}', [CargaArchivosController::class, 'actualizar'])->name('update');    // URL: /mCargaArchivos/actualizar/{id}
+        Route::get('/cargar/{id}', [CargaArchivosController::class, 'cargar'])->name('cargar');             // URL: /mCargaArchivos/cargar/{id}
+        Route::post('/subir-archivo/{id}', [CargaArchivosController::class, 'subirArchivo'])->name('subir_archivo'); // URL: /mCargaArchivos/subir-archivo/{id}
+    });
+
+    // Subgrupo de Mis Datos (mMisDatos)
+    Route::prefix('mis-datos')->name('mis_datos.')->group(function () {
+        Route::get('/', [MisDatosController::class, 'index'])->name('index');                        // URL: /mis-datos
+        Route::post('/actualizar', [MisDatosController::class, 'update'])->name('update');            // URL: /mis-datos/actualizar
+    });
 });
 
 // Redirección por defecto

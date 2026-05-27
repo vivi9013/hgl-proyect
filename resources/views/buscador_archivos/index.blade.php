@@ -71,12 +71,19 @@
                     </thead>
                     <tbody id="tbodyArchivos">
                         <!-- El contenido se cargará dinámicamente vía AJAX -->
-                    </tbody>
+              </tbody>
                 </table>
             </div>
         </div>
-    </div>
-</div>
-
-@vite(['resources/css/buscador_archivos/buscador.css', 'resources/js/buscador_archivos/buscador.js'])
+        
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
+            <div class="text-muted small" id="infoPaginacion">
+                Mostrando 0 a 0 de 0 registros
+            </div>
+            <nav aria-label="Paginacion de archivos">
+                <ul class="pagination mb-0" id="contenedorPaginacion">
+                    </ul>
+            </nav>
+        </div>
+    </div> </div> @vite(['resources/css/buscador_archivos/buscador.css', 'resources/js/buscador_archivos/buscador.js'])
 @endsection
