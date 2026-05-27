@@ -22,9 +22,9 @@
 
 
         <li class="nav-item mb-2">
-          <a href="#" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('mis_datos.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('mis_datos.*') ? 'active-menu-item' : 'text-dark' }}">
             @svg('bi-person-lines-fill')
-            <span  style="padding-left: 20px;">Mis Datos </span>
+            <span style="padding-left: 20px;">Mis Datos</span>
           </a>
         </li>
 

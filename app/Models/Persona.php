@@ -22,7 +22,19 @@ class Persona extends Model
         'fecha_nac',
         'sexo',
         'id_sede',
-        'activo'
+        'activo',
+        'ecivil',
+        'rfc',
+        'curp',
+        'e_mail',
+        'telefono',
+        'colonia',
+        'calle',
+        'numero',
+        'municipio',
+        'estado',
+        'hora',
+        'usuario'
     ];
 
     public function usuario()

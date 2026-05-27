@@ -22,7 +22,9 @@
         $existe = file_exists(base_path($rutaCompleta1)) || file_exists(base_path($rutaCompleta2));
     @endphp
     <tr>
-        <td class="ps-4 fw-medium text-secondary">{{ $index + 1 }}</td>
+        <td class="ps-4 fw-medium text-secondary">
+            {{ ($archivos->currentPage() - 1) * $archivos->perPage() + $loop->iteration }}
+        </td>
         <td>
             <div class="fw-bold text-dark fs-6">{{ $archivo->nombre }}</div>
         </td>
@@ -58,3 +60,15 @@
         </td>
     </tr>
 @endforelse
+
+@if ($archivos->count() > 0)
+    <tr id="datosPaginacionTransporte" class="d-none" 
+        data-total="{{ $archivos->total() }}"
+        data-info="Mostrando {{ $archivos->firstItem() }} a {{ $archivos->lastItem() }} de {{ $archivos->total() }} registros">
+        <td colspan="6">
+            <div id="htmlLinksPaginacion">
+                {{ $archivos->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+            </div>
+        </td>
+    </tr>
+@endif

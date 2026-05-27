@@ -2,9 +2,7 @@
 
 > [!IMPORTANT]
 > **INSTRUCCIÓN PARA LA IA / ASISTENTE:** Este es el archivo de memoria viva de este proyecto. Léelo completo en tu primer análisis para entender el contexto, las reglas de desarrollo, el estado del proyecto y el historial de cambios. Al terminar una tarea, actualiza este archivo con los cambios realizados para que tu sucesor tenga contexto inmediato.
-
 ---
-
 ## 1. Información General del Proyecto
 *   **Nombre del Proyecto:** HGL Proyecto (Sistema de Gestión Hospitalaria - Estadías)
 *   **Tecnologías Principales:**
@@ -13,9 +11,7 @@
     *   **Base de Datos:** mysql 
     *   **Bundler:** Vite
 *   **Arquitectura de Navegación:** Basada en perfiles (`id_perfil`) que determinan los módulos y categorías dinámicas cargadas en la vista principal (`IndexController` / `/inicio`).
-
 ---
-
 ## 2. Normas de Trabajo y Convenciones (Cómo Desarrollar Aquí)
 Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inconsistencias en bases de datos compartidas:
 
@@ -49,19 +45,14 @@ El proyecto cuenta con el framework de automatización en la carpeta `/skills/`.
 - [x] **Panel de Inicio (/inicio):** Carga dinámica de módulos y categorías dependientes del perfil asignado (`id_perfil`).
 - [x] **Cambio de Contraseña:** Flujo seguro para la actualización de password de usuarios autenticados.
 - [x] **Buscador de Archivos (mBuscaArchivos):** Buscador de formatos asíncrono con filtrado AJAX, permisos dinámicos y reportes listos para impresión.
-
 ### En Desarrollo Actual
 - [ ] **Módulo de Citas / Pacientes:** Desarrollo de CRUD dinámico (usando modales AJAX y JS desacoplado).
-
 ### Siguientes Pasos
 1.  Completar el flujo dinámico de CRUD en base de datos mysql para citas.
 2.  Estandarizar las vistas del resto de los módulos con Bootstrap e iconos dinámicos.
-
 ---
-
 ## 4. Historial de Cambios y Decisiones (Living Changelog)
 *(Por favor, registra aquí cada cambio significativo indicando la fecha, el autor o número de chat de IA y una breve descripción de los archivos afectados).*
-
 | Fecha (AAAA-MM-DD) | Autor / Rol | Cambios Realizados y Motivación | Archivos Afectados | Estado |
 | :--- | :--- | :--- | :--- | :--- |
 | **2026-05-10** | Antigravity AI | Instalación de las skills de Superpowers para guiar el flujo de desarrollo de IA. | `/skills/`, `GEMINI.md`, `CLAUDE.md`, etc. | Completado |
@@ -69,8 +60,5 @@ El proyecto cuenta con el framework de automatización en la carpeta `/skills/`.
 | **2026-05-25** | Antigravity AI | Creación del enlace simbólico al Sistema Legacy 1 y configuración local de `.gitignore`. | `legacy-system-1`, `.gitignore` | Completado |
 | **2026-05-25** | Antigravity AI | Integración de las bases y normas de la Filosofía de Modernización (Sistema 1 -> Sistema 2). | `PROJECT_MEMORY.md` | Completado |
 | **2026-05-26** | Antigravity AI | Migración del módulo "Buscador de Archivos" (mBuscaArchivos) a Laravel con arquitectura modular, AJAX y descargas seguras. | `app/Models/BuscadorArchivos/*`, `app/Http/Controllers/BuscadorArchivos/*`, `resources/views/buscador_archivos/*`, `resources/js/buscador_archivos/*`, `resources/css/buscador_archivos/*`, `routes/web.php`, `vite.config.js` | Completado |
+| **2026-05-27** | Antigravity AI | Migración e integración completa del módulo "Carga de Archivos" (mCargaArchivos): alta y listado unificados, validación AJAX, control de status, edición de metadatos y subida física de PDFs. | `App/Http/Controllers/CargarArchivos/CargaArchivosController.php`, `resources/views/carga_archivos/*`, `resources/css/carga_archivos/*`, `resources/js/carga_archivos/*`, `routes/web.php`, `vite.config.js` | Completado |
 
----
-
-> [!TIP]
-> **Consejo para el Equipo:** Al iniciar una conversación en cualquier computadora, pide a la IA: *"Lee el archivo `PROJECT_MEMORY.md` para entender el estado del desarrollo y qué se hizo en la última sesión"*.

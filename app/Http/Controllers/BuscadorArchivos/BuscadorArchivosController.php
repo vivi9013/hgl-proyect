@@ -61,7 +61,7 @@ class BuscadorArchivosController extends Controller
             });
         }
 
-        $archivos = $query->get();
+        $archivos = $query->paginate(10);
 
         return view('buscador_archivos.partials.tabla', compact('archivos'));
     }
