@@ -68,6 +68,11 @@ class LoginController extends Controller
         return response()->json(['resultado' => '2|0']);
     }
 
+    public function showCambiarContra()
+    {
+        return view('cambiar_contra.index');
+    }
+
     public function updatePassword(Request $request)
     {
         $request->validate(['pass' => 'required|min:4']);

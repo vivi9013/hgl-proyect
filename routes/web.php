@@ -21,6 +21,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
     // Cambio de contraseña
+    Route::get('/cambiar-contrasena', [LoginController::class, 'showCambiarContra'])->name('cambiar_contra.index');
     Route::post('/actualizar-password', [LoginController::class, 'updatePassword'])->name('password.update');
 
     // Buscador de Archivos
