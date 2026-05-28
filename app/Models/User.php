@@ -97,10 +97,10 @@ class User extends Authenticatable
             return asset('images/avatar.png');
         }
 
-        $path = "fotos/{$idPersona}.jpg";
-        if (Storage::disk('public')->exists($path)) {
+        $path = "{$idPersona}.jpg";
+        if (Storage::disk('fotos')->exists($path)) {
             // Añadimos un query param timestamp para evitar almacenamiento en caché en el navegador al actualizar la foto
-            return asset("storage/" . $path) . '?t=' . time();
+            return asset("fotos/" . $path) . '?t=' . time();
         }
 
         return asset('images/avatar.png');

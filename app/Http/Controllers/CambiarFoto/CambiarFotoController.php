@@ -44,8 +44,8 @@ class CambiarFotoController extends Controller
         }
 
         try {
-            // Guardamos la foto en storage/app/public/fotos/id_persona.jpg
-            $request->file('archivo-a-subir')->storeAs('fotos', $idPersona . '.jpg', 'public');
+            // Guardamos la foto en resources/assets/fotos/id_persona.jpg
+            $request->file('archivo-a-subir')->storeAs('', $idPersona . '.jpg', 'fotos');
             
             return redirect()->route('cambiar_foto.index')
                              ->with('success', '¡Operación Satisfactoria! La imagen ha sido modificada.');

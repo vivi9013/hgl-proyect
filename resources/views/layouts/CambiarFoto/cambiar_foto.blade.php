@@ -163,7 +163,7 @@
                             @php
                                 $hasPhoto = false;
                                 if ($user && $user->id_persona) {
-                                    $hasPhoto = \Illuminate\Support\Facades\Storage::disk('public')->exists('fotos/' . $user->id_persona . '.jpg');
+                                    $hasPhoto = \Illuminate\Support\Facades\Storage::disk('fotos')->exists($user->id_persona . '.jpg');
                                 }
                             @endphp
                             
@@ -233,9 +233,15 @@
                                     
                                     <!-- Submit buttons -->
                                     <div class="d-grid d-md-flex gap-2 justify-content-md-end">
-                                        <a href="{{ route('inicio') }}" class="btn btn-light px-4 rounded-pill text-dark fw-bold border">Cancelar</a>
+                                        <a href="{{ route('inicio') }}" class="btn btn-light px-4 rounded-pill text-dark fw-bold border" id="cancel-btn">Cancelar</a>
                                         <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold" id="submit-upload-btn" disabled>
-                                            Guardar Cambios
+                                            <span id="btn-default-state">
+                                                <i class="bi bi-cloud-upload me-1"></i> Guardar Cambios
+                                            </span>
+                                            <span id="btn-loading-state" style="display: none;">
+                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Subiendo imagen...
+                                            </span>
                                         </button>
                                     </div>
                                     
@@ -357,6 +363,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
+    // Submit form loading state
+    const form = document.getElementById('photo-upload-form');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const btnDefaultState = document.getElementById('btn-default-state');
+    const btnLoadingState = document.getElementById('btn-loading-state');
+
+    form.addEventListener('submit', function() {
+        // Mostrar estado de carga
+        submitBtn.setAttribute('disabled', 'true');
+        btnDefaultState.style.display = 'none';
+        btnLoadingState.style.display = 'inline-flex';
+        btnLoadingState.style.alignItems = 'center';
+        // Deshabilitar cancelar mientras sube
+        cancelBtn.classList.add('disabled');
+        cancelBtn.setAttribute('aria-disabled', 'true');
+    });
 });
 </script>
 @endsection

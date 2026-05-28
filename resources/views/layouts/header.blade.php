@@ -35,7 +35,7 @@
             $user = Auth::user();
             $hasPhoto = false;
             if ($user && $user->id_persona) {
-                $hasPhoto = \Illuminate\Support\Facades\Storage::disk('public')->exists('fotos/' . $user->id_persona . '.jpg');
+                $hasPhoto = \Illuminate\Support\Facades\Storage::disk('fotos')->exists($user->id_persona . '.jpg');
             }
           @endphp
           @if($hasPhoto)
