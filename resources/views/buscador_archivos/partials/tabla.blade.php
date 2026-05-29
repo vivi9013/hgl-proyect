@@ -16,10 +16,9 @@
         );
         $nombreSanitizado .= '.pdf';
 
-        $rutaCompleta1 = "legacy-system-1/mCargaArchivos/hojasArchivos/{$carpetaSanitizada}/{$nombreSanitizado}";
-        $rutaCompleta2 = "legacy-system-1/mCargaArchivos/hojasArchivo/{$carpetaSanitizada}/{$nombreSanitizado}";
+        $rutaCompleta1 = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
         
-        $existe = file_exists(base_path($rutaCompleta1)) || file_exists(base_path($rutaCompleta2));
+        $existe = file_exists($rutaCompleta1);
     @endphp
     <tr>
         <td class="ps-4 fw-medium text-secondary">

@@ -24,10 +24,9 @@ class CargaArchivosController extends Controller
                 $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
                 $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
                 
-                $ruta1 = "legacy-system-1/mCargaArchivos/hojasArchivos/{$carpetaSanitizada}/{$nombreSanitizado}";
-                $ruta2 = "legacy-system-1/mCargaArchivos/hojasArchivo/{$carpetaSanitizada}/{$nombreSanitizado}";
+                $ruta1 = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
                 
-                $archivo->existe_fisico = file_exists(base_path($ruta1)) || file_exists(base_path($ruta2));
+                $archivo->existe_fisico = file_exists($ruta1);
             } else {
                 $archivo->existe_fisico = false;
             }
@@ -157,10 +156,10 @@ class CargaArchivosController extends Controller
         $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
         $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
 
-        $rutaDirectorio = base_path("legacy-system-1/mCargaArchivos/hojasArchivos/{$carpetaSanitizada}");
+        $rutaDirectorio = storage_path("app/formats/{$carpetaSanitizada}");
 
         if (!file_exists($rutaDirectorio)) {
-            mkdir($rutaDirectorio, 0777, true);
+            mkdir($rutaDirectorio, 0755, true);
         }
 
         $file = $request->file('archivo-a-subir');

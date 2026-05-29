@@ -94,20 +94,12 @@ class BuscadorArchivosController extends Controller
         $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
         $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
 
-        // Ruta del archivo (en legacy-system-1/mCargaArchivos/hojasArchivos/)
-        $rutaCompleta = "legacy-system-1/mCargaArchivos/hojasArchivos/{$carpetaSanitizada}/{$nombreSanitizado}";
-        $pathReal = base_path($rutaCompleta);
+        // Ruta del archivo en el nuevo almacenamiento Laravel
+        $pathReal = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
 
         if (!file_exists($pathReal)) {
-            // Intento alternativo en mCargaArchivos/hojasArchivo/
-            $rutaCompleta2 = "legacy-system-1/mCargaArchivos/hojasArchivo/{$carpetaSanitizada}/{$nombreSanitizado}";
-            $pathReal2 = base_path($rutaCompleta2);
-            if (file_exists($pathReal2)) {
-                $pathReal = $pathReal2;
-            } else {
-                Log::warning("Archivo no encontrado: {$pathReal} o {$pathReal2}");
-                abort(404, 'El archivo físico no fue encontrado en el servidor.');
-            }
+            Log::warning("Archivo no encontrado: {$pathReal}");
+            abort(404, 'El archivo físico no fue encontrado en el servidor.');
         }
 
         return response()->download($pathReal, $nombreSanitizado);
