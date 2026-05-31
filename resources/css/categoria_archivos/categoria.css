@@ -1,0 +1,75 @@
+/* Estilos personalizados para el módulo de Categoría de Archivos */
+
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Efectos de Focus Modernos */
+.form-control:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Clases de retroalimentación personalizadas para AJAX */
+.text-success-custom {
+    color: #2f855a;
+    font-weight: 500;
+}
+
+.text-danger-custom {
+    color: #c53030;
+    font-weight: 500;
+}
+
+/* Animación del Spinner */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Hover en tabla y enlaces de acción */
+#tablaCategorias tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#tablaCategorias tbody tr:hover {
+    background-color: rgba(49, 130, 206, 0.02) !important;
+}
+
+.btn-toggle-status {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.btn-toggle-status:hover {
+    transform: scale(1.1);
+}
+
+.btn-toggle-status[data-activo="1"] {
+    color: #38a169;
+}
+
+.btn-toggle-status[data-activo="0"] {
+    color: #a0aec0;
+}
+
+.fa-pencil-square-o {
+    color: #3182ce;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.fa-pencil-square-o:hover {
+    color: #2b6cb0;
+    transform: scale(1.15);
+}
