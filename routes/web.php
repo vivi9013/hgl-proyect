@@ -8,6 +8,7 @@ use App\Http\Controllers\CargarArchivos\CargaArchivosController;
 use App\Http\Controllers\MisDatos\MisDatosController;
 use App\Http\Middleware\EvitarRetrocesoMiddleware;
 use App\Http\Controllers\CambiarFoto\CambiarFotoController;
+use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 
 // Grupo para invitados
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -53,6 +54,18 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('mis-datos')->name('mis_datos.')->group(function () {
         Route::get('/', [MisDatosController::class, 'index'])->name('index');                        // URL: /mis-datos
         Route::post('/actualizar', [MisDatosController::class, 'update'])->name('update');            // URL: /mis-datos/actualizar
+    });
+
+    // Subgrupo de Categoría de Archivos (mCategoArchivos)
+    Route::prefix('mCategoArchivos')->name('categoria_archivos.')->group(function () {
+        Route::get('/', [CategoriaArchivosController::class, 'index'])->name('index');
+        Route::post('/guardar', [CategoriaArchivosController::class, 'guardar'])->name('store');
+        Route::get('/verificar', [CategoriaArchivosController::class, 'verificar'])->name('verificar');
+        Route::get('/status/{id}', [CategoriaArchivosController::class, 'cambiarStatus'])->name('status');
+        Route::get('/editar/{id}', [CategoriaArchivosController::class, 'editar'])->name('edit');
+        Route::post('/actualizar/{id}', [CategoriaArchivosController::class, 'actualizar'])->name('update');
+        Route::get('/reportes', [CategoriaArchivosController::class, 'reportes'])->name('reportes');
+        Route::get('/imprimir', [CategoriaArchivosController::class, 'imprimir'])->name('imprimir');
     });
 });
 

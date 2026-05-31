@@ -11,11 +11,13 @@ export default defineConfig({
                 'resources/css/buscador_archivos/buscador.css',
                 'resources/css/carga_archivos/carga.css',
                 'resources/css/mis_datos/mis_datos.css',
+                'resources/css/categoria_archivos/categoria.css',
                 'resources/js/app.js',
                 'resources/js/login.js',
                 'resources/js/buscador_archivos/buscador.js',
                 'resources/js/carga_archivos/carga.js',
-                'resources/js/mis_datos/mis_datos.js'
+                'resources/js/mis_datos/mis_datos.js',
+                'resources/js/categoria_archivos/categoria.js'
             ],
             refresh: true,
         }),
