@@ -1,0 +1,232 @@
+/**
+ * Módulo Radiología RX - Estilos Personalizados Premium
+ */
+
+/* ── Variables Locales e Integración de Tema ── */
+:root {
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius-premium: 12px;
+}
+
+/* ── Elementos del Tema Dinámico ── */
+.btn-theme {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff;
+    border: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-theme:hover, .btn-theme:focus {
+    background-color: var(--theme-primary, #2980b9);
+    filter: brightness(0.9);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bg-theme {
+    background-color: var(--theme-primary, #2980b9) !important;
+}
+
+.text-theme {
+    color: var(--theme-primary, #2980b9) !important;
+}
+
+.bg-theme-subtle {
+    background-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.1) !important;
+}
+
+.border-theme {
+    border-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.3) !important;
+}
+
+/* ── Diseño de Pestañas (Tabs) ── */
+#rxTab .nav-link {
+    color: #55595c;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: var(--transition-smooth);
+}
+
+#rxTab .nav-link:hover {
+    background-color: #f8f9fa;
+    color: var(--theme-primary, #2980b9);
+}
+
+#rxTab .nav-link.active {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb, 41, 128, 185), 0.2);
+}
+
+/* ── Caja de Búsqueda ── */
+.search-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.search-box:focus-within {
+    border-color: var(--theme-primary, #2980b9);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 41, 128, 185), 0.15) !important;
+}
+
+.search-box input {
+    font-size: 0.95rem;
+}
+
+/* ── Tablas Modernas ── */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background-color: #f8fafc !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.table tbody tr {
+    transition: var(--transition-smooth);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.02) !important;
+    transform: translateY(-1px);
+}
+
+.table td {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 1px solid #edf2f7;
+}
+
+/* ── Botones de Paginación Estilizados ── */
+.pagination .page-link {
+    color: #4a5568;
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff;
+    border-color: var(--theme-primary, #2980b9);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--theme-primary, #2980b9) !important;
+    border-color: var(--theme-primary, #2980b9) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Modales Premium ── */
+.modal-content {
+    border-radius: var(--border-radius-premium);
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.card-switch {
+    background-color: #f8fafc;
+    border-color: #e2e8f0 !important;
+    transition: var(--transition-smooth);
+}
+
+.card-switch:hover {
+    border-color: var(--theme-primary, #2980b9) !important;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.form-switch .form-check-input {
+    width: 2.5em;
+    height: 1.25em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23cbd5e1'/%3e%3c/svg%3e");
+    transition: var(--transition-smooth);
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--theme-primary, #2980b9);
+    border-color: var(--theme-primary, #2980b9);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+}
+
+/* ── Badges Anatómicos Especiales ── */
+.checkbox-estudio {
+    transition: var(--transition-smooth);
+}
+
+.checkbox-estudio:checked + label {
+    color: var(--theme-primary, #2980b9) !important;
+    font-weight: 700;
+}
+
+.checkbox-estudio:checked {
+    background-color: var(--theme-primary, #2980b9);
+    border-color: var(--theme-primary, #2980b9);
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ── Detalles y Badges del Visualizador ── */
+.detail-card {
+    transition: var(--transition-smooth);
+}
+
+.detail-card:hover {
+    border-color: var(--theme-primary, #2980b9) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-danger-subtle {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.bg-secondary-subtle {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+/* ── Gap classes compatibility helper ── */
+.gap-1\.5 { gap: 0.375rem !important; }
+.gap-2\.5 { gap: 0.625rem !important; }
+.p-3\.5 { padding: 0.875rem !important; }
+.px-2\.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+.py-1\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }

@@ -2,45 +2,31 @@
 
 @section('title', 'Dashboard - Hospital System')
 
+@push('styles')
+@vite(['resources/css/indexstyle.css'])
+@endpush
+
 @section('content')
-
-<style>
-  /* Mapeo seguro de colores de AdminLTE original */
-  .bg-blue, .bg-blue-active { background-color: #0073b7 !important; color: #fff !important; }
-  .bg-green, .bg-green-active { background-color: #00a65a !important; color: #fff !important; }
-  .bg-yellow, .bg-yellow-active { background-color: #f39c12 !important; color: #fff !important; }
-  .bg-red, .bg-red-active { background-color: #dd4b39 !important; color: #fff !important; }
-  .bg-aqua, .bg-aqua-active { background-color: #00c0ef !important; color: #fff !important; }
-  .bg-purple, .bg-purple-active { background-color: #605ca8 !important; color: #fff !important; }
-  .bg-navy, .bg-navy-active { background-color: #001f3f !important; color: #fff !important; }
-  .bg-teal, .bg-teal-active { background-color: #39cccc !important; color: #fff !important; }
-  .bg-olive, .bg-olive-active { background-color: #3d9970 !important; color: #fff !important; }
-  .bg-orange, .bg-orange-active { background-color: #ff851b !important; color: #fff !important; }
-  .bg-fuchsia, .bg-fuchsia-active { background-color: #f012be !important; color: #fff !important; }
-  .bg-maroon, .bg-maroon-active { background-color: #d81b60 !important; color: #fff !important; }
-  .bg-light-blue, .bg-light-blue-active { background-color: #3c8dbc !important; color: #fff !important; }
-
-  /* Estilos específicos para la visualización responsiva del Dashboard */
-  .module-card {
-    transition: transform 0.15s ease-in-out;
-  }
-  .module-card:hover {
-    transform: translateY(-2px);
-  }
-  .icon-opacity {
-    opacity: 0.25;
-    font-size: 2.8rem;
-    position: absolute;
-    right: 15px;
-    top: 15px;
-  }
-</style>
 
 <div class="container-fluid py-2">
     <!-- Encabezado Principal -->
-    <div class="mb-4">
-        <h1 class="h3 mb-0 text-gray-800 fw-bold">Panel de Control <small class="text-muted fs-6">Inicio</small></h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800 fw-bold">
+            PANEL DE CONTROL
+            <small class="text-muted fs-6"> Bienvenido/a, {{ Auth::user()->persona ? Auth::user()->persona->nombre . ' ' . Auth::user()->persona->ap_paterno : Auth::user()->nombre_usuario }}</small>
+        </h1>
+
+        <!-- Buscador alineado a la derecha -->
+        <div class="input-group" style="width: 280px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+            <input type="text" id="global-search" class="form-control bg-light border-0" placeholder="Buscar módulo..." style="font-size: 0.9rem; box-shadow: none;">
+            <span class="input-group-text bg-light border-0">
+                <i class="bi bi-search text-dark"></i>
+            </span>
+        </div>
     </div>
+
+    
+
 
     <!-- Contenedor del Acordeón -->
     <div class="accordion" id="dashboardAccordion">
@@ -88,7 +74,7 @@
                                                 <h6 class="fw-bold mb-1 text-white module-title" style="font-size: 0.95rem; line-height: 1.3;">
                                                     {{ $modulo->nombre }}
                                                 </h6>
-                                                <p class="mb-0 text-white-50 module-desc" style="font-size: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                <p class="mb-0 text-white module-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                                     {{ $modulo->descripcion }}
                                                 </p>
                                             </div>

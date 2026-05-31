@@ -1,77 +1,186 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
-/*CSS */
-
-/*ESTILOS SIDEBAR*/
-.active-menu-item {
-  color: #0d6efd !important;
-  /* Azul primario de Bootstrap */
-  background-color: rgba(13, 110, 253, 0.1);
-  border-radius: 12px;
-  font-weight: 600;
+/* Variables y Estilos de Layout Globales */
+* {
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-.nav-link {
+:root {
+  --sidebar-width: 280px;
+  --header-height: 60px;
+}
+
+body {
+  background-color: #f8fafc;
+  overflow-x: hidden;
+}
+
+.main-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content-area {
+  flex-grow: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f8fafc;
+}
+
+/*ESTILOS SIDEBAR DINÁMICO POR TEMA*/
+.app-sidebar {
+  background-color: var(--theme-primary) !important;
+  color: rgba(232, 232, 232, 0.8) !important;
+  border-right: none !important;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.app-sidebar .sidebar-brand {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: background-color 0.3s ease;
+}
+
+.app-sidebar .sidebar-brand .text-primary {
+  color: #ffffff !important;
+}
+
+.app-sidebar .nav-link {
   transition: all 0.3s ease;
   margin: 4px 12px;
   border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.nav-link:hover:not(.active-menu-item) {
-  background-color: #f8fafc;
+.app-sidebar .nav-link i {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.app-sidebar .nav-link:hover:not(.active-menu-item) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
   transform: translateX(5px);
 }
 
-/* Estilo para el botón de logout al fondo */
-.sidebar-logout {
-  position: absolute;
-  bottom: 20px;
-  width: calc(100% - 24px);
-  left: 12px;
+.app-sidebar .nav-link:hover:not(.active-menu-item) i {
+  color: #ffffff !important;
 }
 
-.btn-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px;
-  background-color: #fee2e2;
-  color: #dc2626;
+.app-sidebar .active-menu-item {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.22) !important;
   border-radius: 12px;
-  text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s ease;
-  border: 1px solid #fecaca;
 }
 
-.btn-logout:hover {
-  background-color: #ef4444;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+.app-sidebar .active-menu-item i {
+  color: #ffffff !important;
 }
 
-/* Sidebar and Layout Transitions */
-.app-sidebar {
-    transition: transform 0.3s ease;
+/* Estilo para el botón de logout al fondo */
+.app-sidebar .sidebar-logout {
+  background-color: var(--theme-primary) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: background-color 0.3s ease;
+}
+
+.app-sidebar .btn-outline-danger {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.25s ease;
+}
+
+.app-sidebar .btn-outline-danger:hover {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+/*ESTILOS HEADER DINÁMICO POR TEMA*/
+.app-header {
+  background-color: var(--theme-primary) !important;
+  color: #ffffff !important;
+  border-bottom: none !important;
+  transition: background-color 0.3s ease;
+}
+
+.app-header .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: color 0.2s ease;
+}
+
+.app-header .nav-link:hover {
+  color: #ffffff !important;
+}
+
+.app-header .nav-link i {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.app-header .navbar-nav .text-dark,
+.app-header .navbar-nav .text-secondary,
+.app-header .navbar-nav .fw-bold {
+  color: #ffffff !important;
+}
+
+.app-header .navbar-nav .text-muted {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.app-header input#global-search {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.25s ease;
+}
+
+.app-header input#global-search::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.app-header input#global-search:focus {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: none !important;
+}
+
+.app-header .input-group-text {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: none !important;
 }
 
 @media (min-width: 992px) {
-    body.sidebar-collapse .app-sidebar {
-        transform: translateX(-100%);
-    }
-    body.sidebar-collapse .content-area {
-        margin-left: 0 !important;
-    }
+  body.sidebar-collapse .app-sidebar {
+    transform: translateX(-100%);
+  }
+
+  body.sidebar-collapse .content-area {
+    margin-left: 0 !important;
+  }
 }
 
 @media (max-width: 991.98px) {
-    .app-sidebar {
-        transform: translateX(-100%);
-    }
-    body.sidebar-open .app-sidebar {
-        transform: translateX(0);
-    }
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+
+  body.sidebar-open .app-sidebar {
+    transform: translateX(0);
+  }
+
+  .content-area {
+    margin-left: 0 !important;
+  }
 }

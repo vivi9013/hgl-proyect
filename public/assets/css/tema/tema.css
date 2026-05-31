@@ -1,0 +1,181 @@
+/* ================================================
+   Cambiar Tema – Módulo de selección de skin
+   ================================================ */
+
+/* ── Encabezado ──────────────────────────────────── */
+.tema-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+.tema-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.25rem;
+}
+.tema-header p {
+    color: #64748b;
+    font-size: 0.88rem;
+    margin: 0;
+}
+.tema-count-badge {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 0.4rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* ── Grid de tarjetas ────────────────────────────── */
+.tema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* ── Tarjeta individual ──────────────────────────── */
+.tema-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #e9ecef;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.tema-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.10);
+    border-color: #cbd5e1;
+}
+.tema-card.active-theme {
+    border-width: 2.5px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── Zona de color (parte superior) ─────────────── */
+.tema-card-color {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+.tema-card-color .color-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.9);
+    border: 2px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(4px);
+}
+
+/* Badge de tema activo sobre la tarjeta */
+.tema-badge-active {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.95);
+    color: #15803d;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* ── Cuerpo de la tarjeta ────────────────────────── */
+.tema-card-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+.tema-card-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+/* ── Botón de selección ──────────────────────────── */
+.tema-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: 1.5px solid currentColor;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-decoration: none;
+    width: 100%;
+    justify-content: center;
+}
+.tema-btn:hover {
+    color: #fff !important;
+}
+
+/* Botón "Seleccionado" (no clicable) */
+.tema-btn-selected {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    color: #16a34a;
+    cursor: default;
+}
+
+/* ── Footer informativo ──────────────────────────── */
+.tema-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 0.82rem;
+    color: #64748b;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 576px) {
+    .tema-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+    .tema-card-color {
+        height: 80px;
+    }
+    .color-circle {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.1rem !important;
+    }
+}

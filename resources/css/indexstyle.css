@@ -1,38 +1,92 @@
 /* Estilos específicos para el Dashboard (Index) */
 
 .module-card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    min-height: 100%;
-    width: 100%;
+    border-radius: 6px !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+    min-height: 160px !important;
+    border: none !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
+    cursor: pointer;
 }
 
 .module-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15) !important;
 }
 
-.card-header {
-    border-radius: 0 !important;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.module-card .card-body {
+    padding: 1.15rem !important;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-.module-card .card-body i {
-    font-size: 3rem;
-    opacity: 0.3;
+.module-card .icon-opacity {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    opacity: 0.70;
+    font-size: 2.2rem;
+    color: #ffffff;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.module-card .card-footer {
-    transition: background-color 0.2s;
+.module-card:hover .icon-opacity {
+    transform: scale(1.2) rotate(8deg);
+    opacity: 0.90;
 }
 
-.module-card:hover .card-footer {
-    background-color: rgba(0, 0, 0, 0.2) !important;
+.module-card .pe-5 {
+    padding-right: 0 !important;
+    margin-right: 35px;
+}
+
+.module-card .module-title {
+    font-size: 1.05rem !important;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 700 !important;
+    margin-bottom: 6px !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.2px;
+}
+
+.module-card .module-desc {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 0.82rem !important;
+    line-height: 1.38 !important;
+    margin-bottom: 0 !important;
+}
+
+.module-card a {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 4px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none;
+    width: fit-content !important;
+}
+
+.module-card a:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    transform: translateY(-1px);
+}
+
+.module-card a span {
+    font-size: 0.8rem !important;
 }
 
 /* Colores personalizados para coincidir con la foto */
@@ -58,4 +112,95 @@
 
 .bg-warning {
     background-color: #f39c12 !important;
+}
+
+/* Mapeo seguro de colores de AdminLTE original para los módulos */
+.bg-blue,
+.bg-blue-active {
+    background-color: #0073b7 !important;
+    color: #fff !important;
+}
+
+.bg-green,
+.bg-green-active {
+    background-color: #00a65a !important;
+    color: #fff !important;
+}
+
+.bg-yellow,
+.bg-yellow-active {
+    background-color: #f39c12 !important;
+    color: #fff !important;
+}
+
+.bg-red,
+.bg-red-active {
+    background-color: #dd4b39 !important;
+    color: #fff !important;
+}
+
+.bg-purple,
+.bg-purple-active {
+    background-color: #605ca8 !important;
+    color: #fff !important;
+}
+
+.bg-maroon,
+.bg-maroon-active {
+    background-color: #d81b60 !important;
+    color: #fff !important;
+}
+
+.bg-navy,
+.bg-navy-active {
+    background-color: #001f3f !important;
+    color: #fff !important;
+}
+
+.bg-teal,
+.bg-teal-active {
+    background-color: #39cccc !important;
+    color: #fff !important;
+}
+
+.bg-olive,
+.bg-olive-active {
+    background-color: #3d9970 !important;
+    color: #fff !important;
+}
+
+.bg-lime,
+.bg-lime-active {
+    background-color: #01ff70 !important;
+    color: #fff !important;
+}
+
+.bg-orange,
+.bg-orange-active {
+    background-color: #ff851b !important;
+    color: #fff !important;
+}
+
+.bg-fuchsia,
+.bg-fuchsia-active {
+    background-color: #f012be !important;
+    color: #fff !important;
+}
+
+.bg-aqua,
+.bg-aqua-active {
+    background-color: #00c0ef !important;
+    color: #fff !important;
+}
+
+.bg-light-blue,
+.bg-light-blue-active {
+    background-color: #3c8dbc !important;
+    color: #fff !important;
+}
+
+.bg-orange,
+.bg-orange-active {
+    background-color: #ff851b !important;
+    color: #fff !important;
 }

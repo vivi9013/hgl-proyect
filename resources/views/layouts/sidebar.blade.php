@@ -1,6 +1,6 @@
-<aside class="app-sidebar bg-white shadow-sm border-end" style="width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000;">
+<aside class="app-sidebar shadow-sm" style="width: var(--sidebar-width); height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000;">
   <!--begin::Sidebar Brand-->
-  <div class="sidebar-brand bg-white border-bottom d-flex align-items-center justify-content-center" style="height: var(--header-height);">
+  <div class="sidebar-brand d-flex align-items-center justify-content-center" style="height: var(--header-height);">
     <a href="/" class="brand-link text-center text-decoration-none">
       <div class="text-primary fs-4 fw-bold">
         <i class="bi bi-heart-pulse-fill"></i> Hospital General
@@ -44,14 +44,14 @@
         </li>
 
         <li class="nav-item mb-2">
-          <a href="#" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('cumpleanos.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('cumpleanos.*') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-cake-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cumpleaños</span>
           </a>
         </li>
 
         <li class="nav-item mb-2">
-          <a href="#" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('cambiar_tema.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('cambiar_tema.*') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-palette-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cambiar Tema</span>
           </a>
@@ -70,7 +70,7 @@
   </div>
   <!--end::Sidebar Wrapper-->
 
-  <div class="sidebar-logout p-3 border-top bg-white" style="position: absolute; bottom: 0; width: 100%; margin-left: -12px;">
+  <div class="sidebar-logout p-3" style="position: absolute; bottom: 0; width: 100%; margin-left: -12px;">
     <a href="{{ route('logout') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
 
       <i class="bi bi-box-arrow-right me-2"></i>

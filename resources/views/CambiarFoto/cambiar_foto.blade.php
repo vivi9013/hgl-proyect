@@ -1,14 +1,17 @@
+@push('styles')
+<link rel="stylesheet" href="{{ asset('public/assets/css/CambiarFoto/cambiar_foto.css') }}">
+@endpush
+@push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/CambiarFoto/cambiar_foto.css') }}">
+@endpush
 @extends('layouts.app')
 
 @section('title', 'Cambiar Fotografía - Hospital System')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/layouts/CambiarFoto/cambiar_foto.css') }}">
-@endpush
-
 @section('content')
-<div class="container-fluid py-4">
 
+
+<div class="container-fluid py-4">
     <!-- Breadcrumb -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -23,7 +26,7 @@
         </nav>
     </div>
 
-    <!-- Alertas -->
+    <!-- Alert Messages -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 p-3" role="alert">
             <div class="d-flex align-items-center">
@@ -67,12 +70,10 @@
         </div>
     @endif
 
-    <!-- Tarjeta principal -->
+    <!-- Card Main Container -->
     <div class="row">
         <div class="col-lg-10 mx-auto">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-
-                <!-- Header -->
                 <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
@@ -82,22 +83,20 @@
                     </div>
                     <span class="badge bg-light text-muted border py-2 px-3 rounded-pill fw-normal">Formato JPG únicamente</span>
                 </div>
-
-                <!-- Body -->
+                
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4 align-items-center">
-
-                        <!-- Panel izquierdo: foto actual -->
+                        <!-- Left Side: Current Profile Picture -->
                         <div class="col-md-4 text-center py-3" style="border-right: 1px solid #dee2e6;">
-                            <h6 class="text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Fotografía Actual</h6>
-
+                            <h6 class="text-muted fw-bold mb-3 uppercase tracking-wider" style="font-size: 0.8rem; letter-spacing: 1px;">FOTOGRAFÍA ACTUAL</h6>
+                            
                             @php
                                 $hasPhoto = false;
                                 if ($user && $user->id_persona) {
                                     $hasPhoto = \Illuminate\Support\Facades\Storage::disk('fotos')->exists($user->id_persona . '.jpg');
                                 }
                             @endphp
-
+                            
                             <div class="avatar-preview-container mb-3 {{ $hasPhoto ? '' : 'pulse-avatar' }}">
                                 @if($hasPhoto)
                                     <img src="{{ $user->foto_url }}" alt="Imagen de Perfil" id="current-photo">
@@ -107,7 +106,6 @@
                                     </div>
                                 @endif
                             </div>
-
                             <p class="mb-0 text-dark fw-bold" style="font-size: 0.9rem;">
                                 {{ $user->persona ? $user->persona->nombre . ' ' . $user->persona->ap_paterno : $user->nombre_usuario }}
                             </p>
@@ -115,17 +113,18 @@
                                 ID Persona: <span class="fw-bold text-primary">{{ $user->id_persona }}</span>
                             </small>
                         </div>
-
-                        <!-- Panel derecho: formulario -->
+                        
+                        <!-- Right Side: Upload Form -->
                         <div class="col-md-8">
                             <div class="ps-md-4">
-                                <h6 class="text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Subir Nueva Imagen</h6>
-
+                                <h6 class="text-muted fw-bold mb-3 uppercase tracking-wider" style="font-size: 0.8rem; letter-spacing: 1px;">SUBIR NUEVA IMAGEN</h6>
+                                
                                 <form action="{{ route('cambiar_foto.store') }}" method="POST" enctype="multipart/form-data" id="photo-upload-form">
                                     @csrf
-                                    <input type="file" name="archivo-a-subir" id="file-upload-input" accept="image/*" style="display: none;">
-
-                                    <!-- Drop Zone -->
+                                    
+                                    <input type="file" name="archivo-a-subir" id="file-upload-input" accept=".jpg,.jpeg" style="display: none;">
+                                    
+                                    <!-- Interactive Drop Zone -->
                                     <div class="drop-zone mb-4" id="upload-drop-zone">
                                         <i class="bi bi-cloud-arrow-up-fill mb-2 d-inline-block text-secondary"></i>
                                         <h5 class="fw-bold mb-1 fs-6 text-dark">Arrastra tu fotografía aquí</h5>
@@ -133,8 +132,8 @@
                                         <button type="button" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-bold" id="browse-files-btn">
                                             Seleccionar archivo
                                         </button>
-
-                                        <!-- Preview -->
+                                        
+                                        <!-- Selected File Indicator -->
                                         <div class="preview-thumbnail-container" id="preview-container">
                                             <hr class="my-3">
                                             <div class="d-flex align-items-center justify-content-center bg-white p-3 rounded-3 border">
@@ -149,21 +148,20 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Requisitos -->
+                                    
+                                    <!-- Requirements info -->
                                     <div class="bg-light p-3 rounded-3 mb-4" style="font-size: 0.8rem;">
                                         <div class="d-flex align-items-start">
-                                            <i class="bi bi-info-circle text-primary me-2 mt-1"></i>
+                                            <i class="bi bi-info-circle text-primary me-2 mt-0.5"></i>
                                             <div>
                                                 <span class="fw-bold text-dark d-block mb-1">Requisitos de la imagen:</span>
-                                                <span class="text-muted d-block">• Se aceptan todos los formatos: <strong>JPG, PNG, WEBP, GIF, BMP</strong></span>
-                                                <span class="text-muted d-block">• El archivo se convertirá automáticamente a <strong>JPG</strong> al guardarse</span>
+                                                <span class="text-muted d-block">• Únicamente imágenes con extensión <strong>.jpg</strong> o <strong>.jpeg</strong></span>
                                                 <span class="text-muted d-block">• El tamaño máximo del archivo no debe exceder <strong>5 MB</strong> (5,120 KB)</span>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Botones -->
+                                    
+                                    <!-- Submit buttons -->
                                     <div class="d-grid d-md-flex gap-2 justify-content-md-end">
                                         <a href="{{ route('inicio') }}" class="btn btn-light px-4 rounded-pill text-dark fw-bold border" id="cancel-btn">Cancelar</a>
                                         <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold" id="submit-upload-btn" disabled>
@@ -176,71 +174,109 @@
                                             </span>
                                         </button>
                                     </div>
+                                    
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const dropZone       = document.getElementById('upload-drop-zone');
-    const fileInput      = document.getElementById('file-upload-input');
-    const browseBtn      = document.getElementById('browse-files-btn');
-    const submitBtn      = document.getElementById('submit-upload-btn');
+    const dropZone = document.getElementById('upload-drop-zone');
+    const fileInput = document.getElementById('file-upload-input');
+    const browseBtn = document.getElementById('browse-files-btn');
+    const submitBtn = document.getElementById('submit-upload-btn');
     const previewContainer = document.getElementById('preview-container');
-    const previewImage   = document.getElementById('preview-image');
+    const previewImage = document.getElementById('preview-image');
     const selectedFileName = document.getElementById('selected-file-name');
     const selectedFileSize = document.getElementById('selected-file-size');
-    const removeFileBtn  = document.getElementById('remove-file-btn');
-
-    browseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
-    dropZone.addEventListener('click', () => { fileInput.click(); });
-
-    ['dragenter', 'dragover'].forEach(ev => {
-        dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('dragover'); }, false);
+    const removeFileBtn = document.getElementById('remove-file-btn');
+    
+    // Open file selector when clicking dropzone elements
+    browseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
     });
-    ['dragleave', 'drop'].forEach(ev => {
-        dropZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('dragover'); }, false);
+    
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Drag and drop events
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('dragover');
+        }, false);
     });
 
     dropZone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length) { fileInput.files = files; handleFileSelect(files[0]); }
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
     });
 
+    // File input change event
     fileInput.addEventListener('change', function() {
-        if (this.files.length) handleFileSelect(this.files[0]);
+        if (this.files.length) {
+            handleFileSelect(this.files[0]);
+        }
     });
 
+    // Handle the selected file
     function handleFileSelect(file) {
-        // Solo verificar que sea una imagen (cualquier formato)
-        if (!file.type.startsWith('image/')) {
-            alert('El archivo seleccionado no es una imagen válida.');
-            resetFileInput(); return;
+        // Validate extension
+        const allowedExtensions = /(\.jpg|\.jpeg)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            alert('La imagen cargada no pertenece a la extensión jpg o jpeg.');
+            resetFileInput();
+            return;
         }
-        if (file.size > 5242880) {
+
+        // Validate size (5MB = 5242880 bytes)
+        const maxSize = 5242880;
+        if (file.size > maxSize) {
             alert('La imagen sobrepasa los 5MB permitidos.');
-            resetFileInput(); return;
+            resetFileInput();
+            return;
         }
+
+        // Display info & enable submit
         selectedFileName.textContent = file.name;
         selectedFileSize.textContent = formatBytes(file.size);
+        
+        // Image preview
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = function(e) {
             previewImage.src = e.target.result;
             previewContainer.style.display = 'block';
             submitBtn.removeAttribute('disabled');
-        };
+        }
         reader.readAsDataURL(file);
     }
 
-    removeFileBtn.addEventListener('click', (e) => { e.stopPropagation(); resetFileInput(); });
+    // Remove file selection
+    removeFileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetFileInput();
+    });
 
     function resetFileInput() {
         fileInput.value = '';
@@ -251,21 +287,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatBytes(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes';
-        const k = 1024, sizes = ['Bytes','KB','MB','GB'];
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
-
+    // Submit form loading state
     const form = document.getElementById('photo-upload-form');
     const cancelBtn = document.getElementById('cancel-btn');
     const btnDefaultState = document.getElementById('btn-default-state');
     const btnLoadingState = document.getElementById('btn-loading-state');
 
     form.addEventListener('submit', function() {
+        // Mostrar estado de carga
         submitBtn.setAttribute('disabled', 'true');
         btnDefaultState.style.display = 'none';
         btnLoadingState.style.display = 'inline-flex';
         btnLoadingState.style.alignItems = 'center';
+        // Deshabilitar cancelar mientras sube
         cancelBtn.classList.add('disabled');
         cancelBtn.setAttribute('aria-disabled', 'true');
     });
