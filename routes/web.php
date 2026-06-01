@@ -10,6 +10,7 @@ use App\Http\Middleware\EvitarRetrocesoMiddleware;
 use App\Http\Controllers\CambiarFoto\CambiarFotoController;
 use App\Http\Controllers\Cumpleanos\CumpleanosController;
 use App\Http\Controllers\Tema\TemaController;
+use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 
 // Grupo para invitados
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -63,6 +64,41 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/', [MisDatosController::class, 'index'])->name('index');                        // URL: /mis-datos
         Route::post('/actualizar', [MisDatosController::class, 'update'])->name('update');            // URL: /mis-datos/actualizar
     });
+
+    // Módulo mCategoArchivos
+Route::prefix('mCategoArchivos')->group(function () {
+    // Index (lista de categorías)
+    Route::get('/', [CategoriaArchivosController::class, 'index'])
+        ->name('categoria_archivos.index');
+
+    // Guardar nueva categoría
+    Route::post('/', [CategoriaArchivosController::class, 'guardar'])
+        ->name('categoria_archivos.store');
+
+    // Editar categoría
+    Route::get('/{id}/edit', [CategoriaArchivosController::class, 'editar'])
+        ->name('categoria_archivos.edit');
+
+    // Actualizar categoría
+    Route::put('/{id}', [CategoriaArchivosController::class, 'actualizar'])
+        ->name('categoria_archivos.update');
+
+    // Cambiar status
+    Route::get('/{id}/status', [CategoriaArchivosController::class, 'cambiarStatus'])
+        ->name('categoria_archivos.status');
+
+    // Reportes del módulo
+    Route::get('/reportes', [CategoriaArchivosController::class, 'reportes'])
+        ->name('categoria_archivos.reportes');
+
+    // Reporte de impresión
+    Route::get('/reportes/impresion', [CategoriaArchivosController::class, 'imprimir'])
+        ->name('categoria_archivos.reporte_impresion');
+
+    // AJAX verificar disponibilidad
+    Route::get('/verificar', [CategoriaArchivosController::class, 'verificar'])
+        ->name('categoria_archivos.verificar');
+});
 
     // Radiología RX (mRXestudios)
     Route::prefix('mRXestudios')->name('rx.')->group(function () {

@@ -18,7 +18,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
                 </li>
-                <li class="breadcrumb-item active">Catálogo</li>
+                <li class="breadcrumb-item active">Categoría de Archivos</li>
             </ol>
         </nav>
     </div>
