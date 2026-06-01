@@ -1,3 +1,51 @@
+body {
+    background-color: #f9fafb;
+}
+
+/* Card */
+.card,
+.card-header,
+.card-body {
+    background-color: #f9fafb;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+/* Header icon */
+.icon-container {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+/* Badge */
+.format-badge {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+    border-radius: 50rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+/* Section titles */
+.section-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+/* Photo panel */
+.photo-panel {
+    border-right: 2px solid #6c757d;
+}
+
+/* Avatar */
 .avatar-preview-container {
     position: relative;
     width: 180px;
@@ -21,6 +69,29 @@
     object-fit: cover;
 }
 
+.no-photo {
+    width: 100%;
+    height: 100%;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+/* User info */
+.user-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #212529;
+}
+
+.user-id {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Drop zone */
 .drop-zone {
     border: 2px dashed #dee2e6;
     border-radius: 16px;
@@ -29,7 +100,6 @@
     background-color: #f8fafc;
     transition: all 0.25s ease-in-out;
     cursor: pointer;
-    position: relative;
 }
 
 .drop-zone:hover,
@@ -49,18 +119,99 @@
     color: #0d6efd;
 }
 
-.upload-btn-wrapper {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-}
-
+/* Preview */
 .preview-thumbnail-container {
     display: none;
     margin-top: 1.5rem;
     animation: fadeIn 0.4s ease-out;
 }
 
+.preview-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.preview-box img {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #198754;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.file-name {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #212529;
+    margin: 0;
+}
+
+.file-size {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* Botón Cancelar */
+#cancel-btn {
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    color: #000000;
+    border-radius: 50rem;
+    padding: 0.5rem 1.5rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+#cancel-btn i {
+    color: #000000;
+}
+
+#cancel-btn:hover {
+    background-color: #f1f5f9;
+}
+
+/* Botón Guardar Cambios */
+#submit-upload-btn {
+    background-color: #0d6efd;
+    border: 2px solid #0d6efd;
+    color: #ffffff;
+    border-radius: 50rem;
+    padding: 0.5rem 1.5rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+#submit-upload-btn i {
+    color: #ffffff;
+}
+
+#submit-upload-btn:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+
+.divider {
+    border: none;
+    border-top: 1px solid #adb5bd;
+    margin: 1.5rem 0;
+}
+
+
+
+/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -89,4 +240,19 @@
     100% {
         box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
     }
+}
+
+#submit-upload-btn {
+    min-width: 200px;
+    /* ajusta según el tamaño que quieras */
+    justify-content: center;
+    /* centra el contenido */
+}
+
+/* Requirements box */
+.requirements {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
 }

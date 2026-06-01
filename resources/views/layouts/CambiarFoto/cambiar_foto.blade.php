@@ -12,84 +12,33 @@
     <!-- Breadcrumb -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800 fw-bold">Cambiar Fotografía</h1>
-            <p class="text-muted mb-0" style="font-size: 0.85rem;">Carga y actualización de la fotografía de perfil del trabajador</p>
+            <h1 class="h3 mb-0 fw-bold"><i class="bi bi-image"></i> Cambiar Fotografía</h1>
+            <p class="text-muted mb-0 subtitle">Carga y actualización de la fotografía de perfil del trabajador</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-light p-2 rounded-3 border-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}" class="text-decoration-none"><i class="fa fa-dashboard me-1"></i>Panel de Control</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Subir archivo</li>
-            </ol>
-        </nav>
     </div>
 
-    <!-- Alertas -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 p-3" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
-                <div>
-                    <h6 class="alert-heading fw-bold mb-1">¡Operación Satisfactoria!</h6>
-                    <span>{{ session('success') }}</span>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 p-3" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
-                <div>
-                    <h6 class="alert-heading fw-bold mb-1">Error de Carga</h6>
-                    <span>{{ session('error') }}</span>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert alert-warning alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4 p-3" role="alert">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-exclamation-circle-fill fs-4 me-3 text-warning"></i>
-                <div>
-                    <h6 class="alert-heading fw-bold mb-1">Validación de Imagen</h6>
-                    <ul class="mb-0 ps-3">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
+    <hr class="divider">
     <!-- Tarjeta principal -->
     <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="col-lg-12 mx-auto">
+            <div class="card">
 
                 <!-- Header -->
-                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-3 me-3">
-                            <i class="bi bi-image fs-5"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-0 text-dark">Modificar Fotografía Base</h5>
+                        <h5 class="card-title fw-bold mb-0"><i class="bi bi-images"></i> Modificar Fotografía Actual</h5>
                     </div>
-                    <span class="badge bg-light text-muted border py-2 px-3 rounded-pill fw-normal">Formato JPG únicamente</span>
+                    <span class="badge format-badge">¡Revisa los formatos disponibles!</span>
                 </div>
 
                 <!-- Body -->
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body">
                     <div class="row g-4 align-items-center">
 
                         <!-- Panel izquierdo: foto actual -->
-                        <div class="col-md-4 text-center py-3" style="border-right: 1px solid #dee2e6;">
-                            <h6 class="text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Fotografía Actual</h6>
+                        <div class="col-md-4 text-center photo-panel">
+                            <h6 class="section-title">Fotografía Actual</h6>
 
                             @php
                                 $hasPhoto = false;
@@ -102,16 +51,16 @@
                                 @if($hasPhoto)
                                     <img src="{{ $user->foto_url }}" alt="Imagen de Perfil" id="current-photo">
                                 @else
-                                    <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center flex-column text-muted">
+                                    <div class="no-photo">
                                         <span class="fw-bold fs-1">{{ $user->initials }}</span>
                                     </div>
                                 @endif
                             </div>
 
-                            <p class="mb-0 text-dark fw-bold" style="font-size: 0.9rem;">
+                            <p class="user-name">
                                 {{ $user->persona ? $user->persona->nombre . ' ' . $user->persona->ap_paterno : $user->nombre_usuario }}
                             </p>
-                            <small class="text-muted" style="font-size: 0.75rem;">
+                            <small class="user-id">
                                 ID Persona: <span class="fw-bold text-primary">{{ $user->id_persona }}</span>
                             </small>
                         </div>
@@ -119,29 +68,29 @@
                         <!-- Panel derecho: formulario -->
                         <div class="col-md-8">
                             <div class="ps-md-4">
-                                <h6 class="text-muted fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;">Subir Nueva Imagen</h6>
+                                <h6 class="section-title">Subir Nueva Imagen</h6>
 
                                 <form action="{{ route('cambiar_foto.store') }}" method="POST" enctype="multipart/form-data" id="photo-upload-form">
                                     @csrf
-                                    <input type="file" name="archivo-a-subir" id="file-upload-input" accept="image/*" style="display: none;">
+                                    <input type="file" name="archivo-a-subir" id="file-upload-input" accept="image/*" hidden>
 
                                     <!-- Drop Zone -->
                                     <div class="drop-zone mb-4" id="upload-drop-zone">
-                                        <i class="bi bi-cloud-arrow-up-fill mb-2 d-inline-block text-secondary"></i>
-                                        <h5 class="fw-bold mb-1 fs-6 text-dark">Arrastra tu fotografía aquí</h5>
-                                        <p class="text-muted mb-3" style="font-size: 0.8rem;">O si lo prefieres, haz clic para buscar en tus archivos</p>
-                                        <button type="button" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-bold" id="browse-files-btn">
+                                        <i class="bi bi-cloud-arrow-up-fill mb-2 d-inline-block"></i>
+                                        <h5 class="fw-bold mb-1">Arrastra tu fotografía aquí</h5>
+                                        <p class="text-muted mb-3">O si lo prefieres, haz clic para buscar en tus archivos</p>
+                                        <button type="button" class="btn btn-outline-primary btn-sm px-4 fw-bold" id="browse-files-btn">
                                             Seleccionar archivo
                                         </button>
 
                                         <!-- Preview -->
                                         <div class="preview-thumbnail-container" id="preview-container">
                                             <hr class="my-3">
-                                            <div class="d-flex align-items-center justify-content-center bg-white p-3 rounded-3 border">
-                                                <img src="" id="preview-image" class="rounded-circle me-3 object-fit-cover" style="width: 50px; height: 50px; border: 2px solid #198754;" alt="Preview">
+                                            <div class="preview-box">
+                                                <img src="" id="preview-image" alt="Preview">
                                                 <div class="text-start">
-                                                    <p class="mb-0 fw-bold text-dark text-truncate" id="selected-file-name" style="max-width: 250px; font-size: 0.85rem;"></p>
-                                                    <small class="text-muted" id="selected-file-size" style="font-size: 0.75rem;"></small>
+                                                    <p class="file-name" id="selected-file-name"></p>
+                                                    <small class="file-size" id="selected-file-size"></small>
                                                 </div>
                                                 <button type="button" class="btn btn-link text-danger ms-auto p-0" id="remove-file-btn">
                                                     <i class="bi bi-trash-fill fs-5"></i>
@@ -151,35 +100,38 @@
                                     </div>
 
                                     <!-- Requisitos -->
-                                    <div class="bg-light p-3 rounded-3 mb-4" style="font-size: 0.8rem;">
+                                    <div class="requirements mb-4">
                                         <div class="d-flex align-items-start">
-                                            <i class="bi bi-info-circle text-primary me-2 mt-1"></i>
+                                            <i class="bi bi-info-circle text-primary me-2"></i>
                                             <div>
-                                                <span class="fw-bold text-dark d-block mb-1">Requisitos de la imagen:</span>
-                                                <span class="text-muted d-block">• Se aceptan todos los formatos: <strong>JPG, PNG, WEBP, GIF, BMP</strong></span>
-                                                <span class="text-muted d-block">• El archivo se convertirá automáticamente a <strong>JPG</strong> al guardarse</span>
-                                                <span class="text-muted d-block">• El tamaño máximo del archivo no debe exceder <strong>5 MB</strong> (5,120 KB)</span>
+                                                <span class="fw-bold d-block mb-1">Requisitos de la imagen:</span>
+                                                <span class="d-block">• Se aceptan todos los formatos: <strong>JPG, PNG, WEBP, GIF, BMP</strong></span>
+                                                <span class="d-block">• El archivo se convertirá automáticamente a <strong>JPG</strong> al guardarse</span>
+                                                <span class="d-block">• El tamaño máximo del archivo no debe exceder <strong>5 MB</strong> (5,120 KB)</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Botones -->
                                     <div class="d-grid d-md-flex gap-2 justify-content-md-end">
-                                        <a href="{{ route('inicio') }}" class="btn btn-light px-4 rounded-pill text-dark fw-bold border" id="cancel-btn">Cancelar</a>
-                                        <button type="submit" class="btn btn-primary px-5 rounded-pill fw-bold" id="submit-upload-btn" disabled>
+                                        <button type="button" id="cancel-btn" onclick="window.location='{{ route('inicio') }}'">
+                                            <i class="bi bi-arrow-left"></i> Cancelar
+                                        </button>
+
+                                        <button type="submit" id="submit-upload-btn" disabled>
                                             <span id="btn-default-state">
                                                 <i class="bi bi-cloud-upload me-1"></i> Guardar Cambios
                                             </span>
-                                            <span id="btn-loading-state" style="display: none;">
-                                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            <span id="btn-loading-state" hidden>
+                                                <span class="spinner-border spinner-border-sm me-2"></span>
                                                 Subiendo imagen...
                                             </span>
-                                        </button>
+                                            </button>
                                     </div>
                                 </form>
                             </div>
                         </div>
-
+                        <hr class="divider">
                     </div>
                 </div>
             </div>
@@ -264,8 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function() {
         submitBtn.setAttribute('disabled', 'true');
         btnDefaultState.style.display = 'none';
+
+        // 🔑 quitar el atributo hidden para que se muestre correctamente
+        btnLoadingState.removeAttribute('hidden');
         btnLoadingState.style.display = 'inline-flex';
         btnLoadingState.style.alignItems = 'center';
+
         cancelBtn.classList.add('disabled');
         cancelBtn.setAttribute('aria-disabled', 'true');
     });

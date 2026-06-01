@@ -2,21 +2,20 @@
 
 @section('title', 'Cambiar Contraseña - Hospital General')
 
+@push('styles')
+    @vite('resources/assets/css/cambiar_contra/contra.css')
+@endpush
+
 @section('content')
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0 fw-bold">
-                <i class="fa fa-lock text-primary me-2"></i>Cambiar Contraseña
+                <i class="fa fa-lock"></i> Cambiar Contraseña
             </h1>
             <p class="text-muted mb-0">Actualiza tu contraseña de acceso al sistema</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item active">Cambiar Contraseña</li>
-            </ol>
-        </nav>
+
     </div>
 
     <div class="row">
@@ -28,7 +27,7 @@
                     </h5>
                 </div>
                 <div class="card-body px-4 pb-4 pt-0">
-                    <!-- Alertas de retroalimentación -->
+                    <!-- Alertas -->
                     <div id="alertaExito" class="alert alert-success border-0 rounded-3 d-none" role="alert">
                         <i class="fa fa-check-circle me-2"></i>¡Contraseña actualizada correctamente!
                     </div>
@@ -45,7 +44,7 @@
                         <!-- Nueva Contraseña -->
                         <div class="mb-3">
                             <label for="pass" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-lock me-1 text-primary"></i> Nueva contraseña:
+                                <i class="fa fa-lock"></i> Nueva contraseña:
                             </label>
                             <input type="password" name="pass" id="pass"
                                    class="form-control border-gray-300 shadow-sm"
@@ -57,7 +56,7 @@
                         <!-- Confirmar Contraseña -->
                         <div class="mb-4">
                             <label for="repass" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-lock me-1 text-primary"></i> Confirmar contraseña:
+                                <i class="fa fa-lock"></i>Confirmar contraseña:
                             </label>
                             <input type="password" name="repass" id="repass"
                                    class="form-control border-gray-300 shadow-sm"
@@ -95,9 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Verificación visual en tiempo real
     repassInput.addEventListener('keyup', function () {
         if (passInput.value !== repassInput.value) {
-            repassInput.style.background = 'rgba(192,57,43,.15)';
+            repassInput.classList.add('is-invalid');
+            repassInput.classList.remove('is-valid');
         } else {
-            repassInput.style.background = 'rgba(39,174,96,.15)';
+            repassInput.classList.add('is-valid');
+            repassInput.classList.remove('is-invalid');
             mensaje4.classList.add('d-none');
         }
     });
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alertaExito.classList.remove('d-none');
                 passInput.value = '';
                 repassInput.value = '';
-                repassInput.style.background = '';
+                repassInput.classList.remove('is-valid', 'is-invalid');
                 setTimeout(() => window.location.href = '{{ route("inicio") }}', 1500);
             } else {
                 mensajeError.textContent = data.message || 'Error al actualizar la contraseña.';

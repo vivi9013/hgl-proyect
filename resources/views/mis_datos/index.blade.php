@@ -8,16 +8,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
-                <i class="fa fa-id-card text-primary me-2"></i>Mis Datos Personales
+                <i class="bi bi-person-arms-up"></i> Mis Datos Personales
             </h1>
-            <p class="text-muted mb-0">Visualiza y mantén actualizada tu información de perfil</p>
+            <p class="text-muted mb-0">Visualiza y mantén actualizada tu información personal</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Mis Datos</li>
-            </ol>
-        </nav>
     </div>
 
     <!-- Alertas de Éxito / Errores del Servidor -->
@@ -56,7 +50,7 @@
                         <!-- Sección 1: Datos de Identificación -->
                         <div class="mb-4">
                             <h5 class="section-title text-primary border-bottom pb-2 mb-3">
-                                <i class="fa fa-user-circle-o me-2"></i>Información Personal y de Contacto
+                                <i class="bi bi-person-rolodex"></i> Información Personal y de Contacto
                             </h5>
                             
                             <div class="row g-3">

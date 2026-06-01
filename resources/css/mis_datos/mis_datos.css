@@ -1,6 +1,13 @@
 /* Estilos personalizados para el módulo de Mis Datos */
+body {
+    background-color: #f9fafb !important;
+}
 
-
+.card {
+    background-color: #f9fafb !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
 
 .section-title {
     font-weight: 700;
@@ -9,16 +16,51 @@
     border-color: #f1f5f9 !important;
 }
 
+.btn-light {
+    background-color: #f9fafb !important;
+    border: 2px solid #9ba3af !important;
+    color: #000000 !important;
+
+}
+
+.btn-primary {
+    background-color: #176bcb !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+}
+
+
+.section-title {
+    position: relative;
+    padding-top: 1.5rem;
+    /* espacio para la línea */
+}
+
+.section-title::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    /* grosor de la línea */
+    background-color: #e2e8f0;
+    /* color gris claro */
+    position: absolute;
+    top: 0;
+    /* justo arriba del título */
+    left: 0;
+}
+
 /* Estilos refinados de los campos y controles */
-.form-control, .form-select {
+.form-control,
+.form-select {
     padding: 0.6rem 0.95rem;
     border-color: #e2e8f0;
     font-size: 0.9rem;
-    border-radius: 8px;
     transition: all 0.2s ease-in-out;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: #93c5fd;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
@@ -43,7 +85,8 @@
 }
 
 /* Validaciones personalizadas de Bootstrap */
-.form-control.is-invalid, .form-select.is-invalid {
+.form-control.is-invalid,
+.form-select.is-invalid {
     border-color: #ef4444;
 }
 
@@ -53,4 +96,8 @@
     margin-top: 4px;
 }
 
-
+.section-title i,
+.text-primary,
+.section-title {
+    color: #000000 !important;
+}
