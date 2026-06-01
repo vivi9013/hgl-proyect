@@ -23,7 +23,7 @@
         </nav>
     </div>
 
-    {{-- ── 2. Navegación Interna / Submódulos del Cuerpo (Opciones del Sidebar Legacy) ── --}}
+    {{-- ── 2. Navegación Interna y Contenedor con los Submódulos --> ── --}}
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-8">
             <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
@@ -42,12 +42,13 @@
                 </div>
             </div>
         </div>
+        <!-- Contenedor con los Submódulos -->
         <div class="col-12 col-md-4">
             <div class="card border-0 shadow-sm p-3 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex gap-2 justify-content-md-end">
                     <a href="{{ route('categoria_archivos.reportes') }}"
                        class="btn btn-sm btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes Generales
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes 
                     </a>
                 </div>
             </div>

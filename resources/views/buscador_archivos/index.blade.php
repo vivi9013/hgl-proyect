@@ -41,7 +41,7 @@
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex gap-2 justify-content-md-end">
                     <a href="{{ route('busca_archivos.reportes') }}" class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes del Módulo
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
                     </a>
                 </div>
             </div>
