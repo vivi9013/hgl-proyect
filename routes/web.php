@@ -50,6 +50,9 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/actualizar/{id}', [CargaArchivosController::class, 'actualizar'])->name('update');    // URL: /mCargaArchivos/actualizar/{id}
         Route::get('/cargar/{id}', [CargaArchivosController::class, 'cargar'])->name('cargar');             // URL: /mCargaArchivos/cargar/{id}
         Route::post('/subir-archivo/{id}', [CargaArchivosController::class, 'subirArchivo'])->name('subir_archivo'); // URL: /mCargaArchivos/subir-archivo/{id}
+        Route::get('/reportes', [CargaArchivosController::class, 'reportes'])->name('reportes');             // URL: /mCargaArchivos/reportes
+        Route::post('/reportes/imprimir', [CargaArchivosController::class, 'imprimirReporte'])->name('imprimir'); // URL: /mCargaArchivos/reportes/imprimir
+        Route::get('/graficas', [CargaArchivosController::class, 'graficas'])->name('graficas');             // URL: /mCargaArchivos/graficas
     });
 
     // Cumpleaños

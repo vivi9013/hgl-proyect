@@ -169,4 +169,44 @@ class CargaArchivosController extends Controller
             ->route('carga_archivos.index')
             ->with('success', 'El archivo PDF se ha subido correctamente.');
     }
+
+    public function reportes()
+    {
+        $categorias = CategoArchivo::where('activo', 1)
+            ->orderBy('categoria', 'asc')
+            ->get();
+
+        return view('carga_archivos.reportes', compact('categorias'));
+    }
+
+    public function imprimirReporte(Request $request)
+    {
+        $request->validate([
+            'tipo' => 'required|integer|exists:catego_archivos,id_catego_archivos'
+        ]);
+
+        $categoria = CategoArchivo::findOrFail($request->tipo);
+
+        $archivos = CargaArchivo::where('id_catego', $request->tipo)
+            ->where('activo', 1)
+            ->orderBy('id_archivo', 'asc')
+            ->get();
+
+        return view('carga_archivos.reporte_impresion', compact('categoria', 'archivos'));
+    }
+
+    public function graficas()
+    {
+        $categorias = CategoArchivo::where('activo', 1)
+            ->whereHas('archivos', function ($query) {
+                $query->where('activo', 1);
+            })
+            ->withCount(['archivos' => function ($query) {
+                $query->where('activo', 1);
+            }])
+            ->orderBy('categoria', 'asc')
+            ->get();
+
+        return view('carga_archivos.graficas', compact('categorias'));
+    }
 }

@@ -23,7 +23,7 @@
     {{-- ── NUEVO APARTADO: Barra de Navegación Interna y Submódulos ── --}}
     <div class="row g-4 mb-4">
         <!-- Lógica o información del módulo -->
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
                 <div class="d-flex align-items-center gap-3">
                     <div class="bg-primary-light p-3 rounded-circle text-primary">
@@ -37,10 +37,10 @@
             </div>
         </div>
         
-        <!-- Contenedor con los 2 Submódulos solicitados -->
-        <div class="col-12 col-md-4">
+        <!-- Contenedor con los Submódulos solicitados -->
+        <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-md-end align-items-center">
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
                     {{-- Submódulo 1: Catálogo de Categorías --}}
                     <a href="{{ route('categoria_archivos.index') }}" class="btn btn-outline-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
                         <i class="fa fa-tags me-2"></i> Catálogo Cat.
@@ -49,6 +49,11 @@
                     {{-- Submódulo 2: Reportes del Módulo --}}
                     <a href="{{ route('carga_archivos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
                         <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes Módulo
+                    </a>
+
+                    {{-- Submódulo 3: Gráficas del Módulo --}}
+                    <a href="{{ route('carga_archivos.graficas') }}" class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-bar-chart me-2 text-success"></i> Gráficas Módulo
                     </a>
                 </div>
             </div>
