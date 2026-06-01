@@ -16,7 +16,9 @@ export default defineConfig({
                 'resources/js/buscador_archivos/buscador.js',
                 'resources/js/carga_archivos/carga.js',
                 'resources/js/mis_datos/mis_datos.js',
-                'resources/js/categoria_archivos/categoria.js'
+                'resources/js/categoria_archivos/categoria.js',
+                'resources/css/trabajador_categorias/permisos.css',
+                'resources/js/trabajador_categorias/permisos.js'
             ],
             refresh: true,
         }),

@@ -20,6 +20,41 @@
         </nav>
     </div>
 
+    {{-- ── NUEVO APARTADO: Barra de Navegación Interna y Submódulos ── --}}
+    <div class="row g-4 mb-4">
+        <!-- Lógica o información del módulo -->
+        <div class="col-12 col-md-8">
+            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary-light p-3 rounded-circle text-primary">
+                        <i class="fa fa-info-circle fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Panel de Control de Repositorio</h6>
+                        <p class="text-muted small mb-0">Utiliza el formulario de la izquierda para dar de alta nuevos documentos y el botón derecho de la tabla para cargar los físicos en PDF.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenedor con los 2 Submódulos solicitados -->
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-md-end align-items-center">
+                    {{-- Submódulo 1: Catálogo de Categorías --}}
+                    <a href="{{ route('categoria_archivos.index') }}" class="btn btn-outline-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-tags me-2"></i> Catálogo Cat.
+                    </a>
+                    
+                    {{-- Submódulo 2: Reportes del Módulo --}}
+                    <a href="{{ route('carga_archivos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes Módulo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Alertas de Éxito / Errores -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert">

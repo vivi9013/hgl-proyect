@@ -100,6 +100,16 @@ Route::prefix('mCategoArchivos')->group(function () {
         ->name('categoria_archivos.verificar');
 });
 
+    // Módulo mPermisosArchivo
+    Route::prefix('mPermisosArchivo')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'index'])
+            ->name('trabajador_categorias.index');
+        Route::get('/{id}/create', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'create'])
+            ->name('trabajador_categorias.create');
+        Route::post('/store', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'store'])
+            ->name('trabajador_categorias.store');
+    });
+
     // Radiología RX (mRXestudios)
     Route::prefix('mRXestudios')->name('rx.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Pacientes\RxController::class, 'index'])->name('index');

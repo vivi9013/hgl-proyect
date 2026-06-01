@@ -1,0 +1,44 @@
+/* Estilos personalizados para el módulo de Permisos de Archivos */
+
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Efectos de Focus Modernos */
+.form-control:focus, .form-check-input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Fila activa de categoría con tono suave verde de Bootstrap 5 */
+.table-success-soft {
+    background-color: rgba(40, 167, 69, 0.06) !important;
+    transition: background-color 0.25s ease;
+}
+
+/* Hover en las tablas */
+#tablaTrabajadoresPermisos tbody tr,
+#tablaAsignacionPermisos tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#tablaTrabajadoresPermisos tbody tr:hover,
+#tablaAsignacionPermisos tbody tr:hover {
+    background-color: rgba(49, 130, 206, 0.02) !important;
+}
+
+/* Switch styling enhancements */
+.form-switch .form-check-input {
+    cursor: pointer;
+    width: 2.8em;
+    height: 1.5em;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}

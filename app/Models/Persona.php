@@ -51,5 +51,16 @@ class Persona extends Model
     {
         return $this->hasOne(Trabajador::class, 'id_persona');
     }
+
+    public function categorias()
+    {
+        return $this->belongsToMany(
+            \App\Models\BuscadorArchivos\CategoArchivo::class,
+            'trabajador_categorias',
+            'id_trabajador',
+            'id_categoria'
+        )->withPivot('fecha_registro', 'hora_registro', 'usuario');
+    }
 }
+
 
