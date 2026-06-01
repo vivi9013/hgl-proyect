@@ -23,6 +23,8 @@
         </nav>
     </div>
  
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+ 
     {{-- ── Botón de Reportes del Módulo (igual que buscador_archivos) ─────── --}}
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-8"></div>
@@ -37,6 +39,8 @@
             </div>
         </div>
     </div>
+ 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
  
     {{-- ── Alertas SweetAlert2 ─────────────────────────────────────────────── --}}
     @if(session('exitog'))
@@ -101,6 +105,8 @@
         </div>
     </div>
  
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── Tabla de Categorías ─────────────────────────────────────────────── --}}
     <div class="row">
         <div class="col-xs-12">

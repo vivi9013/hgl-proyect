@@ -6,16 +6,18 @@ body {
 .card,
 .card-header,
 .card-body {
-    background-color: #f9fafb;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 /* Header icon */
 .icon-container {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #000000;
     padding: 0.5rem;
     border-radius: 0.5rem;
 }
@@ -23,26 +25,27 @@ body {
 /* Badge */
 .format-badge {
     background-color: #f8f9fa;
-    color: #6c757d;
+    color: #000000;
     border: 1px solid #dee2e6;
     border-radius: 50rem;
     padding: 0.25rem 0.75rem;
     font-size: 0.8rem;
+    font-weight: bold;
 }
 
 /* Section titles */
 .section-title {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #6c757d;
+    color: #000000;
     margin-bottom: 1rem;
 }
 
 /* Photo panel */
 .photo-panel {
-    border-right: 2px solid #6c757d;
+    border-right: 2px solid #e2e8f0;
 }
 
 /* Avatar */
@@ -54,13 +57,13 @@ body {
     border-radius: 50%;
     overflow: hidden;
     border: 4px solid #fff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
 }
 
 .avatar-preview-container:hover {
     transform: scale(1.03);
-    box-shadow: 0 12px 32px rgba(13, 110, 253, 0.18);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 }
 
 .avatar-preview-container img {
@@ -76,47 +79,47 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d;
+    color: #000000;
 }
 
 /* User info */
 .user-name {
     font-size: 0.9rem;
     font-weight: bold;
-    color: #212529;
+    color: #000000;
 }
 
 .user-id {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: #4b5563;
 }
 
 /* Drop zone */
 .drop-zone {
-    border: 2px dashed #dee2e6;
+    border: 2px dashed #d1d5db;
     border-radius: 16px;
     padding: 2.5rem 1.5rem;
     text-align: center;
-    background-color: #f8fafc;
+    background-color: #ffffff;
     transition: all 0.25s ease-in-out;
     cursor: pointer;
 }
 
 .drop-zone:hover,
 .drop-zone.dragover {
-    border-color: #0d6efd;
-    background-color: rgba(13, 110, 253, 0.03);
+    border-color: #000000;
+    background-color: rgba(0, 0, 0, 0.02);
 }
 
 .drop-zone i {
     font-size: 2.5rem;
-    color: #6c757d;
+    color: #4b5563;
     transition: color 0.2s;
 }
 
 .drop-zone:hover i,
 .drop-zone.dragover i {
-    color: #0d6efd;
+    color: #000000;
 }
 
 /* Preview */
@@ -139,7 +142,7 @@ body {
 .preview-box img {
     width: 50px;
     height: 50px;
-    border: 2px solid #198754;
+    border: 2px solid #000000;
     border-radius: 50%;
     object-fit: cover;
     margin-right: 1rem;
@@ -148,20 +151,20 @@ body {
 .file-name {
     font-size: 0.85rem;
     font-weight: bold;
-    color: #212529;
+    color: #000000;
     margin: 0;
 }
 
 .file-size {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: #4b5563;
 }
 
 /* Botón Cancelar */
 #cancel-btn {
-    background-color: #ffffff;
-    border: 2px solid #000000;
-    color: #000000;
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
     border-radius: 50rem;
     padding: 0.5rem 1.5rem;
     font-weight: bold;
@@ -172,18 +175,24 @@ body {
 }
 
 #cancel-btn i {
-    color: #000000;
+    color: #4b5563 !important;
 }
 
 #cancel-btn:hover {
-    background-color: #f1f5f9;
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+#cancel-btn:hover i {
+    color: #000000 !important;
 }
 
 /* Botón Guardar Cambios */
 #submit-upload-btn {
-    background-color: #0d6efd;
-    border: 2px solid #0d6efd;
-    color: #ffffff;
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
     border-radius: 50rem;
     padding: 0.5rem 1.5rem;
     font-weight: bold;
@@ -194,18 +203,17 @@ body {
 }
 
 #submit-upload-btn i {
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 #submit-upload-btn:hover {
-    background-color: #0b5ed7;
-    border-color: #0b5ed7;
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
 }
-
 
 .divider {
     border: none;
-    border-top: 1px solid #adb5bd;
+    border-top: 1px solid #e2e8f0;
     margin: 1.5rem 0;
 }
 
@@ -255,4 +263,16 @@ body {
     padding: 1rem;
     border-radius: 0.5rem;
     font-size: 0.8rem;
+}
+
+/* Override all blue utility classes in this module */
+.text-primary,
+.btn-outline-primary {
+    color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
 }

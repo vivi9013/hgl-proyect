@@ -23,6 +23,8 @@
         </nav>
     </div>
 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── 2. Navegación Interna / Submódulos del Cuerpo (Opciones del Sidebar Legacy) ── --}}
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-8">
@@ -53,6 +55,8 @@
             </div>
         </div>
     </div>
+
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     {{-- ── 3. Alertas de Operación (SweetAlert2 o Notificaciones) ──────── --}}
     @if(session('exitog') || request('var') == 'exitog')

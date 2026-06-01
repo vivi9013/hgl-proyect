@@ -230,3 +230,222 @@
 .p-3\.5 { padding: 0.875rem !important; }
 .px-2\.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
 .py-1\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
+
+/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Evitar hover en la tarjeta principal */
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Forzar que todos los iconos de este módulo sean negros */
+.bi-journal-medical,
+.bi-person-plus-fill,
+.bi-people-fill,
+.bi-file-earmark-medical-fill,
+.bi-search,
+.bi-person-fill,
+.bi-journal-check,
+.bi-disc,
+.bi-body-text,
+.bi-eye-fill {
+    color: #000000 !important;
+}
+
+/* Pestañas de Navegación */
+#rxTab .nav-link {
+    color: #000000 !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+    border: 1px solid #d1d5db !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#rxTab .nav-link.active {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+#rxTab .nav-link:hover:not(.active) {
+    background-color: #f3f4f6 !important;
+    color: #000000 !important;
+}
+
+/* Botón Registrar Paciente y otros botones de tema (Primario): Azul con borde Negro */
+.btn-theme {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-theme:hover,
+.btn-theme:focus {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Badges y acentos */
+.badge.bg-theme-subtle {
+    background-color: #f3f4f6 !important;
+    color: #000000 !important;
+    border-color: #d1d5db !important;
+}
+
+/* Checks y campos condicionales */
+.checkbox-estudio:checked {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+.checkbox-estudio:checked + label {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Modales */
+.modal-header.bg-theme {
+    background-color: #000000 !important;
+}
+
+.modal-header.bg-success {
+    background-color: #000000 !important;
+}
+
+.modal-header.bg-dark {
+    background-color: #000000 !important;
+}
+
+/* Botones en modales (Guardar/Registrar): Azul con borde Negro */
+.btn-primary,
+.btn-success,
+.btn-dark {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-dark:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón de Cancelar: Blanco con borde Gris */
+.btn-outline-secondary {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+.table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+}
+
+.table th {
+    background-color: #f9fafb !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem !important;
+    border-bottom: 1.5px solid #e5e7eb !important;
+}
+
+.table td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.875rem;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb !important;
+    transform: none !important;
+}
+
+/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+

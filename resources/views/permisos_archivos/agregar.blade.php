@@ -26,6 +26,8 @@
         </nav>
     </div>
 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── 2. Barra de Navegación Interna (Módulo en el Cuerpo) ────────────── --}}
     <div class="row g-4 mb-4">
         <div class="col-12">
@@ -38,6 +40,8 @@
             </div>
         </div>
     </div>
+
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     {{-- ── 3. Matriz de Asignación de Permisos ────────────────────────────── --}}
     <div class="row">
