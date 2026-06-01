@@ -64,7 +64,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/', [MisDatosController::class, 'index'])->name('index');                        // URL: /mis-datos
         Route::post('/actualizar', [MisDatosController::class, 'update'])->name('update');            // URL: /mis-datos/actualizar
     });
-
+    
     // Módulo mCategoArchivos
 Route::prefix('mCategoArchivos')->group(function () {
     // Index (lista de categorías)
@@ -93,7 +93,7 @@ Route::prefix('mCategoArchivos')->group(function () {
 
     // Reporte de impresión
     Route::get('/reportes/impresion', [CategoriaArchivosController::class, 'imprimir'])
-        ->name('categoria_archivos.reporte_impresion');
+        ->name('categoria_archivos.imprimir');
 
     // AJAX verificar disponibilidad
     Route::get('/verificar', [CategoriaArchivosController::class, 'verificar'])

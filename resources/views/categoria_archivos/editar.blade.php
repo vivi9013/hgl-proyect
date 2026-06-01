@@ -33,8 +33,9 @@
                 <div class="card-header bg-primary text-white py-3">
                     <h5 class="mb-0 fw-semibold"><i class="fa fa-pencil-square-o me-2"></i>Actualizar datos de la categoría</h5>
                 </div>
-                <form method="POST" action="{{ route('categoria_archivos.update', $categoria->id_catego_archivos) }}" novalidate>
+                <form action="{{ route('categoria_archivos.update', $categoria->id_catego_archivos) }}" method="POST" novalidate>
                     @csrf
+                    @method('PUT')
                     <div class="card-body p-4">
                         <div class="form-group mb-3">
                             <label for="categoria" class="form-label fw-semibold text-secondary">Nombre de la categoría:</label>
