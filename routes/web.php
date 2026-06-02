@@ -1,134 +1,107 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\EvitarRetrocesoMiddleware;
+
+// Importaciones de Controladores organizadas
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\IndexController;
-use App\Http\Controllers\BuscadorArchivos\BuscadorArchivosController;
-use App\Http\Controllers\CargarArchivos\CargaArchivosController;
 use App\Http\Controllers\MisDatos\MisDatosController;
-use App\Http\Middleware\EvitarRetrocesoMiddleware;
 use App\Http\Controllers\CambiarFoto\CambiarFotoController;
 use App\Http\Controllers\Cumpleanos\CumpleanosController;
 use App\Http\Controllers\Tema\TemaController;
+use App\Http\Controllers\BuscadorArchivos\BuscadorArchivosController;
+use App\Http\Controllers\CargarArchivos\CargaArchivosController;
 use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 use App\Http\Controllers\Inventario\AreaAlmacenController;
 use App\Http\Controllers\Inventario\AreaSurtimientoController;
+use App\Http\Controllers\PermisosArchivos\PermisosArchivosController;
+use App\Http\Controllers\Pacientes\RxController;
 
-// Grupo para invitados
+// Redirección raíz por defecto
+Route::get('/', function () {
+    return redirect()->route('inicio');
+});
+
+// ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
     Route::post('/validar-login', [LoginController::class, 'login'])->name('login.post');
 });
 
-// Grupo para usuarios autenticados
+// ── GRUPO PARA USUARIOS AUTENTICADOS ───────────────────────────────────────
 Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function () {
+    
     Route::get('/inicio', [IndexController::class, 'index'])->name('inicio');
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // Cambio de contraseña
-    Route::get('/cambiar-contrasena', [LoginController::class, 'showCambiarContra'])->name('cambiar_contra.index');
-    Route::post('/actualizar-password', [LoginController::class, 'updatePassword'])->name('password.update');
-
-    // Buscador de Archivos
-    Route::prefix('mBuscaArchivos')->name('busca_archivos.')->group(function () {
-        Route::get('/', [BuscadorArchivosController::class, 'index'])->name('index');
-        Route::get('/filtrar', [BuscadorArchivosController::class, 'filtrar'])->name('filtrar');
-        Route::get('/descargar/{id}', [BuscadorArchivosController::class, 'descargar'])->name('descargar');
-        Route::get('/reportes', [BuscadorArchivosController::class, 'reportes'])->name('reportes');
-        Route::get('/imprimir', [BuscadorArchivosController::class, 'imprimirReporte'])->name('imprimir');
+    // Gestión de Credenciales de Usuario
+    Route::controller(LoginController::class)->group(function () {
+        Route::get('/cambiar-contrasena', 'showCambiarContra')->name('cambiar_contra.index');
+        Route::put('/actualizar-password', 'updatePassword')->name('password.update'); // Cambiado a PUT
     });
 
     // Cambiar Fotografía
-    Route::get('/cambiar-foto', [CambiarFotoController::class, 'index'])->name('cambiar_foto.index');
-    Route::post('/cambiar-foto', [CambiarFotoController::class, 'store'])->name('cambiar_foto.store');
-
-    // Subgrupo de Carga de Archivos (mCargaArchivos)
-    Route::prefix('mCargaArchivos')->name('carga_archivos.')->group(function () {
-        Route::get('/', [CargaArchivosController::class, 'index'])->name('index');                        // URL: /mCargaArchivos
-        Route::post('/guardar', [CargaArchivosController::class, 'guardar'])->name('store');                // URL: /mCargaArchivos/guardar
-        Route::get('/verificar-nombre', [CargaArchivosController::class, 'revisarexistencia'])->name('check_availability'); // URL: /mCargaArchivos/verificar-nombre
-        Route::get('/status/{id}', [CargaArchivosController::class, 'toggleStatus'])->name('status');       // URL: /mCargaArchivos/status/{id}
-        Route::get('/editar/{id}', [CargaArchivosController::class, 'editar'])->name('edit');               // URL: /mCargaArchivos/editar/{id}
-        Route::post('/actualizar/{id}', [CargaArchivosController::class, 'actualizar'])->name('update');    // URL: /mCargaArchivos/actualizar/{id}
-        Route::get('/cargar/{id}', [CargaArchivosController::class, 'cargar'])->name('cargar');             // URL: /mCargaArchivos/cargar/{id}
-        Route::post('/subir-archivo/{id}', [CargaArchivosController::class, 'subirArchivo'])->name('subir_archivo'); // URL: /mCargaArchivos/subir-archivo/{id}
-        Route::get('/reportes', [CargaArchivosController::class, 'reportes'])->name('reportes');             // URL: /mCargaArchivos/reportes
-        Route::post('/reportes/imprimir', [CargaArchivosController::class, 'imprimirReporte'])->name('imprimir'); // URL: /mCargaArchivos/reportes/imprimir
-        Route::get('/graficas', [CargaArchivosController::class, 'graficas'])->name('graficas');             // URL: /mCargaArchivos/graficas
+    Route::controller(CambiarFotoController::class)->group(function () {
+        Route::get('/cambiar-foto', 'index')->name('cambiar_foto.index');
+        Route::post('/cambiar-foto', 'store')->name('cambiar_foto.store');
     });
 
-    // Cumpleaños
+    // Cumpleaños y Preferencias
     Route::get('/cumpleanos', [CumpleanosController::class, 'index'])->name('cumpleanos.index');
+    
+    Route::controller(TemaController::class)->group(function () {
+        Route::get('/cambiar-tema', 'index')->name('cambiar_tema.index');
+        Route::patch('/cambiar-tema', 'update')->name('cambiar_tema.update'); // Cambiado a PATCH
+    });
 
-    // Cambiar Tema
-    Route::get('/cambiar-tema', [TemaController::class, 'index'])->name('cambiar_tema.index');
-    Route::post('/cambiar-tema', [TemaController::class, 'update'])->name('cambiar_tema.update');
+    // Subgrupo: Mis Datos
+    Route::prefix('mis-datos')->name('mis_datos.')->controller(MisDatosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::put('/actualizar', 'update')->name('update'); // Cambiado a PUT
+    });
 
-    // Subgrupo de Mis Datos (mMisDatos)
-    Route::prefix('mis-datos')->name('mis_datos.')->group(function () {
-        Route::get('/', [MisDatosController::class, 'index'])->name('index');                        // URL: /mis-datos
-        Route::post('/actualizar', [MisDatosController::class, 'update'])->name('update');            // URL: /mis-datos/actualizar
+    // Subgrupo: Buscador de Archivos
+    Route::prefix('buscador-archivos')->name('busca_archivos.')->controller(BuscadorArchivosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/filtrar', 'filtrar')->name('filtrar');
+        Route::get('/descargar/{id}', 'descargar')->name('descargar');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/imprimir', 'imprimirReporte')->name('imprimir');
+    });
+
+    // Subgrupo: Carga de Archivos
+    Route::prefix('carga-archivos')->name('carga_archivos.')->controller(CargaArchivosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/verificar-nombre', 'revisarexistencia')->name('check_availability');
+        Route::patch('/status/{id}', 'toggleStatus')->name('status'); // Cambiado a PATCH por seguridad
+        Route::get('/editar/{id}', 'editar')->name('edit');
+        Route::put('/actualizar/{id}', 'actualizar')->name('update'); // Cambiado a PUT
+        Route::get('/cargar/{id}', 'cargar')->name('cargar');
+        Route::post('/subir-archivo/{id}', 'subirArchivo')->name('subir_archivo');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::post('/reportes/imprimir', 'imprimirReporte')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
     });
     
-    // Módulo mCategoArchivos
-Route::prefix('mCategoArchivos')->group(function () {
-    // Index (lista de categorías)
-    Route::get('/', [CategoriaArchivosController::class, 'index'])
-        ->name('categoria_archivos.index');
-
-    // Guardar nueva categoría
-    Route::post('/', [CategoriaArchivosController::class, 'guardar'])
-        ->name('categoria_archivos.store');
-
-    // Editar categoría
-    Route::get('/{id}/edit', [CategoriaArchivosController::class, 'editar'])
-        ->name('categoria_archivos.edit');
-
-    // Actualizar categoría
-    Route::put('/{id}', [CategoriaArchivosController::class, 'actualizar'])
-        ->name('categoria_archivos.update');
-
-    // Cambiar status
-    Route::get('/{id}/status', [CategoriaArchivosController::class, 'cambiarStatus'])
-        ->name('categoria_archivos.status');
-
-    // Reportes del módulo
-    Route::get('/reportes', [CategoriaArchivosController::class, 'reportes'])
-        ->name('categoria_archivos.reportes');
-
-    // Reporte de impresión
-    Route::get('/reportes/impresion', [CategoriaArchivosController::class, 'imprimir'])
-        ->name('categoria_archivos.imprimir');
-
-    // AJAX verificar disponibilidad
-    Route::get('/verificar', [CategoriaArchivosController::class, 'verificar'])
-        ->name('categoria_archivos.verificar');
-});
-
-    // Módulo mPermisosArchivo
-    Route::prefix('mPermisosArchivo')->group(function () {
-        Route::get('/', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'index'])
-            ->name('trabajador_categorias.index');
-        Route::get('/{id}/create', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'create'])
-            ->name('trabajador_categorias.create');
-        Route::post('/store', [\App\Http\Controllers\PermisosArchivos\PermisosArchivosController::class, 'store'])
-            ->name('trabajador_categorias.store');
+    // Subgrupo: Catálogo de Categorías
+    Route::prefix('categoria-archivos')->name('categoria_archivos.')->controller(CategoriaArchivosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status'); // Cambiado a PATCH
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/verificar', 'verificar')->name('verificar');
     });
 
-    // Radiología RX (mRXestudios)
-    Route::prefix('mRXestudios')->name('rx.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Pacientes\RxController::class, 'index'])->name('index');
-        Route::get('/estudios', [\App\Http\Controllers\Pacientes\RxController::class, 'estudios'])->name('estudios');
-        
-        Route::get('/pacientes/ver/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'verPaciente'])->name('pacientes.ver');
-        Route::post('/pacientes/guardar', [\App\Http\Controllers\Pacientes\RxController::class, 'guardarPaciente'])->name('pacientes.guardar');
-        Route::post('/pacientes/actualizar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'actualizarPaciente'])->name('pacientes.actualizar');
-        Route::delete('/pacientes/eliminar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'eliminarPaciente'])->name('pacientes.eliminar');
-        
-        Route::get('/estudios/ver/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'verEstudio'])->name('estudios.ver');
-        Route::post('/estudios/guardar', [\App\Http\Controllers\Pacientes\RxController::class, 'guardarEstudio'])->name('estudios.guardar');
-        Route::post('/estudios/actualizar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'actualizarEstudio'])->name('estudios.actualizar');
-        Route::delete('/estudios/eliminar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'eliminarEstudio'])->name('estudios.eliminar');
+    // Subgrupo: Permisos de Archivo
+    Route::prefix('permisos-archivo')->name('trabajador_categorias.')->controller(PermisosArchivosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{id}/asignar', 'asignar')->name('asignar');
+        Route::post('/guardar', 'guardar')->name('guardar');
     });
 
     // ── Módulo mAreasAlmacen (Inventario – Áreas de Almacén) ──────────────────
@@ -192,9 +165,22 @@ Route::prefix('mCategoArchivos')->group(function () {
         Route::get('/reporte/imprimir', [AreaSurtimientoController::class, 'imprimir'])
             ->name('imprimir');
     });
-});
 
-// Redirección por defecto
-Route::get('/', function () {
-    return redirect()->route('inicio');
+    // Subgrupo: Radiología RX
+    Route::prefix('rx-estudios')->name('rx.')->controller(RxController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/estudios', 'estudios')->name('estudios');
+        
+        // Pacientes
+        Route::get('/pacientes/ver/{id}', 'verPaciente')->name('pacientes.ver');
+        Route::post('/pacientes/guardar', 'guardarPaciente')->name('pacientes.guardar');
+        Route::put('/pacientes/actualizar/{id}', 'actualizarPaciente')->name('pacientes.actualizar'); // Cambiado a PUT
+        Route::delete('/pacientes/eliminar/{id}', 'eliminarPaciente')->name('pacientes.eliminar');
+        
+        // Estudios
+        Route::get('/estudios/ver/{id}', 'verEstudio')->name('estudios.ver');
+        Route::post('/estudios/guardar', 'guardarEstudio')->name('estudios.guardar');
+        Route::put('/estudios/actualizar/{id}', 'actualizarEstudio')->name('estudios.actualizar'); // Cambiado a PUT
+        Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
+    });
 });

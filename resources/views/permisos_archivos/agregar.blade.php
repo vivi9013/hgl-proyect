@@ -47,7 +47,7 @@
     <div class="row">
         <div class="col-12">
             {{-- Formulario moderno apuntando al método Store/Sync --}}
-            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.store') }}">
+            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.guardar') }}">
                 @csrf
                 {{-- Campo oculto para el ID del trabajador ($pro del legacy) --}}
                 <input type="hidden" name="id_trabajador" value="{{ $trabajador->id }}">

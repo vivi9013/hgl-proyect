@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/mCategoArchivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
+                fetch(`/categoria-archivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -98,6 +98,28 @@ document.addEventListener('DOMContentLoaded', function () {
             const iconType = (activo === 1) ? 'warning' : 'question';
             const confirmBtnText = (activo === 1) ? 'Sí, desactivar' : 'Sí, activar';
 
+            const submitStatusForm = () => {
+                const form = document.createElement('form');
+                form.action = url;
+                form.method = 'POST';
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PATCH';
+                form.appendChild(methodInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            };
+
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: `¿Desea ${accion} la categoría?`,
@@ -110,13 +132,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = url;
+                        submitStatusForm();
                     }
                 });
             } else {
                 // Fallback por si SweetAlert2 no está disponible
                 if (confirm(`¿Está seguro de que desea ${accion} la categoría "${nombre}"?`)) {
-                    window.location.href = url;
+                    submitStatusForm();
                 }
             }
         });
