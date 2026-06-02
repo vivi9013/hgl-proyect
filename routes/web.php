@@ -62,7 +62,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
 
     // Subgrupo: Buscador de Archivos
-    Route::prefix('buscador-archivos')->name('busca_archivos.')->controller(BuscadorArchivosController::class)->group(function () {
+    Route::prefix('mBuscaArchivos')->name('busca_archivos.')->controller(BuscadorArchivosController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/filtrar', 'filtrar')->name('filtrar');
         Route::get('/descargar/{id}', 'descargar')->name('descargar');
@@ -71,7 +71,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
 
     // Subgrupo: Carga de Archivos
-    Route::prefix('carga-archivos')->name('carga_archivos.')->controller(CargaArchivosController::class)->group(function () {
+    Route::prefix('mCargaArchivos')->name('carga_archivos.')->controller(CargaArchivosController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
         Route::get('/verificar-nombre', 'revisarexistencia')->name('check_availability');
@@ -86,7 +86,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
     
     // Subgrupo: Catálogo de Categorías
-    Route::prefix('categoria-archivos')->name('categoria_archivos.')->controller(CategoriaArchivosController::class)->group(function () {
+    Route::prefix('mCategoArchivos')->name('categoria_archivos.')->controller(CategoriaArchivosController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'guardar')->name('store');
         Route::get('/{id}/edit', 'editar')->name('edit');
@@ -98,7 +98,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
 
     // Subgrupo: Permisos de Archivo
-    Route::prefix('permisos-archivo')->name('trabajador_categorias.')->controller(PermisosArchivosController::class)->group(function () {
+    Route::prefix('mPermisosArchivo')->name('trabajador_categorias.')->controller(PermisosArchivosController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{id}/asignar', 'asignar')->name('asignar');
         Route::post('/guardar', 'guardar')->name('guardar');
@@ -167,7 +167,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
 
     // Subgrupo: Radiología RX
-    Route::prefix('rx-estudios')->name('rx.')->controller(RxController::class)->group(function () {
+    Route::prefix('mRXestudios')->name('rx.')->controller(RxController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/estudios', 'estudios')->name('estudios');
         
@@ -184,3 +184,4 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
     });
 });
+

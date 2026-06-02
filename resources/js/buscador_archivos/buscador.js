@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
 
         // Modificado: Se añade el parámetro &page= a la URL
-        fetch(`/buscador-archivos/filtrar?categoria=${encodeURIComponent(categoria)}&page=${pagina}`, {
+        fetch(`/mBuscaArchivos/filtrar?categoria=${encodeURIComponent(categoria)}&page=${pagina}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         feedbackDisponibilidad.innerHTML = '';
 
         // Petición AJAX (Fetch API) a la ruta de verificación
-        fetch(`/carga-archivos/verificar-nombre?nombre=${encodeURIComponent(nombre)}&id_catego=${encodeURIComponent(categoriaId)}`, {
+        fetch(`/mCargaArchivos/verificar-nombre?nombre=${encodeURIComponent(nombre)}&id_catego=${encodeURIComponent(categoriaId)}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'

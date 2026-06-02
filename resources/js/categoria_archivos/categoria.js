@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/categoria-archivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
+                fetch(`/mCategoArchivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
