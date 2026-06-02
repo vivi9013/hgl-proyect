@@ -26,6 +26,8 @@
         </div>
     </div>
 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── Panel de Contenidos Principal ── --}}
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <!-- Pestañas de Navegación -->

@@ -1,20 +1,15 @@
-/* Estilos personalizados para el módulo de Categoría de Archivos */
+/* ================================================================
+   Módulo: Áreas de Surtimiento
+   Inventario de Medicamentos y Material de Curación
+   Sigue el patrón clásico/profesional unificado del proyecto HGL
+   ================================================================ */
 
+/* ── Transición suave para tarjetas ── */
 .card {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.card:hover {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Efectos de Focus Modernos */
-.form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-}
-
-/* Clases de retroalimentación personalizadas para AJAX */
+/* ── Feedback AJAX ── */
 .text-success-custom {
     color: #2f855a;
     font-weight: 500;
@@ -25,7 +20,7 @@
     font-weight: 500;
 }
 
-/* Animación del Spinner */
+/* ── Animación Spinner ── */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -34,15 +29,29 @@
     animation: spin 1s linear infinite;
 }
 
-/* Hover en tabla y enlaces de acción */
-#tablaCategorias tbody tr {
+/* ── Hover en la tabla ── */
+#tablaAreas tbody tr {
     transition: background-color 0.2s ease;
 }
 
-#tablaCategorias tbody tr:hover {
-    background-color: rgba(49, 130, 206, 0.02) !important;
+#tablaAreas tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.01) !important;
 }
 
+/* ── Icono de editar ── */
+.fa-pencil-square-o {
+    color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.fa-pencil-square-o:hover {
+    color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* ── Botón toggle de status ── */
 .btn-toggle-status {
     color: #4a5568;
     font-size: 1.25rem;
@@ -62,19 +71,11 @@
     color: #a0aec0;
 }
 
-.fa-pencil-square-o {
-    color: #000000 !important;
-    font-size: 1.2rem;
-    transition: color 0.2s ease, transform 0.2s ease;
-    display: inline-block;
-}
+/* ================================================================
+   ESTILOS CLÁSICOS Y SIMPLES – Sin tarjetas pronunciadas,
+   iconos en negro, diseño plano y profesional
+   ================================================================ */
 
-.fa-pencil-square-o:hover {
-    color: #4b5563 !important;
-    transform: scale(1.15);
-}
-
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
 .card,
 .card-header,
 .card-body,
@@ -87,13 +88,12 @@
     padding-right: 0 !important;
 }
 
-/* Evitar escala y sombras en hover */
 .card:hover {
     transform: none !important;
     box-shadow: none !important;
 }
 
-/* Convertir cabeceras de tarjetas con bg-primary en elegantes títulos subrayados */
+/* Cabeceras tipo título subrayado en negro */
 .card-header.bg-primary {
     background-color: transparent !important;
     color: #000000 !important;
@@ -111,7 +111,6 @@
     color: #000000 !important;
 }
 
-/* Modificar botones a color blanco/negro clásico en la cabecera */
 .card-header.bg-primary .btn-outline-light {
     border-color: #000000 !important;
     color: #000000 !important;
@@ -122,9 +121,16 @@
     color: #ffffff !important;
 }
 
-/* Iconos y textos de acento en Negro */
+/* Cabecera blanca del listado */
+.card-header.bg-white h5 {
+    font-size: 1.05rem !important;
+    font-weight: bold !important;
+    color: #000000 !important;
+}
+
+/* Iconos de acento en Negro */
 .text-primary,
-.fa-folder-open,
+.fa-tags,
 .fa-plus-circle,
 .fa-list {
     color: #000000 !important;
@@ -182,7 +188,7 @@
     color: #000000 !important;
 }
 
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+/* ── Tabla moderna con bordes sutiles ── */
 .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
@@ -214,7 +220,7 @@
     background-color: #f9fafb !important;
 }
 
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+/* ── Paginación sencilla en negro ── */
 .pagination {
     margin: 0 !important;
 }
@@ -248,5 +254,3 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-

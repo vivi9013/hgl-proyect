@@ -68,6 +68,7 @@
                     @else
                         <form action="{{ route('cambiar_tema.update') }}" method="POST">
                             @csrf
+                            @method('PATCH')
                             <input type="hidden" name="color" value="{{ $tema['id'] }}">
                             <button type="submit" class="tema-btn"
                                 style="color: {{ $tema['color'] }}; border-color: {{ $tema['color'] }};"

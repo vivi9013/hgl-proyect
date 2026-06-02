@@ -1,0 +1,89 @@
+/* Solo afecta al módulo Cambiar Contraseña */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Título e Iconos en Negro */
+h1.fw-bold,
+.card-title,
+.card-title i,
+label.form-label,
+label.form-label i {
+    color: #000000 !important;
+}
+
+/* Input Fields */
+.form-control {
+    border-color: #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.form-control::placeholder {
+    color: #9ca3af !important;
+}
+
+.form-control:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Botones con estilo clásico y profesional */
+#boton {
+    min-width: 220px;
+    justify-content: center;
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+#boton:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+}
+
+.btn-light {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* Colores de validación */
+#repass.is-invalid {
+    background-color: rgba(192, 57, 43, 0.08) !important;
+    border-color: #dc2626 !important;
+}
+
+#repass.is-valid {
+    background-color: rgba(39, 174, 96, 0.08) !important;
+    border-color: #16a34a !important;
+}
+
+/* Alertas más visibles */
+.alert {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+}

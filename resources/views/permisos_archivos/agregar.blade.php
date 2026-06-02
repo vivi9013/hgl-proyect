@@ -26,6 +26,8 @@
         </nav>
     </div>
 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── 2. Barra de Navegación Interna (Módulo en el Cuerpo) ────────────── --}}
     <div class="row g-4 mb-4">
         <div class="col-12">
@@ -39,11 +41,13 @@
         </div>
     </div>
 
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
+
     {{-- ── 3. Matriz de Asignación de Permisos ────────────────────────────── --}}
     <div class="row">
         <div class="col-12">
             {{-- Formulario moderno apuntando al método Store/Sync --}}
-            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.store') }}">
+            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.guardar') }}">
                 @csrf
                 {{-- Campo oculto para el ID del trabajador ($pro del legacy) --}}
                 <input type="hidden" name="id_trabajador" value="{{ $trabajador->id }}">

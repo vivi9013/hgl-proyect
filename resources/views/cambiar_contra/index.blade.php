@@ -3,7 +3,7 @@
 @section('title', 'Cambiar Contraseña - Hospital General')
 
 @push('styles')
-    @vite('resources/assets/css/cambiar_contra/contra.css')
+    @vite('resources/css/cambiar_contra/contra.css')
 @endpush
 
 @section('content')
@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('pass', passInput.value);
         formData.append('_token', document.querySelector('input[name="_token"]').value);
+        formData.append('_method', 'PUT');
 
         fetch('{{ route("password.update") }}', {
             method: 'POST',

@@ -12,17 +12,13 @@
             </h1>
             <p class="text-muted mb-0">Administración de formatos institucionales</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Buscador</li>
-            </ol>
-        </nav>
     </div>
+    
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     <!-- Opciones y Menú de Filtro -->
     <div class="row g-4 mb-4">
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-8 separator-border-md">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
                 <div class="d-flex flex-wrap align-items-center gap-3">
                     <label for="filtroCategoria" class="fw-bold mb-0 text-secondary">
@@ -47,6 +43,8 @@
             </div>
         </div>
     </div>
+
+    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     <!-- Contenedor del Listado -->
     <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">

@@ -17,17 +17,32 @@ body {
 }
 
 .btn-light {
-    background-color: #f9fafb !important;
-    border: 2px solid #9ba3af !important;
-    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #374151 !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease-in-out;
+}
 
+.btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
 }
 
 .btn-primary {
-    background-color: #176bcb !important;
+    background-color: #0d6efd !important;
     border: 2px solid #000000 !important;
     color: #ffffff !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease-in-out;
 }
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+}
+
 
 
 .section-title {

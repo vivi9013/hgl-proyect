@@ -30,7 +30,7 @@ class PermisosArchivosController extends Controller
     /**
      * Muestra la pantalla para asignar categorías a un trabajador específico.
      */
-    public function create($id)
+    public function asignar($id)
     {
         $trabajador = Persona::with('categorias')->findOrFail($id);
         $categorias = CategoArchivo::whereIn('activo', [0, 1])
@@ -43,7 +43,7 @@ class PermisosArchivosController extends Controller
     /**
      * Guarda la sincronización de las categorías permitidas para un trabajador.
      */
-    public function store(Request $request)
+    public function guardar(Request $request)
     {
         $request->validate([
             'id_trabajador' => 'required|integer|exists:personas,id',
