@@ -13,9 +13,17 @@
             </h1>
             <p class="text-muted mb-0">Gestión y control de acceso a categorías por trabajador</p>
         </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 bg-transparent p-0">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
+                </li>
+                <li class="breadcrumb-item active">Acceso a Categorías</li>
+            </ol>
+        </nav>
     </div>
 
-    {{-- ── 2. Navegación Interna y Contenedor con los Submódulos ── --}}
+    {{-- ── 2. Navegación Interna y Contenedor con los Submódulos --> ── --}}
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-8">
             <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
@@ -46,8 +54,6 @@
             </div>
         </div>
     </div>
-
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     {{-- ── 3. Alertas de Operación (SweetAlert2 o Notificaciones) ──────── --}}
     @if(session('exitog') || request('var') == 'exitog')
@@ -92,7 +98,7 @@
                                         
                                         {{-- Botón de Acción para agregar categorías --}}
                                         <td class="text-center">
-                                            <a href="{{ route('trabajador_categorias.asignar', $trabajador->id) }}" 
+                                            <a href="{{ route('trabajador_categorias.create', $trabajador->id) }}" 
                                                class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm text-primary fw-bold d-inline-flex align-items-center gap-1">
                                                 <i class="fa fa-plus-circle"></i> Asignar
                                             </a>

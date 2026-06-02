@@ -12,10 +12,15 @@
             </h1>
             <p class="text-muted mb-0">Carga y gestión de formatos y documentos institucionales</p>
         </div>
-
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 bg-transparent p-0">
+                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Administración de Archivos</li>
+            </ol>
+        </nav>
     </div>
 
-    {{-- ── Informacion de modulo y Submódulos ── --}}
+    {{--Informacion de modulo y Submódulos ── --}}
     <div class="row g-4 mb-4">
         <!-- Lógica o información del módulo -->
         <div class="col-12 col-md-6">

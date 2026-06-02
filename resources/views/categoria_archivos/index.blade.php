@@ -13,6 +13,14 @@
             </h1>
             <p class="text-muted mb-0">Registro, edición y consulta de las categorías de archivos </p>
         </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 bg-transparent p-0">
+                <li class="breadcrumb-item">
+                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
+                </li>
+                <li class="breadcrumb-item active">Categoría de Archivos</li>
+            </ol>
+        </nav>
     </div>
  
        {{-- ── Informacion de modulo y Submódulos ── --}}
@@ -47,8 +55,6 @@
         </div>
     </div>
     
- 
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
  
     {{-- ── Alertas SweetAlert2 ─────────────────────────────────────────────── --}}
     @if(session('exitog'))
@@ -113,8 +119,6 @@
         </div>
     </div>
  
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
-
     {{-- ── Tabla de Categorías ─────────────────────────────────────────────── --}}
     <div class="row">
         <div class="col-xs-12">
