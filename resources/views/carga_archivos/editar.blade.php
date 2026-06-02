@@ -33,6 +33,7 @@
                 <div class="card-body px-4 pb-4 pt-0">
                     <form action="{{ route('carga_archivos.update', $archivo->id_archivo) }}" method="POST" autocomplete="off">
                         @csrf
+                        @method('PUT')
                         
                         <!-- Nombre del Archivo -->
                         <div class="mb-3">

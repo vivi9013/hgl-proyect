@@ -68,7 +68,7 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
                 </li>
-                <li class="breadcrumb-item">
+                <li class="breadcrumb-item">git
                     <a href="{{ route('carga_archivos.index') }}">Archivos</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">Gráficas</li>

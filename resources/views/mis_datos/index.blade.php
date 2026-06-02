@@ -46,6 +46,7 @@
                 <div class="card-body p-4">
                     <form id="formMisDatos" action="{{ route('mis_datos.update') }}" method="POST" class="needs-validation" novalidate autocomplete="off">
                         @csrf
+                        @method('PUT')
 
                         <!-- Sección 1: Datos de Identificación -->
                         <div class="mb-4">

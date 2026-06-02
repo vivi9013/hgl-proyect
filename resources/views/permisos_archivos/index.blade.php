@@ -92,7 +92,7 @@
                                         
                                         {{-- Botón de Acción para agregar categorías --}}
                                         <td class="text-center">
-                                            <a href="{{ route('trabajador_categorias.create', $trabajador->id) }}" 
+                                            <a href="{{ route('trabajador_categorias.asignar', $trabajador->id) }}" 
                                                class="btn btn-sm btn-light border rounded-pill px-3 shadow-sm text-primary fw-bold d-inline-flex align-items-center gap-1">
                                                 <i class="fa fa-plus-circle"></i> Asignar
                                             </a>

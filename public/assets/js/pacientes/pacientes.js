@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>
         `;
 
-        fetch(`/mRXestudios?q=${encodeURIComponent(buscarPacienteTerm)}&page=${pagina}`, {
+        fetch(`/rx-estudios?q=${encodeURIComponent(buscarPacienteTerm)}&page=${pagina}`, {
             headers: { 'Accept': 'application/json' }
         })
         .then(res => res.json())
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>
         `;
 
-        fetch(`/mRXestudios/estudios?q=${encodeURIComponent(buscarEstudioTerm)}&page=${pagina}`)
+        fetch(`/rx-estudios/estudios?q=${encodeURIComponent(buscarEstudioTerm)}&page=${pagina}`)
         .then(res => res.json())
         .then(res => {
             document.getElementById('total-estudios-badge').textContent = `Total: ${res.total} estudios`;
@@ -314,9 +314,12 @@ document.addEventListener('DOMContentLoaded', function () {
         textPaciente.textContent = 'Guardando...';
 
         const id = document.getElementById('paciente-id').value;
-        const url = id ? `/mRXestudios/pacientes/actualizar/${id}` : '/mRXestudios/pacientes/guardar';
+        const url = id ? `/rx-estudios/pacientes/actualizar/${id}` : '/rx-estudios/pacientes/guardar';
 
         const formData = new FormData(formPaciente);
+        if (id) {
+            formData.append('_method', 'PUT');
+        }
 
         fetch(url, {
             method: 'POST',
@@ -358,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnEdit = e.target.closest('.btn-edit-paciente');
         if (btnEdit) {
             const id = btnEdit.getAttribute('data-id');
-            fetch(`/mRXestudios/pacientes/ver/${id}`)
+            fetch(`/rx-estudios/pacientes/ver/${id}`)
             .then(res => res.json())
             .then(p => {
                 document.getElementById('paciente-id').value = p.id_paciente;
@@ -410,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (btnDel) {
             const id = btnDel.getAttribute('data-id');
             if (confirm('¿Estás totalmente seguro de que deseas eliminar este paciente de los expedientes?')) {
-                fetch(`/mRXestudios/pacientes/eliminar/${id}`, {
+                fetch(`/rx-estudios/pacientes/eliminar/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value
@@ -438,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnEstudio = e.target.closest('.btn-estudio');
         if (btnEstudio) {
             const id = btnEstudio.getAttribute('data-id');
-            fetch(`/mRXestudios/pacientes/ver/${id}`)
+            fetch(`/rx-estudios/pacientes/ver/${id}`)
             .then(res => res.json())
             .then(p => {
                 formEstudio.reset();
@@ -489,9 +492,12 @@ document.addEventListener('DOMContentLoaded', function () {
         textEstudio.textContent = 'Guardando...';
 
         const id = document.getElementById('estudio-id').value;
-        const url = id ? `/mRXestudios/estudios/actualizar/${id}` : '/mRXestudios/estudios/guardar';
+        const url = id ? `/rx-estudios/estudios/actualizar/${id}` : '/rx-estudios/estudios/guardar';
 
         const formData = new FormData(formEstudio);
+        if (id) {
+            formData.append('_method', 'PUT');
+        }
 
         fetch(url, {
             method: 'POST',
@@ -538,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnEdit = e.target.closest('.btn-edit-estudio');
         if (btnEdit) {
             const id = btnEdit.getAttribute('data-id');
-            fetch(`/mRXestudios/estudios/ver/${id}`)
+            fetch(`/rx-estudios/estudios/ver/${id}`)
             .then(res => res.json())
             .then(est => {
                 formEstudio.reset();
@@ -592,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (btnDel) {
             const id = btnDel.getAttribute('data-id');
             if (confirm('¿Estás totalmente seguro de que deseas eliminar este registro de estudio de radiología?')) {
-                fetch(`/mRXestudios/estudios/eliminar/${id}`, {
+                fetch(`/rx-estudios/estudios/eliminar/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value
@@ -614,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnVer = e.target.closest('.btn-ver-estudio');
         if (btnVer) {
             const id = btnVer.getAttribute('data-id');
-            fetch(`/mRXestudios/estudios/ver/${id}`)
+            fetch(`/rx-estudios/estudios/ver/${id}`)
             .then(res => res.json())
             .then(est => {
                 // Llenar campos del modal de detalle
