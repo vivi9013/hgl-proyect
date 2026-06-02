@@ -11,6 +11,8 @@ use App\Http\Controllers\CambiarFoto\CambiarFotoController;
 use App\Http\Controllers\Cumpleanos\CumpleanosController;
 use App\Http\Controllers\Tema\TemaController;
 use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
+use App\Http\Controllers\Inventario\AreaAlmacenController;
+use App\Http\Controllers\Inventario\AreaSurtimientoController;
 
 // Grupo para invitados
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -127,6 +129,68 @@ Route::prefix('mCategoArchivos')->group(function () {
         Route::post('/estudios/guardar', [\App\Http\Controllers\Pacientes\RxController::class, 'guardarEstudio'])->name('estudios.guardar');
         Route::post('/estudios/actualizar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'actualizarEstudio'])->name('estudios.actualizar');
         Route::delete('/estudios/eliminar/{id}', [\App\Http\Controllers\Pacientes\RxController::class, 'eliminarEstudio'])->name('estudios.eliminar');
+    });
+
+    // ── Módulo mAreasAlmacen (Inventario – Áreas de Almacén) ──────────────────
+    Route::prefix('mAreasAlmacen')->name('areas_almacen.')->group(function () {
+        // Index (lista + formulario de alta)
+        Route::get('/', [AreaAlmacenController::class, 'index'])
+            ->name('index');
+
+        // Guardar nueva área
+        Route::post('/', [AreaAlmacenController::class, 'guardar'])
+            ->name('store');
+
+        // Editar área
+        Route::get('/{id}/edit', [AreaAlmacenController::class, 'editar'])
+            ->name('edit');
+
+        // Actualizar área
+        Route::put('/{id}', [AreaAlmacenController::class, 'actualizar'])
+            ->name('update');
+
+        // Cambiar status
+        Route::get('/{id}/status', [AreaAlmacenController::class, 'cambiarStatus'])
+            ->name('status');
+
+        // AJAX: verificar disponibilidad de nombre
+        Route::get('/verificar', [AreaAlmacenController::class, 'verificar'])
+            ->name('verificar');
+
+        // Reporte de impresión
+        Route::get('/reporte/imprimir', [AreaAlmacenController::class, 'imprimir'])
+            ->name('imprimir');
+    });
+
+    // ── Módulo mAreaSurtimiento (Inventario – Áreas de Surtimiento) ───────────
+    Route::prefix('mAreaSurtimiento')->name('areas_surtimiento.')->group(function () {
+        // Index (lista + formulario de alta)
+        Route::get('/', [AreaSurtimientoController::class, 'index'])
+            ->name('index');
+
+        // Guardar nueva área
+        Route::post('/', [AreaSurtimientoController::class, 'guardar'])
+            ->name('store');
+
+        // Editar área
+        Route::get('/{id}/edit', [AreaSurtimientoController::class, 'editar'])
+            ->name('edit');
+
+        // Actualizar área
+        Route::put('/{id}', [AreaSurtimientoController::class, 'actualizar'])
+            ->name('update');
+
+        // Cambiar status
+        Route::get('/{id}/status', [AreaSurtimientoController::class, 'cambiarStatus'])
+            ->name('status');
+
+        // AJAX: verificar disponibilidad de nombre por tipo
+        Route::get('/verificar', [AreaSurtimientoController::class, 'verificar'])
+            ->name('verificar');
+
+        // Reporte de impresión
+        Route::get('/reporte/imprimir', [AreaSurtimientoController::class, 'imprimir'])
+            ->name('imprimir');
     });
 });
 

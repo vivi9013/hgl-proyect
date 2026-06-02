@@ -1,0 +1,130 @@
+/**
+ * Lógica JavaScript para el módulo de Áreas de Almacén
+ * Inventario de Medicamentos y Material de Curación – HGL
+ */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputNombre              = document.getElementById('nombre');
+    const feedbackDisponibilidad   = document.getElementById('feedbackDisponibilidad');
+    const loadingSpinner           = document.getElementById('loadingSpinner');
+    const btnGuardar               = document.getElementById('btnGuardar');
+
+    // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
+    const alertaExitog = document.getElementById('alertaExitog');
+    const alertaExito  = document.getElementById('alertaExito');
+
+    if (alertaExitog && typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '¡Operación Satisfactoria!',
+            text: 'El área de almacén se ha guardado correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+
+    if (alertaExito && typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '¡Operación Satisfactoria!',
+            text: 'El área de almacén se ha actualizado correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar'
+        });
+    }
+
+    // ── 2. Verificación AJAX de disponibilidad de nombre (debounce 300 ms) ────
+    if (inputNombre && feedbackDisponibilidad && loadingSpinner && btnGuardar) {
+        let timeoutId;
+
+        inputNombre.addEventListener('input', function () {
+            clearTimeout(timeoutId);
+            const nombre = this.value.trim();
+
+            // Si el campo está vacío, limpiar feedback
+            if (!nombre) {
+                feedbackDisponibilidad.innerHTML = '';
+                inputNombre.classList.remove('is-valid', 'is-invalid');
+                btnGuardar.disabled = false;
+                return;
+            }
+
+            timeoutId = setTimeout(() => {
+                loadingSpinner.style.display = 'block';
+                feedbackDisponibilidad.innerHTML = '';
+
+                fetch(`/mAreasAlmacen/verificar?nombre=${encodeURIComponent(nombre)}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error de servidor');
+                    return response.json();
+                })
+                .then(data => {
+                    loadingSpinner.style.display = 'none';
+
+                    if (data.disponible) {
+                        feedbackDisponibilidad.innerHTML =
+                            '<span class="text-success-custom"><i class="fa fa-check-circle"></i> Nombre disponible</span>';
+                        inputNombre.classList.remove('is-invalid');
+                        inputNombre.classList.add('is-valid');
+                        btnGuardar.disabled = false;
+                    } else {
+                        feedbackDisponibilidad.innerHTML =
+                            '<span class="text-danger-custom"><i class="fa fa-times-circle"></i> Esta área ya se encuentra registrada</span>';
+                        inputNombre.classList.remove('is-valid');
+                        inputNombre.classList.add('is-invalid');
+                        btnGuardar.disabled = true;
+                    }
+                })
+                .catch(error => {
+                    loadingSpinner.style.display = 'none';
+                    console.error('Error al verificar área:', error);
+                });
+            }, 300);
+        });
+    }
+
+    // ── 3. Confirmación SweetAlert2 para cambiar status (Activar / Desactivar) ─
+    const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
+    toggleStatusLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const url    = this.getAttribute('data-url');
+            const nombre = this.getAttribute('data-nombre');
+            const activo = parseInt(this.getAttribute('data-activo'));
+
+            const accion         = activo === 1 ? 'desactivar' : 'activar';
+            const iconType       = activo === 1 ? 'warning' : 'question';
+            const confirmBtnText = activo === 1 ? 'Sí, desactivar' : 'Sí, activar';
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: `¿Desea ${accion} el área?`,
+                    text: `El área "${nombre}" será ${activo === 1 ? 'desactivada' : 'activada'} en el sistema.`,
+                    icon: iconType,
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: confirmBtnText,
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            } else {
+                // Fallback nativo
+                if (confirm(`¿Está seguro de que desea ${accion} el área "${nombre}"?`)) {
+                    window.location.href = url;
+                }
+            }
+        });
+    });
+
+});

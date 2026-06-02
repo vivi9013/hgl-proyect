@@ -11,21 +11,26 @@ html {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 15px; /* Evita que la tarjeta toque los bordes en celulares */
+  padding: 15px;
+  /* Evita que la tarjeta toque los bordes en celulares */
   box-sizing: border-box;
-  position: relative; /* Contexto de posicionamiento para el pie de página */
+  position: relative;
+  /* Contexto de posicionamiento para el pie de página */
   /* Degradado de azul oscuro a negro */
   background: linear-gradient(135deg, #1c3977 0%, #0a0a0a 100%);
 }
 
 .login-card {
   background-color: white;
-  padding: 40px 30px; /* Padding optimizado */
+  padding: 40px 30px;
+  /* Padding optimizado */
   width: 100%;
-  max-width: 440px; /* Tamaño perfecto y simétrico en cualquier pantalla */
+  max-width: 440px;
+  /* Tamaño perfecto y simétrico en cualquier pantalla */
   border: 3px solid #000000;
   box-sizing: border-box;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra suave para darle volumen */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  /* Sombra suave para darle volumen */
 }
 
 .login-title {
@@ -37,7 +42,8 @@ html {
 
 .login-logo-img {
   width: 100%;
-  max-width: 280px; /* El logo se adapta pero tiene un límite óptimo */
+  max-width: 280px;
+  /* El logo se adapta pero tiene un límite óptimo */
   height: auto;
 }
 
@@ -55,11 +61,13 @@ html {
 
 .login-input {
   width: 100%;
-  padding: 12px 12px; /* Mayor espacio para mejor usabilidad táctil */
+  padding: 12px 12px;
+  /* Mayor espacio para mejor usabilidad táctil */
   border: 1px solid #d1d5db;
   border-radius: 6px;
   box-sizing: border-box;
-  font-size: 16px; /* Evita que iOS haga zoom automático molesto */
+  font-size: 16px;
+  /* Evita que iOS haga zoom automático molesto */
   transition: all 0.2s;
 }
 
@@ -117,17 +125,21 @@ html {
 .login-checkbox {
   font-family: 'Times New Roman', Times, serif;
   display: flex;
-  justify-content: space-between; /* Distribuye checkbox a la izquierda y botón a la derecha */
+  justify-content: space-between;
+  /* Distribuye checkbox a la izquierda y botón a la derecha */
   align-items: center;
-  flex-wrap: wrap; /* Apila los elementos en celulares muy angostos */
-  gap: 15px; /* Separación cuando se apilan */
+  flex-wrap: wrap;
+  /* Apila los elementos en celulares muy angostos */
+  gap: 15px;
+  /* Separación cuando se apilan */
   color: #000000;
   width: 100%;
   margin-top: 25px;
 }
 
 .login-checkbox input[type="checkbox"] {
-  width: 24px; /* Tamaño estilizado y táctil */
+  width: 24px;
+  /* Tamaño estilizado y táctil */
   height: 24px;
   cursor: pointer;
 }

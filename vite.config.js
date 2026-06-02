@@ -19,7 +19,11 @@ export default defineConfig({
                 'resources/js/mis_datos/mis_datos.js',
                 'resources/js/categoria_archivos/categoria.js',
                 'resources/css/trabajador_categorias/permisos.css',
-                'resources/js/trabajador_categorias/permisos.js'
+                'resources/js/trabajador_categorias/permisos.js',
+                'resources/css/inventario/areas_almacen/areas.css',
+                'resources/js/inventario/areas_almacen/areas.js',
+                'resources/css/inventario/areas_surtimiento/surtimiento.css',
+                'resources/js/inventario/areas_surtimiento/surtimiento.js'
             ],
             refresh: true,
         }),
