@@ -15,9 +15,7 @@
 
     </div>
 
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
-
-    {{-- ── NUEVO APARTADO: Barra de Navegación Interna y Submódulos ── --}}
+    {{-- ── Informacion de modulo y Submódulos ── --}}
     <div class="row g-4 mb-4">
         <!-- Lógica o información del módulo -->
         <div class="col-12 col-md-6">
@@ -28,36 +26,31 @@
                     </div>
                     <div>
                         <h6 class="fw-bold mb-1 text-dark">Panel de Control de Repositorio</h6>
-                        <p class="text-muted small mb-0">Utiliza el formulario de la izquierda para dar de alta nuevos documentos y el botón derecho de la tabla para cargar los físicos en PDF.</p>
+                        <p class="text-muted small mb-0">Modulo para dar de alta nuevos documentos y subir los archivos en PDF. Se pueden subir/actualizar versiones de un archivo/formato</p>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Contenedor con los Submódulos solicitados -->
+        <!-- Contenedor con los Submódulos -->
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
                     {{-- Submódulo 1: Catálogo de Categorías --}}
-                    <a href="{{ route('categoria_archivos.index') }}" class="btn btn-outline-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-tags me-2"></i> Catálogo Cat.
-                    </a>
                     
                     {{-- Submódulo 2: Reportes del Módulo --}}
                     <a href="{{ route('carga_archivos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes Módulo
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
                     </a>
 
                     {{-- Submódulo 3: Gráficas del Módulo --}}
                     <a href="{{ route('carga_archivos.graficas') }}" class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-bar-chart me-2 text-success"></i> Gráficas Módulo
+                        <i class="fa fa-bar-chart me-2 text-success"></i> Gráficas
                     </a>
                 </div>
             </div>
         </div>
     </div>
-
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     <!-- Alertas de Éxito / Errores -->
     @if(session('success'))
@@ -91,7 +84,7 @@
 
     <div class="row g-4">
         <!-- Columna Izquierda: Formulario (4/12) -->
-        <div class="col-12 col-xl-4 separator-border">
+        <div class="col-12 col-xl-4">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                 <div class="card-header bg-white border-0 py-4 px-4">
                     <h5 class="card-title mb-0 fw-bold text-dark">
@@ -184,33 +177,33 @@
                 
                 <div class="card-body p-0">
                     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                        <table class="table table-hover align-middle mb-0 table-fixed-layout">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
                                 <tr>
-                                    <th class="ps-3" style="width: 4%;">#</th>
-                                    <th style="width: 22%;">Nombre</th>
-                                    <th style="width: 14%;">Categoría</th>
-                                    <th style="width: 24%;">Descripción</th>
-                                    <th class="text-center" style="width: 6%;">Ver.</th>
-                                    <th class="text-center" style="width: 7%;">PDF</th>
-                                    <th class="text-center" style="width: 11%;">Estado</th>
-                                    <th class="text-center pe-2" style="width: 12%;">Acciones</th>
+                                    <th class="ps-4" style="width: 50px;">#</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center" style="width: 80px;">Ver.</th>
+                                    <th class="text-center" style="width: 90px;">Físico</th>
+                                    <th class="text-center" style="width: 100px;">Estado</th>
+                                    <th class="text-center pe-4" style="width: 100px;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($archivos as $archivo)
                                     <tr class="{{ $archivo->activo == 0 ? 'text-muted opacity-75' : '' }}">
-                                        <td class="ps-3 fw-bold">{{ $loop->iteration }}</td>
+                                        <td class="ps-4 fw-bold">{{ $loop->iteration }}</td>
                                         <td>
-                                            <span class="fw-semibold text-dark text-truncate d-block" title="{{ $archivo->nombre }}">{{ $archivo->nombre }}</span>
+                                            <span class="fw-semibold text-dark">{{ $archivo->nombre }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-light text-secondary border px-2 py-1 text-truncate d-inline-block" style="max-width: 100%;" title="{{ $archivo->categoria->categoria ?? 'Sin Categoría' }}">
+                                            <span class="badge bg-light text-secondary border px-2 py-1">
                                                 {{ $archivo->categoria->categoria ?? 'Sin Categoría' }}
                                             </span>
                                         </td>
                                         <td>
-                                            <small class="text-truncate d-block" title="{{ $archivo->descripcion_archivo }}">
+                                            <small class="text-truncate d-inline-block" style="max-width: 150px;" title="{{ $archivo->descripcion_archivo }}">
                                                 {{ $archivo->descripcion_archivo }}
                                             </small>
                                         </td>
@@ -245,8 +238,8 @@
                                                 </a>
                                             @endif
                                         </td>
-                                        <td class="text-center pe-2">
-                                            <div class="d-flex justify-content-center gap-1 flex-nowrap">
+                                        <td class="text-center pe-4">
+                                            <div class="d-flex justify-content-center gap-1">
                                                 <a href="{{ route('carga_archivos.edit', $archivo->id_archivo) }}" 
                                                    class="btn btn-sm btn-outline-secondary rounded-circle" 
                                                    title="Editar registro">

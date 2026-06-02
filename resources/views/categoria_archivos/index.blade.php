@@ -11,26 +11,42 @@
             <h1 class="h3 mb-0 fw-bold">
                 <i class="fa fa-folder-open text-primary me-2"></i>Categorías de Archivos
             </h1>
-            <p class="text-muted mb-0">Catálogo</p>
+            <p class="text-muted mb-0">Registro, edición y consulta de las categorías de archivos </p>
         </div>
     </div>
  
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
- 
-    {{-- ── Botón de Reportes del Módulo (igual que buscador_archivos) ─────── --}}
+       {{-- ── Informacion de modulo y Submódulos ── --}}
     <div class="row g-4 mb-4">
-        <div class="col-12 col-md-8"></div>
-        <div class="col-12 col-md-4">
+        <!-- Lógica o información del módulo -->
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary-light p-3 rounded-circle text-primary">
+                        <i class="fa fa-info-circle fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Panel de Control de Repositorio</h6>
+                        <p class="text-muted small mb-0">Modulo para Registrar, editar y consultar las categorías de archivos </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenedor con los Submódulos -->
+        <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex gap-2 justify-content-md-end">
-                    <a href="{{ route('categoria_archivos.reportes') }}"
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
+                    {{-- Submódulo 1: Catálogo de Categorías --}}
+                     <a href="{{ route('categoria_archivos.reportes') }}"
                        class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes del Módulo
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
                     </a>
+                  
                 </div>
             </div>
         </div>
     </div>
+    
  
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
  
