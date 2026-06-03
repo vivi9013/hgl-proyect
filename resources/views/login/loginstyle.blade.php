@@ -17,7 +17,6 @@
 @endpush
 </head>
 <body class="login-container">
-
     @yield('content')
     <footer id="foot">
         <label class="foot">MGTI. Pablo Adrián Pérez Briseño</label>
