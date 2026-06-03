@@ -19,6 +19,7 @@ use App\Http\Controllers\Pacientes\RxController;
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
 use App\Http\Controllers\Inventario\AreaSurtimientoController;
+use App\Http\Controllers\Inventario\BajaInsumoController;
 
 // Redirección raíz por defecto
 Route::get('/', function () {
@@ -125,6 +126,17 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status'); // Cambiado a PATCH por estándar
         Route::get('/verificar', 'verificar')->name('verificar');
+        Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
+    });
+
+
+    // ── Módulo: Bajas de Insumos (Inventario) ──────────────────────────────
+    Route::prefix('bajas-insumos')->name('bajas_insumos.')->controller(BajaInsumoController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos');
+        Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock');
+        Route::get('/{id}/cancelar', 'cancelar')->name('cancelar');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });
 

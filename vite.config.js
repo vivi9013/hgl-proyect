@@ -23,7 +23,9 @@ export default defineConfig({
                 'resources/css/inventario/areas_almacen/areas.css',
                 'resources/js/inventario/areas_almacen/areas.js',
                 'resources/css/inventario/areas_surtimiento/surtimiento.css',
-                'resources/js/inventario/areas_surtimiento/surtimiento.js'
+                'resources/js/inventario/areas_surtimiento/surtimiento.js',
+                'resources/css/inventario/bajas_insumos/bajas.css',
+                'resources/js/inventario/bajas_insumos/bajas.js'
             ],
             refresh: true,
         }),

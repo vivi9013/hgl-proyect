@@ -81,7 +81,24 @@
                                             
                                             <!-- Botón de ingreso -->
                                             <div class="mt-3">
-                                                <a href="{{ url($modulo->carpeta) }}" class="text-white text-decoration-none d-flex align-items-center justify-content-between py-1 px-2 rounded bg-black bg-opacity-20 border border-white border-opacity-10" style="font-size: 0.8rem; transition: background 0.15s;">
+                                                @php
+                                                    $routeMap = [
+                                                        'mBuscaArchivos' => 'busca_archivos.index',
+                                                        'mCargaArchivos' => 'carga_archivos.index',
+                                                        'mCategoArchivos' => 'categoria_archivos.index',
+                                                        'mPermisosArchivo' => 'trabajador_categorias.index',
+                                                        'mRXestudios' => 'rx.index',
+                                                        'mAreasAlmacen' => 'areas_almacen.index',
+                                                        'mAreaSurtimiento' => 'areas_surtimiento.index',
+                                                        'mCumpleanos' => 'cumpleanos.index',
+                                                        'mBajasInsumos' => 'bajas_insumos.index',
+                                                    ];
+                                                    $carpeta = trim($modulo->carpeta);
+                                                    $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])
+                                                        ? route($routeMap[$carpeta])
+                                                        : url($modulo->carpeta);
+                                                @endphp
+                                                <a href="{{ $href }}" class="text-white text-decoration-none d-flex align-items-center justify-content-between py-1 px-2 rounded bg-black bg-opacity-20 border border-white border-opacity-10" style="font-size: 0.8rem; transition: background 0.15s;">
                                                     <span>Ingresar al Módulo</span>
                                                     <i class="fa fa-arrow-circle-right"></i>
                                                 </a>
