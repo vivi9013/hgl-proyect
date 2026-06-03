@@ -13,17 +13,6 @@
             </h1>
             <p class="text-muted mb-0">Agregar o quitar registros de permisos por trabajador</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ route('trabajador_categorias.index') }}">Lista</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Categorías</li>
-            </ol>
-        </nav>
     </div>
 
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
@@ -47,10 +36,8 @@
     <div class="row">
         <div class="col-12">
             {{-- Formulario moderno apuntando al método Store/Sync --}}
-            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.guardar') }}">
+            <form id="formAsignarCategorias" method="POST" action="{{ route('trabajador_categorias.guardar', $trabajador->id) }}">
                 @csrf
-                {{-- Campo oculto para el ID del trabajador ($pro del legacy) --}}
-                <input type="hidden" name="id_trabajador" value="{{ $trabajador->id }}">
 
                 <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
                     
@@ -64,9 +51,7 @@
                                     Trabajador -> ( {{ $trabajador->ap_paterno }} {{ $trabajador->ap_materno }} {{ $trabajador->nombre }} )
                                 </h3>
                             </div>
-                            <span class="badge bg-white text-primary border border-primary px-3 py-2 rounded-pill fw-bold shadow-sm">
-                                <i class="fa fa-id-card-o me-1"></i> ID: {{ $trabajador->id }}
-                            </span>
+
                         </div>
                     </div>
 
@@ -155,9 +140,6 @@
     </div>
 
 </div>
-@endsection
 
-@push('scripts')
-    {{-- Mantenemos el desacoplamiento apuntando a los recursos modales compilados por Vite --}}
-    @vite(['resources/css/trabajador_categorias/permisos.css', 'resources/js/trabajador_categorias/permisos.js'])
-@endpush
+@vite(['resources/css/trabajador_categorias/permisos.css', 'resources/js/trabajador_categorias/permisos.js'])
+@endsection

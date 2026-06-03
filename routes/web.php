@@ -103,7 +103,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('permisos-archivo')->name('trabajador_categorias.')->controller(PermisosArchivosController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{id}/asignar', 'asignar')->name('asignar');
-        Route::post('/guardar', 'guardar')->name('guardar');
+        Route::post('/{id}/guardar', 'guardar')->name('guardar');
     });
 
     // ── Módulo: Áreas de Almacén (Inventario - Optimizado y Limpio) ──────────
