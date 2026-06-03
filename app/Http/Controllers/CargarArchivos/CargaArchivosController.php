@@ -15,9 +15,10 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get(['id_catego_archivos', 'categoria']);
 
+        // Cambiado: Ahora pagina de 10 en 10
         $archivos = CargaArchivo::with('categoria')
             ->orderBy('id_archivo', 'desc')
-            ->get();
+            ->paginate(10);
 
         foreach ($archivos as $archivo) {
             if ($archivo->categoria) {
@@ -32,8 +33,14 @@ class CargaArchivosController extends Controller
             }
         }
 
+        // Si la petición viene por AJAX (para paginar), retornamos la vista parcial
+        if (request()->ajax() || request()->wantsJson()) {
+            return view('carga_archivos.partials.tabla', compact('archivos'));
+        }
+
         return view('carga_archivos.index', compact('categorias', 'archivos'));
     }
+
 
     public function toggleStatus($id)
     {
@@ -41,7 +48,7 @@ class CargaArchivosController extends Controller
         $archivo->activo = $archivo->activo == 1 ? 0 : 1;
         $archivo->save();
 
-        return redirect()->back()->with('success', 'El estado del archivo se ha actualizado.');
+        return redirect()->route('carga_archivos.index')->with('success', 'El estado del archivo se ha actualizado.');
     }
 
     private function sanearString($string)

@@ -15,8 +15,12 @@ class CategoriaArchivosController extends Controller
      */
     public function index()
     {
-        $categorias = CategoArchivo::orderBy('id_catego_archivos', 'desc')->get();
-
+        // Ordena de manera descendente y pagina de 10 en 10
+        $categorias = CategoArchivo::orderBy('id_catego_archivos', 'desc')->paginate(10);
+        // Si la petición viene por AJAX (para cambiar de página), retornamos la vista parcial
+        if (request()->ajax() || request()->wantsJson()) {
+            return view('categoria_archivos.partials.tabla', compact('categorias'));
+        }
         return view('categoria_archivos.index', compact('categorias'));
     }
 

@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/mAreasAlmacen/verificar?nombre=${encodeURIComponent(nombre)}`, {
+                fetch(`/areas-almacen/verificar?nombre=${encodeURIComponent(nombre)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'

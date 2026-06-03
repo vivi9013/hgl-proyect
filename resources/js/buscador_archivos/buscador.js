@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>
         `;
 
-        // Modificado: Se añade el parámetro &page= a la URL
-        fetch(`/mBuscaArchivos/filtrar?categoria=${encodeURIComponent(categoria)}&page=${pagina}`, {
+                // Modificado: Se añade el parámetro &page= a la URL
+        fetch(`/buscador-archivos/filtrar?categoria=${encodeURIComponent(categoria)}&page=${pagina}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }

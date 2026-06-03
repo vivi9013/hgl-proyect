@@ -79,4 +79,79 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ejecución inicial para establecer el contador correctamente al cargar la página
     actualizarContador();
+
+    // ─────────────────────────────────────────────────────────
+    // 3. MOTOR DE PAGINACIÓN ASÍNCRONA (patrón idéntico a carga_archivos)
+    // ─────────────────────────────────────────────────────────
+    const tbody = document.getElementById('tbodyTrabajadores');
+    const totalBadge = document.getElementById('totalTrabajadores');
+    const infoPaginacion = document.getElementById('infoPaginacion');
+    const contenedorPaginacion = document.getElementById('contenedorPaginacion');
+
+    function cargarPagina(numeroPagina = 1) {
+        if (!tbody) return;
+
+        // Efecto visual de carga
+        tbody.style.opacity = '0.5';
+
+        fetch(`/permisos-archivo?page=${numeroPagina}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            return response.text();
+        })
+        .then(html => {
+            tbody.style.opacity = '1';
+            tbody.innerHTML = html;
+
+            // Sincronizar transporte de datos
+            const elTransporte = document.getElementById('datosPaginacionTransporte');
+
+            if (elTransporte) {
+                const totalGlobal = parseInt(elTransporte.getAttribute('data-total'));
+                const textoInfo = elTransporte.getAttribute('data-info');
+                const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
+
+                if (totalBadge) totalBadge.textContent = `${totalGlobal} ${totalGlobal === 1 ? 'Registro' : 'Registros'}`;
+                if (infoPaginacion) infoPaginacion.textContent = textoInfo;
+
+                if (contenedorPaginacion) {
+                    contenedorPaginacion.innerHTML = htmlLinks;
+                    asignarEventosEnlaces();
+                }
+            }
+        })
+        .catch(err => {
+            tbody.style.opacity = '1';
+            console.error('Error paginando módulo de permisos:', err);
+        });
+    }
+
+    function asignarEventosEnlaces() {
+        if (!contenedorPaginacion) return;
+        const enlaces = contenedorPaginacion.querySelectorAll('a.page-link');
+
+        enlaces.forEach(enlace => {
+            enlace.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Extraemos dinámicamente la página de la URL nativa de Laravel
+                const urlObj = new URL(this.href);
+                const paginaDestino = urlObj.searchParams.get('page');
+
+                if (paginaDestino) {
+                    cargarPagina(paginaDestino);
+                }
+            });
+        });
+    }
+
+    // Disparar render inicial de botones de paginación al entrar al módulo
+    const elTransporteInicial = document.getElementById('datosPaginacionTransporte');
+    if (elTransporteInicial && contenedorPaginacion) {
+        const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
+        contenedorPaginacion.innerHTML = htmlLinks;
+        asignarEventosEnlaces();
+    }
 });

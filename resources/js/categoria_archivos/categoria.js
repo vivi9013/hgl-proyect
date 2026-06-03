@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingSpinner = document.getElementById('loadingSpinner');
     const btnGuardar = document.getElementById('btnGuardar');
 
+    // === ELEMENTOS ADICIONALES PARA PAGINACIÓN ===
+    const tbody = document.getElementById('tbodyCategorias');
+    const infoPaginacion = document.getElementById('infoPaginacion');
+    const contenedorPaginacion = document.getElementById('contenedorPaginacion');
+
     // 1. Mostrar SweetAlert2 si existen los divs de alerta de sesión
     const alertaExitog = document.getElementById('alertaExitog');
     const alertaExito = document.getElementById('alertaExito');
@@ -47,12 +52,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Pequeño debounce para no saturar al servidor
             timeoutId = setTimeout(() => {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/mCategoArchivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
+                fetch(`/categoria-archivos/verificar?categoria=${encodeURIComponent(nombre)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -66,12 +70,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadingSpinner.style.display = 'none';
 
                     if (data.disponible) {
-                        feedbackDisponibilidad.innerHTML = '<span class="text-success-custom"><i class="fa fa-check-circle"></i> Categoría disponible</span>';
+                        feedbackDisponibilidad.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> Categoría disponible</span>';
                         inputCategoria.classList.remove('is-invalid');
                         inputCategoria.classList.add('is-valid');
                         btnGuardar.disabled = false;
                     } else {
-                        feedbackDisponibilidad.innerHTML = '<span class="text-danger-custom"><i class="fa fa-times-circle"></i> Esta categoría ya existe</span>';
+                        feedbackDisponibilidad.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> Esta categoría ya existe</span>';
                         inputCategoria.classList.remove('is-valid');
                         inputCategoria.classList.add('is-invalid');
                         btnGuardar.disabled = true;
@@ -85,62 +89,133 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 3. Confirmación de SweetAlert2 al cambiar estatus (Activar / Desactivar)
-    const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
-    toggleStatusLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.getAttribute('data-url');
-            const nombre = this.getAttribute('data-nombre');
-            const activo = parseInt(this.getAttribute('data-activo'));
+    // 3. MOTOR DE PAGINACIÓN ASÍNCRONA (AJAX)
+    function cargarPagina(numeroPagina = 1) {
+        if (!tbody) return;
 
-            const accion = (activo === 1) ? 'desactivar' : 'activar';
-            const iconType = (activo === 1) ? 'warning' : 'question';
-            const confirmBtnText = (activo === 1) ? 'Sí, desactivar' : 'Sí, activar';
+        // Efecto visual de carga suavizado
+        tbody.style.opacity = '0.5';
 
-            const submitStatusForm = () => {
-                const form = document.createElement('form');
-                form.action = url;
-                form.method = 'POST';
+        fetch(`/categoria-archivos?page=${numeroPagina}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            return response.text();
+        })
+        .then(html => {
+            tbody.style.opacity = '1';
+            tbody.innerHTML = html;
 
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = csrfToken;
-                form.appendChild(csrfInput);
+            const elTransporte = document.getElementById('datosPaginacionTransporte');
+            
+            if (elTransporte) {
+                const textoInfo = elTransporte.getAttribute('data-info');
+                const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
 
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'PATCH';
-                form.appendChild(methodInput);
+                if (infoPaginacion) infoPaginacion.textContent = textoInfo;
+                
+                if (contenedorPaginacion) {
+                    contenedorPaginacion.innerHTML = htmlLinks;
+                    asignarEventosEnlaces();
+                }
+                
+                // REENLAZAR los eventos de cambio de estatus a las nuevas filas inyectadas
+                enlazarEventosStatus();
+            }
+        })
+        .catch(err => {
+            tbody.style.opacity = '1';
+            console.error('Error paginando el módulo de categorías:', err);
+        });
+    }
 
-                document.body.appendChild(form);
-                form.submit();
-            };
+    function asignarEventosEnlaces() {
+        if (!contenedorPaginacion) return;
+        const enlaces = contenedorPaginacion.querySelectorAll('a.page-link');
+        
+        enlaces.forEach(enlace => {
+            enlace.addEventListener('click', function (e) {
+                e.preventDefault();
+                const urlObj = new URL(this.href);
+                const paginaDestino = urlObj.searchParams.get('page');
+                if (paginaDestino) {
+                    cargarPagina(paginaDestino);
+                }
+            });
+        });
+    }
 
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: `¿Desea ${accion} la categoría?`,
-                    text: `La categoría "${nombre}" será ${activo === 1 ? 'desactivada' : 'activada'} en el sistema.`,
-                    icon: iconType,
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: confirmBtnText,
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+    // 4. Confirmación de SweetAlert2 al cambiar estatus (Modularizado para re-uso)
+    function enlazarEventosStatus() {
+        const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
+        toggleStatusLinks.forEach(link => {
+            // Clonamos el nodo para limpiar listeners previos y evitar ejecuciones dobles
+            const nuevoLink = link.cloneNode(true);
+            link.parentNode.replaceChild(nuevoLink, link);
+
+            nuevoLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-url');
+                const nombre = this.getAttribute('data-nombre');
+                const activo = parseInt(this.getAttribute('data-activo'));
+
+                const accion = (activo === 1) ? 'desactivar' : 'activar';
+                const iconType = (activo === 1) ? 'warning' : 'question';
+                const confirmBtnText = (activo === 1) ? 'Sí, desactivar' : 'Sí, activar';
+
+                const submitStatusForm = () => {
+                    const form = document.createElement('form');
+                    form.action = url;
+                    form.method = 'POST';
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'PATCH';
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                };
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: `¿Desea ${accion} la categoría?`,
+                        text: `La categoría "${nombre}" será ${activo === 1 ? 'desactivada' : 'activada'} en el sistema.`,
+                        icon: iconType,
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: confirmBtnText,
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            submitStatusForm();
+                        }
+                    });
+                } else {
+                    if (confirm(`¿Está seguro de que desea ${accion} la categoría "${nombre}"?`)) {
                         submitStatusForm();
                     }
-                });
-            } else {
-                // Fallback por si SweetAlert2 no está disponible
-                if (confirm(`¿Está seguro de que desea ${accion} la categoría "${nombre}"?`)) {
-                    submitStatusForm();
                 }
-            }
+            });
         });
-    });
+    }
+
+    // Inicializar listeners de la primera carga
+    const elTransporteInicial = document.getElementById('datosPaginacionTransporte');
+    if (elTransporteInicial && contenedorPaginacion) {
+        const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
+        contenedorPaginacion.innerHTML = htmlLinks;
+        asignarEventosEnlaces();
+    }
+    enlazarEventosStatus();
 });

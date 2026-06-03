@@ -24,6 +24,11 @@ class PermisosArchivosController extends Controller
             ->orderByRaw("CONCAT(personas.ap_paterno, ' ', personas.ap_materno, ' ', personas.nombre) ASC")
             ->paginate(10);
 
+        // Si es una petición AJAX (paginación asíncrona), devuelve solo el partial
+        if (request()->ajax()) {
+            return view('permisos_archivos.partials.tabla', compact('trabajadores'));
+        }
+
         return view('permisos_archivos.index', compact('trabajadores'));
     }
 
@@ -43,15 +48,14 @@ class PermisosArchivosController extends Controller
     /**
      * Guarda la sincronización de las categorías permitidas para un trabajador.
      */
-    public function guardar(Request $request)
+    public function guardar(Request $request, $id)
     {
         $request->validate([
-            'id_trabajador' => 'required|integer|exists:personas,id',
             'categorias'   => 'nullable|array',
             'categorias.*' => 'integer|exists:catego_archivos,id_catego_archivos'
         ]);
 
-        $trabajador = Persona::findOrFail($request->id_trabajador);
+        $trabajador = Persona::findOrFail($id);
         
         $categoriasIds = $request->input('categorias', []);
         
