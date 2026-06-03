@@ -28,8 +28,10 @@ Para mantener la coherencia con el trabajo del equipo (3 personas) y evitar inco
 *   **Integridad de la Base de Datos:**
     *   Toda modificación a la base de datos debe ser gestionada mediante migraciones de Laravel. **No hagas modificaciones directas** en Mysql que no estén documentadas en código.
 *   **Seguridad y Sesiones:**
-    *   Las rutas protegidas deben usar los middlewares adecuados (ej. `auth` y `EvitarRetrocesoMiddleware` para seguridad de historial).
-    *   **Eficiencia de Contexto:** No escanees ni abras archivos de todo el proyecto de forma automática. Si necesitas conocer la estructura de una tabla o de un modelo previo, pídemelo en el chat o solicita que yo abra el archivo en el editor.
+    * Las rutas protegidas deben usar los middlewares adecuados (ej. `auth` y `EvitarRetrocesoMiddleware` para seguridad de historial).
+    * Sin fugas de seguridad, nada que el usuario pueda apretar F12 y modificar o inyectar cosas para enviar al backend.
+    **Eficiencia de Contexto:** No escanees ni abras archivos de todo el proyecto de forma automática. Si necesitas conocer la estructura de una tabla o de un modelo previo, pídemelo en el chat o solicita que yo abra el archivo en el editor.
+  
 
 ##  2.5 Configuración de Skills del Agente (Control de Cuota)
 El proyecto cuenta con el framework de automatización en la carpeta `/skills/`. Para proteger la cuota del plan gratuito, se aplican las siguientes restricciones:

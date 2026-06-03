@@ -55,19 +55,19 @@
                         </div>
                     </div>
 
-                    {{-- Controles Globales de Selección Rápida (Marcar/Desmarcar todos) --}}
+    {{-- Controles Globales de Selección Rápida --}}
                     <div class="bg-white border-top border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div class="d-flex gap-3">
                             <button type="button" id="btnMarcarTodos" class="btn btn-sm btn-link text-decoration-none fw-bold p-0">
-                                <i class="fa fa-check-square"></i> Marcar todos
+                                <i class="fa fa-check-square"></i> Marcar todos en esta página
                             </button>
                             <span class="text-muted">|</span>
                             <button type="button" id="btnDesmarcarTodos" class="btn btn-sm btn-link text-decoration-none fw-bold text-secondary p-0">
-                                <i class="fa fa-minus-square"></i> Desmarcar todos
+                                <i class="fa fa-minus-square"></i> Desmarcar todos en esta página
                             </button>
                         </div>
                         <div class="text-muted small fw-medium">
-                            <span id="contadorSeleccionados" class="text-primary fw-bold">0</span> de {{ $categorias->count() }} categorías seleccionadas
+                            <span id="contadorSeleccionados" class="text-primary fw-bold">0</span> categorías seleccionadas en total
                         </div>
                     </div>
 
@@ -82,53 +82,27 @@
                                         <th class="text-center pe-4" style="width: 180px;">Agregar/Quitar</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($categorias as $index => $cat)
-                                        {{-- Evaluamos si el trabajador ya tiene la categoría --}}
-                                        @php
-                                            $tieneAcceso = $trabajador->categorias->contains($cat->id_catego_archivos);
-                                        @endphp
-                                        <tr class="fila-categoria {{ $tieneAcceso ? 'table-success-soft' : '' }}">
-                                            <td class="ps-4 fw-medium text-secondary">{{ $index + 1 }}</td>
-                                            
-                                            <td>
-                                                <div class="fw-bold text-dark fs-6 label-categoria">
-                                                    {{ $cat->categoria }}
-                                                </div>
-                                                <small class="text-muted">Estatus en catálogo: Activo</small>
-                                            </td>
-
-                                            {{-- Control de Checkbox tipo Switch estilizado con Bootstrap 5 --}}
-                                            <td class="text-center pe-4">
-                                                <div class="form-check form-switch d-inline-block">
-                                                    <input 
-                                                        class="form-check-input chk-permiso" 
-                                                        type="checkbox" 
-                                                        name="categorias[]" 
-                                                        value="{{ $cat->id_catego_archivos }}" 
-                                                        id="cat_{{ $cat->id_catego_archivos }}"
-                                                        {{ $tieneAcceso ? 'checked' : '' }}
-                                                    >
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="3" class="text-center py-5">
-                                                <div class="py-4">
-                                                    <i class="fa fa-folder-open-o fa-3x mb-3 text-secondary opacity-40"></i>
-                                                    <p class="mb-0 fw-medium text-secondary">No hay categorías registradas en el sistema.</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                <tbody id="tbodyAsignacion">
+                                    {{-- Carga inicial del servidor --}}
+                                    @include('permisos_archivos.partials.tabla_asignacion')
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    {{-- Footer de la Caja con el botón procesador --}}
-                    <div class="card-footer bg-white border-top py-4 px-4 d-flex justify-content-end">
+                    {{-- Contenedor Oculto para Inyección Dinámica del Formulario --}}
+                    <div id="inputsDestinoOcultos"></div>
+
+                    {{-- Footer de la Caja con Paginación y Botón --}}
+                    <div class="card-footer bg-white border-top py-4 px-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="text-muted small" id="infoPaginacion">
+                            Mostrando {{ $categorias->firstItem() ?? 0 }} a {{ $categorias->lastItem() ?? 0 }} de {{ $categorias->total() }} categorías
+                        </div>
+                        <nav aria-label="Paginación de asignación">
+                            <ul class="pagination mb-0" id="contenedorPaginacion">
+                                {{-- Manejado dinámicamente por JS --}}
+                            </ul>
+                        </nav>
                         <button type="submit" id="btnGuardarPermisos" class="btn btn-primary px-5 py-2 rounded-pill shadow-sm fw-bold">
                             <i class="fa fa-save me-2"></i> Agregar o quitar categoría
                         </button>
