@@ -11,13 +11,7 @@
                 <i class="fa fa-upload text-primary me-2"></i>Administración de Archivos
             </h1>
             <p class="text-muted mb-0">Carga y gestión de formatos y documentos institucionales</p>
-        </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Administración de Archivos</li>
-            </ol>
-        </nav>
+        </div> 
     </div>
 
     {{--Informacion de modulo y Submódulos ── --}}
@@ -175,13 +169,13 @@
                     <h5 class="card-title mb-0 fw-bold text-dark">
                         <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Archivos
                     </h5>
-                    <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold">
-                        {{ count($archivos) }} Registros
+                    <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalArchivos">
+                        {{ $archivos->total() }} Registros
                     </span>
                 </div>
                 
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
                                 <tr>
@@ -195,80 +189,25 @@
                                     <th class="text-center pe-4" style="width: 100px;">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($archivos as $archivo)
-                                    <tr class="{{ $archivo->activo == 0 ? 'text-muted opacity-75' : '' }}">
-                                        <td class="ps-4 fw-bold">{{ $loop->iteration }}</td>
-                                        <td>
-                                            <span class="fw-semibold text-dark">{{ $archivo->nombre }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-secondary border px-2 py-1">
-                                                {{ $archivo->categoria->categoria ?? 'Sin Categoría' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <small class="text-truncate d-inline-block" style="max-width: 150px;" title="{{ $archivo->descripcion_archivo }}">
-                                                {{ $archivo->descripcion_archivo }}
-                                            </small>
-                                        </td>
-                                        <td class="text-center fw-bold">{{ $archivo->version_archivo }}</td>
-                                        <td class="text-center">
-                                            @if($archivo->existe_fisico)
-                                                <a href="{{ route('busca_archivos.descargar', $archivo->id_archivo) }}" 
-                                                   class="btn btn-sm btn-light border shadow-sm rounded-circle" 
-                                                   title="Descargar PDF" 
-                                                   target="_blank">
-                                                    <i class="fa fa-download text-primary"></i>
-                                                </a>
-                                            @else
-                                                <span class="fa-stack text-muted" title="Archivo físico no subido" style="font-size: 0.8rem; width: 1.5em; height: 1.5em; line-height: 1.5em;">
-                                                    <i class="fa fa-download fa-stack-1x"></i>
-                                                    <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            @if($archivo->activo == 1)
-                                                <a href="{{ route('carga_archivos.status', $archivo->id_archivo) }}" 
-                                                   class="badge bg-success text-decoration-none py-2 px-3 rounded-pill shadow-sm"
-                                                   title="Click para desactivar">
-                                                    <i class="fa fa-check-circle me-1"></i> Activo
-                                                </a>
-                                            @else
-                                                <a href="{{ route('carga_archivos.status', $archivo->id_archivo) }}" 
-                                                   class="badge bg-danger text-decoration-none py-2 px-3 rounded-pill shadow-sm"
-                                                   title="Click para activar">
-                                                    <i class="fa fa-times-circle me-1"></i> Inactivo
-                                                </a>
-                                            @endif
-                                        </td>
-                                        <td class="text-center pe-4">
-                                            <div class="d-flex justify-content-center gap-1">
-                                                <a href="{{ route('carga_archivos.edit', $archivo->id_archivo) }}" 
-                                                   class="btn btn-sm btn-outline-secondary rounded-circle" 
-                                                   title="Editar registro">
-                                                    <i class="fa fa-pencil"></i>
-                                                </a>
-                                                <a href="{{ route('carga_archivos.cargar', $archivo->id_archivo) }}" 
-                                                   class="btn btn-sm btn-outline-primary rounded-circle" 
-                                                   title="Subir archivo PDF">
-                                                    <i class="fa fa-upload"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center py-4 text-muted">
-                                            <i class="fa fa-folder-open-o fs-3 mb-2 d-block"></i> No hay archivos registrados
-                                        </td>
-                                    </tr>
-                                @endforelse
+                            <tbody id="tbodyArchivos">
+                                {{-- Carga inicial del servidor --}}
+                                @include('carga_archivos.partials.tabla')
                             </tbody>
                         </table>
                     </div>
                 </div>
+
+                <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
+                    <div class="text-muted small" id="infoPaginacion">
+                        Mostrando {{ $archivos->firstItem() ?? 0 }} a {{ $archivos->lastItem() ?? 0 }} de {{ $archivos->total() }} registros
+                    </div>
+                    <nav aria-label="Paginacion de archivos cargados">
+                        <ul class="pagination mb-0" id="contenedorPaginacion">
+                            {{-- Los botones se mantendrán sincronizados asíncronamente por JS --}}
+                        </ul>
+                    </nav>
+                </div>
+
             </div>
         </div>
     </div>

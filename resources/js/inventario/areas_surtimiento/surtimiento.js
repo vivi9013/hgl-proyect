@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/mAreaSurtimiento/verificar?nombre=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}`, {
+                fetch(`/areas-surtimiento/verificar?nombre=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'

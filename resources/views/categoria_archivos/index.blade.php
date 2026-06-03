@@ -13,14 +13,6 @@
             </h1>
             <p class="text-muted mb-0">Registro, edición y consulta de las categorías de archivos </p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
-                </li>
-                <li class="breadcrumb-item active">Categoría de Archivos</li>
-            </ol>
-        </nav>
     </div>
  
        {{-- ── Informacion de modulo y Submódulos ── --}}
@@ -119,7 +111,7 @@
         </div>
     </div>
  
-    {{-- ── Tabla de Categorías ─────────────────────────────────────────────── --}}
+ {{-- ── Tabla de Categorías ─────────────────────────────────────────────── --}}
     <div class="row">
         <div class="col-xs-12">
             <div class="card shadow-sm">
@@ -136,64 +128,33 @@
                             <table id="tablaCategorias" class="table table-condensed table-bordered table-striped align-middle mb-0">
                                 <thead>
                                     <tr class="table-info">
-                                        <th>#</th>
-                                        <th>Editar</th>
+                                        <th style="width: 50px;">#</th>
+                                        <th style="width: 80px;" class="text-center">Editar</th>
                                         <th>Categoría</th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
-                                        <th>Status</th>
+                                        <th style="width: 150px;">Fecha</th>
+                                        <th style="width: 150px;">Hora</th>
+                                        <th style="width: 100px;" class="text-center">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @forelse($categorias as $index => $cat)
-                                        <tr class="{{ $cat->activo == 0 ? 'text-muted fst-italic' : '' }}">
-                                            <td>{{ $index + 1 }}</td>
-                                            <td class="text-center">
-                                                <a href="{{ route('categoria_archivos.edit', $cat->id_catego_archivos) }}"
-                                                   title="Editar">
-                                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                                </a>
-                                            </td>
-                                            <td>{{ $cat->categoria }}</td>
-                                            <td>{{ $cat->fecha_registro }}</td>
-                                            <td>{{ $cat->hora_registro }}</td>
-                                            <td class="text-center">
-                                                <a href="#"
-                                                   class="btn-toggle-status"
-                                                   data-url="{{ route('categoria_archivos.status', $cat->id_catego_archivos) }}"
-                                                   data-nombre="{{ $cat->categoria }}"
-                                                   data-activo="{{ $cat->activo }}"
-                                                   title="{{ $cat->activo == 1 ? 'Desactivar' : 'Activar' }}">
-                                                    @if($cat->activo == 1)
-                                                        <i class="fa fa-check-square-o" aria-hidden="true"></i>
-                                                    @else
-                                                        <i class="fa fa-square-o" aria-hidden="true"></i>
-                                                    @endif
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
-                                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
-                                                No hay categorías registradas.
-                                            </td>
-                                        </tr>
-                                    @endforelse
+                                <tbody id="tbodyCategorias">
+                                    {{-- Carga Server-Side inicial --}}
+                                    @include('categoria_archivos.partials.tabla')
                                 </tbody>
-                                <tfoot>
-                                    <tr class="table-info">
-                                        <th>#</th>
-                                        <th>Editar</th>
-                                        <th>Categoría</th>
-                                        <th>Fecha</th>
-                                        <th>Hora</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
+                    
+                    <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
+                        <div class="text-muted small" id="infoPaginacion">
+                            Mostrando {{ $categorias->firstItem() ?? 0 }} a {{ $categorias->lastItem() ?? 0 }} de {{ $categorias->total() }} registros
+                        </div>
+                        <nav aria-label="Paginacion de categorias">
+                            <ul class="pagination mb-0" id="contenedorPaginacion">
+                                {{-- Sincronizado por JavaScript de manera dinámica --}}
+                            </ul>
+                        </nav>
+                    </div>
+
                 </div>
             </div>
         </div>
