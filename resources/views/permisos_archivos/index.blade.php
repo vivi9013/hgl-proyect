@@ -18,19 +18,15 @@
     {{-- ── 2. Navegación Interna y Contenedor con los Submódulos --> ── --}}
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-8">
-            <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
-                <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <span class="text-secondary fw-bold me-2"><i class="fa fa-arrow-circle-right text-primary"></i> Submódulos:</span>
-                    
-                    {{-- Enlace al catálogo de categorías (el index de referencia que me pasaste) --}}
-                    <a href="{{ route('categoria_archivos.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                        <i class="fa fa-folder-open me-1"></i> Catálogo de Categorías
-                    </a>
-                    
-                    {{-- Botón activo actual --}}
-                    <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" disabled>
-                        <i class="fa fa-user-plus me-1"></i> Asignar Permisos a Trabajadores
-                    </button>
+           <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary-light p-3 rounded-circle text-primary">
+                        <i class="fa fa-info-circle fa-lg"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">Panel de Control de Repositorio</h6>
+                        <p class="text-muted small mb-0">Modulo para asignar, editar y revisar permisos de categorias para los trabajadores </p>
+                    </div>
                 </div>
             </div>
         </div>

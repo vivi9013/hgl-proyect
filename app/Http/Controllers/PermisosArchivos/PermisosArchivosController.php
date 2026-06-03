@@ -32,15 +32,22 @@ class PermisosArchivosController extends Controller
         return view('permisos_archivos.index', compact('trabajadores'));
     }
 
-    /**
+/**
      * Muestra la pantalla para asignar categorías a un trabajador específico.
      */
     public function asignar($id)
     {
         $trabajador = Persona::with('categorias')->findOrFail($id);
+        
+        // Cambiado: Ahora las categorías se paginan de 10 en 10
         $categorias = CategoArchivo::whereIn('activo', [0, 1])
             ->orderBy('categoria', 'asc')
-            ->get();
+            ->paginate(10);
+
+        // Si es una petición AJAX (paginación de la matriz), devuelve solo el partial de la tabla
+        if (request()->ajax()) {
+            return view('permisos_archivos.partials.tabla_asignacion', compact('trabajador', 'categorias'));
+        }
 
         return view('permisos_archivos.agregar', compact('trabajador', 'categorias'));
     }
