@@ -66,7 +66,7 @@
         data-info="Mostrando {{ $archivos->firstItem() }} a {{ $archivos->lastItem() }} de {{ $archivos->total() }} registros">
         <td colspan="6">
             <div id="htmlLinksPaginacion">
-                {{ $archivos->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+                {{ $archivos->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
             </div>
         </td>
     </tr>

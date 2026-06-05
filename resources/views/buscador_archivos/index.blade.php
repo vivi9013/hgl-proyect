@@ -87,7 +87,7 @@
             <nav aria-label="Paginacion de archivos">
                 <ul class="pagination mb-0" id="contenedorPaginacion">
                     @if ($archivos->count() > 0)
-                        {!! $archivos->appends(request()->except('page'))->links('pagination::bootstrap-5') !!}
+                        {!! $archivos->appends(request()->except('page'))->links('pagination::bootstrap-4') !!}
                     @endif
                 </ul>
             </nav>
