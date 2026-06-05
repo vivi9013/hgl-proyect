@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const tbody = document.getElementById('tbodyCategorias');
     const infoPaginacion = document.getElementById('infoPaginacion');
     const contenedorPaginacion = document.getElementById('contenedorPaginacion');
+    const searchInput = document.getElementById('global-search');
+    const totalBadge = document.getElementById('totalCategorias');
 
     // 1. Mostrar SweetAlert2 si existen los divs de alerta de sesión
     const alertaExitog = document.getElementById('alertaExitog');
@@ -93,10 +95,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function cargarPagina(numeroPagina = 1) {
         if (!tbody) return;
 
+        const buscar = searchInput ? searchInput.value : '';
+
         // Efecto visual de carga suavizado
         tbody.style.opacity = '0.5';
 
-        fetch(`/categoria-archivos?page=${numeroPagina}`, {
+        fetch(`/categoria-archivos?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => {
@@ -110,9 +114,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const elTransporte = document.getElementById('datosPaginacionTransporte');
             
             if (elTransporte) {
+                const totalGlobal = parseInt(elTransporte.getAttribute('data-total'));
                 const textoInfo = elTransporte.getAttribute('data-info');
                 const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
 
+                if (totalBadge) totalBadge.textContent = `${totalGlobal} ${totalGlobal === 1 ? 'Registro' : 'Registros'}`;
                 if (infoPaginacion) infoPaginacion.textContent = textoInfo;
                 
                 if (contenedorPaginacion) {
@@ -122,6 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // REENLAZAR los eventos de cambio de estatus a las nuevas filas inyectadas
                 enlazarEventosStatus();
+            } else {
+                // Manejo de escenario vacío (0 registros que coincidan con la búsqueda)
+                if (totalBadge) totalBadge.textContent = '0 Registros';
+                if (infoPaginacion) infoPaginacion.textContent = "Mostrando 0 a 0 de 0 registros";
+                if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
             }
         })
         .catch(err => {
@@ -208,6 +219,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+    }
+
+    // Función debounce para evitar ráfagas de peticiones innecesarias a la BD mientras se escribe
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function () {
+            cargarPagina(1); // Resetear a la página 1 en búsquedas por texto
+        }, 300));
     }
 
     // Inicializar listeners de la primera carga

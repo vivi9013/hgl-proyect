@@ -44,10 +44,10 @@
     </div>
 
     {{-- ── 3. Alertas de Operación (SweetAlert2 o Notificaciones) ──────── --}}
-    @if(session('exitog') || request('var') == 'exitog')
+    @if(session('exitog'))
         <div id="alertaExitog" data-mensaje="El registro se ha guardado correctamente."></div>
     @endif
-    @if(session('exito') || request('var') == 'exito')
+    @if(session('exito'))
         <div id="alertaExito" data-mensaje="El registro se ha actualizado correctamente."></div>
     @endif
 
@@ -55,14 +55,26 @@
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
-                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 fw-bold text-dark">
-                        <i class="fa fa-users text-secondary me-2"></i>Lista de Trabajadores del Hospital
-                    </h5>
-                    {{-- Conteo dinámico que se alimentará desde el servidor/paginador --}}
-                    <span class="badge bg-primary rounded-pill px-4 py-2 shadow-sm fw-bold" id="totalTrabajadores">
-                        {{ $trabajadores->total() }} Registros
-                    </span>
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <h5 class="card-title mb-0 fw-bold text-dark">
+                                <i class="fa fa-users text-secondary me-2"></i>Lista de Trabajadores del Hospital
+                            </h5>
+                            <span class="badge bg-primary rounded-pill px-4 py-2 shadow-sm fw-bold" id="totalTrabajadores">
+                                {{ $trabajadores->total() }} Registros
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                            <div class="input-group" style="min-width: 240px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar trabajador..." style="font-size: 0.85rem; box-shadow: none;">
+                                <span class="input-group-text bg-light border-0 py-0">
+                                    <i class="fa fa-search text-dark"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="card-body p-0">

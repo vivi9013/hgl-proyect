@@ -13,12 +13,21 @@ class CategoriaArchivosController extends Controller
     /**
      * Muestra la lista de categorías (catálogo).
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ordena de manera descendente y pagina de 10 en 10
-        $categorias = CategoArchivo::orderBy('id_catego_archivos', 'desc')->paginate(10);
-        // Si la petición viene por AJAX (para cambiar de página), retornamos la vista parcial
-        if (request()->ajax() || request()->wantsJson()) {
+        $buscar = $request->get('buscar');
+
+        $query = CategoArchivo::orderBy('id_catego_archivos', 'desc');
+
+        if (!empty($buscar)) {
+            $buscarLimpiado = trim($buscar);
+            $query->where('categoria', 'like', '%' . $buscarLimpiado . '%');
+        }
+
+        $categorias = $query->paginate(10);
+
+        // Si la petición viene por AJAX (para cambiar de página o buscar), retornamos la vista parcial
+        if ($request->ajax() || $request->wantsJson()) {
             return view('categoria_archivos.partials.tabla', compact('categorias'));
         }
         return view('categoria_archivos.index', compact('categorias'));
@@ -41,23 +50,25 @@ class CategoriaArchivosController extends Controller
                 ->withErrors(['categoria' => 'Esta categoría ya se encuentra registrada.']);
         }
 
+        $user = Auth::user();
+        $userId = $user ? $user->id : 1;
+
         $categoria = CategoArchivo::create([
             'categoria'      => $request->categoria,
             'fecha_registro' => now()->toDateString(),
             'hora_registro'  => now()->toTimeString(),
             'activo'         => 1,
-            'usuario'        => Auth::id() ?? 1,
+            'usuario'        => $userId,
         ]);
 
         // Sincronización automática: Asignar permiso de acceso al creador del módulo
-        $user = Auth::user();
         if ($user && $user->id_persona) {
             TrabajadorCategoria::create([
                 'id_trabajador'  => $user->id_persona,
                 'id_categoria'   => $categoria->id_catego_archivos,
                 'fecha_registro' => now()->toDateString(),
                 'hora_registro'  => now()->toTimeString(),
-                'usuario'        => $user->id,
+                'usuario'        => $userId,
             ]);
         }
 

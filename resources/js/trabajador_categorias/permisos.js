@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Nodos de la tabla asíncrona
     const tbody = document.getElementById('tbodyAsignacion');
+    const tbodyTrabajadores = document.getElementById('tbodyTrabajadores');
+    const totalTrabajadoresBadge = document.getElementById('totalTrabajadores');
+    const searchInput = document.getElementById('global-search');
     const contador = document.getElementById('contadorSeleccionados');
     const infoPaginacion = document.getElementById('infoPaginacion');
     const contenedorPaginacion = document.getElementById('contenedorPaginacion');
@@ -127,8 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Captura la URI actual del formulario de asignación
         const urlAsignar = window.location.pathname;
+        const buscar = searchInput ? searchInput.value : '';
 
-        fetch(`${urlAsignar}?page=${numeroPagina}`, {
+        fetch(`${urlAsignar}?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => {
@@ -161,6 +165,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function cargarPaginaTrabajadores(numeroPagina = 1) {
+        if (!tbodyTrabajadores) return;
+        tbodyTrabajadores.style.opacity = '0.5';
+
+        const buscar = searchInput ? searchInput.value : '';
+
+        fetch(`/permisos-archivo?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error recuperando la lista de trabajadores.');
+            return response.text();
+        })
+        .then(html => {
+            tbodyTrabajadores.style.opacity = '1';
+            tbodyTrabajadores.innerHTML = html;
+
+            const elTransporte = document.getElementById('datosPaginacionTransporte');
+            if (elTransporte) {
+                const totalGlobal = parseInt(elTransporte.getAttribute('data-total'));
+                const textoInfo = elTransporte.getAttribute('data-info');
+                const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
+
+                if (totalTrabajadoresBadge) {
+                    totalTrabajadoresBadge.textContent = `${totalGlobal} ${totalGlobal === 1 ? 'Registro' : 'Registros'}`;
+                }
+                if (infoPaginacion) infoPaginacion.textContent = textoInfo;
+                if (contenedorPaginacion) {
+                    contenedorPaginacion.innerHTML = htmlLinks;
+                    asignarEventosEnlaces();
+                }
+            } else {
+                if (totalTrabajadoresBadge) totalTrabajadoresBadge.textContent = '0 Registros';
+                if (infoPaginacion) infoPaginacion.textContent = "Mostrando 0 a 0 de 0 trabajadores";
+                if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
+            }
+        })
+        .catch(err => {
+            tbodyTrabajadores.style.opacity = '1';
+            console.error('Error paginando lista de trabajadores:', err);
+        });
+    }
+
     function asignarEventosEnlaces() {
         if (!contenedorPaginacion) return;
         contenedorPaginacion.querySelectorAll('a.page-link').forEach(enlace => {
@@ -169,7 +216,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const urlObj = new URL(this.href);
                 const paginaDestino = urlObj.searchParams.get('page');
                 if (paginaDestino) {
-                    cargarPaginaAsignacion(paginaDestino);
+                    if (tbodyTrabajadores) {
+                        cargarPaginaTrabajadores(paginaDestino);
+                    } else if (tbody) {
+                        cargarPaginaAsignacion(paginaDestino);
+                    }
                 }
             });
         });
@@ -194,6 +245,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+    }
+
+    // Función debounce para evitar ráfagas de peticiones
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function () {
+            if (tbodyTrabajadores) {
+                cargarPaginaTrabajadores(1);
+            } else if (tbody) {
+                cargarPaginaAsignacion(1);
+            }
+        }, 300));
     }
 
     // Inicialización al cargar la página

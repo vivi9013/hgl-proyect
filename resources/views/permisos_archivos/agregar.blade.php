@@ -43,15 +43,23 @@
                     
                     {{-- Cabecera con el Nombre del Trabajador (Réplica exacta del encabezado legacy) --}}
                     <div class="card-header bg-light border-0 py-4 px-4">
-                        <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
-                                <span class="text-uppercase font-size-xs text-secondary d-block mb-1 letter-spacing-1 fw-bold">Trabajador</span>
+                                <span class="text-uppercase font-size-xs text-secondary d-block mb-1 letter-spacing-1 fw-bold">Asignar Permisos</span>
                                 <h3 class="h4 mb-0 fw-bold text-dark">
                                     <i class="fa fa-user text-primary opacity-75 me-2"></i>
                                     Trabajador -> ( {{ $trabajador->ap_paterno }} {{ $trabajador->ap_materno }} {{ $trabajador->nombre }} )
                                 </h3>
                             </div>
-
+                            
+                            <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                                <div class="input-group" style="min-width: 240px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                                    <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar categoría..." style="font-size: 0.85rem; box-shadow: none;">
+                                    <span class="input-group-text bg-light border-0 py-0">
+                                        <i class="fa fa-search text-dark"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

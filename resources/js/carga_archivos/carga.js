@@ -1,27 +1,33 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // === ELEMENTOS FORMULARIO ===
+    // === ELEMENTOS FORMULARIO (IZQUIERDA) ===
     const inputNombre = document.getElementById('nombre');
-    const selectTipo = document.getElementById('tipo');
+    const inputVersion = document.getElementById('version'); // <-- Agregado para capturar la versión
+    const selectTipo = document.getElementById('tipo'); // <-- Agregado para capturar la categoría
     const feedbackDisponibilidad = document.getElementById('feedbackDisponibilidad');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const btnGuardar = document.getElementById('btnGuardar');
 
-    // === ELEMENTOS PAGINACIÓN ===
+    // === ELEMENTOS FILTRO Y BUSCADOR (DERECHA) ===
+    const filtro = document.getElementById('filtroCategoria');
+    const searchInput = document.getElementById('global-search');
     const tbody = document.getElementById('tbodyArchivos');
     const totalBadge = document.getElementById('totalArchivos');
     const infoPaginacion = document.getElementById('infoPaginacion');
     const contenedorPaginacion = document.getElementById('contenedorPaginacion');
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA 1: VERIFICAR DISPONIBILIDAD DE NOMBRE (TU LOGICA)
+    // LÓGICA 1: VERIFICAR DISPONIBILIDAD DE NOMBRE Y VERSIÓN (POR CATEGORÍA)
     // ─────────────────────────────────────────────────────────
-    if (inputNombre && selectTipo) {
+    if (inputNombre && inputVersion) {
         function verificarDisponibilidad() {
             const nombre = inputNombre.value.trim();
-            const categoriaId = selectTipo.value;
+            const version = inputVersion.value.trim();
+            const tipo = selectTipo ? selectTipo.value.trim() : '';
 
-            if (!nombre || !categoriaId) {
+            // Si el nombre, la versión o la categoría están vacíos, reseteamos estilos y permitimos guardar
+            if (!nombre || !version || !tipo) {
                 feedbackDisponibilidad.innerHTML = '';
+                inputNombre.classList.remove('is-valid', 'is-invalid');
                 if(btnGuardar) btnGuardar.disabled = false;
                 return;
             }
@@ -29,7 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
             loadingSpinner.style.display = 'block';
             feedbackDisponibilidad.innerHTML = '';
 
-            fetch(`/carga-archivos/verificar-nombre?nombre=${encodeURIComponent(nombre)}&id_catego=${encodeURIComponent(categoriaId)}`, {
+            // Se realiza la petición enviando nombre, versión y categoría
+            fetch(`/carga-archivos/verificar-nombre?nombre=${encodeURIComponent(nombre)}&version=${encodeURIComponent(version)}&tipo=${encodeURIComponent(tipo)}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
             .then(response => {
@@ -39,12 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 loadingSpinner.style.display = 'none';
                 if (data.disponible) {
-                    feedbackDisponibilidad.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> Nombre disponible</span>';
+                    feedbackDisponibilidad.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> Nombre y versión disponibles</span>';
                     inputNombre.classList.remove('is-invalid');
                     inputNombre.classList.add('is-valid');
                     if(btnGuardar) btnGuardar.disabled = false;
                 } else {
-                    feedbackDisponibilidad.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> El nombre ya existe en esta categoría</span>';
+                    feedbackDisponibilidad.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> Este nombre y versión ya existen en esta categoría</span>';
                     inputNombre.classList.remove('is-valid');
                     inputNombre.classList.add('is-invalid');
                     if(btnGuardar) btnGuardar.disabled = true;
@@ -56,20 +63,35 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        const verificarConDebounce = debounce(verificarDisponibilidad, 300);
+
+        // Listeners para el Nombre
         inputNombre.addEventListener('blur', verificarDisponibilidad);
-        selectTipo.addEventListener('change', verificarDisponibilidad);
+        inputNombre.addEventListener('input', verificarConDebounce);
+
+        // Listeners para la Versión (Reacciona si suben/bajan con las flechas o escriben)
+        inputVersion.addEventListener('change', verificarDisponibilidad);
+        inputVersion.addEventListener('input', verificarConDebounce);
+
+        // Listener para la Categoría
+        if (selectTipo) {
+            selectTipo.addEventListener('change', verificarDisponibilidad);
+        }
     }
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA 2: MOTOR DE PAGINACIÓN ASÍNCRONA (AJAX)
+    // LÓGICA 2: REPOSITORIO DE CARGA FILTRADA ASÍNCROMA (AJAX)
     // ─────────────────────────────────────────────────────────
     function cargarPagina(numeroPagina = 1) {
         if (!tbody) return;
 
-        // Efecto visual de carga
+        const categoria = filtro ? filtro.value : 'Todos';
+        const buscar = searchInput ? searchInput.value : '';
+
+        // Feedback visual intermedio
         tbody.style.opacity = '0.5';
 
-        fetch(`/carga-archivos?page=${numeroPagina}`, {
+        fetch(`/carga-archivos?categoria=${encodeURIComponent(categoria)}&buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => {
@@ -80,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tbody.style.opacity = '1';
             tbody.innerHTML = html;
 
-            // Sincronizar transporte de datos
+            // Sincronizar transporte de datos desde el partial inyectado
             const elTransporte = document.getElementById('datosPaginacionTransporte');
             
             if (elTransporte) {
@@ -95,11 +117,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     contenedorPaginacion.innerHTML = htmlLinks;
                     asignarEventosEnlaces();
                 }
+            } else {
+                // Manejo de escenario vacío (0 registros que coincidan con la búsqueda)
+                if (totalBadge) totalBadge.textContent = '0 Registros';
+                if (infoPaginacion) infoPaginacion.textContent = "Mostrando 0 a 0 de 0 registros";
+                if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
             }
         })
         .catch(err => {
             tbody.style.opacity = '1';
-            console.error('Error paginando módulo de carga:', err);
+            console.error('Error paginando módulo de carga con filtros:', err);
         });
     }
 
@@ -110,8 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
         enlaces.forEach(enlace => {
             enlace.addEventListener('click', function (e) {
                 e.preventDefault();
-                
-                // Extraemos dinámicamente la página de la URL nativa de Laravel
                 const urlObj = new URL(this.href);
                 const paginaDestino = urlObj.searchParams.get('page');
                 
@@ -122,11 +147,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Disparar render inicial de botones de paginación al entrar al módulo
+    // Función debounce para evitar ráfagas de peticiones innecesarias a la BD mientras se escribe
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // === LISTENERS REACTIVOS AL BUSCADOR ===
+    if (filtro) {
+        filtro.addEventListener('change', function () {
+            cargarPagina(1); // Resetear a la página 1 en cambios de categoría
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function () {
+            cargarPagina(1); // Resetear a la página 1 en búsquedas por texto
+        }, 300));
+    }
+
+    // Inicialización de la paginación al renderizar el módulo por primera vez
     const elTransporteInicial = document.getElementById('datosPaginacionTransporte');
     if (elTransporteInicial && contenedorPaginacion) {
-        const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
-        contenedorPaginacion.innerHTML = htmlLinks;
+        contenedorPaginacion.innerHTML = document.getElementById('htmlLinksPaginacion').innerHTML;
         asignarEventosEnlaces();
     }
 });

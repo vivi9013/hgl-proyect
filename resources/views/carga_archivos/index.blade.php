@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <!-- Encabezado del Módulo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
@@ -16,7 +15,6 @@
 
     {{--Informacion de modulo y Submódulos ── --}}
     <div class="row g-4 mb-4">
-        <!-- Lógica o información del módulo -->
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
                 <div class="d-flex align-items-center gap-3">
@@ -31,7 +29,6 @@
             </div>
         </div>
         
-        <!-- Contenedor con los Submódulos -->
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
@@ -51,7 +48,6 @@
         </div>
     </div>
 
-    <!-- Alertas de Éxito / Errores -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert">
             <div class="d-flex align-items-center">
@@ -82,7 +78,6 @@
     @endif
 
     <div class="row g-4">
-        <!-- Columna Izquierda: Formulario (4/12) -->
         <div class="col-12 col-xl-4">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                 <div class="card-header bg-white border-0 py-4 px-4">
@@ -94,7 +89,6 @@
                     <form id="formCargaArchivo" action="{{ route('carga_archivos.store') }}" method="POST" autocomplete="off">
                         @csrf
                         
-                        <!-- Categoría -->
                         <div class="mb-3">
                             <label for="tipo" class="form-label fw-bold text-secondary">
                                 <i class="fa fa-folder-open-o me-1 text-primary"></i> Categoría:
@@ -109,7 +103,6 @@
                             </select>
                         </div>
 
-                        <!-- Nombre del Archivo -->
                         <div class="mb-3">
                             <label for="nombre" class="form-label fw-bold text-secondary d-flex justify-content-between align-items-center">
                                 <span><i class="fa fa-file-text-o me-1 text-primary"></i> Nombre del archivo:</span>
@@ -127,7 +120,6 @@
                             </div>
                         </div>
 
-                        <!-- Versión del Archivo -->
                         <div class="mb-3">
                             <label for="version" class="form-label fw-bold text-secondary">
                                 <i class="fa fa-code-fork me-1 text-primary"></i> Versión:
@@ -140,7 +132,6 @@
                                    required>
                         </div>
 
-                        <!-- Descripción -->
                         <div class="mb-4">
                             <label for="desc" class="form-label fw-bold text-secondary">
                                 <i class="fa fa-info-circle me-1 text-primary"></i> Descripción:
@@ -151,7 +142,6 @@
                                       required>{{ old('desc') }}</textarea>
                         </div>
 
-                        <!-- Botones de Acción -->
                         <div class="d-grid gap-2">
                             <button type="submit" id="btnGuardar" class="btn btn-primary py-2 rounded-pill shadow-sm">
                                 <i class="fa fa-save me-2"></i>Guardar Información
@@ -162,19 +152,41 @@
             </div>
         </div>
 
-        <!-- Columna Derecha: Listado de Archivos (8/12) -->
         <div class="col-12 col-xl-8">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-                <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 fw-bold text-dark">
-                        <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Archivos
-                    </h5>
-                    <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalArchivos">
-                        {{ $archivos->total() }} Registros
-                    </span>
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        
+                        <div class="d-flex align-items-center gap-3">
+                            <h5 class="card-title mb-0 fw-bold text-dark">
+                                <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Archivos
+                            </h5>
+                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalArchivos">
+                                {{ $archivos->total() }} Registros
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                            
+                            <select id="filtroCategoria" class="form-select border-gray-300 shadow-sm text-muted" style="min-width: 180px; font-size: 0.85rem;">
+                                <option value="Todos">Todas las categorías</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->categoria }}">{{ $categoria->categoria }}</option>
+                                @endforeach
+                            </select>
+
+                            <div class="input-group" style="min-width: 240px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar archivo..." style="font-size: 0.85rem; box-shadow: none;">
+                                <span class="input-group-text bg-light border-0 py-0">
+                                    <i class="fa fa-search text-dark"></i>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="card-body p-0">
+                <div class="card-body p-0 mt-2">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">

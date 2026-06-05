@@ -32,7 +32,13 @@ class BuscadorArchivosController extends Controller
             ->orderBy('categoria')
             ->get();
 
-        return view('buscador_archivos.index', compact('categorias'));
+        // Carga inicial paginada (SSR)
+        $archivos = CargaArchivo::where('activo', 1)
+            ->whereIn('id_catego', $categoriasPermitidasIds)
+            ->with('categoria')
+            ->paginate(10);
+
+        return view('buscador_archivos.index', compact('categorias', 'archivos'));
     }
 
     /**
@@ -46,6 +52,7 @@ class BuscadorArchivosController extends Controller
         }
         $idPersona = $user->id_persona;
         $categoriaFiltro = $request->get('categoria', 'Todos');
+        $buscar = $request->get('buscar');
 
         // Validar permisos del trabajador
         $categoriasPermitidasIds = TrabajadorCategoria::where('id_trabajador', $idPersona)
@@ -58,6 +65,15 @@ class BuscadorArchivosController extends Controller
         if ($categoriaFiltro !== 'Todos') {
             $query->whereHas('categoria', function ($q) use ($categoriaFiltro) {
                 $q->where('categoria', $categoriaFiltro);
+            });
+        }
+
+        // Filtro por Buscador (Seguridad sin fisuras: encapsulado en un closure)
+        if (!empty($buscar)) {
+            $buscarLimpiado = trim($buscar);
+            $query->where(function ($q) use ($buscarLimpiado) {
+                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhere('descripcion_archivo', 'like', '%' . $buscarLimpiado . '%');
             });
         }
 

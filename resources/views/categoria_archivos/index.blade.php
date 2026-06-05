@@ -115,12 +115,30 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fa fa-list me-2"></i>Lista de categorías</h5>
-                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseTabla">
-                        <i class="fa fa-minus"></i>
-                    </button>
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <h5 class="card-title mb-0 fw-bold text-dark">
+                                <i class="fa fa-list me-2"></i>Lista de categorías
+                            </h5>
+                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalCategorias">
+                                {{ $categorias->total() }} Registros
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                            <div class="input-group" style="min-width: 240px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar categoría..." style="font-size: 0.85rem; box-shadow: none;">
+                                <span class="input-group-text bg-light border-0 py-0">
+                                    <i class="fa fa-search text-dark"></i>
+                                </span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseTabla">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="collapse show" id="collapseTabla">
                     <div class="card-body p-0">
@@ -161,8 +179,5 @@
     </div>
  
 </div>
+@vite(['resources/css/categoria_archivos/categoria.css', 'resources/js/categoria_archivos/categoria.js'])
 @endsection
- 
-@push('scripts')
-    @vite(['resources/css/categoria_archivos/categoria.css', 'resources/js/categoria_archivos/categoria.js'])
-@endpush

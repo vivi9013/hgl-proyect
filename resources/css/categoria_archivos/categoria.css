@@ -249,4 +249,9 @@
     border-color: #e5e7eb !important;
 }
 
+.bg-primary {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
 

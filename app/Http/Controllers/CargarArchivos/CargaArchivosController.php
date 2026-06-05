@@ -6,41 +6,60 @@ use App\Http\Controllers\Controller;
 use App\Models\BuscadorArchivos\CategoArchivo;
 use App\Models\BuscadorArchivos\CargaArchivo;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CargaArchivosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categorias = CategoArchivo::where('activo', 1)
             ->orderBy('categoria', 'asc')
             ->get(['id_catego_archivos', 'categoria']);
 
-        // Cambiado: Ahora pagina de 10 en 10
-        $archivos = CargaArchivo::with('categoria')
-            ->orderBy('id_archivo', 'desc')
-            ->paginate(10);
+        // Captura de variables para el filtro dinámico
+        $categoriaFiltro = $request->get('categoria', 'Todos');
+        $buscar = $request->get('buscar');
 
+        $query = CargaArchivo::with('categoria')
+            ->orderBy('id_archivo', 'desc');
+
+        // Aplicar filtro por categoría si no es "Todos"
+        if ($categoriaFiltro !== 'Todos') {
+            $query->whereHas('categoria', function ($q) use ($categoriaFiltro) {
+                $q->where('categoria', $categoriaFiltro);
+            });
+        }
+
+        // Aplicar término de búsqueda si existe
+        if (!empty($buscar)) {
+            $buscarLimpiado = trim($buscar);
+            $query->where(function ($q) use ($buscarLimpiado) {
+                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhere('descripcion_archivo', 'like', '%' . $buscarLimpiado . '%');
+            });
+        }
+
+        $archivos = $query->paginate(10);
+
+        // Validación de existencia física de archivos
         foreach ($archivos as $archivo) {
             if ($archivo->categoria) {
                 $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
                 $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
-                
                 $ruta1 = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
-                
                 $archivo->existe_fisico = file_exists($ruta1);
             } else {
                 $archivo->existe_fisico = false;
             }
         }
 
-        // Si la petición viene por AJAX (para paginar), retornamos la vista parcial
-        if (request()->ajax() || request()->wantsJson()) {
+        // Si la petición viene por AJAX, retornamos exclusivamente la vista parcial de la tabla
+        if ($request->ajax() || $request->wantsJson()) {
             return view('carga_archivos.partials.tabla', compact('archivos'));
         }
 
         return view('carga_archivos.index', compact('categorias', 'archivos'));
     }
-
 
     public function toggleStatus($id)
     {
@@ -64,12 +83,24 @@ class CargaArchivosController extends Controller
 
     public function guardar(Request $request)
     {
-        // 1. Validar los datos recibidos
+        // 1. Validar los datos recibidos (Evita duplicados de nombre + versión a nivel global)
         $request->validate([
-            'nombre'  => 'required|string|max:255',
+            'nombre'  => [
+                'required',
+                'string',
+                'max:255',
+                // Validación única compuesta: nombre + version_archivo dentro de la misma categoría
+                Rule::unique('carga_archivos', 'nombre')->where(function ($query) use ($request) {
+                    return $query->where('version_archivo', $request->version)
+                                 ->where('id_catego', $request->tipo);
+                }),
+            ],
             'tipo'    => 'required|integer|exists:catego_archivos,id_catego_archivos',
             'version' => 'required|integer|min:1',
             'desc'    => 'required|string',
+        ], [
+            // Mensaje personalizado para cuando falle la restricción
+            'nombre.unique' => 'Ya existe un archivo con este mismo nombre y versión en esta categoría.',
         ]);
 
         // 2. Crear el registro usando el modelo Eloquent
@@ -78,10 +109,10 @@ class CargaArchivosController extends Controller
             'id_catego'           => $request->tipo,
             'version_archivo'     => $request->version,
             'descripcion_archivo' => $request->desc,
-            'fecha_registro'      => now()->toDateString(), // Equivale a date("Y-m-d")
-            'hora_registro'       => now()->toTimeString(),  // Equivale a date("h:i:s")
+            'fecha_registro'      => now()->toDateString(), 
+            'hora_registro'       => now()->toTimeString(),  
             'activo'              => 1,
-            'usuario'             => auth()->user()->usuario ?? 'sistema', // Usuario autenticado
+            'usuario'             => auth()->user()->usuario ?? 'sistema', 
         ]);
 
         // 3. Redireccionar de vuelta con un mensaje de éxito
@@ -91,16 +122,20 @@ class CargaArchivosController extends Controller
     }
 
     public function revisarexistencia(Request $request)
-    {   // verificacion de disponibilidad
+    {   
+        // Verificación de disponibilidad por Nombre, Versión y Categoría
         $nombre = $request->query('nombre');
-        $id_catego = $request->query('id_catego');
+        $version = $request->query('version');
+        $tipo = $request->query('tipo');
 
-        if (!$nombre || !$id_catego) {
+        if (!$nombre || !$version || !$tipo) {
             return response()->json(['disponible' => false, 'error' => 'Faltan parámetros']);
         }
 
+        // Busca si ya existe esa combinación exacta en la categoría seleccionada
         $existe = CargaArchivo::where('nombre', $nombre)
-            ->where('id_catego', $id_catego)
+            ->where('version_archivo', $version)
+            ->where('id_catego', $tipo)
             ->exists();
 
         return response()->json(['disponible' => !$existe]);
@@ -119,10 +154,21 @@ class CargaArchivosController extends Controller
     public function actualizar(Request $request, $id)
     {
         $request->validate([
-            'nombre'  => 'required|string|max:255',
+            'nombre'  => [
+                'required',
+                'string',
+                'max:255',
+                // Validación única compuesta: nombre + version_archivo dentro de la misma categoría, ignorando el registro actual
+                Rule::unique('carga_archivos', 'nombre')->where(function ($query) use ($request) {
+                    return $query->where('version_archivo', $request->version)
+                                 ->where('id_catego', $request->tipo);
+                })->ignore($id, 'id_archivo'),
+            ],
             'tipo'    => 'required|integer|exists:catego_archivos,id_catego_archivos',
             'version' => 'required|integer|min:1',
             'desc'    => 'required|string',
+        ], [
+            'nombre.unique' => 'Ya existe un archivo con este mismo nombre y versión en esta categoría.',
         ]);
 
         $archivo = CargaArchivo::findOrFail($id);
