@@ -32,8 +32,11 @@
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
-                    {{-- Submódulo 1: Catálogo de Categorías --}}
-                    
+                    {{-- Registrar Nuevo Archivo --}}
+                    <button type="button" class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#modalCargaArchivo">
+                        <i class="fa fa-plus-circle me-2"></i> Registrar Nuevo Archivo
+                    </button>
+
                     {{-- Submódulo 2: Reportes del Módulo --}}
                     <a href="{{ route('carga_archivos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
                         <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
@@ -78,81 +81,7 @@
     @endif
 
     <div class="row g-4">
-        <div class="col-12 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-                <div class="card-header bg-white border-0 py-4 px-4">
-                    <h5 class="card-title mb-0 fw-bold text-dark">
-                        <i class="fa fa-edit text-secondary me-2"></i>Registrar nuevo archivo
-                    </h5>
-                </div>
-                <div class="card-body px-4 pb-4 pt-0">
-                    <form id="formCargaArchivo" action="{{ route('carga_archivos.store') }}" method="POST" autocomplete="off">
-                        @csrf
-                        
-                        <div class="mb-3">
-                            <label for="tipo" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-folder-open-o me-1 text-primary"></i> Categoría:
-                            </label>
-                            <select name="tipo" id="tipo" class="form-select border-gray-300 shadow-sm" required>
-                                <option value="" disabled selected>Seleccione una categoría</option>
-                                @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id_catego_archivos }}" {{ old('tipo') == $categoria->id_catego_archivos ? 'selected' : '' }}>
-                                        {{ $categoria->categoria }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label fw-bold text-secondary d-flex justify-content-between align-items-center">
-                                <span><i class="fa fa-file-text-o me-1 text-primary"></i> Nombre del archivo:</span>
-                                <span id="feedbackDisponibilidad" class="small fw-normal"></span>
-                            </label>
-                            <div class="input-group">
-                                <input type="text" name="nombre" id="nombre" 
-                                       class="form-control border-gray-300 shadow-sm" 
-                                       placeholder="Coloca el nombre del archivo" 
-                                       value="{{ old('nombre') }}" 
-                                       required>
-                                <span class="input-group-text bg-white border-gray-300 text-muted" id="loadingSpinner" style="display: none;">
-                                    <i class="fa fa-spinner fa-spin"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="version" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-code-fork me-1 text-primary"></i> Versión:
-                            </label>
-                            <input type="number" name="version" id="version" 
-                                   class="form-control border-gray-300 shadow-sm" 
-                                   placeholder="Ej. 1" 
-                                   min="1" 
-                                   value="{{ old('version', 1) }}" 
-                                   required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="desc" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-info-circle me-1 text-primary"></i> Descripción:
-                            </label>
-                            <textarea name="desc" id="desc" rows="3" 
-                                      class="form-control border-gray-300 shadow-sm" 
-                                      placeholder="Ingrese una descripción del archivo" 
-                                      required>{{ old('desc') }}</textarea>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" id="btnGuardar" class="btn btn-primary py-2 rounded-pill shadow-sm">
-                                <i class="fa fa-save me-2"></i>Guardar Información
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-xl-8">
+        <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -220,6 +149,85 @@
                     </nav>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Registrar nuevo archivo -->
+    <div class="modal fade" id="modalCargaArchivo" tabindex="-1" aria-labelledby="modalCargaArchivoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color: #ffffff; border: 2px solid #000000 !important;">
+                <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="modalCargaArchivoLabel">
+                        <i class="fa fa-edit text-dark me-2"></i>Registrar nuevo archivo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: brightness(0);"></button>
+                </div>
+                <form id="formCargaArchivo" action="{{ route('carga_archivos.store') }}" method="POST" autocomplete="off">
+                    @csrf
+                    <div class="modal-body px-4 py-4">
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-folder-open-o me-1 text-dark"></i> Categoría:
+                            </label>
+                            <select name="tipo" id="tipo" class="form-select border-gray-300 shadow-sm" required>
+                                <option value="" disabled selected>Seleccione una categoría</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->id_catego_archivos }}" {{ old('tipo') == $categoria->id_catego_archivos ? 'selected' : '' }}>
+                                        {{ $categoria->categoria }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold text-secondary d-flex justify-content-between align-items-center">
+                                <span><i class="fa fa-file-text-o me-1 text-dark"></i> Nombre del archivo:</span>
+                                <span id="feedbackDisponibilidad" class="small fw-normal"></span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" name="nombre" id="nombre" 
+                                       class="form-control border-gray-300 shadow-sm" 
+                                       placeholder="Coloca el nombre del archivo" 
+                                       value="{{ old('nombre') }}" 
+                                       required>
+                                <span class="input-group-text bg-white border-gray-300 text-muted" id="loadingSpinner" style="display: none;">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="version" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-code-fork me-1 text-dark"></i> Versión:
+                            </label>
+                            <input type="number" name="version" id="version" 
+                                   class="form-control border-gray-300 shadow-sm" 
+                                   placeholder="Ej. 1" 
+                                   min="1" 
+                                   value="{{ old('version', 1) }}" 
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="desc" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-info-circle me-1 text-dark"></i> Descripción:
+                            </label>
+                            <textarea name="desc" id="desc" rows="3" 
+                                      class="form-control border-gray-300 shadow-sm" 
+                                      placeholder="Ingrese una descripción del archivo" 
+                                      required>{{ old('desc') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" id="btnGuardar" class="btn btn-primary py-2 rounded-pill shadow-sm">
+                            <i class="fa fa-save me-2"></i>Guardar Información
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -36,9 +36,14 @@
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
                 <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
+                    {{-- Registrar Nueva Categoría --}}
+                    <button type="button" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAltaCategoria">
+                        <i class="fa fa-plus-circle me-2"></i> Registrar Nueva Categoría
+                    </button>
+
                     {{-- Submódulo 1: Catálogo de Categorías --}}
                      <a href="{{ route('categoria_archivos.reportes') }}"
-                       class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
+                       class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
                         <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
                     </a>
                   
@@ -55,61 +60,23 @@
     @if(session('exito'))
         <div id="alertaExito"></div>
     @endif
- 
-    {{-- ── Formulario de Alta ──────────────────────────────────────────────── --}}
-    <div class="row mb-4">
-        <div class="col-xs-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fa fa-plus-circle me-2"></i>Registra una nueva categoría</h5>
-                    <button class="btn btn-sm btn-outline-light" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseAlta">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-                <div class="collapse show" id="collapseAlta">
-                    <form method="POST" action="{{ route('categoria_archivos.store') }}" novalidate>
-                        @csrf
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                    <div class="form-group">
-                                        <label id="Info" for="categoria" class="form-label">
-                                            Nombre de la categoría:
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="categoria"
-                                            id="categoria"
-                                            class="form-control @error('categoria') is-invalid @enderror"
-                                            value="{{ old('categoria') }}"
-                                            placeholder="Coloque el nombre de la categoría"
-                                            autocomplete="off"
-                                            maxlength="255"
-                                            autofocus
-                                            required
-                                        >
-                                        <div id="feedbackDisponibilidad" class="mt-1 small"></div>
-                                        <div id="loadingSpinner" class="mt-1 small text-muted" style="display:none;">
-                                            <i class="fa fa-spinner fa-spin me-1"></i>Verificando...
-                                        </div>
-                                        @error('categoria')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-end">
-                            <button type="submit" id="btnGuardar" class="btn btn-primary">
-                                <i class="fa fa-save me-1"></i>Guardar Información
-                            </button>
-                        </div>
-                    </form>
+
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert" style="background-color: #f8d7da; border: 1px solid #f5c2c7; color: #842029;">
+            <div class="d-flex align-items-center">
+                <i class="fa fa-exclamation-triangle me-2 fs-4" style="color: #842029 !important;"></i>
+                <div>
+                    <strong>¡Atención!</strong> Por favor corrige los siguientes errores:
+                    <ul class="mb-0 mt-1 small">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
+    @endif
  
  {{-- ── Tabla de Categorías ─────────────────────────────────────────────── --}}
     <div class="row">
@@ -178,6 +145,65 @@
         </div>
     </div>
  
+    <!-- Modal Registrar nueva categoría -->
+    <div class="modal fade" id="modalAltaCategoria" tabindex="-1" aria-labelledby="modalAltaCategoriaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color: #ffffff; border: 2px solid #000000 !important;">
+                <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="modalAltaCategoriaLabel">
+                        <i class="fa fa-plus-circle text-dark me-2"></i>Registra una nueva categoría
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: brightness(0);"></button>
+                </div>
+                <form method="POST" action="{{ route('categoria_archivos.store') }}" novalidate>
+                    @csrf
+                    <div class="modal-body px-4 py-4">
+                        <div class="form-group mb-3">
+                            <label for="categoria" class="form-label fw-bold text-secondary">
+                                Nombre de la categoría:
+                            </label>
+                            <input
+                                type="text"
+                                name="categoria"
+                                id="categoria"
+                                class="form-control @error('categoria') is-invalid @enderror"
+                                value="{{ old('categoria') }}"
+                                placeholder="Coloque el nombre de la categoría"
+                                autocomplete="off"
+                                maxlength="255"
+                                required
+                            >
+                            <div id="feedbackDisponibilidad" class="mt-1 small"></div>
+                            <div id="loadingSpinner" class="mt-1 small text-muted" style="display:none;">
+                                <i class="fa fa-spinner fa-spin me-1"></i>Verificando...
+                            </div>
+                            @error('categoria')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" id="btnGuardar" class="btn btn-primary py-2 rounded-pill shadow-sm">
+                            <i class="fa fa-save me-2"></i>Guardar Información
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+@if($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var myModal = new bootstrap.Modal(document.getElementById('modalAltaCategoria'));
+            myModal.show();
+        });
+    </script>
+@endif
+
 @vite(['resources/css/categoria_archivos/categoria.css', 'resources/js/categoria_archivos/categoria.js'])
 @endsection
