@@ -18,8 +18,61 @@ class BajaInsumoController extends Controller
      */
     public function index(Request $request)
     {
-        $buscar = $request->get('buscar', '');
-        $perPage = 10;
+        $buscar    = $request->get('buscar', '');
+        $fechaInit = $request->get('fecha_inicio', '');
+        $fechaFin  = $request->get('fecha_fin', '');
+        $perPage   = 10;
+
+        // Normalizar y validar fecha_inicio
+        $fechaInitDb = null;
+        if (!empty($fechaInit)) {
+            try {
+                if (strpos($fechaInit, '/') !== false) {
+                    $fechaInitDb = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaInit)->format('Y-m-d');
+                } else {
+                    $fechaInitDb = \Carbon\Carbon::parse($fechaInit)->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                try {
+                    $fechaInitDb = \Carbon\Carbon::parse($fechaInit)->format('Y-m-d');
+                } catch (\Exception $ex) {
+                    $fechaInit = '';
+                }
+            }
+        }
+
+        // Normalizar y validar fecha_fin
+        $fechaFinDb = null;
+        if (!empty($fechaFin)) {
+            try {
+                if (strpos($fechaFin, '/') !== false) {
+                    $fechaFinDb = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaFin)->format('Y-m-d');
+                } else {
+                    $fechaFinDb = \Carbon\Carbon::parse($fechaFin)->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                try {
+                    $fechaFinDb = \Carbon\Carbon::parse($fechaFin)->format('Y-m-d');
+                } catch (\Exception $ex) {
+                    $fechaFin = '';
+                }
+            }
+        }
+
+        // Validar coherencia del rango
+        if ($fechaInitDb && $fechaFinDb && $fechaInitDb > $fechaFinDb) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'La fecha de inicio no puede ser posterior a la fecha de fin.');
+        }
+
+        // Asignar los valores normalizados en formato Y-m-d para que se enlacen correctamente en el input date
+        if ($fechaInitDb) {
+            $fechaInit = $fechaInitDb;
+        }
+        if ($fechaFinDb) {
+            $fechaFin = $fechaFinDb;
+        }
 
         $query = BajaInsumo::with(['insumo', 'areaAlmacen'])
             ->orderBy('id_baja_insumo', 'desc');
@@ -40,12 +93,60 @@ class BajaInsumoController extends Controller
             });
         }
 
+        if ($fechaInitDb) {
+            $query->whereDate('fecha_baja', '>=', $fechaInitDb);
+        }
+
+        if ($fechaFinDb) {
+            $query->whereDate('fecha_baja', '<=', $fechaFinDb);
+        }
+
+        // AJAX: devolver sugerencias JSON para el autocomplete del buscador de bajas
+        if ($request->ajax()) {
+            $sugerencias = [];
+            $records = $query->limit(10)->get();
+            foreach ($records as $b) {
+                if ($b->insumo) {
+                    $sugerencias[] = [
+                        'text' => $b->insumo->descripcion,
+                        'type' => 'Insumo',
+                        'detail' => $b->insumo->clave
+                    ];
+                }
+                if ($b->areaAlmacen) {
+                    $sugerencias[] = [
+                        'text' => $b->areaAlmacen->nombre,
+                        'type' => 'Área',
+                        'detail' => ''
+                    ];
+                }
+                if (!empty($b->motivo)) {
+                    $sugerencias[] = [
+                        'text' => $b->motivo,
+                        'type' => 'Motivo',
+                        'detail' => ''
+                    ];
+                }
+            }
+            // Eliminar duplicados
+            $uniqueSugerencias = [];
+            $seen = [];
+            foreach ($sugerencias as $sug) {
+                $key = strtolower($sug['text']);
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $uniqueSugerencias[] = $sug;
+                }
+            }
+            return response()->json(array_values($uniqueSugerencias));
+        }
+
         $bajas = $query->paginate($perPage)->withQueryString();
 
         // Áreas de almacén activas para el formulario de alta
         $areas = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
 
-        return view('inventario.bajas_insumos.index', compact('bajas', 'areas', 'buscar'));
+        return view('inventario.bajas_insumos.index', compact('bajas', 'areas', 'buscar', 'fechaInit', 'fechaFin'));
     }
 
     /**
@@ -55,46 +156,60 @@ class BajaInsumoController extends Controller
     {
         $termino = $request->get('q', '');
         $idArea  = $request->get('id_area_almacen');
+        $all     = $request->boolean('all', false); // panel de atajo (doble clic)
 
-        if (strlen($termino) < 2) {
+        // En modo panel (all=1) sin área seleccionada: no tiene sentido mostrar claves
+        // porque no se puede saber el stock → devolver vacío y el JS mostrará el aviso
+        if ($all && !$idArea) {
             return response()->json([]);
         }
 
-        $query = Insumo::where('activo', 1)
-            ->where(function ($q) use ($termino) {
+        // Búsqueda normal: requerir mínimo 2 caracteres
+        if (!$all && strlen($termino) < 2) {
+            return response()->json([]);
+        }
+
+        $query = Insumo::where('activo', 1);
+
+        // Filtrar por texto solo si se proporcionó un término
+        if (strlen($termino) >= 1) {
+            $query->where(function ($q) use ($termino) {
                 $q->where('descripcion', 'LIKE', "%{$termino}%")
                   ->orWhere('clave', 'LIKE', "%{$termino}%");
             });
+        }
 
-        // Si se especifica un área, filtrar solo insumos con stock en esa área
+        // Filtrar solo insumos con stock >= 1 en el área indicada
         if ($idArea) {
             $query->whereHas('insumosArea', function ($q) use ($idArea) {
                 $q->where('id_area_almacen', $idArea)
-                  ->whereRaw('CAST(stock AS UNSIGNED) > 0');
+                  ->whereRaw('CAST(stock AS UNSIGNED) >= 1');
             });
         }
 
         $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
-            ->orderBy('descripcion')
-            ->limit(20)
+            ->orderBy('clave')
+            ->when(!$all, fn($q) => $q->limit(20))
             ->get();
 
-        // Agregar stock del área si se indicó
+        // Agregar stock del área si se indicó; si no hay área, omitir la clave 'stock'
         $resultado = $insumos->map(function ($insumo) use ($idArea) {
-            $stock = 0;
-            if ($idArea) {
-                $insumoArea = InsumoArea::where('id_insumo', $insumo->id_insumo)
-                    ->where('id_area_almacen', $idArea)
-                    ->first();
-                $stock = $insumoArea ? (int) $insumoArea->stock : 0;
-            }
-            return [
+            $data = [
                 'id_insumo'   => $insumo->id_insumo,
                 'clave'       => $insumo->clave,
                 'descripcion' => $insumo->descripcion,
                 'tipo'        => $insumo->tipo,
-                'stock'       => $stock,
             ];
+
+            if ($idArea) {
+                $insumoArea = InsumoArea::where('id_insumo', $insumo->id_insumo)
+                    ->where('id_area_almacen', $idArea)
+                    ->first();
+                $data['stock'] = $insumoArea ? (int) $insumoArea->stock : 0;
+            }
+            // Sin área: no se incluye 'stock' → JS mostrará '—'
+
+            return $data;
         });
 
         return response()->json($resultado);
@@ -187,34 +302,65 @@ class BajaInsumoController extends Controller
     /**
      * Cancela una baja de insumo y restaura el stock.
      */
-    public function cancelar($id)
+    /**
+     * Alterna el estado de una baja de insumo (Cancela o Reactiva) y actualiza el stock.
+     */
+    public function toggleStatus($id)
     {
         $baja = BajaInsumo::findOrFail($id);
 
-        if ($baja->cancelado === 'Si') {
+        if ($baja->cancelado === 'No') {
+            // Cancelar la baja (marcar como Si) y restaurar el stock
+            DB::transaction(function () use ($baja) {
+                // Restaurar stock en insumosarea
+                $insumoArea = InsumoArea::where('id_insumo', $baja->id_insumo)
+                    ->where('id_area_almacen', $baja->id_area_almacen)
+                    ->first();
+
+                if ($insumoArea) {
+                    $stockRestaurado = (int) $insumoArea->stock + (int) $baja->cantidad;
+                    $insumoArea->update(['stock' => (string) $stockRestaurado]);
+                }
+
+                // Marcar baja como cancelada
+                $baja->update(['cancelado' => 'Si']);
+            });
+
             return redirect()
                 ->route('bajas_insumos.index')
-                ->with('error', 'Esta baja ya fue cancelada anteriormente.');
-        }
-
-        DB::transaction(function () use ($baja) {
-            // Restaurar stock en insumosarea
+                ->with('exito', 'La baja de insumo ha sido cancelada y el stock restaurado.');
+        } else {
+            // Reactivar la baja (marcar como No) y descontar el stock
             $insumoArea = InsumoArea::where('id_insumo', $baja->id_insumo)
                 ->where('id_area_almacen', $baja->id_area_almacen)
                 ->first();
 
-            if ($insumoArea) {
-                $stockRestaurado = (int) $insumoArea->stock + (int) $baja->cantidad;
-                $insumoArea->update(['stock' => (string) $stockRestaurado]);
+            if (!$insumoArea) {
+                return redirect()
+                    ->route('bajas_insumos.index')
+                    ->with('error', 'El insumo no tiene registro de stock en la misma área.');
             }
 
-            // Marcar baja como cancelada
-            $baja->update(['cancelado' => 'Si']);
-        });
+            $stockActual = (int) $insumoArea->stock;
+            if ($baja->cantidad > $stockActual) {
+                return redirect()
+                    ->route('bajas_insumos.index')
+                    ->with('error', "No se puede reactivar la baja. El stock disponible ({$stockActual} piezas) es insuficiente para dar de baja {$baja->cantidad} piezas.");
+            }
 
-        return redirect()
-            ->route('bajas_insumos.index')
-            ->with('exito', 'La baja de insumo ha sido cancelada y el stock restaurado.');
+            DB::transaction(function () use ($baja, $insumoArea) {
+                // Descontar stock
+                $nuevoStock = (int) $insumoArea->stock - (int) $baja->cantidad;
+                $insumoArea->update(['stock' => (string) $nuevoStock]);
+
+                // Marcar baja como activa
+                $baja->update(['cancelado' => 'No']);
+            });
+
+            return redirect()
+                ->route('bajas_insumos.index')
+                ->with('exito', 'La baja de insumo ha sido reactivada y el stock descontado.');
+        }
     }
 
     /**
@@ -225,6 +371,56 @@ class BajaInsumoController extends Controller
         $buscar    = $request->get('buscar', '');
         $fechaInit = $request->get('fecha_inicio', '');
         $fechaFin  = $request->get('fecha_fin', '');
+
+        // Normalizar y validar fecha_inicio
+        $fechaInitDb = null;
+        if (!empty($fechaInit)) {
+            try {
+                if (strpos($fechaInit, '/') !== false) {
+                    $fechaInitDb = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaInit)->format('Y-m-d');
+                } else {
+                    $fechaInitDb = \Carbon\Carbon::parse($fechaInit)->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                try {
+                    $fechaInitDb = \Carbon\Carbon::parse($fechaInit)->format('Y-m-d');
+                } catch (\Exception $ex) {
+                    $fechaInit = '';
+                }
+            }
+        }
+
+        // Normalizar y validar fecha_fin
+        $fechaFinDb = null;
+        if (!empty($fechaFin)) {
+            try {
+                if (strpos($fechaFin, '/') !== false) {
+                    $fechaFinDb = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaFin)->format('Y-m-d');
+                } else {
+                    $fechaFinDb = \Carbon\Carbon::parse($fechaFin)->format('Y-m-d');
+                }
+            } catch (\Exception $e) {
+                try {
+                    $fechaFinDb = \Carbon\Carbon::parse($fechaFin)->format('Y-m-d');
+                } catch (\Exception $ex) {
+                    $fechaFin = '';
+                }
+            }
+        }
+
+        // Si hay incoherencia, las intercambiamos para no romper la impresión
+        if ($fechaInitDb && $fechaFinDb && $fechaInitDb > $fechaFinDb) {
+            $temp = $fechaInitDb;
+            $fechaInitDb = $fechaFinDb;
+            $fechaFinDb = $temp;
+        }
+
+        if ($fechaInitDb) {
+            $fechaInit = $fechaInitDb;
+        }
+        if ($fechaFinDb) {
+            $fechaFin = $fechaFinDb;
+        }
 
         $query = BajaInsumo::with(['insumo', 'areaAlmacen'])
             ->orderBy('fecha_baja', 'desc')
@@ -240,15 +436,16 @@ class BajaInsumoController extends Controller
             });
         }
 
-        if (!empty($fechaInit)) {
-            $query->whereDate('fecha_baja', '>=', $fechaInit);
+        if ($fechaInitDb) {
+            $query->whereDate('fecha_baja', '>=', $fechaInitDb);
         }
 
-        if (!empty($fechaFin)) {
-            $query->whereDate('fecha_baja', '<=', $fechaFin);
+        if ($fechaFinDb) {
+            $query->whereDate('fecha_baja', '<=', $fechaFinDb);
         }
 
-        $bajas = $query->get();
+        // Limitar a 500 registros para prevenir agotamiento de memoria PHP con tablas masivas
+        $bajas = $query->limit(500)->get();
 
         return view('inventario.bajas_insumos.reporte_impresion', compact('bajas', 'buscar', 'fechaInit', 'fechaFin'));
     }

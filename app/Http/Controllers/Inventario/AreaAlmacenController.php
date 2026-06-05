@@ -12,11 +12,32 @@ class AreaAlmacenController extends Controller
     /**
      * Muestra el listado de áreas de almacén y el formulario de alta.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $areas = AreaAlmacen::orderBy('id_area_almacen', 'desc')->paginate(10);
+        $buscar = $request->get('buscar', '');
 
-        return view('inventario.areas_almacen.index', compact('areas'));
+        $query = AreaAlmacen::orderBy('id_area_almacen', 'desc');
+
+        if (!empty($buscar)) {
+            $query->where('nombre', 'LIKE', "%{$buscar}%");
+        }
+
+        // AJAX: devolver sugerencias JSON para el autocomplete del buscador
+        if ($request->ajax()) {
+            $sugerencias = $query->select('id_area_almacen', 'nombre', 'activo')
+                ->limit(10)
+                ->get()
+                ->map(fn($a) => [
+                    'id'     => $a->id_area_almacen,
+                    'nombre' => $a->nombre,
+                    'activo' => $a->activo,
+                ]);
+            return response()->json($sugerencias);
+        }
+
+        $areas = $query->paginate(10)->withQueryString();
+
+        return view('inventario.areas_almacen.index', compact('areas', 'buscar'));
     }
 
     /**
@@ -135,10 +156,18 @@ class AreaAlmacenController extends Controller
     /**
      * Genera el reporte/impresión de las áreas de almacén.
      */
-    public function imprimir()
+    public function imprimir(Request $request)
     {
-        $areas = AreaAlmacen::orderBy('nombre', 'asc')->get();
+        $buscar = $request->get('buscar', '');
 
-        return view('inventario.areas_almacen.reporte_impresion', compact('areas'));
+        $query = AreaAlmacen::orderBy('nombre', 'asc');
+
+        if (!empty($buscar)) {
+            $query->where('nombre', 'LIKE', "%{$buscar}%");
+        }
+
+        $areas = $query->get();
+
+        return view('inventario.areas_almacen.reporte_impresion', compact('areas', 'buscar'));
     }
 }

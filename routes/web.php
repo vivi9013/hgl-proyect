@@ -113,7 +113,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'guardar')->name('store');
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
-        Route::patch('/{id}/status', 'cambiarStatus')->name('status'); // Cambiado a PATCH por estándar
+        Route::get('/{id}/status', 'cambiarStatus')->name('status');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });
@@ -124,7 +124,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'guardar')->name('store');
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
-        Route::patch('/{id}/status', 'cambiarStatus')->name('status'); // Cambiado a PATCH por estándar
+        Route::get('/{id}/status', 'cambiarStatus')->name('status');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });
@@ -136,7 +136,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'guardar')->name('store');
         Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos');
         Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock');
-        Route::get('/{id}/cancelar', 'cancelar')->name('cancelar');
+        Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });
 
@@ -144,7 +144,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('rx-estudios')->name('rx.')->controller(RxController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/estudios', 'estudios')->name('estudios');
-        
+    
         // Pacientes
         Route::get('/pacientes/ver/{id}', 'verPaciente')->name('pacientes.ver');
         Route::post('/pacientes/guardar', 'guardarPaciente')->name('pacientes.guardar');

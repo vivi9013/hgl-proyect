@@ -15,35 +15,6 @@
         </div>
     </div>
 
-    {{-- ── Información del módulo y accesos rápidos ── --}}
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary-light p-3 rounded-circle text-primary">
-                        <i class="fa fa-info-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">Inventario de Medicamentos y Material de Curación</h6>
-                        <p class="text-muted small mb-0">Registro de salidas de insumos por área: caducidad, daño, pérdida u otros motivos</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
-                    <a href="{{ route('bajas_insumos.imprimir') }}"
-                       target="_blank"
-                       class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="fa fa-print me-2 text-dark"></i> Imprimir Reporte
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     {{-- ── Alertas SweetAlert2 ── --}}
@@ -57,267 +28,356 @@
         <div id="alertaError" data-message="{{ session('error') }}"></div>
     @endif
 
-    {{-- ── Formulario de Alta de Baja ── --}}
-    <div class="row mb-4">
-        <div class="col-xs-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fa fa-plus-circle me-2"></i>Registrar nueva baja de insumo</h5>
-                    <button class="btn btn-sm btn-outline-light" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseAlta">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-                <div class="collapse show" id="collapseAlta">
-                    <form method="POST" action="{{ route('bajas_insumos.store') }}" novalidate id="formBaja">
-                        @csrf
-                        <div class="card-body">
-                            <div class="row g-3">
-
-                                {{-- Área de Almacén --}}
-                                <div class="col-xs-12 col-sm-12 col-md-4">
-                                    <div class="form-group">
-                                        <label for="id_area_almacen" class="form-label">
-                                            Área de Almacén:
-                                        </label>
-                                        <select
-                                            name="id_area_almacen"
-                                            id="id_area_almacen"
-                                            class="form-control @error('id_area_almacen') is-invalid @enderror"
-                                            required
-                                        >
-                                            <option value="">-- Seleccionar área --</option>
-                                            @foreach($areas as $area)
-                                                <option value="{{ $area->id_area_almacen }}"
-                                                    {{ old('id_area_almacen') == $area->id_area_almacen ? 'selected' : '' }}>
-                                                    {{ $area->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('id_area_almacen')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                {{-- Insumo --}}
-                                <div class="col-xs-12 col-sm-12 col-md-4">
-                                    <div class="form-group">
-                                        <label for="buscarInsumo" class="form-label">
-                                            Insumo (clave o descripción):
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="buscarInsumo"
-                                            class="form-control @error('id_insumo') is-invalid @enderror"
-                                            placeholder="Buscar insumo..."
-                                            autocomplete="off"
-                                            value="{{ old('buscarInsumo', '') }}"
-                                        >
-                                        <input type="hidden" name="id_insumo" id="id_insumo" value="{{ old('id_insumo') }}">
-                                        <div id="sugerenciasInsumo" class="list-group position-absolute w-100" style="z-index:1000; display:none; max-height:220px; overflow-y:auto;"></div>
-                                        <div id="infoStock" class="mt-1 small text-muted" style="display:none;">
-                                            <i class="fa fa-cubes me-1"></i>Stock disponible: <strong id="stockDisponible">0</strong> piezas
-                                        </div>
-                                        @error('id_insumo')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                {{-- Cantidad --}}
-                                <div class="col-xs-12 col-sm-12 col-md-4">
-                                    <div class="form-group">
-                                        <label for="cantidad" class="form-label">
-                                            Cantidad a dar de baja:
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name="cantidad"
-                                            id="cantidad"
-                                            class="form-control @error('cantidad') is-invalid @enderror"
-                                            value="{{ old('cantidad') }}"
-                                            placeholder="Ej. 5"
-                                            min="1"
-                                            required
-                                        >
-                                        @error('cantidad')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                {{-- Motivo --}}
-                                <div class="col-xs-12 col-sm-12 col-md-12">
-                                    <div class="form-group">
-                                        <label for="motivo" class="form-label">
-                                            Motivo de la baja:
-                                        </label>
-                                        <textarea
-                                            name="motivo"
-                                            id="motivo"
-                                            class="form-control @error('motivo') is-invalid @enderror"
-                                            rows="2"
-                                            placeholder="Ej. Producto caducado, daño físico, pérdida..."
-                                            maxlength="500"
-                                            required
-                                        >{{ old('motivo') }}</textarea>
-                                        @error('motivo')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-end">
-                            <button type="submit" id="btnGuardar" class="btn btn-primary">
-                                <i class="fa fa-save me-1"></i>Registrar Baja
+    {{-- ── Buscador y Filtros (con botones Imprimir Reporte y Registrar Baja en la esquina contraria) ── --}}
+    <div class="row mb-4 align-items-end g-3">
+        <div class="col-12 col-md-8">
+            <form method="GET" action="{{ route('bajas_insumos.index') }}" id="formBuscar">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-6 position-relative">
+                        <label for="inputBuscar" class="form-label small fw-bold mb-1 text-dark"><i class="fa fa-search me-1"></i>Buscar:</label>
+                        <div class="input-group" style="border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                            <input
+                                type="text"
+                                name="buscar"
+                                id="inputBuscar"
+                                class="form-control bg-light border-0"
+                                placeholder="Buscar por insumo, área o motivo..."
+                                value="{{ $buscar }}"
+                                autocomplete="off"
+                                style="font-size: 0.9rem; box-shadow: none;"
+                            >
+                            @if($buscar)
+                                <a href="{{ route('bajas_insumos.index') }}" class="input-group-text bg-light border-0 text-decoration-none" title="Limpiar Filtros">
+                                    <i class="fa fa-times text-danger"></i>
+                                </a>
+                            @endif
+                            <button class="input-group-text bg-light border-0" type="submit" title="Buscar">
+                                <i class="fa fa-search text-dark"></i>
                             </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
-
-    {{-- ── Buscador ── --}}
-    <div class="row mb-3">
-        <div class="col-xs-12 col-sm-12 col-md-6">
-            <form method="GET" action="{{ route('bajas_insumos.index') }}" id="formBuscar">
-                <div class="input-group">
-                    <input
-                        type="text"
-                        name="buscar"
-                        id="inputBuscar"
-                        class="form-control"
-                        placeholder="Buscar por insumo, área o motivo..."
-                        value="{{ $buscar }}"
-                        autocomplete="off"
-                    >
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <i class="fa fa-search"></i>
-                    </button>
-                    @if($buscar)
-                        <a href="{{ route('bajas_insumos.index') }}" class="btn btn-outline-secondary">
-                            <i class="fa fa-times"></i>
-                        </a>
-                    @endif
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label for="fecha_inicio" class="form-label small fw-bold mb-1 text-dark"><i class="fa fa-calendar me-1"></i>Fecha Inicio:</label>
+                        <input
+                            type="date"
+                            name="fecha_inicio"
+                            id="fecha_inicio"
+                            class="form-control bg-light"
+                            value="{{ $fechaInit }}"
+                        >
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label for="fecha_fin" class="form-label small fw-bold mb-1 text-dark"><i class="fa fa-calendar me-1"></i>Fecha Fin:</label>
+                        <div class="input-group">
+                            <input
+                                type="date"
+                                name="fecha_fin"
+                                id="fecha_fin"
+                                class="form-control bg-light"
+                                value="{{ $fechaFin }}"
+                            >
+                            @if($buscar || $fechaInit || $fechaFin)
+                                <a href="{{ route('bajas_insumos.index') }}" class="btn btn-outline-secondary" title="Limpiar Filtros">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
+        <div class="col-12 col-md-4 text-md-end d-flex justify-content-md-end align-items-center mt-2 mt-md-0" style="gap: 0.75rem;">
+            <a href="{{ route('bajas_insumos.imprimir', request()->query()) }}"
+               target="_blank"
+               class="btn btn-outline-secondary rounded-pill shadow-sm"
+               id="btnImprimirReporte"
+               style="font-size: 0.82rem; font-weight: 700; padding: 0.45rem 1.2rem;">
+                <i class="fa fa-print me-1 text-dark"></i> Imprimir Reporte
+            </a>
+            <button type="button" class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAltaBaja"
+                    style="font-size: 0.82rem; font-weight: 700; padding: 0.45rem 1.2rem;">
+                <i class="fa fa-plus-circle me-1"></i>Registrar Baja
+            </button>
+        </div>
     </div>
 
-    {{-- ── Tabla de Bajas ── --}}
+    {{-- ── Tabla de Bajas (Diseño similar al Buscador de Archivos) ── --}}
     <div class="row">
         <div class="col-xs-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fa fa-list me-2"></i>Historial de bajas de insumos</h5>
-                    <button class="btn btn-sm btn-outline-secondary" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#collapseTabla">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-                <div class="collapse show" id="collapseTabla">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table id="tablaAreas" class="table table-condensed table-bordered table-striped align-middle mb-0">
-                                <thead>
-                                    <tr class="table-info">
-                                        <th>#</th>
-                                        <th>Cancelar</th>
-                                        <th>Insumo</th>
-                                        <th>Clave</th>
-                                        <th>Área de Almacén</th>
-                                        <th>Motivo</th>
-                                        <th>Cantidad</th>
-                                        <th>Fecha Baja</th>
-                                        <th>Hora</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($bajas as $index => $baja)
-                                        <tr class="{{ $baja->cancelado === 'Si' ? 'text-muted fst-italic' : '' }}">
-                                            <td>{{ ($bajas->currentPage() - 1) * $bajas->perPage() + $loop->iteration }}</td>
-                                            <td class="text-center">
-                                                @if($baja->cancelado === 'No')
-                                                    <a href="#"
-                                                       class="btn-cancelar-baja"
-                                                       data-url="{{ route('bajas_insumos.cancelar', $baja->id_baja_insumo) }}"
-                                                       data-insumo="{{ $baja->insumo->descripcion ?? 'Insumo' }}"
-                                                       data-cantidad="{{ $baja->cantidad }}"
-                                                       title="Cancelar baja">
-                                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted" title="Baja cancelada">
-                                                        <i class="fa fa-ban" aria-hidden="true"></i>
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $baja->insumo->descripcion ?? '—' }}</td>
-                                            <td>
-                                                <span class="badge bg-secondary">{{ $baja->insumo->clave ?? '—' }}</span>
-                                            </td>
-                                            <td>{{ $baja->areaAlmacen->nombre ?? '—' }}</td>
-                                            <td>{{ $baja->motivo }}</td>
-                                            <td class="text-center">{{ $baja->cantidad }}</td>
-                                            <td>{{ $baja->fecha_baja ? \Carbon\Carbon::parse($baja->fecha_baja)->format('d/m/Y') : '' }}</td>
-                                            <td>{{ $baja->hora_baja }}</td>
-                                            <td class="text-center">
-                                                @if($baja->cancelado === 'Si')
-                                                    <span class="badge bg-danger">Cancelada</span>
-                                                @else
-                                                    <span class="badge bg-success">Activa</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="10" class="text-center text-muted py-4">
-                                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
-                                                No hay bajas de insumos registradas.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                                <tfoot>
-                                    <tr class="table-info">
-                                        <th>#</th>
-                                        <th>Cancelar</th>
-                                        <th>Insumo</th>
-                                        <th>Clave</th>
-                                        <th>Área de Almacén</th>
-                                        <th>Motivo</th>
-                                        <th>Cantidad</th>
-                                        <th>Fecha Baja</th>
-                                        <th>Hora</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+            <div class="card shadow-sm border-0 bg-transparent">
+                <div class="card-header bg-white border-0 pt-4 px-0 pb-2 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <h5 class="card-title mb-0 fw-bold text-dark">
+                            <i class="fa fa-list text-secondary me-2"></i>Historial de bajas de insumos
+                        </h5>
+                        <span class="rounded-pill px-3 py-1 fw-bold align-middle d-inline-block" style="background-color: #e9ecef; font-size: 0.78rem; letter-spacing: 0.03em;">
+                            <span style="color: #000000;">{{ $bajas->total() }}</span> <span style="color: #495057;">{{ $bajas->total() === 1 ? 'Registro' : 'Registros' }}</span>
+                        </span>
                     </div>
-                    @if($bajas->total() > 0)
-                        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
-                            <div class="text-muted small">
-                                Mostrando {{ $bajas->firstItem() ?? 0 }} a {{ $bajas->lastItem() ?? 0 }} de {{ $bajas->total() }} bajas
-                            </div>
-                            <nav aria-label="Paginación de bajas de insumos">
-                                {{ $bajas->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
-                            </nav>
-                        </div>
-                    @endif
                 </div>
+                <div class="card-body p-0 mt-2">
+                    <div class="table-responsive">
+                        <table id="tablaAreas" class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1">
+                                <tr>
+                                    <th class="ps-4" style="width: 80px;">#</th>
+                                    <th>Insumo</th>
+                                    <th>Clave</th>
+                                    <th>Área de Almacén</th>
+                                    <th>Motivo</th>
+                                    <th class="text-center" style="width: 100px;">Cantidad</th>
+                                    <th>Fecha Baja</th>
+                                    <th>Hora</th>
+                                    <th class="text-center pe-4" style="width: 150px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($bajas as $index => $baja)
+                                    <tr class="{{ $baja->cancelado === 'Si' ? 'text-muted fst-italic' : '' }}">
+                                        <td class="ps-4 fw-bold">{{ ($bajas->currentPage() - 1) * $bajas->perPage() + $loop->iteration }}</td>
+                                        <td>
+                                            <span class="fw-semibold text-dark">{{ $baja->insumo->descripcion ?? '—' }}</span>
+                                        </td>
+                                        <td>
+                                            <span style="font-family: Arial, sans-serif; font-size: 0.82rem; font-weight: 600; color: #374151; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 10px; display: inline-block; letter-spacing: 0.03em; box-shadow: 0 1px 2px rgba(0,0,0,0.07);">{{ $baja->insumo->clave ?? '—' }}</span>
+                                        </td>
+                                        <td>{{ $baja->areaAlmacen->nombre ?? '—' }}</td>
+                                        <td>
+                                            <small class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $baja->motivo }}">
+                                                {{ $baja->motivo }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center fw-bold">{{ $baja->cantidad }}</td>
+                                        <td>{{ $baja->fecha_baja ? \Carbon\Carbon::parse($baja->fecha_baja)->format('d/m/Y') : '' }}</td>
+                                        <td>{{ $baja->hora_baja }}</td>
+                                        <td class="text-center pe-4">
+                                            @if($baja->cancelado === 'Si')
+                                                <a href="#"
+                                                   class="btn-toggle-baja-status badge bg-danger text-decoration-none py-2 px-3 rounded-pill shadow-sm"
+                                                   data-url="{{ route('bajas_insumos.toggle_status', $baja->id_baja_insumo) }}"
+                                                   data-insumo="{{ $baja->insumo->descripcion ?? 'Insumo' }}"
+                                                   data-cantidad="{{ $baja->cantidad }}"
+                                                   data-accion="activar"
+                                                   title="Haga clic para reactivar esta baja">
+                                                    <i class="fa fa-times-circle me-1"></i> Cancelada
+                                                </a>
+                                            @else
+                                                <a href="#"
+                                                   class="btn-toggle-baja-status badge bg-success text-decoration-none py-2 px-3 rounded-pill shadow-sm"
+                                                   data-url="{{ route('bajas_insumos.toggle_status', $baja->id_baja_insumo) }}"
+                                                   data-insumo="{{ $baja->insumo->descripcion ?? 'Insumo' }}"
+                                                   data-cantidad="{{ $baja->cantidad }}"
+                                                   data-accion="cancelar"
+                                                   title="Haga clic para cancelar esta baja">
+                                                    <i class="fa fa-check-circle me-1"></i> Activa
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">
+                                            <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+                                            No hay bajas de insumos registradas.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if($bajas->total() > 0)
+                    <div class="card-footer bg-white border-0 py-3 px-0 d-flex justify-content-between align-items-center border-top mt-2">
+                        <div class="text-muted small">
+                            Mostrando {{ $bajas->firstItem() ?? 0 }} a {{ $bajas->lastItem() ?? 0 }} de {{ $bajas->total() }} bajas
+                        </div>
+                        <nav aria-label="Paginación de bajas de insumos">
+                            {{ $bajas->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+                        </nav>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
 </div>
+
+{{-- ── Modal de Registro de Baja ── --}}
+<div class="modal fade" id="modalAltaBaja" tabindex="-1" aria-labelledby="modalAltaBajaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white border-0 py-3 px-4">
+                <h5 class="modal-title fw-bold text-white" id="modalAltaBajaLabel">
+                    <i class="fa fa-plus-circle me-2"></i>Registrar nueva baja de insumo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('bajas_insumos.store') }}" novalidate id="formBaja">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+
+                        {{-- Área de Almacén --}}
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="id_area_almacen" class="form-label fw-bold">
+                                    Área de Almacén:
+                                </label>
+                                <select
+                                    name="id_area_almacen"
+                                    id="id_area_almacen"
+                                    class="form-control @error('id_area_almacen') is-invalid @enderror"
+                                    required
+                                >
+                                    <option value="">-- Seleccionar área --</option>
+                                    @foreach($areas as $area)
+                                        <option value="{{ $area->id_area_almacen }}"
+                                            {{ old('id_area_almacen') == $area->id_area_almacen ? 'selected' : '' }}>
+                                            {{ $area->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('id_area_almacen')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Insumo --}}
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group position-relative">
+                                <label for="buscarInsumo" class="form-label fw-bold">
+                                    Insumo (clave o descripción):
+                                </label>
+                                <input
+                                    type="text"
+                                    id="buscarInsumo"
+                                    class="form-control @error('id_insumo') is-invalid @enderror"
+                                    placeholder="Buscar insumo… (doble clic para ver claves)"
+                                    autocomplete="off"
+                                    value="{{ old('buscarInsumo', '') }}"
+                                    title="Doble clic para ver listado de claves disponibles"
+                                >
+                                <input type="hidden" name="id_insumo" id="id_insumo" value="{{ old('id_insumo') }}">
+                                <div id="sugerenciasInsumo" class="list-group position-absolute w-100" style="z-index:1060; display:none; max-height:220px; overflow-y:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                                <div id="infoStock" class="mt-1 small text-muted" style="display:none;">
+                                    <i class="fa fa-cubes me-1"></i>Stock disponible: <strong id="stockDisponible">0</strong> piezas
+                                </div>
+                                @error('id_insumo')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+
+                                {{-- Panel de acceso rapido (doble clic) --}}
+                                <div id="panelClaves" style="display:none; position:absolute; left:0; top:calc(100% + 6px); z-index:1070; width:580px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.13); overflow:hidden;">
+                                    <div style="background:#1d4ed8; padding:8px 14px; display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="color:#fff; font-weight:700; font-size:0.82rem;">
+                                            <i class="fa fa-list-alt me-1"></i> Claves disponibles
+                                        </span>
+                                        <button type="button" id="cerrarPanelClaves" style="background:transparent; border:none; color:#fff; font-size:1rem; cursor:pointer; line-height:1;" title="Cerrar">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div style="padding:8px 10px; border-bottom:1px solid #e5e7eb;">
+                                        <input type="text" id="filtroPanelClaves" placeholder="Filtrar claves…" style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 10px; font-size:0.8rem; outline:none;">
+                                    </div>
+                                    {{-- Aviso sin área --}}
+                                    <div id="avisoSinArea" style="display:none; align-items:center; gap:8px; padding:7px 14px; background:#fffbeb; border-bottom:1px solid #fde68a; font-size:0.78rem; color:#92400e;">
+                                        <i class="fa fa-info-circle" style="color:#d97706;"></i>
+                                        <span>Selecciona primero un <strong>Área de Almacén</strong> para ver el stock real de cada insumo.</span>
+                                    </div>
+                                    <div id="cuerpoPanelClaves" style="max-height:260px; overflow-y:auto; overflow-x:hidden;">
+                                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; table-layout:fixed;">
+                                            <colgroup>
+                                                <col style="width:140px;">
+                                                <col style="width:360px;">
+                                                <col style="width:80px;">
+                                            </colgroup>
+                                            <thead>
+                                                <tr style="background:#f8fafc; position:sticky; top:0; z-index:1;">
+                                                    <th style="padding:6px 10px; text-align:left; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb; font-family:Arial,sans-serif;">Clave</th>
+                                                    <th style="padding:6px 10px; text-align:left; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb;">Descripcion</th>
+                                                    <th style="padding:6px 10px; text-align:center; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb;">Stock</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="filasClaves"></tbody>
+                                        </table>
+                                        <div id="panelClavesLoading" style="text-align:center; padding:18px; color:#6b7280; font-size:0.82rem;">
+                                            <i class="fa fa-circle-o-notch fa-spin me-1"></i> Cargando claves…
+                                        </div>
+                                        <div id="panelClavesVacio" style="display:none; text-align:center; padding:18px; color:#9ca3af; font-size:0.82rem;">
+                                            <i class="fa fa-search me-1"></i> Sin resultados
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Cantidad --}}
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <label for="cantidad" class="form-label fw-bold">
+                                    Cantidad a dar de baja:
+                                </label>
+                                <input
+                                    type="number"
+                                    name="cantidad"
+                                    id="cantidad"
+                                    class="form-control @error('cantidad') is-invalid @enderror"
+                                    value="{{ old('cantidad') }}"
+                                    placeholder="Ej. 5"
+                                    min="1"
+                                    required
+                                >
+                                @error('cantidad')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Motivo --}}
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="form-group">
+                                <label for="motivo" class="form-label fw-bold">
+                                    Motivo de la baja:
+                                </label>
+                                <textarea
+                                    name="motivo"
+                                    id="motivo"
+                                    class="form-control @error('motivo') is-invalid @enderror"
+                                    rows="3"
+                                    placeholder="Ej. Producto caducado, daño físico, pérdida..."
+                                    maxlength="500"
+                                    required
+                                >{{ old('motivo') }}</textarea>
+                                @error('motivo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnGuardar" class="btn btn-primary">
+                        <i class="fa fa-save me-1"></i>Registrar Baja
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('modalAltaBaja'));
+            myModal.show();
+        });
+    </script>
+@endif
 @endsection
 
 @push('scripts')

@@ -76,7 +76,7 @@ class CambiarFotoController extends Controller
             \imagecopy($dst, $src, 0, 0, 0, 0, $w, $h);
             \imagedestroy($src);
 
-            // ── Guardar como JPG en disco 'fotos' ─────────────────
+            // ── Guardar como JPG en la carpeta de 'fotos'
             $destPath = Storage::disk('fotos')->path($idPersona . '.jpg');
             \imagejpeg($dst, $destPath, 90);   // calidad 90%
             \imagedestroy($dst);

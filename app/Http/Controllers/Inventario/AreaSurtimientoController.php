@@ -12,11 +12,36 @@ class AreaSurtimientoController extends Controller
     /**
      * Muestra el listado de áreas de surtimiento.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $areas = AreaSurtimiento::orderBy('id_area_surtimiento', 'desc')->paginate(10);
+        $buscar = $request->get('buscar', '');
 
-        return view('inventario.areas_surtimiento.index', compact('areas'));
+        $query = AreaSurtimiento::orderBy('id_area_surtimiento', 'desc');
+
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('tipo', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        // AJAX: devolver sugerencias JSON para el autocomplete del buscador
+        if ($request->ajax()) {
+            $sugerencias = $query->select('id_area_surtimiento', 'nombre', 'tipo', 'activo')
+                ->limit(10)
+                ->get()
+                ->map(fn($a) => [
+                    'id'     => $a->id_area_surtimiento,
+                    'nombre' => $a->nombre,
+                    'tipo'   => $a->tipo,
+                    'activo' => $a->activo,
+                ]);
+            return response()->json($sugerencias);
+        }
+
+        $areas = $query->paginate(10)->withQueryString();
+
+        return view('inventario.areas_surtimiento.index', compact('areas', 'buscar'));
     }
 
     /**
@@ -150,10 +175,21 @@ class AreaSurtimientoController extends Controller
     /**
      * Genera el reporte/impresión de las áreas de surtimiento.
      */
-    public function imprimir()
+    public function imprimir(Request $request)
     {
-        $areas = AreaSurtimiento::orderBy('nombre', 'asc')->get();
+        $buscar = $request->get('buscar', '');
 
-        return view('inventario.areas_surtimiento.reporte_impresion', compact('areas'));
+        $query = AreaSurtimiento::orderBy('nombre', 'asc');
+
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('tipo', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        $areas = $query->get();
+
+        return view('inventario.areas_surtimiento.reporte_impresion', compact('areas', 'buscar'));
     }
 }

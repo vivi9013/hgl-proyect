@@ -254,3 +254,115 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
+
+/* ================================================================
+   MEJORAS VISUALES MODERNAS Y ATRACTIVAS (REEMPLAZO DE FUENTE SERIF)
+   ================================================================ */
+#tablaAreas, 
+.table, 
+.table th, 
+.table td, 
+.badge, 
+.btn, 
+.form-control, 
+.input-group,
+.page-link,
+.card-title {
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.table th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #334155 !important;
+    font-size: 0.85rem !important;
+    vertical-align: middle !important;
+}
+
+.btn-outline-primary.rounded-circle {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.btn-outline-primary.rounded-circle:hover {
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+    background-color: #3b82f6 !important;
+}
+
+.badge-tipo {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    font-weight: 600 !important;
+    padding: 0.25rem 0.6rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.78rem !important;
+}
+
+/* ── Status Badges premium ── */
+.badge-status-activo {
+    background-color: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1.5px solid #86efac !important;
+    font-weight: 700 !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.8rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 4px rgba(21, 128, 61, 0.15) !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+}
+.badge-status-activo:hover {
+    background-color: #86efac !important;
+    color: #14532d !important;
+    box-shadow: 0 3px 8px rgba(21, 128, 61, 0.28) !important;
+    transform: scale(1.06) !important;
+}
+.badge-status-activo .fa {
+    font-size: 0.85rem !important;
+}
+
+.badge-status-inactivo {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1.5px solid #fca5a5 !important;
+    font-weight: 700 !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.8rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 4px rgba(185, 28, 28, 0.15) !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+}
+.badge-status-inactivo:hover {
+    background-color: #fca5a5 !important;
+    color: #7f1d1d !important;
+    box-shadow: 0 3px 8px rgba(185, 28, 28, 0.28) !important;
+    transform: scale(1.06) !important;
+}
+.badge-status-inactivo .fa {
+    font-size: 0.85rem !important;
+}

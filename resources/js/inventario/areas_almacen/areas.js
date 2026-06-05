@@ -10,6 +10,60 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingSpinner           = document.getElementById('loadingSpinner');
     const btnGuardar               = document.getElementById('btnGuardar');
 
+    // ── 0. Filtrado en Tiempo Real (basado en el buscador de Panel de Control) ─────
+    const inputBuscar = document.getElementById('inputBuscar');
+    const formBuscar  = document.getElementById('formBuscar');
+    if (inputBuscar && formBuscar) {
+        inputBuscar.addEventListener('input', function () {
+            const query = inputBuscar.value.toLowerCase().trim();
+
+            // Filtrado local de filas de la tabla en tiempo real (como en el Panel de Control)
+            const rows = document.querySelectorAll('#tablaAreas tbody tr');
+            let matchCount = 0;
+            rows.forEach(row => {
+                // Ignorar filas de mensaje
+                if (row.cells.length === 1 && row.cells[0].classList.contains('text-center')) {
+                    return;
+                }
+                if (row.id === 'noLocalResultsRow') {
+                    return;
+                }
+
+                const text = row.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    row.classList.remove('d-none');
+                    matchCount++;
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+
+            // Mostrar u ocultar fila de no resultados locales
+            let noRecordsRow = document.getElementById('noLocalResultsRow');
+            if (query !== '' && matchCount === 0) {
+                if (!noRecordsRow) {
+                    noRecordsRow = document.createElement('tr');
+                    noRecordsRow.id = 'noLocalResultsRow';
+                    noRecordsRow.innerHTML = `
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="fa fa-search fa-2x mb-2 d-block"></i>
+                            No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en el servidor.
+                        </td>
+                    `;
+                    document.querySelector('#tablaAreas tbody').appendChild(noRecordsRow);
+                } else {
+                    noRecordsRow.style.display = '';
+                    noRecordsRow.querySelector('td').innerHTML = `
+                        <i class="fa fa-search fa-2x mb-2 d-block"></i>
+                        No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en el servidor.
+                    `;
+                }
+            } else if (noRecordsRow) {
+                noRecordsRow.style.display = 'none';
+            }
+        });
+    }
+
     // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
     const alertaExito  = document.getElementById('alertaExito');
@@ -42,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function () {
             clearTimeout(timeoutId);
             const nombre = this.value.trim();
 
-            // Si el campo está vacío, limpiar feedback
             if (!nombre) {
                 feedbackDisponibilidad.innerHTML = '';
                 inputNombre.classList.remove('is-valid', 'is-invalid');
@@ -89,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── 3. Confirmación SweetAlert2 para cambiar status (Activar / Desactivar) ─
+    // ── 3. Confirmación SweetAlert2 + envío PATCH para cambiar status ──────────
     const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
     toggleStatusLinks.forEach(link => {
         link.addEventListener('click', function (e) {
@@ -103,6 +156,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const iconType       = activo === 1 ? 'warning' : 'question';
             const confirmBtnText = activo === 1 ? 'Sí, desactivar' : 'Sí, activar';
 
+            const doRequest = () => {
+                window.location.href = url;
+            };
+
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: `¿Desea ${accion} el área?`,
@@ -115,13 +172,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = url;
+                        doRequest();
                     }
                 });
             } else {
-                // Fallback nativo
                 if (confirm(`¿Está seguro de que desea ${accion} el área "${nombre}"?`)) {
-                    window.location.href = url;
+                    doRequest();
                 }
             }
         });

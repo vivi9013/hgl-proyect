@@ -105,7 +105,7 @@
                                             <i class="bi bi-info-circle text-primary me-2"></i>
                                             <div>
                                                 <span class="fw-bold d-block mb-1">Requisitos de la imagen:</span>
-                                                <span class="d-block">• Se aceptan todos los formatos: <strong>JPG, PNG, WEBP, GIF, BMP</strong></span>
+                                                <span class="d-block">• Se aceptan todos los formatos: <strong>JPG, PNG, WEBP</strong></span>
                                                 <span class="d-block">• El archivo se convertirá automáticamente a <strong>JPG</strong> al guardarse</span>
                                                 <span class="d-block">• El tamaño máximo del archivo no debe exceder <strong>5 MB</strong> (5,120 KB)</span>
                                             </div>

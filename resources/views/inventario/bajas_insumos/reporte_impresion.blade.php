@@ -172,6 +172,12 @@
         </div>
     @endif
 
+    @if($bajas->count() >= 500)
+        <div style="background-color: #fffbeb; border: 1px solid #fef3c7; color: #92400e; padding: 8px 12px; margin-bottom: 14px; border-radius: 6px; font-size: 11px;" class="no-print">
+            <strong>Aviso:</strong> El reporte se ha limitado a los 500 registros más recientes para optimizar el rendimiento y la impresión. Por favor, utilice los filtros de fecha o búsqueda en la pantalla del listado para delimitar los resultados si requiere registros anteriores.
+        </div>
+    @endif
+
     {{-- ── Tabla de bajas ── --}}
     <table>
         <thead>
