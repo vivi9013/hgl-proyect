@@ -38,7 +38,7 @@ class BuscadorArchivosController extends Controller
             ->with('categoria')
             ->paginate(10);
 
-        return view('buscador_archivos.index', compact('categorias', 'archivos'));
+        return view('admin_formatos.buscador_archivos.index', compact('categorias', 'archivos'));
     }
 
     /**
@@ -79,7 +79,7 @@ class BuscadorArchivosController extends Controller
 
         $archivos = $query->paginate(10);
 
-        return view('buscador_archivos.partials.tabla', compact('archivos'));
+        return view('admin_formatos.buscador_archivos.partials.tabla', compact('archivos'));
     }
 
     /**
@@ -126,7 +126,7 @@ class BuscadorArchivosController extends Controller
      */
     public function reportes()
     {
-        return view('buscador_archivos.reportes');
+        return view('admin_formatos.buscador_archivos.reportes');
     }
 
     /**
@@ -148,7 +148,7 @@ class BuscadorArchivosController extends Controller
             ->with('categoria')
             ->get();
 
-        return view('buscador_archivos.reporte_impresion', compact('archivos'));
+        return view('admin_formatos.buscador_archivos.reporte_impresion', compact('archivos'));
     }
 
     /**

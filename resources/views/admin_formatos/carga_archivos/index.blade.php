@@ -203,7 +203,7 @@
                             </thead>
                             <tbody id="tbodyArchivos">
                                 {{-- Carga inicial del servidor --}}
-                                @include('carga_archivos.partials.tabla')
+                                @include('admin_formatos.carga_archivos.partials.tabla')
                             </tbody>
                         </table>
                     </div>

@@ -156,7 +156,7 @@
                                 </thead>
                                 <tbody id="tbodyCategorias">
                                     {{-- Carga Server-Side inicial --}}
-                                    @include('categoria_archivos.partials.tabla')
+                                    @include('admin_formatos.categoria_archivos.partials.tabla')
                                 </tbody>
                             </table>
                         </div>

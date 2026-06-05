@@ -90,7 +90,7 @@
                             </thead>
                             <tbody id="tbodyTrabajadores">
                                 {{-- Carga inicial del servidor --}}
-                                @include('permisos_archivos.partials.tabla')
+                                @include('admin_formatos.permisos_archivos.partials.tabla')
                             </tbody>
                         </table>
                     </div>

@@ -39,10 +39,10 @@ class PermisosArchivosController extends Controller
 
         // Si es una petición AJAX (paginación asíncrona), devuelve solo el partial
         if ($request->ajax() || $request->wantsJson()) {
-            return view('permisos_archivos.partials.tabla', compact('trabajadores'));
+            return view('admin_formatos.permisos_archivos.partials.tabla', compact('trabajadores'));
         }
 
-        return view('permisos_archivos.index', compact('trabajadores'));
+        return view('admin_formatos.permisos_archivos.index', compact('trabajadores'));
     }
 
     /**
@@ -65,10 +65,10 @@ class PermisosArchivosController extends Controller
 
         // Si es una petición AJAX (paginación de la matriz), devuelve solo el partial de la tabla
         if ($request->ajax() || $request->wantsJson()) {
-            return view('permisos_archivos.partials.tabla_asignacion', compact('trabajador', 'categorias'));
+            return view('admin_formatos.permisos_archivos.partials.tabla_asignacion', compact('trabajador', 'categorias'));
         }
 
-        return view('permisos_archivos.agregar', compact('trabajador', 'categorias'));
+        return view('admin_formatos.permisos_archivos.agregar', compact('trabajador', 'categorias'));
     }
 
     /**

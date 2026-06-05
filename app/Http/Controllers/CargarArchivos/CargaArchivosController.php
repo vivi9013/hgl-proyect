@@ -55,10 +55,10 @@ class CargaArchivosController extends Controller
 
         // Si la petición viene por AJAX, retornamos exclusivamente la vista parcial de la tabla
         if ($request->ajax() || $request->wantsJson()) {
-            return view('carga_archivos.partials.tabla', compact('archivos'));
+            return view('admin_formatos.carga_archivos.partials.tabla', compact('archivos'));
         }
 
-        return view('carga_archivos.index', compact('categorias', 'archivos'));
+        return view('admin_formatos.carga_archivos.index', compact('categorias', 'archivos'));
     }
 
     public function toggleStatus($id)
@@ -148,7 +148,7 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get(['id_catego_archivos', 'categoria']);
 
-        return view('carga_archivos.editar', compact('archivo', 'categorias'));
+        return view('admin_formatos.carga_archivos.editar', compact('archivo', 'categorias'));
     }
 
     public function actualizar(Request $request, $id)
@@ -191,7 +191,7 @@ class CargaArchivosController extends Controller
     public function cargar($id)
     {
         $archivo = CargaArchivo::with('categoria')->findOrFail($id);
-        return view('carga_archivos.cargar', compact('archivo'));
+        return view('admin_formatos.carga_archivos.cargar', compact('archivo'));
     }
 
     public function subirArchivo(Request $request, $id)
@@ -229,7 +229,7 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('carga_archivos.reportes', compact('categorias'));
+        return view('admin_formatos.carga_archivos.reportes', compact('categorias'));
     }
 
     public function imprimirReporte(Request $request)
@@ -245,7 +245,7 @@ class CargaArchivosController extends Controller
             ->orderBy('id_archivo', 'asc')
             ->get();
 
-        return view('carga_archivos.reporte_impresion', compact('categoria', 'archivos'));
+        return view('admin_formatos.carga_archivos.reporte_impresion', compact('categoria', 'archivos'));
     }
 
     public function graficas()
@@ -260,6 +260,6 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('carga_archivos.graficas', compact('categorias'));
+        return view('admin_formatos.carga_archivos.graficas', compact('categorias'));
     }
 }

@@ -28,9 +28,9 @@ class CategoriaArchivosController extends Controller
 
         // Si la petición viene por AJAX (para cambiar de página o buscar), retornamos la vista parcial
         if ($request->ajax() || $request->wantsJson()) {
-            return view('categoria_archivos.partials.tabla', compact('categorias'));
+            return view('admin_formatos.categoria_archivos.partials.tabla', compact('categorias'));
         }
-        return view('categoria_archivos.index', compact('categorias'));
+        return view('admin_formatos.categoria_archivos.index', compact('categorias'));
     }
 
     /**
@@ -84,7 +84,7 @@ class CategoriaArchivosController extends Controller
     {
         $categoria = CategoArchivo::findOrFail($id);
 
-        return view('categoria_archivos.editar', compact('categoria'));
+        return view('admin_formatos.categoria_archivos.editar', compact('categoria'));
     }
 
     /**
@@ -142,7 +142,7 @@ class CategoriaArchivosController extends Controller
      */
     public function reportes()
     {
-        return view('categoria_archivos.reportes.reportes');
+        return view('admin_formatos.categoria_archivos.reportes.reportes');
     }
 
     /**
@@ -162,7 +162,7 @@ class CategoriaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('categoria_archivos.reportes.reporte_impresion', compact('categorias'));
+        return view('admin_formatos.categoria_archivos.reportes.reporte_impresion', compact('categorias'));
     }
 
     /**

@@ -92,7 +92,7 @@
                                 </thead>
                                 <tbody id="tbodyAsignacion">
                                     {{-- Carga inicial del servidor --}}
-                                    @include('permisos_archivos.partials.tabla_asignacion')
+                                    @include('admin_formatos.permisos_archivos.partials.tabla_asignacion')
                                 </tbody>
                             </table>
                         </div>

@@ -74,7 +74,7 @@
                         </tr>
                     </thead>
                     <tbody id="tbodyArchivos">
-                        @include('buscador_archivos.partials.tabla')
+                        @include('admin_formatos.buscador_archivos.partials.tabla')
                     </tbody>
                 </table>
             </div>
