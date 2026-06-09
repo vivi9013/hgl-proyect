@@ -1,0 +1,73 @@
+/* Estilos personalizados para el formulario de edición de Categoría de Módulos */
+
+/* Formulario en tarjeta clásica plana */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Títulos con íconos */
+.text-primary,
+.fa-pencil-square-o,
+.fa-edit {
+    color: #000000 !important;
+}
+
+/* Campos de Formulario */
+.form-control,
+.form-select {
+    border-color: #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Botón Actualizar (Primario): Azul con borde negro */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón Cancelar/Volver: Blanco con bordes grises */
+.btn-light {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}

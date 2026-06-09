@@ -6,6 +6,7 @@ trait Sanitizable
 {
     /**
      * Función de sanitización compatible con la lógica legacy.
+     * Elimina acentos y caracteres especiales del español para rutas/archivos físicos.
      */
     public function sanearString($string)
     {

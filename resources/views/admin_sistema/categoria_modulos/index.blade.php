@@ -3,6 +3,13 @@
 @section('title', 'Categoría de Módulos - Hospital General')
 
 @section('content')
+{{-- Alertas de Sesión renderizadas por SweetAlert2 desde categoria.js --}}
+@if(session('exitog'))
+    <div id="alertaExitog" data-message="{{ session('exitog') }}" style="display: none;"></div>
+@endif
+@if(session('exito'))
+    <div id="alertaExito" data-message="{{ session('exito') }}" style="display: none;"></div>
+@endif
 <div class="container-fluid py-4">
     {{-- Encabezado del Módulo --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -37,6 +44,16 @@
                     <button type="button" class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAltaCategoria">
                         <i class="fa fa-plus-circle me-2"></i> Registrar Nueva Categoría
                     </button>
+
+                    {{-- Submódulo: Reportes del Módulo --}}
+                    <a href="{{ route('categoria_modulos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
+                    </a>
+
+                    {{-- Submódulo: Gráficas del Módulo --}}
+                    <a href="{{ route('categoria_modulos.graficas') }}" class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-bar-chart me-2 text-success"></i> Gráficas
+                    </a>
                 </div>
             </div>
         </div>
@@ -53,7 +70,7 @@
                             <h5 class="card-title mb-0 fw-bold text-dark">
                                 <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Categorías
                             </h5>
-                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalRegistros">
+                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalCategorias">
                                 {{ $categorias->total() }} Registros
                             </span>
                         </div>
@@ -87,7 +104,7 @@
                             </thead>
                             <tbody id="tbodyCategorias">
                                 {{-- Render inicial desde Servidor usando tu patrón de fragmentos --}}
-                                @include('admin_formatos.categoria_modulos.partials.tabla')
+                                @include('admin_sistema.categoria_modulos.partials.tabla')
                             </tbody>
                         </table>
                     </div>
@@ -130,9 +147,17 @@
                                 <i class="fa fa-tag me-1 text-dark"></i> Nombre de la Categoría:
                             </label>
                             <input type="text" name="categoria" id="categoria" 
-                                   class="form-control border-gray-300 shadow-sm" 
+                                   class="form-control border-gray-300 shadow-sm @error('categoria') is-invalid @enderror" 
+                                   value="{{ old('categoria') }}"
                                    placeholder="Coloque el nombre de la categoría del módulo" 
                                    required>
+                            <div id="feedbackDisponibilidad" class="mt-1 small fw-semibold"></div>
+                            <div id="loadingSpinner" class="spinner-border spinner-border-sm text-primary mt-1" role="status" style="display: none;">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            @error('categoria')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">
@@ -140,9 +165,13 @@
                                 <i class="fa fa-laptop me-1 text-dark"></i> Proyecto Relacionado:
                             </label>
                             <input type="text" name="proyecto" id="proyecto" 
-                                   class="form-control border-gray-300 shadow-sm" 
+                                   class="form-control border-gray-300 shadow-sm @error('proyecto') is-invalid @enderror" 
+                                   value="{{ old('proyecto') }}"
                                    placeholder="Coloque el nombre del proyecto" 
                                    required>
+                            @error('proyecto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">

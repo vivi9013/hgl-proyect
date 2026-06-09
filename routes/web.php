@@ -15,6 +15,7 @@ use App\Http\Controllers\CargarArchivos\CargaArchivosController;
 use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 use App\Http\Controllers\PermisosArchivos\PermisosArchivosController;
 use App\Http\Controllers\Pacientes\RxController;
+use App\Http\Controllers\CategoriaModulos\CategoriaModulosController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -98,6 +99,22 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
+    });
+
+    // Subgrupo: Catálogo de Categorías de Módulos (Prefijo limpio adaptado)
+    Route::prefix('categoria-modulos')->name('categoria_modulos.')->controller(CategoriaModulosController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::patch('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::patch('/{id}/colapsar', 'cambiarColapsar')->name('colapsar');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/verificar', 'verificar')->name('verificar');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/graficas/pie', 'graficaPie')->name('graficas.pie');
+        Route::get('/graficas/bar', 'graficaBar')->name('graficas.bar');
     });
 
     // Subgrupo: Permisos de Archivo (Prefijo limpio adaptado)

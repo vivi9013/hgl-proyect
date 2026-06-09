@@ -83,15 +83,16 @@
                                             <div class="mt-3">
                                                 @php
                                                     $routeMap = [
-                                                        'mBuscaArchivos' => 'busca_archivos.index',
-                                                        'mCargaArchivos' => 'carga_archivos.index',
-                                                        'mCategoArchivos' => 'categoria_archivos.index',
-                                                        'mPermisosArchivo' => 'trabajador_categorias.index',
-                                                        'mRXestudios' => 'rx.index',
-                                                        'mAreasAlmacen' => 'areas_almacen.index',
-                                                        'mAreaSurtimiento' => 'areas_surtimiento.index',
-                                                        'mCumpleanos' => 'cumpleanos.index',
-                                                        'mBajasInsumos' => 'bajas_insumos.index',
+                                                        'mBuscaArchivos'    => 'busca_archivos.index',
+                                                        'mCargaArchivos'    => 'carga_archivos.index',
+                                                        'mCategoArchivos'   => 'categoria_archivos.index',
+                                                        'mPermisosArchivo'  => 'trabajador_categorias.index',
+                                                        'mRXestudios'       => 'rx.index',
+                                                        'mAreasAlmacen'     => 'areas_almacen.index',
+                                                        'mAreaSurtimiento'  => 'areas_surtimiento.index',
+                                                        'mCumpleanos'       => 'cumpleanos.index',
+                                                        'mBajasInsumos'     => 'bajas_insumos.index',
+                                                        'mCategoModulos'    => 'categoria_modulos.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

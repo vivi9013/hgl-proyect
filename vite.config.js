@@ -25,7 +25,18 @@ export default defineConfig({
                 'resources/css/inventario/areas_surtimiento/surtimiento.css',
                 'resources/js/inventario/areas_surtimiento/surtimiento.js',
                 'resources/css/inventario/bajas_insumos/bajas.css',
-                'resources/js/inventario/bajas_insumos/bajas.js'
+                'resources/js/inventario/bajas_insumos/bajas.js',
+                // Categoria de Modulos Assets
+                'resources/css/categoria_modulos/categoria.css',
+                'resources/css/categoria_modulos/categoria_edit.css',
+                'resources/css/categoria_modulos/categoria_graficas.css',
+                'resources/css/categoria_modulos/categoria_reportes.css',
+                'resources/js/categoria_modulos/categoria.js',
+                'resources/js/categoria_modulos/categoria_edit.js',
+                'resources/js/categoria_modulos/categoria_graficas.js',
+                'resources/js/categoria_modulos/grafica_pie.js',
+                'resources/js/categoria_modulos/grafica_barras.js',
+                'resources/js/categoria_modulos/categoria_reportes.js'
             ],
             refresh: true,
         }),
