@@ -92,7 +92,8 @@
                                                         'mAreaSurtimiento' => 'areas_surtimiento.index',
                                                         'mCumpleanos' => 'cumpleanos.index',
                                                         'mBajasInsumos' => 'bajas_insumos.index',
-                                                        'mDevoluciones' => 'devoluciones.index',
+                                                        'mDevoluciones'    => 'devoluciones.index',
+                                                        'mCategoModulos'   => 'categoria_modulos.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

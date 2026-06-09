@@ -9,9 +9,13 @@ use App\Models\BuscadorArchivos\TrabajadorCategoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Traits\Sanitizable;
+use Illuminate\Support\Facades\Storage;
 
 class BuscadorArchivosController extends Controller
 {
+    use Sanitizable;
+
     /**
      * Vista principal del Buscador.
      */
@@ -106,19 +110,17 @@ class BuscadorArchivosController extends Controller
             abort(403, 'No tienes permiso para descargar este archivo.');
         }
 
-        // Sanitización igual al sistema legacy para buscar el archivo en el sistema
-        $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
-        $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
+        $rutaRelativa = $archivo->ruta_fisica;
+        $nombreDescarga = $archivo->nombre_fisico;
 
-        // Ruta del archivo en el nuevo almacenamiento Laravel
-        $pathReal = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
+        $pathReal = storage_path("app/{$rutaRelativa}");
 
-        if (!file_exists($pathReal)) {
+        if (!Storage::disk('local')->exists($rutaRelativa)) {
             Log::warning("Archivo no encontrado: {$pathReal}");
             abort(404, 'El archivo físico no fue encontrado en el servidor.');
         }
 
-        return response()->download($pathReal, $nombreSanitizado);
+        return response()->download($pathReal, $nombreDescarga);
     }
 
     /**
@@ -149,20 +151,5 @@ class BuscadorArchivosController extends Controller
             ->get();
 
         return view('admin_formatos.buscador_archivos.reporte_impresion', compact('archivos'));
-    }
-
-    /**
-     * Función auxiliar de sanitización compatible con la lógica legacy.
-     */
-    private function sanearString($string)
-    {
-        $string = trim($string);
-        // Quitar acentos de manera compatible con el sistema legacy
-        $string = str_replace(
-            ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ'],
-            ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N'],
-            $string
-        );
-        return $string;
     }
 }

@@ -7,9 +7,13 @@ use App\Models\BuscadorArchivos\CategoArchivo;
 use App\Models\BuscadorArchivos\CargaArchivo;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Traits\Sanitizable;
+use Illuminate\Support\Facades\Storage;
 
 class CargaArchivosController extends Controller
 {
+    use Sanitizable;
+
     public function index(Request $request)
     {
         $categorias = CategoArchivo::where('activo', 1)
@@ -41,18 +45,6 @@ class CargaArchivosController extends Controller
 
         $archivos = $query->paginate(10);
 
-        // Validación de existencia física de archivos
-        foreach ($archivos as $archivo) {
-            if ($archivo->categoria) {
-                $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
-                $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
-                $ruta1 = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
-                $archivo->existe_fisico = file_exists($ruta1);
-            } else {
-                $archivo->existe_fisico = false;
-            }
-        }
-
         // Si la petición viene por AJAX, retornamos exclusivamente la vista parcial de la tabla
         if ($request->ajax() || $request->wantsJson()) {
             return view('admin_formatos.carga_archivos.partials.tabla', compact('archivos'));
@@ -68,17 +60,6 @@ class CargaArchivosController extends Controller
         $archivo->save();
 
         return redirect()->route('carga_archivos.index')->with('success', 'El estado del archivo se ha actualizado.');
-    }
-
-    private function sanearString($string)
-    {
-        $string = trim($string);
-        $string = str_replace(
-            ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ'],
-            ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N'],
-            $string
-        );
-        return $string;
     }
 
     public function guardar(Request $request)
@@ -206,17 +187,15 @@ class CargaArchivosController extends Controller
             return redirect()->back()->withErrors(['error' => 'La categoría del archivo no es válida.']);
         }
 
-        $carpetaSanitizada = $this->sanearString($archivo->categoria->categoria);
-        $nombreSanitizado = $this->sanearString($archivo->nombre) . '.pdf';
+        $rutaRelativa = $archivo->ruta_fisica; // Obtiene "formats/carpeta/archivo.pdf"
+        $nombreFisico = $archivo->nombre_fisico; // Obtiene "archivo.pdf"
 
-        $rutaDirectorio = storage_path("app/formats/{$carpetaSanitizada}");
-
-        if (!file_exists($rutaDirectorio)) {
-            mkdir($rutaDirectorio, 0755, true);
+        if (!$rutaRelativa) {
+            return redirect()->back()->withErrors(['error' => 'No se pudo determinar la ruta de destino.']);
         }
 
-        $file = $request->file('archivo-a-subir');
-        $file->move($rutaDirectorio, $nombreSanitizado);
+        // Laravel crea los directorios automáticamente si no existen al usar storeAs
+        $request->file('archivo-a-subir')->storeAs(dirname($rutaRelativa), $nombreFisico, 'local');
 
         return redirect()
             ->route('carga_archivos.index')
