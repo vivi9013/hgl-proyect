@@ -25,7 +25,9 @@ export default defineConfig({
                 'resources/css/inventario/areas_surtimiento/surtimiento.css',
                 'resources/js/inventario/areas_surtimiento/surtimiento.js',
                 'resources/css/inventario/bajas_insumos/bajas.css',
-                'resources/js/inventario/bajas_insumos/bajas.js'
+                'resources/js/inventario/bajas_insumos/bajas.js',
+                'resources/css/inventario/devoluciones/devoluciones.css',
+                'resources/js/inventario/devoluciones/devoluciones.js'
             ],
             refresh: true,
         }),

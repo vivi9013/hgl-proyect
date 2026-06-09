@@ -22,7 +22,7 @@ label.form-label i {
 
 /* Input Fields */
 .form-control {
-    border-color: #d1d5db !important;
+    border-color: rgba(0, 0, 0, 0.35) !important;
     border-radius: 8px !important;
     box-shadow: none !important;
     padding: 0.6rem 0.95rem;
@@ -37,7 +37,7 @@ label.form-label i {
 
 .form-control:focus {
     border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Botones con estilo clásico y profesional */

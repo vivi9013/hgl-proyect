@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SyncLegacySession::class,
         ]);
 
+        $middleware->alias([
+            'modulo' => \App\Http\Middleware\VerificarModulo::class,
+        ]);
+
         $middleware->redirectUsersTo('/inicio');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

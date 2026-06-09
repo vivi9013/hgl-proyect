@@ -20,6 +20,8 @@ use App\Http\Controllers\Pacientes\RxController;
 use App\Http\Controllers\Inventario\AreaAlmacenController;
 use App\Http\Controllers\Inventario\AreaSurtimientoController;
 use App\Http\Controllers\Inventario\BajaInsumoController;
+use App\Http\Controllers\Inventario\DevolucionController;
+use App\Http\Controllers\Inventario\DetalleDevolucionController;
 
 // Redirección raíz por defecto
 Route::get('/', function () {
@@ -138,6 +140,26 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock');
         Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Devoluciones (Inventario) ────────────────────────────────────
+    Route::prefix('devoluciones')->middleware('modulo:30')->name('devoluciones.')->controller(DevolucionController::class)->group(function () {
+        Route::get('/', 'index')->name('index');                              // Pendientes
+        Route::post('/', 'store')->name('store');                             // Crear nueva
+        Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos'); // Autocompletado
+        Route::get('/terminadas', 'terminadas')->name('terminadas');          // Terminadas
+        Route::get('/reportes', 'reportes')->name('reportes');               // Vista reportes
+        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');      // Imprimir reporte
+        Route::get('/{id}/detalle', 'detalle')->name('detalle');             // Ver/agregar insumos
+        Route::post('/{id}/finalizar', 'finalizar')->name('finalizar');      // Finalizar devolución
+        Route::get('/{id}/comprobante', 'comprobante')->name('comprobante'); // Comprobante PDF
+        Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status'); // Alternar estado (Cancelar/Reactivar)
+    });
+
+    Route::prefix('detalle-devoluciones')->middleware('modulo:30')->name('detalle_devoluciones.')->controller(DetalleDevolucionController::class)->group(function () {
+        Route::post('/', 'store')->name('store');         // Agregar insumo
+        Route::put('/{id}', 'update')->name('update');   // Actualizar detalle
+        Route::delete('/{id}', 'destroy')->name('destroy'); // Eliminar insumo
     });
 
     // Subgrupo: Radiología RX (Prefijo limpio adaptado)

@@ -1,0 +1,134 @@
+/**
+ * Estilos para el módulo de Devoluciones
+ * HGL – Sistema de Gestión de Inventario
+ */
+
+/* ── Variables ─────────────────────────────────────────────────────────────── */
+:root {
+    --devol-blue:       #1d4ed8;
+    --devol-blue-light: #eff6ff;
+    --devol-blue-border:#bfdbfe;
+    --devol-success:    #15803d;
+    --devol-warning:    #854d0e;
+    --devol-border:     #e2e8f0;
+    --devol-text-muted: #64748b;
+    --devol-radius:     10px;
+}
+
+/* ── Tabla general ─────────────────────────────────────────────────────────── */
+#tablaDevoluciones thead th,
+#tablaDetalles thead th,
+.tabla-devoluciones thead th {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: #475569;
+    border-bottom: 2px solid var(--devol-border);
+    padding: 0.75rem 0.6rem;
+}
+
+#tablaDevoluciones tbody tr,
+#tablaDetalles tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+#tablaDevoluciones tbody tr:hover,
+#tablaDetalles tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* ── Badges folio ───────────────────────────────────────────────────────────── */
+.folio-badge {
+    font-family: Arial, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--devol-blue);
+    background-color: var(--devol-blue-light);
+    border: 1px solid var(--devol-blue-border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    display: inline-block;
+    letter-spacing: 0.02em;
+}
+
+/* ── Card del formulario de agregar insumo ─────────────────────────────────── */
+.card .card-header.bg-primary {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* ── Sugerencias de insumo (autocompletado) ────────────────────────────────── */
+#sugerenciasDetalle {
+    border: 1px solid var(--devol-border);
+    border-radius: 0 0 8px 8px;
+    overflow-y: auto;
+}
+
+#sugerenciasDetalle .list-group-item {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.12s;
+}
+
+#sugerenciasDetalle .list-group-item:hover {
+    background-color: var(--devol-blue-light);
+}
+
+#sugerenciasDetalle .clave-badge {
+    font-family: monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--devol-blue);
+    background: #e0eaff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+}
+
+/* ── Botones de acción ─────────────────────────────────────────────────────── */
+.btn-outline-primary:hover,
+.btn-outline-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Paginación negra sencilla ─────────────────────────────────────────────── */
+.pagination .page-link {
+    color: #000;
+    border-color: #dee2e6;
+    font-size: 0.82rem;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.pagination .page-link:hover {
+    background-color: #f1f5f9;
+    color: #000;
+}
+
+/* ── Indicador de status ───────────────────────────────────────────────────── */
+.badge.bg-warning.text-dark {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+}
+
+.badge.bg-success {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .d-flex.justify-content-md-end {
+        justify-content: flex-start !important;
+    }
+}

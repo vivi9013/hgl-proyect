@@ -35,7 +35,7 @@
                 // Se expande la primera categoría por defecto, o según lo guardado en el campo "colapsado" de la DB
                 $isOpen = ($index == 0 || $categoria->colapsado == 'no');
             @endphp
-            <div class="accordion-item category-item border-0 shadow-sm mb-3 rounded-3 overflow-hidden">
+            <div class="accordion-item category-item shadow-sm mb-3 rounded-3 overflow-hidden">
                 <h2 class="accordion-header" id="heading-{{ $categoria->id_CategoriaModulo }}">
                     <button class="accordion-button fw-bold bg-dark text-white {{ $isOpen ? '' : 'collapsed' }}" 
                             type="button" 
@@ -92,6 +92,7 @@
                                                         'mAreaSurtimiento' => 'areas_surtimiento.index',
                                                         'mCumpleanos' => 'cumpleanos.index',
                                                         'mBajasInsumos' => 'bajas_insumos.index',
+                                                        'mDevoluciones' => 'devoluciones.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

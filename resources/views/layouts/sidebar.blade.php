@@ -3,7 +3,7 @@
   <div class="sidebar-brand d-flex align-items-center justify-content-center" style="height: var(--header-height);">
     <a href="/" class="brand-link text-center text-decoration-none">
       <div class="text-primary fs-4 fw-bold">
-        <i class="bi bi-heart-pulse-fill"></i> Hospital General
+        <i class="bi bi-heart-pulse-fill"></i> HGLinares
       </div>
     </a>
   </div>
@@ -19,6 +19,8 @@
             <span class="fw-medium" style="padding-left: 20px;">Panel de Control</span>
           </a>
         </li>
+
+
 
 
         <li class="nav-item mb-2">
@@ -70,7 +72,7 @@
   </div>
   <!--end::Sidebar Wrapper-->
 
-  <div class="sidebar-logout p-3" style="position: absolute; bottom: 0; width: 100%; margin-left: -12px;">
+  <div class="sidebar-logout p-3" style="position: absolute; bottom: 0; width: 100%;">
     <a href="{{ route('logout') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
 
       <i class="bi bi-box-arrow-right me-2"></i>

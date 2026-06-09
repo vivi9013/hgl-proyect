@@ -1,132 +1,3 @@
-<style>
-/* ── Profile Dropdown Card ───────────────────────────────── */
-.profile-dropdown-menu {
-    width: 300px;
-    border: none;
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-    overflow: hidden;
-    padding: 0;
-    margin-top: 10px !important;
-}
-
-.profile-card-top {
-    background: linear-gradient(160deg, #1a1a2e 0%, #2d2d44 100%);
-    padding: 24px 20px 20px;
-    text-align: center;
-}
-
-.profile-card-avatar {
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.25);
-    object-fit: cover;
-    margin-bottom: 12px;
-}
-
-.profile-card-avatar-initials {
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.25);
-    background: rgba(255,255,255,0.12);
-    color: #fff;
-    font-size: 1.6rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 12px;
-}
-
-.profile-card-name {
-    color: #fff;
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 2px;
-    line-height: 1.3;
-}
-
-.profile-card-role {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.78rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-}
-
-.profile-card-meta {
-    color: rgba(255,255,255,0.45);
-    font-size: 0.73rem;
-}
-
-.profile-card-bottom {
-    background: #fff;
-    padding: 16px 20px;
-}
-
-.profile-card-desc {
-    font-size: 0.82rem;
-    color: #666;
-    text-align: center;
-    margin-bottom: 14px;
-    line-height: 1.4;
-}
-
-.profile-card-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.profile-card-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 500;
-    text-decoration: none;
-    border: 1.5px solid #ddd;
-    color: #444;
-    background: #f8f8f8;
-    transition: all 0.18s ease;
-}
-
-.profile-card-btn:hover {
-    background: #f0f0f0;
-    border-color: #bbb;
-    color: #222;
-    text-decoration: none;
-}
-
-.profile-card-btn.btn-danger-soft {
-    border-color: #fbb;
-    color: #c0392b;
-    background: #fff5f5;
-}
-
-.profile-card-btn.btn-danger-soft:hover {
-    background: #ffe0e0;
-    border-color: #e74c3c;
-    color: #c0392b;
-}
-
-/* ── Trigger hover en el header ──────────────────────────── */
-.profile-trigger {
-    cursor: pointer;
-    border-radius: 10px;
-    padding: 6px 10px;
-    transition: background 0.15s;
-}
-.profile-trigger:hover {
-    background: rgba(0,0,0,0.06);
-}
-</style>
 
 @php
     $user = Auth::user();
@@ -172,11 +43,11 @@
     // Texto meta unificado para evitar chars especiales en directivas Blade
     $metaTexto = '';
     if ($miembroDesde && $edad) {
-        $metaTexto = 'Miembro desde ' . $miembroDesde . ' - ' . $edad . ' anos de edad';
+        $metaTexto = 'Miembro desde ' . $miembroDesde . ' - ' . $edad . ' años de edad';
     } elseif ($miembroDesde) {
         $metaTexto = 'Miembro desde ' . $miembroDesde;
     } elseif ($edad) {
-        $metaTexto = $edad . ' anos de edad';
+        $metaTexto = $edad . ' años de edad';
     }
     $iniciales = $user ? $user->initials : 'US';
 @endphp
@@ -219,7 +90,7 @@
           @endif
 
           <div class="d-none d-sm-block">
-            <p class="mb-0 fw-bold" style="font-size: 0.85rem; line-height: 1;">
+            <p class="mb-0 fw-bold" style="font-size: 0.85rem; line-height: 1; color: var(--theme-text);">
               {{ $nombreCorto }}
             </p>
             <small class="text-muted" style="font-size: 0.75rem;">
@@ -228,22 +99,22 @@
           </div>
         </a>
 
-        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu" aria-labelledby="profileDropdown">
+        <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu" style="border: 2px solid #000000;" aria-labelledby="profileDropdown">
           <li>
-            <div class="profile-card-top">
+            <div class="profile-card-top" style="background: var(--theme-primary);">
               @if($hasPhoto)
-                <img src="{{ $user->foto_url }}" class="profile-card-avatar" alt="Foto de perfil">
+                <img src="{{ $user->foto_url }}" class="profile-card-avatar" alt="Foto de perfil" style="width: 78px; height: 78px; border-radius: 50%; border: 3px solid rgba(0, 0, 0, 0.35); object-fit: cover; margin-bottom: 12px;">
               @else
-                <div class="profile-card-avatar-initials">
+                <div class="profile-card-avatar-initials" style="background: var(--theme-hover-bg); color: var(--theme-text); border: 3px solid rgba(0,0,0,0.3);">
                   {{ $iniciales }}
                 </div>
               @endif
 
-              <div class="profile-card-name">{{ $nombreCompleto }}</div>
-              <div class="profile-card-role">{{ $rolNombre }}</div>
+              <div class="profile-card-name" style="color: var(--theme-text);">{{ $nombreCompleto }}</div>
+              <div class="profile-card-role" style="color: var(--theme-text-muted);">{{ $rolNombre }}</div>
 
               @if($metaTexto)
-                <div class="profile-card-meta">{{ $metaTexto }}</div>
+                <div class="profile-card-meta" style="color: var(--theme-text-muted);">{{ $metaTexto }}</div>
               @endif
             </div>
 

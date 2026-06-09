@@ -39,6 +39,20 @@
         @foreach($themes as $tema)
             @php
                 $isCurrent = (Auth::user()->tema === $tema['id']);
+                
+                // Calculate luminance for each theme choice to decide hover button text color
+                $hex = str_replace('#', '', $tema['color']);
+                if (strlen($hex) == 3) {
+                    $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+                    $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+                    $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+                } else {
+                    $r = hexdec(substr($hex, 0, 2));
+                    $g = hexdec(substr($hex, 2, 2));
+                    $b = hexdec(substr($hex, 4, 2));
+                }
+                $yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+                $btnHoverText = $yiq >= 150 ? '#000000' : '#ffffff';
             @endphp
 
             <div class="tema-card {{ $isCurrent ? 'active-theme' : '' }}"
@@ -72,7 +86,7 @@
                             <input type="hidden" name="color" value="{{ $tema['id'] }}">
                             <button type="submit" class="tema-btn"
                                 style="color: {{ $tema['color'] }}; border-color: {{ $tema['color'] }};"
-                                onmouseover="this.style.backgroundColor='{{ $tema['color'] }}'; this.style.color='#fff';"
+                                onmouseover="this.style.backgroundColor='{{ $tema['color'] }}'; this.style.color='{{ $btnHoverText }}';"
                                 onmouseout="this.style.backgroundColor='transparent'; this.style.color='{{ $tema['color'] }}';">
                                 <i class="bi bi-cursor-fill"></i> Seleccionar
                             </button>

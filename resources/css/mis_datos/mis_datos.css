@@ -1,10 +1,10 @@
 /* Estilos personalizados para el módulo de Mis Datos */
 body {
-    background-color: #f9fafb !important;
+    background-color: #f5f0e8 !important;
 }
 
 .card {
-    background-color: #f9fafb !important;
+    background-color: #f5f0e8 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
 }
@@ -57,8 +57,8 @@ body {
     width: 100%;
     height: 2px;
     /* grosor de la línea */
-    background-color: #e2e8f0;
-    /* color gris claro */
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    /* color negro sutil */
     position: absolute;
     top: 0;
     /* justo arriba del título */
@@ -69,21 +69,22 @@ body {
 .form-control,
 .form-select {
     padding: 0.6rem 0.95rem;
-    border-color: #e2e8f0;
+    border-color: rgba(0, 0, 0, 0.35) !important;
     font-size: 0.9rem;
     transition: all 0.2s ease-in-out;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #93c5fd;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 .input-group-text {
-    border-color: #e2e8f0;
+    border-color: rgba(0, 0, 0, 0.35) !important;
     border-radius: 8px;
 }
+
 
 /* Efectos visuales interactivos */
 #btnActualizar {
