@@ -32,8 +32,8 @@
     <div class="accordion" id="dashboardAccordion">
         @forelse ($categorias as $index => $categoria)
             @php
-                // Se expande la primera categoría por defecto, o según lo guardado en el campo "colapsado" de la DB
-                $isOpen = ($index == 0 || $categoria->colapsado == 'no');
+                // Se expande según lo guardado en el campo "colapsado" de la DB (colapsado == 'no')
+                $isOpen = ($categoria->colapsado == 'no');
             @endphp
             <div class="accordion-item category-item shadow-sm mb-3 rounded-3 overflow-hidden">
                 <h2 class="accordion-header" id="heading-{{ $categoria->id_CategoriaModulo }}">
@@ -94,6 +94,7 @@
                                                         'mBajasInsumos' => 'bajas_insumos.index',
                                                         'mDevoluciones'    => 'devoluciones.index',
                                                         'mCategoModulos'   => 'categoria_modulos.index',
+                                                        'mConfiguracion' => 'configuracion_sistema.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

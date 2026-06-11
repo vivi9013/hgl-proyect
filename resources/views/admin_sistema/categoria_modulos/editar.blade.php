@@ -40,7 +40,7 @@
                         <div class="row g-3">
 
                             {{-- Nombre de la Categoría --}}
-                            <div class="col-12 col-md-5">
+                            <div class="col-12 col-md-4">
                                 <div class="mb-3">
                                     <label for="categoria" class="form-label fw-bold text-secondary">
                                         <i class="fa fa-tag me-1 text-dark"></i> Nombre de la categoría:
@@ -54,7 +54,7 @@
                             </div>
 
                             {{-- Proyecto --}}
-                            <div class="col-12 col-md-5">
+                            <div class="col-12 col-md-4">
                                 <div class="mb-3">
                                     <label for="proyecto" class="form-label fw-bold text-secondary">
                                         <i class="fa fa-laptop me-1 text-dark"></i> Proyecto:
@@ -74,9 +74,25 @@
                                         <i class="fa fa-folder-open-o me-1 text-dark"></i> Panel Abierto:
                                     </label>
                                     <select name="colapsado" id="colapsado" class="form-select border-gray-300 shadow-sm" required>
-                                        <option value="no" {{ old('colapsado', $categoria->colapsado) == 'no' ? 'selected' : '' }}>No</option>
-                                        <option value="si" {{ old('colapsado', $categoria->colapsado) == 'si' ? 'selected' : '' }}>Sí</option>
+                                        <option value="no" {{ old('colapsado', $categoria->colapsado) == 'no' ? 'selected' : '' }}>Sí</option>
+                                        <option value="si" {{ old('colapsado', $categoria->colapsado) == 'si' ? 'selected' : '' }}>No</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            {{-- Orden / Posición --}}
+                            <div class="col-12 col-md-2">
+                                <div class="mb-3">
+                                    <label for="orden" class="form-label fw-bold text-secondary">
+                                        <i class="fa fa-sort me-1 text-dark"></i> Orden / Posición:
+                                    </label>
+                                    <input type="number" name="orden" id="orden" 
+                                           class="form-control border-gray-300 shadow-sm @error('orden') is-invalid @enderror" 
+                                           value="{{ old('orden', $categoria->orden) }}" 
+                                           min="1" required>
+                                    @error('orden')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 

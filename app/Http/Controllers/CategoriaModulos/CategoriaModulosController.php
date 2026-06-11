@@ -16,9 +16,8 @@ class CategoriaModulosController extends Controller
     {
         $buscar = $request->get('buscar');
 
-        $query = CategoriaModulo::orderBy('id_CategoriaModulo', 'desc')
-            ->orderBy('orden', 'asc')
-            ->orderBy('categoria', 'asc');
+        $query = CategoriaModulo::orderBy('orden', 'asc')
+            ->orderBy('id_CategoriaModulo', 'desc');
 
         if (!empty($buscar)) {
             $buscarLimpiado = trim($buscar);
@@ -39,8 +38,10 @@ class CategoriaModulosController extends Controller
                 'info' => "Mostrando " . ($categorias->firstItem() ?? 0) . " a " . ($categorias->lastItem() ?? 0) . " de " . $categorias->total() . " registros"
             ]);
         }
+        // Calcular el siguiente orden sugerido para el formulario de alta
+        $siguienteOrden = (CategoriaModulo::max('orden') ?? 0) + 1;
 
-        return view('admin_sistema.categoria_modulos.index', compact('categorias'));
+        return view('admin_sistema.categoria_modulos.index', compact('categorias', 'siguienteOrden'));
     }
 
     /**
@@ -52,6 +53,7 @@ class CategoriaModulosController extends Controller
             'categoria' => 'required|string|max:255',
             'proyecto'  => 'required|string|max:255',
             'colapsado' => 'required|in:si,no',
+            'orden'     => 'required|integer|min:1',
         ]);
 
         $existe = CategoriaModulo::whereRaw('LOWER(categoria) = ?', [strtolower(trim($request->categoria))])->exists();
@@ -61,16 +63,35 @@ class CategoriaModulosController extends Controller
                 ->withErrors(['categoria' => 'Esta categoría de módulos ya se encuentra registrada.']);
         }
 
-        CategoriaModulo::create([
-            'categoria'      => trim($request->categoria),
-            'proyecto'       => trim($request->proyecto),
-            'colapsado'      => $request->colapsado,
-            'fecha_registro' => now()->toDateString(),
-            'hora_registro'  => now()->toTimeString(),
-            'id_usuario'     => Auth::id() ?? 1,
-            'activo'         => 1,
-            'orden'          => 0,
-        ]);
+        $nuevoOrden = intval($request->orden);
+
+        \DB::transaction(function () use ($nuevoOrden, $request) {
+            // Asegurar que no hay gaps inicialmente
+            $this->compactarOrdenes();
+
+            $maxOrden = CategoriaModulo::max('orden') ?? 0;
+            // Si el orden solicitado es mayor al máximo + 1, lo dejamos al final
+            if ($nuevoOrden > $maxOrden + 1) {
+                $nuevoOrden = $maxOrden + 1;
+            }
+
+            // Desplazar (shift) todas las categorías desde $nuevoOrden hacia arriba
+            CategoriaModulo::where('orden', '>=', $nuevoOrden)->increment('orden');
+
+            CategoriaModulo::create([
+                'categoria'      => trim($request->categoria),
+                'proyecto'       => trim($request->proyecto),
+                'colapsado'      => $request->colapsado,
+                'orden'          => $nuevoOrden,
+                'fecha_registro' => now()->toDateString(),
+                'hora_registro'  => now()->toTimeString(),
+                'id_usuario'     => Auth::id() ?? 1,
+                'activo'         => 1,
+            ]);
+
+            // Compactar al final para garantizar coherencia
+            $this->compactarOrdenes();
+        });
 
         return redirect()
             ->route('categoria_modulos.index')
@@ -95,6 +116,7 @@ class CategoriaModulosController extends Controller
             'categoria' => 'required|string|max:255',
             'proyecto'  => 'required|string|max:255',
             'colapsado' => 'required|in:si,no',
+            'orden'     => 'required|integer|min:1',
         ]);
 
         $categoria = CategoriaModulo::findOrFail($id);
@@ -108,14 +130,48 @@ class CategoriaModulosController extends Controller
                 ->withErrors(['categoria' => 'Esta categoría ya se encuentra registrada con otra clave.']);
         }
 
-        $categoria->update([
-            'categoria'      => trim($request->categoria),
-            'proyecto'       => trim($request->proyecto),
-            'colapsado'      => $request->colapsado,
-            'fecha_registro' => now()->toDateString(),
-            'hora_registro'  => now()->toTimeString(),
-            'id_usuario'     => Auth::id() ?? 1,
-        ]);
+        $nuevoOrden = intval($request->orden);
+        $ordenActual = intval($categoria->orden);
+
+        \DB::transaction(function () use ($categoria, $nuevoOrden, $ordenActual, $request) {
+            // Asegurar que no hay gaps inicialmente
+            $this->compactarOrdenes();
+
+            // Recargar el orden actual por si cambió al compactar
+            $categoria->refresh();
+            $ordenActual = intval($categoria->orden);
+
+            // Ajustar nuevo orden si excede el máximo
+            $maxOrden = CategoriaModulo::max('orden') ?? 0;
+            if ($nuevoOrden > $maxOrden) {
+                $nuevoOrden = $maxOrden;
+            }
+
+            if ($nuevoOrden !== $ordenActual) {
+                if ($nuevoOrden < $ordenActual) {
+                    CategoriaModulo::where('orden', '>=', $nuevoOrden)
+                        ->where('orden', '<', $ordenActual)
+                        ->increment('orden');
+                } else {
+                    CategoriaModulo::where('orden', '>', $ordenActual)
+                        ->where('orden', '<=', $nuevoOrden)
+                        ->decrement('orden');
+                }
+            }
+
+            $categoria->update([
+                'categoria'      => trim($request->categoria),
+                'proyecto'       => trim($request->proyecto),
+                'colapsado'      => $request->colapsado,
+                'orden'          => $nuevoOrden,
+                'fecha_registro' => now()->toDateString(),
+                'hora_registro'  => now()->toTimeString(),
+                'id_usuario'     => Auth::id() ?? 1,
+            ]);
+
+            // Compactar al final para garantizar coherencia
+            $this->compactarOrdenes();
+        });
 
         return redirect()
             ->route('categoria_modulos.index')
@@ -198,32 +254,29 @@ class CategoriaModulosController extends Controller
      */
     public function graficas()
     {
-        return view('admin_sistema.categoria_modulos.analitica.graficas');
-    }
-
-    /**
-     * Muestra la gráfica de pastel (Pie Chart).
-     */
-    public function graficaPie()
-    {
         $dataGrafica = CategoriaModulo::whereHas('modulos')
             ->withCount('modulos as contador')
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('admin_sistema.categoria_modulos.analitica.grafica_pie', compact('dataGrafica'));
+        return view('admin_sistema.categoria_modulos.analitica.graficas', compact('dataGrafica'));
     }
 
     /**
-     * Muestra la gráfica de barras (Bar Chart).
+     * Compacta el orden de las categorías para evitar gaps (números correlativos 1 a N).
      */
-    public function graficaBar()
+    private function compactarOrdenes()
     {
-        $dataGrafica = CategoriaModulo::whereHas('modulos')
-            ->withCount('modulos as contador')
-            ->orderBy('categoria', 'asc')
+        $categorias = CategoriaModulo::orderBy('orden', 'asc')
+            ->orderBy('id_CategoriaModulo', 'asc')
             ->get();
 
-        return view('admin_sistema.categoria_modulos.analitica.grafica_barras', compact('dataGrafica'));
+        foreach ($categorias as $index => $cat) {
+            $nuevoOrden = $index + 1;
+            if ($cat->orden != $nuevoOrden) {
+                $cat->orden = $nuevoOrden;
+                $cat->save();
+            }
+        }
     }
 }

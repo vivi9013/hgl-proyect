@@ -13,17 +13,6 @@
             </h1>
             <p class="text-muted mb-0">Impresión y exportación de archivos por categoría</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ route('carga_archivos.index') }}">Archivos</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Reportes</li>
-            </ol>
-        </nav>
     </div>
 
     {{-- ── Formulario de Selección ── --}}

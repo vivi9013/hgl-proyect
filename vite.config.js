@@ -33,14 +33,13 @@ export default defineConfig({
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/css/categoria_modulos/categoria_edit.css',
-                'resources/css/categoria_modulos/categoria_graficas.css',
                 'resources/css/categoria_modulos/categoria_reportes.css',
                 'resources/js/categoria_modulos/categoria.js',
                 'resources/js/categoria_modulos/categoria_edit.js',
-                'resources/js/categoria_modulos/categoria_graficas.js',
-                'resources/js/categoria_modulos/grafica_pie.js',
-                'resources/js/categoria_modulos/grafica_barras.js',
-                'resources/js/categoria_modulos/categoria_reportes.js'
+                'resources/js/categoria_modulos/categoria_reportes.js',
+                // Configuración General Assets
+                'resources/css/configuracion_sistema/configuracion.css',
+                'resources/js/configuracion_sistema/configuracion.js',
             ],
             refresh: true,
         }),

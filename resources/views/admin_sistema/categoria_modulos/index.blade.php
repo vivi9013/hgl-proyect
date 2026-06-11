@@ -178,11 +178,23 @@
                             <label for="colapsado" class="form-label fw-bold text-secondary">
                                 <i class="fa fa-folder-open-o me-1 text-dark"></i> ¿Panel Abierto Inicialmente?
                             </label>
-                            {{-- Siguiendo la recomendación de no dejar strings vacíos o textos harcodeados inconsistentes --}}
                             <select name="colapsado" id="colapsado" class="form-select border-gray-300 shadow-sm" required>
-                                <option value="no" selected>No (Se muestra cerrado)</option>
-                                <option value="si">Sí (Se muestra expandido)</option>
+                                <option value="no" selected>Sí (Se muestra expandido)</option>
+                                <option value="si">No (Se muestra cerrado)</option>
                             </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="orden" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-sort me-1 text-dark"></i> Orden / Posición:
+                            </label>
+                            <input type="number" name="orden" id="orden" 
+                                   class="form-control border-gray-300 shadow-sm @error('orden') is-invalid @enderror" 
+                                   value="{{ old('orden', $siguienteOrden) }}" 
+                                   min="1" required>
+                            @error('orden')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                     </div>

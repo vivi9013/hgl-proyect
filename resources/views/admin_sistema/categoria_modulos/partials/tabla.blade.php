@@ -6,7 +6,7 @@
     @endphp
     <tr class="{{ $claseFila }}">
         {{-- Índice incremental correcto basado en paginación --}}
-        <td class="ps-4 fw-bold">{{ $categorias->firstItem() + $index }}</td>
+        <td class="ps-4 fw-bold index-cell">{{ $row->orden }}</td>
         
         <td>{{ $row->categoria }}</td>
         
@@ -15,7 +15,7 @@
         {{-- Columna interactiva: Panel Abierto --}}
         <td class="text-center">
             <button type="button" class="btn btn-link btn-sm btn-toggle-colapsar p-0" data-id="{{ $row->id_CategoriaModulo }}">
-                @if($row->colapsado == 'si')
+                @if($row->colapsado == 'no')
                     <i class="fa fa-thumbs-o-up text-primary fs-5" title="Abierto"></i>
                 @else
                     <i class="fa fa-thumbs-o-down text-secondary fs-5" title="Cerrado"></i>

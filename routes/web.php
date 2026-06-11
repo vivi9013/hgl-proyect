@@ -16,6 +16,7 @@ use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 use App\Http\Controllers\PermisosArchivos\PermisosArchivosController;
 use App\Http\Controllers\Pacientes\RxController;
 use App\Http\Controllers\CategoriaModulos\CategoriaModulosController;
+use App\Http\Controllers\ConfiguracionSistema\ConfiguracionController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -115,8 +116,14 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/graficas', 'graficas')->name('graficas');
-        Route::get('/graficas/pie', 'graficaPie')->name('graficas.pie');
-        Route::get('/graficas/bar', 'graficaBar')->name('graficas.bar');
+    });
+
+    // Módulo: Configuración General del Sistema
+    Route::prefix('configuracion-sistema')->name('configuracion_sistema.')->controller(ConfiguracionController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/institucion', 'actualizarInstitucion')->name('update.institucion');
+        Route::post('/seguridad', 'actualizarSeguridad')->name('update.seguridad');
+        Route::post('/encabezado', 'subirEncabezado')->name('update.encabezado');
     });
 
     // Subgrupo: Permisos de Archivo (Prefijo limpio adaptado)

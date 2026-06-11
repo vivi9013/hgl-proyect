@@ -2,56 +2,6 @@
 
 @section('title', 'Gráficas - Carga de Archivos')
 
-@push('styles')
-<style>
-    @media print {
-        /* Ocultar elementos innecesarios al imprimir */
-        .no-print, 
-        .app-sidebar, 
-        .sidebar, 
-        .sidebar-brand, 
-        .main-header, 
-        nav, 
-        .breadcrumb, 
-        .btn, 
-        .card-header span,
-        footer {
-            display: none !important;
-        }
-
-        /* Ajustar contenedor principal al ancho completo de la página */
-        body, 
-        .container-fluid, 
-        .content-wrapper, 
-        main {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            background-color: #ffffff !important;
-        }
-
-        /* Colocar gráficos en página completa apilados de forma limpia */
-        .row {
-            display: block !important;
-        }
-
-        .col-12, .col-lg-6 {
-            width: 100% !important;
-            max-width: 100% !important;
-            flex: 0 0 100% !important;
-            margin-bottom: 40px !important;
-            page-break-inside: avoid !important;
-        }
-
-        .card {
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: none !important;
-        }
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="container-fluid py-4">
 
@@ -63,20 +13,9 @@
             </h1>
             <p class="text-muted mb-0">Visualización de distribución de archivos por categoría</p>
         </div>
-        <nav aria-label="breadcrumb" class="no-print">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item">
-                    <a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a>
-                </li>
-                <li class="breadcrumb-item">git
-                    <a href="{{ route('carga_archivos.index') }}">Archivos</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Gráficas</li>
-            </ol>
-        </nav>
     </div>
 
-    {{-- ── Botón Volver y Botón Imprimir ── --}}
+    {{-- ── Botón Volver ── --}}
     <div class="row mb-4 no-print">
         <div class="col-12">
             <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
@@ -84,21 +23,8 @@
                     <a href="{{ route('carga_archivos.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
                         <i class="fa fa-arrow-left me-1"></i> Volver a la Lista de Archivos
                     </a>
-                    <button onclick="window.print()" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm">
-                        <i class="fa fa-print me-1"></i> Imprimir Gráficas
-                    </button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    {{-- Título Impreso (Visible únicamente al imprimir) --}}
-    <div class="d-none d-print-block text-center mb-4 border-bottom pb-3">
-        <h2 class="fw-bold text-primary mb-1">Hospital General de Linares</h2>
-        <h5 class="text-secondary fw-medium">Reporte Gráfico de Archivos por Categoría</h5>
-        <div class="text-muted small mt-2">
-            <span><b>Fecha de emisión:</b> {{ date('d/m/Y') }}</span> | 
-            <span><b>Hora de emisión:</b> {{ date('H:i:s') }}</span>
         </div>
     </div>
 
@@ -115,8 +41,12 @@
                     <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-1.5 rounded-pill fw-bold">Pastel / Donut</span>
                 </div>
                 <div class="card-body p-4 d-flex align-items-center justify-content-center" style="min-height: 380px;">
-                    <div style="width: 100%; max-width: 320px; position: relative;">
+                    <div class="position-relative" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1;">
                         <canvas id="pastelChart"></canvas>
+                        <div id="chartCenterText" class="position-absolute start-50 top-50 translate-middle text-center" style="pointer-events: none; transform: translate(-50%, -50%);">
+                            <div id="chartCenterLabel" style="font-size: 16px; font-weight: bold; color: #333333; line-height: 1.2; max-width: 180px; word-wrap: break-word;"></div>
+                            <div id="chartCenterValue" style="font-size: 24px; font-weight: bold; color: #333333; margin-top: 4px;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,11 +82,19 @@
         const data = {!! json_encode($categorias->pluck('archivos_count')) !!};
 
         const colors = [
-            '#3182ce', '#38a169', '#dd6b20', '#e53e3e', '#805ad5',
-            '#319795', '#d69e2e', '#4a5568', '#b7791f', '#2b6cb0',
-            '#2c5282', '#276749', '#9c4221', '#9b2c2c', '#553c9a',
-            '#234e52', '#744210', '#1a202c', '#2b6cb0', '#2f855a'
+            "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", 
+            "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", 
+            "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", 
+            "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"
         ];
+
+        // Inicializar texto central
+        const centerLabel = document.getElementById('chartCenterLabel');
+        const centerValue = document.getElementById('chartCenterValue');
+        if (labels.length > 0) {
+            centerLabel.textContent = labels[0];
+            centerValue.textContent = data[0];
+        }
 
         // 1. PASTEL CHART (DONUT)
         const ctxPastel = document.getElementById('pastelChart').getContext('2d');
@@ -176,25 +114,20 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 15,
-                            font: {
-                                family: "'Inter', sans-serif",
-                                size: 11
-                            }
-                        }
+                        display: false // Ocultar la leyenda al igual que en Morris.js legacy
                     },
                     tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return ` ${context.label}: ${context.raw} archivos`;
-                            }
-                        }
+                        enabled: false // Desactivar tooltip flotante para mostrar datos únicamente en el centro
                     }
                 },
-                cutout: '60%'
+                cutout: '70%',
+                onHover: function(event, activeElements) {
+                    if (activeElements && activeElements.length > 0) {
+                        const index = activeElements[0].index;
+                        centerLabel.textContent = labels[index];
+                        centerValue.textContent = data[index];
+                    }
+                }
             }
         });
 
@@ -207,8 +140,8 @@
                 datasets: [{
                     label: 'Cantidad de Archivos',
                     data: data,
-                    backgroundColor: '#3182ce',
-                    borderRadius: 8,
+                    backgroundColor: '{{ session('s_colGr', '#2980b9') }}', // Usar color de tema primario de la sesión
+                    borderRadius: 0, // Barras planas sin esquinas redondeadas para idéntico aspecto Morris.js
                     maxBarThickness: 40
                 }]
             },
@@ -218,6 +151,16 @@
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                return `Cantidad de archivos: ${context.raw}`;
+                            }
+                        }
                     }
                 },
                 scales: {
