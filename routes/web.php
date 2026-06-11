@@ -17,6 +17,7 @@ use App\Http\Controllers\PermisosArchivos\PermisosArchivosController;
 use App\Http\Controllers\Pacientes\RxController;
 use App\Http\Controllers\CategoriaModulos\CategoriaModulosController;
 use App\Http\Controllers\ConfiguracionSistema\ConfiguracionController;
+use App\Http\Controllers\Modulos\ModuloController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -116,6 +117,24 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/graficas', 'graficas')->name('graficas');
+    });
+
+    // Subgrupo: Módulos (Prefijo limpio adaptado)
+    Route::prefix('modulos')->name('modulos.')->controller(ModuloController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/imprimir/{tipo?}', 'imprimir')->name('reportes.imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::post('/categoria-preview', 'categoriaPreview')->name('categoria_preview');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::patch('/{id}/toggle', 'cambiarStatus')->name('toggle');
+        Route::get('/{id}/proyectos', 'proyectos')->name('proyectos');
+        Route::put('/{id}/proyectos', 'actualizarProyectos')->name('proyectos.sync');
+        Route::get('/{id}/perfiles', 'perfiles')->name('perfiles');
+        Route::put('/{id}/perfiles', 'actualizarPerfiles')->name('perfiles.sync');
     });
 
     // Módulo: Configuración General del Sistema

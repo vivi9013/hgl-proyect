@@ -40,6 +40,9 @@ export default defineConfig({
                 // Configuración General Assets
                 'resources/css/configuracion_sistema/configuracion.css',
                 'resources/js/configuracion_sistema/configuracion.js',
+                // Módulos CRUD Assets
+                'resources/css/modulos/modulos.css',
+                'resources/js/modulos/modulos.js',
             ],
             refresh: true,
         }),

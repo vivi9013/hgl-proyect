@@ -34,7 +34,7 @@
             <span class="text-secondary font-size-sm">{{ $archivo->descripcion_archivo ?: 'Sin descripción.' }}</span>
         </td>
         <td class="text-center">
-            <span class="badge bg-secondary-gradient px-3 py-1.5 rounded-pill fw-medium">{{ $archivo->version_archivo ?: '1.0' }}</span>
+            <span class="fw-bold text-dark">{{ $archivo->version_archivo ?: '1' }}</span>
         </td>
         <td class="text-center pe-4">
             @if ($existe)

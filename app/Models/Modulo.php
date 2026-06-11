@@ -43,6 +43,14 @@ class Modulo extends Model
     }
 
     /**
+     * Alias de categoría (para compatibilidad con vistas de reportes).
+     */
+    public function categoriaModulo()
+    {
+        return $this->belongsTo(CategoriaModulo::class, 'id_CategoriaModulo', 'id_CategoriaModulo');
+    }
+
+    /**
      * Relación de muchos a muchos con Perfiles (a través de la tabla pivote modulo_perfil)
      */
     public function perfiles()
@@ -52,6 +60,19 @@ class Modulo extends Model
             'modulo_perfil', 
             'id_modulo', 
             'id_perfil'
+        )->withPivot('usuario', 'fecha', 'hora');
+    }
+
+    /**
+     * Relación de muchos a muchos con Proyectos (a través de la tabla pivote modulo_proyecto)
+     */
+    public function proyectos()
+    {
+        return $this->belongsToMany(
+            Proyecto::class, 
+            'modulo_proyecto', 
+            'id_modulo', 
+            'id_proyecto'
         )->withPivot('usuario', 'fecha', 'hora');
     }
 }

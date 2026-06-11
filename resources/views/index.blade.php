@@ -95,6 +95,7 @@
                                                         'mDevoluciones'    => 'devoluciones.index',
                                                         'mCategoModulos'   => 'categoria_modulos.index',
                                                         'mConfiguracion' => 'configuracion_sistema.index',
+                                                        'mModulos'         => 'modulos.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

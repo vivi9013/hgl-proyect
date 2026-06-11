@@ -17,7 +17,7 @@
 
     {{-- ── 2. Navegación Interna y Contenedor con los Submódulos --> ── --}}
     <div class="row g-4 mb-4">
-        <div class="col-12 col-md-8">
+        <div class="col-12">
            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
                 <div class="d-flex align-items-center gap-3">
                     <div class="bg-primary-light p-3 rounded-circle text-primary">
@@ -27,17 +27,6 @@
                         <h6 class="fw-bold mb-1 text-dark">Panel de Control de Repositorio</h6>
                         <p class="text-muted small mb-0">Modulo para asignar, editar y revisar permisos de categorias para los trabajadores </p>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Contenedor con los Submódulos -->
-        <div class="col-12 col-md-4">
-            <div class="card border-0 shadow-sm p-3 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex gap-2 justify-content-md-end">
-                    <a href="{{ route('categoria_archivos.reportes') }}"
-                       class="btn btn-sm btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes 
-                    </a>
                 </div>
             </div>
         </div>

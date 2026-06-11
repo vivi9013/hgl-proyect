@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reportes - Buscador de Archivos')
+@section('title', 'Reportes - Gestión de Módulos')
 
 @section('content')
 <div class="container-fluid py-4">
@@ -25,17 +25,17 @@
                                 <i class="fa fa-print fa-2x"></i>
                             </div>
                             <div>
-                                <h5 class="fw-bold mb-1 text-dark">Lista Completa de Archivos</h5>
+                                <h5 class="fw-bold mb-1 text-dark">Lista completa de Módulos</h5>
                                 <span class="badge bg-light text-secondary border">Formato PDF / Impresión</span>
                             </div>
                         </div>
-                        <p class="text-secondary mb-0">Genera una lista completa con todos los archivos y formatos ingresados en el sistema a los que tu perfil de usuario tiene autorización para acceder.</p>
+                        <p class="text-secondary mb-0">Imprime una lista completa de las de los modulos contenidos en el sistema.</p>
                     </div>
                     <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
-                        <a href="{{ route('busca_archivos.index') }}" class="btn btn-link text-decoration-none p-0 text-secondary fw-medium">
-                            <i class="fa fa-arrow-left me-1"></i> Volver al buscador
+                        <a href="{{ route('modulos.index') }}" class="btn btn-link text-decoration-none p-0 text-secondary fw-medium">
+                            <i class="fa fa-arrow-left me-1"></i> Volver al listado
                         </a>
-                        <a href="{{ route('busca_archivos.imprimir') }}" target="_blank" class="btn btn-danger-gradient px-4 py-2 rounded-pill shadow-sm d-inline-flex align-items-center gap-1.5 fw-medium">
+                        <a href="{{ route('modulos.reportes.imprimir', 'completa') }}" target="_blank" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm d-inline-flex align-items-center gap-1.5 fw-medium">
                             <i class="fa fa-print"></i> Imprimir Reporte
                         </a>
                     </div>
@@ -44,5 +44,5 @@
         </div>
     </div>
 </div>
-@vite(['resources/css/buscador_archivos/buscador.css'])
+@vite(['resources/css/modulos/modulos.css'])
 @endsection
