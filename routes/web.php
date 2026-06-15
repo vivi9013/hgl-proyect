@@ -126,14 +126,12 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/imprimir/{tipo?}', 'imprimir')->name('reportes.imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
-        Route::post('/categoria-preview', 'categoriaPreview')->name('categoria_preview');
+        Route::get('/categoria-preview', 'categoriaPreview')->name('categoria_preview');
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::patch('/{id}/toggle', 'cambiarStatus')->name('toggle');
-        Route::get('/{id}/proyectos', 'proyectos')->name('proyectos');
         Route::put('/{id}/proyectos', 'actualizarProyectos')->name('proyectos.sync');
-        Route::get('/{id}/perfiles', 'perfiles')->name('perfiles');
         Route::put('/{id}/perfiles', 'actualizarPerfiles')->name('perfiles.sync');
     });
 

@@ -10,6 +10,7 @@ use App\Models\Perfil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ModuloController extends Controller
 {
@@ -55,6 +56,7 @@ class ModuloController extends Controller
         $buscar = $request->get('buscar');
 
         $query = Modulo::with('categoria')
+            ->withCount(['proyectos', 'perfiles'])
             ->orderBy('id', 'desc');
 
         if (!empty($buscar)) {
@@ -97,25 +99,23 @@ class ModuloController extends Controller
     public function guardar(Request $request)
     {
         $request->validate([
-            'nombre'             => 'required|string|max:255',
+            'nombre'             => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('modulos')->where(function ($query) use ($request) {
+                    return $query->where('id_CategoriaModulo', $request->id_CategoriaModulo);
+                })
+            ],
             'carpeta'            => 'required|string|max:255',
             'id_CategoriaModulo' => 'required|exists:categoria_modulo,id_CategoriaModulo',
             'color'              => 'required|string|max:50',
             'icono'              => 'required|string|max:100',
             'creador'            => 'required|string|max:255',
             'descripcion'        => 'required|string',
+        ], [
+            'nombre.unique' => 'Este nombre de módulo ya se encuentra registrado en esta categoría.',
         ]);
-
-        // Evitar duplicados por nombre en la misma categoría
-        $existe = Modulo::where('nombre', trim($request->nombre))
-            ->where('id_CategoriaModulo', $request->id_CategoriaModulo)
-            ->exists();
-
-        if ($existe) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['nombre' => 'Este nombre de módulo ya se encuentra registrado en esta categoría.']);
-        }
 
         Modulo::create([
             'nombre'             => trim($request->nombre),
@@ -142,15 +142,29 @@ class ModuloController extends Controller
      */
     public function editar($id)
     {
-        $modulo = Modulo::findOrFail($id);
-        
+        $modulo = Modulo::with(['proyectos', 'perfiles'])->findOrFail($id);
+
         $categorias = CategoriaModulo::where('activo', 1)
             ->orderBy('categoria', 'asc')
             ->get();
 
+        $proyectos = Proyecto::where('activo', 1)
+            ->orderBy('id_proyecto', 'desc')
+            ->get();
+        $asignadosProyectos = $modulo->proyectos->pluck('id_proyecto');
+
+        $perfiles = Perfil::where('activo', 1)
+            ->orderBy('id', 'desc')
+            ->get();
+        $asignadosPerfiles = $modulo->perfiles->pluck('id');
+
         $colores = $this->colorTranslations;
 
-        return view('admin_sistema.modulos.editar', compact('modulo', 'categorias', 'colores'));
+        return view('admin_sistema.modulos.editar', compact(
+            'modulo', 'categorias', 'colores',
+            'proyectos', 'asignadosProyectos',
+            'perfiles', 'asignadosPerfiles'
+        ));
     }
 
     /**
@@ -159,28 +173,25 @@ class ModuloController extends Controller
     public function actualizar(Request $request, $id)
     {
         $request->validate([
-            'nombre'             => 'required|string|max:255',
+            'nombre'             => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('modulos')->where(function ($query) use ($request) {
+                    return $query->where('id_CategoriaModulo', $request->id_CategoriaModulo);
+                })->ignore($id)
+            ],
             'carpeta'            => 'required|string|max:255',
             'id_CategoriaModulo' => 'required|exists:categoria_modulo,id_CategoriaModulo',
             'color'              => 'required|string|max:50',
             'icono'              => 'required|string|max:100',
             'creador'            => 'required|string|max:255',
             'descripcion'        => 'required|string',
+        ], [
+            'nombre.unique' => 'Este nombre de módulo ya se encuentra registrado en esta categoría.',
         ]);
 
         $modulo = Modulo::findOrFail($id);
-
-        // Validar duplicado excluyendo el ID actual
-        $existe = Modulo::where('nombre', trim($request->nombre))
-            ->where('id_CategoriaModulo', $request->id_CategoriaModulo)
-            ->where('id', '!=', $id)
-            ->exists();
-
-        if ($existe) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['nombre' => 'Este nombre de módulo ya se encuentra registrado en esta categoría.']);
-        }
 
         $modulo->update([
             'nombre'             => trim($request->nombre),
@@ -219,31 +230,21 @@ class ModuloController extends Controller
         ]);
     }
 
-    /**
-     * Interfaz para asignar proyectos.
-     */
-    public function proyectos($id)
-    {
-        $modulo = Modulo::with('proyectos')->findOrFail($id);
 
-        $proyectos = Proyecto::where('activo', 1)
-            ->orderBy('id_proyecto', 'desc')
-            ->get();
-
-        // IDs de proyectos ya asignados (colección para usar contains() en la vista)
-        $asignados = $modulo->proyectos->pluck('id_proyecto');
-
-        return view('admin_sistema.modulos.proyectos', compact('modulo', 'proyectos', 'asignados'));
-    }
 
     /**
      * Guarda la asignación de proyectos (sync atómico).
      */
     public function actualizarProyectos(Request $request, $id)
     {
+        $request->validate([
+            'proyectos'   => 'nullable|array',
+            'proyectos.*' => 'required|exists:proyectos,id_proyecto'
+        ]);
+
         $modulo = Modulo::findOrFail($id);
 
-        $proyectoIds = array_filter((array) $request->input('proyectos', []), 'is_numeric');
+        $proyectoIds = $request->input('proyectos', []);
 
         $syncData = [];
         $fecha   = now()->toDateString();
@@ -263,35 +264,25 @@ class ModuloController extends Controller
         });
 
         return redirect()
-            ->route('modulos.proyectos', $id)
+            ->route('modulos.edit', $id)
             ->with('exito', 'Los proyectos asociados al módulo se han actualizado correctamente.');
     }
 
-    /**
-     * Interfaz para asignar perfiles.
-     */
-    public function perfiles($id)
-    {
-        $modulo = Modulo::with('perfiles')->findOrFail($id);
 
-        $perfiles = Perfil::where('activo', 1)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        // IDs de perfiles ya asignados (colección para usar contains() en la vista)
-        $asignados = $modulo->perfiles->pluck('id');
-
-        return view('admin_sistema.modulos.perfiles', compact('modulo', 'perfiles', 'asignados'));
-    }
 
     /**
      * Guarda la asignación de perfiles (sync atómico).
      */
     public function actualizarPerfiles(Request $request, $id)
     {
+        $request->validate([
+            'perfiles'   => 'nullable|array',
+            'perfiles.*' => 'required|exists:perfiles,id'
+        ]);
+
         $modulo = Modulo::findOrFail($id);
 
-        $perfilIds = array_filter((array) $request->input('perfiles', []), 'is_numeric');
+        $perfilIds = $request->input('perfiles', []);
 
         $syncData = [];
         $fecha   = now()->toDateString();
@@ -311,7 +302,7 @@ class ModuloController extends Controller
         });
 
         return redirect()
-            ->route('modulos.perfiles', $id)
+            ->route('modulos.edit', $id)
             ->with('exito', 'Los perfiles asociados al módulo se han actualizado correctamente.');
     }
 

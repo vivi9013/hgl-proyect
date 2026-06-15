@@ -2,77 +2,73 @@
     @php
         $stu   = ($mod->activo == 1) ? '' : 'text-muted';
         $color = $mod->color ?? 'blue';
+        $bgClass = 'bg-' . $color;
     @endphp
     <tr class="{{ $stu }}" id="row_{{ $mod->id }}">
-        {{-- # --}}
-        <td class="ps-4 text-muted small fw-bold">
+        {{-- 1. # --}}
+        <td class="text-center text-muted small fw-bold">
             {{ $modulos->firstItem() + $index }}
         </td>
 
-        {{-- Módulo --}}
-        <td>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge rounded-pill px-2 py-1" style="background:rgba(0,0,0,.06);">
-                    <i class="{{ $mod->icono ?? 'fa fa-cube' }} text-primary"></i>
-                </span>
-                <div>
-                    <span class="fw-semibold col-nombre-modulo">{{ $mod->nombre }}</span><br>
-                    <small class="text-muted">{{ Str::limit($mod->descripcion, 50) }}</small>
-                </div>
-            </div>
-        </td>
-
-        {{-- Categoría --}}
-        <td>
-            <span class="text-dark small">{{ $mod->categoria->categoria ?? 'Sin Categoría' }}</span>
-        </td>
-
-        {{-- Icono / Color --}}
-        <td>
-            <div class="d-flex align-items-center gap-2">
-                <i class="{{ $mod->icono ?? 'fa fa-cube' }} fa-lg" style="color: #555;"></i>
-                <span class="badge rounded-pill px-2 py-1 small"
-                      style="background: rgba(0,0,0,.07); color: #333; font-size:0.7rem;">
-                    {{ $mod->color ?? '—' }}
-                </span>
-            </div>
-        </td>
-
-        {{-- Estado --}}
+        {{-- 2. Editar --}}
         <td class="text-center">
-            <a href="#" class="btn-toggle-status text-decoration-none" data-id="{{ $mod->id }}" title="Cambiar Estado">
-                @if($mod->activo == 1)
-                    <span class="badge bg-success rounded-pill px-3">Activo</span>
-                @else
-                    <span class="badge bg-secondary rounded-pill px-3">Inactivo</span>
-                @endif
+            <a href="{{ route('modulos.edit', $mod->id) }}" class="text-decoration-none" title="Editar Módulo">
+                <i class="fa fa-pencil-square-o fa-lg" style="color: #000;"></i>
             </a>
         </td>
 
-        {{-- Acciones --}}
-        <td class="text-center pe-4">
-            <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('modulos.edit', $mod->id) }}"
-                   class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1"
-                   title="Editar Módulo">
-                    <i class="fa fa-pencil"></i>
-                </a>
-                <a href="{{ route('modulos.proyectos', $mod->id) }}"
-                   class="btn btn-sm btn-outline-success rounded-pill px-2 py-1"
-                   title="Proyectos">
-                    <i class="fa fa-laptop"></i>
-                </a>
-                <a href="{{ route('modulos.perfiles', $mod->id) }}"
-                   class="btn btn-sm btn-outline-info rounded-pill px-2 py-1"
-                   title="Perfiles">
-                    <i class="fa fa-users"></i>
-                </a>
-            </div>
+        {{-- 3. Agregar proyecto --}}
+        <td class="text-center">
+            <a href="{{ route('modulos.edit', $mod->id) }}?seccion=proyectos" class="text-decoration-none" title="Asignar Proyectos">
+                <i class="fa fa-plus fa-lg" style="color: #0073b7;"></i>
+            </a>
+        </td>
+
+        {{-- 4. Agregar perfil --}}
+        <td class="text-center">
+            <a href="{{ route('modulos.edit', $mod->id) }}?seccion=perfiles" class="text-decoration-none" title="Asignar Perfiles">
+                <i class="fa fa-plus fa-lg" style="color: #0073b7;"></i>
+            </a>
+        </td>
+
+        {{-- 5. Módulo --}}
+        <td class="{{ $bgClass }} text-white fw-bold col-nombre-modulo">
+            {{ $mod->nombre }}
+        </td>
+
+        {{-- 6. Categoría --}}
+        <td class="{{ $bgClass }} text-white">
+            {{ $mod->categoria->categoria ?? 'Sin Categoría' }}
+        </td>
+
+        {{-- 7. Icono --}}
+        <td class="{{ $bgClass }} text-white text-center">
+            <i class="{{ $mod->icono ?? 'fa fa-cube' }} fa-lg"></i>
+        </td>
+
+        {{-- 8. Creador --}}
+        <td class="{{ $bgClass }} text-white text-nowrap">
+            {{ $mod->creador ?? '—' }}
+        </td>
+
+        {{-- 9. Proyectos --}}
+        <td class="{{ $bgClass }} text-white text-center fw-bold">
+            {{ $mod->proyectos_count ?? 0 }}
+        </td>
+
+        {{-- 10. Perfiles --}}
+        <td class="{{ $bgClass }} text-white text-center fw-bold">
+            {{ $mod->perfiles_count ?? 0 }}
+        </td>
+
+        {{-- 11. Status --}}
+        <td class="{{ $bgClass }} text-white text-center">
+            <input type="checkbox" class="btn-alternar-estado" data-id="{{ $mod->id }}" {{ $mod->activo == 1 ? 'checked' : '' }} style="cursor: pointer; width: 18px; height: 18px;">
         </td>
     </tr>
 @empty
     <tr>
-        <td colspan="6" class="text-center py-5 text-muted">
+        <td colspan="11" class="text-center py-5 text-muted">
             <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
             No se encontraron módulos registrados que coincidan con la búsqueda.
         </td>

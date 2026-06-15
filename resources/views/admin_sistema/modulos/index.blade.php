@@ -11,7 +11,7 @@
     <div id="alertaExito" data-message="{{ session('exito') }}" style="display: none;"></div>
 @endif
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-4" id="modulo-gestion-modulos">
     {{-- Encabezado del Módulo --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -44,7 +44,8 @@
                     {{-- Botón Alta de Módulo --}}
                     <button type="button"
                             class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap"
-                            data-bs-toggle="modal" data-bs-target="#modalAltaModulo">
+                            data-bs-toggle="collapse" data-bs-target="#colapsarAltaModulo"
+                            aria-expanded="false" aria-controls="colapsarAltaModulo">
                         <i class="fa fa-plus-circle me-2"></i>Registrar Nuevo Módulo
                     </button>
 
@@ -63,6 +64,166 @@
             </div>
         </div>
     </div>
+
+   {{-- Formulario Colapsable: Registrar Nuevo Módulo (Diseño Legacy Alta) --}}
+    <div class="collapse mb-4 @if($errors->any()) show @endif " id="colapsarAltaModulo">
+        <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="fa fa-edit text-dark me-2"></i>Registra la Información solicitada
+                </h5>
+                <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#colapsarAltaModulo" aria-label="Close"></button>
+            </div>
+
+            <form id="formularioAltaModulo" action="{{ route('modulos.store') }}" method="POST" autocomplete="off">
+                @csrf
+                <div class="row g-3">
+                    {{-- Row 1: Nombre, Carpeta, Categoría --}}
+                    <div class="col-12 col-md-4">
+                        <label for="nombre" class="form-label fw-bold text-secondary">
+                            Nombre:
+                        </label>
+                        <input type="text" name="nombre" id="nombre"
+                               class="form-control @error('nombre') is-invalid @enderror"
+                               value="{{ old('nombre') }}"
+                               placeholder="Coloca el nombre del módulo" required>
+                        @error('nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="carpeta" class="form-label fw-bold text-secondary">
+                            Carpeta:
+                        </label>
+                        <input type="text" name="carpeta" id="carpeta"
+                               class="form-control @error('carpeta') is-invalid @enderror"
+                               value="{{ old('carpeta') }}"
+                               placeholder="Coloca el nombre de la carpeta" required>
+                        @error('carpeta')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="id_CategoriaModulo" class="form-label fw-bold text-secondary">
+                            Categoría:
+                        </label>
+                        <select name="id_CategoriaModulo" id="id_CategoriaModulo"
+                                class="form-select @error('id_CategoriaModulo') is-invalid @enderror"
+                                required>
+                            <option value="">— Selecciona una categoría —</option>
+                            @foreach($categorias as $cat)
+                                <option value="{{ $cat->id_CategoriaModulo }}"
+                                    {{ old('id_CategoriaModulo') == $cat->id_CategoriaModulo ? 'selected' : '' }}>
+                                    {{ $cat->categoria }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('id_CategoriaModulo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Row 2: Color de Caja, Icono Font Awesome, Creador --}}
+                    <div class="col-12 col-md-4">
+                        <label for="color" class="form-label fw-bold text-secondary">
+                            Color de Caja:
+                        </label>
+                        <select name="color" id="color"
+                                class="form-select" required>
+                            @foreach([
+                                'red'=>'Rojo','yellow'=>'Amarillo','aqua'=>'Aqua',
+                                'blue'=>'Azul','light-blue'=>'Azul Claro','green'=>'Verde',
+                                'navy'=>'Militar','teal'=>'Verde Azulado','olive'=>'Verde Olivo',
+                                'lime'=>'Lima','orange'=>'Naranja','fuchsia'=>'Fucsia',
+                                'purple'=>'Morado','maroon'=>'Granada','black'=>'Negro'
+                            ] as $val => $label)
+                                <option value="{{ $val }}" {{ old('color') === $val ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="icono" class="form-label fw-bold text-secondary">
+                            Icono Font Awesome:
+                        </label>
+                        <input type="text" name="icono" id="icono"
+                               class="form-control @error('icono') is-invalid @enderror"
+                               value="{{ old('icono', 'fa fa-cube') }}"
+                               placeholder="fa fa-icono" required>
+                        @error('icono')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="creador" class="form-label fw-bold text-secondary">
+                            Creador:
+                        </label>
+                        <input type="text" name="creador" id="creador"
+                               class="form-control @error('creador') is-invalid @enderror"
+                               value="{{ old('creador') }}"
+                               placeholder="Autor del módulo" required>
+                        @error('creador')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Row 3: Descripción (izquierda) & Vista Previa Card (derecha) --}}
+                    <div class="col-12 col-md-8 d-flex flex-column justify-content-start">
+                        <label for="descripcion" class="form-label fw-bold text-secondary">
+                            Descripción:
+                        </label>
+                        <input type="text" name="descripcion" id="descripcion"
+                               class="form-control mb-auto @error('descripcion') is-invalid @enderror"
+                               value="{{ old('descripcion') }}"
+                               placeholder="Descripción general del módulo" required style="height: calc(100% - 32px); min-height: 50px;">
+                        @error('descripcion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-12 col-md-4 d-flex align-items-end justify-content-center">
+                        <div class="small-box bg-red w-100 mb-0" id="vistaPreviaTarjeta" style="min-height: 100px;">
+                            <div class="inner" style="padding: 10px 10px 0 10px;">
+                                <h3>&nbsp;</h3>
+                                <span class="progress-description fw-bold" id="vistaPreviaNombre">Nombre del módulo</span>
+                            </div>
+                            <div class="icon" style="top: -5px; right: 10px; font-size: 65px;">
+                                <i class="fa fa-cube" id="vistaPreviaIcono"></i>
+                            </div>
+                            <a href="#" class="small-box-footer py-2" style="margin-top: 10px;">
+                                Ingresar al Módulo <i class="fa fa-arrow-circle-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Row 4: Botones Guardar/Cancelar --}}
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="button" class="btn btn-light py-2 rounded-pill shadow-sm" data-bs-toggle="collapse" data-bs-target="#colapsarAltaModulo">
+                        <i class="fa fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="submit" id="btnGuardarModulo" class="btn btn-primary py-2 rounded-pill shadow-sm">
+                        <i class="fa fa-save me-2"></i>Guardar Información
+                    </button>
+                </div>
+            </form>
+
+            {{-- Sección Dinámica: Submódulos de la Categoría Seleccionada --}}
+            <div class="mt-4 d-none" id="contenedorVistaPreviaCategoria">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body bg-light p-3" id="contenidoVistaPreviaCategoria">
+                        <!-- Carga dinámica por AJAX desde JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     {{-- Área Principal: Tabla de Registros --}}
     <div class="row g-4">
@@ -83,7 +244,7 @@
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
                             {{-- Buscador Reactivo --}}
                             <div class="input-group" style="min-width: 260px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
-                                <input type="search" id="global-search" class="form-control bg-light border-0"
+                                <input type="search" id="busqueda-global" class="form-control bg-light border-0"
                                        placeholder="Buscar módulo o categoría..."
                                        style="font-size: 0.85rem; box-shadow: none;">
                                 <span class="input-group-text bg-light border-0 py-0">
@@ -101,18 +262,38 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
                                 <tr>
-                                    <th class="ps-4" style="width: 60px;">#</th>
+                                    <th class="text-center" style="width: 50px;">#</th>
+                                    <th class="text-center">Editar</th>
+                                    <th class="text-center">Agregar proyecto</th>
+                                    <th class="text-center">Agregar perfil</th>
                                     <th>Módulo</th>
                                     <th>Categoría</th>
-                                    <th>Icono / Color</th>
-                                    <th class="text-center" style="width: 100px;">Estado</th>
-                                    <th class="text-center pe-4" style="width: 140px;">Acciones</th>
+                                    <th class="text-center">Icono</th>
+                                    <th>Creador</th>
+                                    <th class="text-center">Proyectos</th>
+                                    <th class="text-center">Perfiles</th>
+                                    <th class="text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbodyModulos">
+                            <tbody id="cuerpoTablaModulos">
                                 {{-- Render inicial desde Servidor usando patrón de fragmentos --}}
                                 @include('admin_sistema.modulos.partials.tabla')
                             </tbody>
+                            <tfoot class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 bg-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Editar</th>
+                                    <th class="text-center">Agregar proyecto</th>
+                                    <th class="text-center">Agregar perfil</th>
+                                    <th>Módulo</th>
+                                    <th>Categoría</th>
+                                    <th class="text-center">Icono</th>
+                                    <th>Creador</th>
+                                    <th class="text-center">Proyectos</th>
+                                    <th class="text-center">Perfiles</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -133,177 +314,11 @@
         </div>
     </div>
 
-    {{-- Modal: Registrar Nuevo Módulo --}}
-    <div class="modal fade" id="modalAltaModulo" tabindex="-1"
-         aria-labelledby="modalAltaModuloLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg rounded-3"
-                 style="background-color: #ffffff; border: 2px solid #000000 !important;">
-                <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
-                    <h5 class="modal-title fw-bold text-dark" id="modalAltaModuloLabel">
-                        <i class="fa fa-cube text-dark me-2"></i>Registrar Nuevo Módulo
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close" style="filter: brightness(0);"></button>
-                </div>
-
-                <form id="formAltaModulo" action="{{ route('modulos.store') }}" method="POST" autocomplete="off">
-                    @csrf
-                    <div class="modal-body px-4 py-4">
-
-                        <div class="row g-3">
-                            {{-- Nombre --}}
-                            <div class="col-12 col-md-6">
-                                <label for="nombre" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-tag me-1 text-dark"></i> Nombre del Módulo:
-                                </label>
-                                <input type="text" name="nombre" id="nombre"
-                                       class="form-control border-gray-300 shadow-sm @error('nombre') is-invalid @enderror"
-                                       value="{{ old('nombre') }}"
-                                       placeholder="Nombre del módulo" required>
-                                @error('nombre')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Carpeta --}}
-                            <div class="col-12 col-md-6">
-                                <label for="carpeta" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-folder-o me-1 text-dark"></i> Carpeta:
-                                </label>
-                                <input type="text" name="carpeta" id="carpeta"
-                                       class="form-control border-gray-300 shadow-sm @error('carpeta') is-invalid @enderror"
-                                       value="{{ old('carpeta') }}"
-                                       placeholder="nombre-carpeta" required>
-                                @error('carpeta')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Categoría --}}
-                            <div class="col-12 col-md-6">
-                                <label for="id_CategoriaModulo" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-sitemap me-1 text-dark"></i> Categoría:
-                                </label>
-                                <select name="id_CategoriaModulo" id="id_CategoriaModulo"
-                                        class="form-select border-gray-300 shadow-sm @error('id_CategoriaModulo') is-invalid @enderror"
-                                        required>
-                                    <option value="">— Selecciona una categoría —</option>
-                                    @foreach($categorias as $cat)
-                                        <option value="{{ $cat->id_CategoriaModulo }}"
-                                            {{ old('id_CategoriaModulo') == $cat->id_CategoriaModulo ? 'selected' : '' }}>
-                                            {{ $cat->categoria }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_CategoriaModulo')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Color de Caja --}}
-                            <div class="col-12 col-md-6">
-                                <label for="color" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-paint-brush me-1 text-dark"></i> Color de Caja:
-                                </label>
-                                <select name="color" id="color"
-                                        class="form-select border-gray-300 shadow-sm" required>
-                                    @foreach([
-                                        'red'=>'Rojo','yellow'=>'Amarillo','aqua'=>'Aqua',
-                                        'blue'=>'Azul','light-blue'=>'Azul Claro','green'=>'Verde',
-                                        'navy'=>'Militar','teal'=>'Verde Azulado','olive'=>'Verde Olivo',
-                                        'lime'=>'Lima','orange'=>'Naranja','fuchsia'=>'Fucsia',
-                                        'purple'=>'Morado','maroon'=>'Granada','black'=>'Negro'
-                                    ] as $val => $label)
-                                        <option value="{{ $val }}" {{ old('color') === $val ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Icono Font Awesome --}}
-                            <div class="col-12 col-md-6">
-                                <label for="icono" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-smile-o me-1 text-dark"></i> Icono Font Awesome:
-                                </label>
-                                <input type="text" name="icono" id="icono"
-                                       class="form-control border-gray-300 shadow-sm @error('icono') is-invalid @enderror"
-                                       value="{{ old('icono', 'fa fa-cube') }}"
-                                       placeholder="fa fa-cube" required>
-                                @error('icono')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Creador --}}
-                            <div class="col-12 col-md-6">
-                                <label for="creador" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-user-o me-1 text-dark"></i> Creador:
-                                </label>
-                                <input type="text" name="creador" id="creador"
-                                       class="form-control border-gray-300 shadow-sm @error('creador') is-invalid @enderror"
-                                       value="{{ old('creador') }}"
-                                       placeholder="Autor del módulo" required>
-                                @error('creador')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Descripción --}}
-                            <div class="col-12">
-                                <label for="descripcion" class="form-label fw-bold text-secondary">
-                                    <i class="fa fa-align-left me-1 text-dark"></i> Descripción:
-                                </label>
-                                <input type="text" name="descripcion" id="descripcion"
-                                       class="form-control border-gray-300 shadow-sm @error('descripcion') is-invalid @enderror"
-                                       value="{{ old('descripcion') }}"
-                                       placeholder="Descripción general del módulo" required>
-                                @error('descripcion')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Vista previa del badge de icono --}}
-                            <div class="col-12">
-                                <div class="p-3 rounded-3 bg-light d-flex align-items-center gap-3" id="previewModulo">
-                                    <i id="previewIcono" class="fa fa-cube fa-2x text-primary"></i>
-                                    <div>
-                                        <span class="fw-bold text-dark" id="previewNombre">Nombre del módulo</span><br>
-                                        <small class="text-muted" id="previewDesc">Descripción del módulo</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">
-                            <i class="fa fa-times me-2"></i>Cancelar
-                        </button>
-                        <button type="submit" id="btnGuardarModulo" class="btn btn-primary py-2 rounded-pill shadow-sm">
-                            <i class="fa fa-save me-2"></i>Guardar Módulo
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+ 
 
 </div>
 
-{{-- Variables de configuración para JS --}}
-<script>
-    window.ModulosConfig = {
-        urlTabla: "{{ route('modulos.index') }}",
-        urlToggle: "{{ url('modulos') }}/",
-        totalRegistros: {{ $modulos->total() }},
-        paginaActual: {{ $modulos->currentPage() }},
-        totalPaginas: {{ $modulos->lastPage() }},
-        porPagina: {{ $modulos->perPage() }},
-        csrfToken: "{{ csrf_token() }}"
-    };
-</script>
+
 
 {{-- Inyección de activos encapsulada por Vite --}}
 @vite(['resources/css/modulos/modulos.css', 'resources/js/modulos/modulos.js'])
