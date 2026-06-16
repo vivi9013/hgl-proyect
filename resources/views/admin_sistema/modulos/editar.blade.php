@@ -113,15 +113,7 @@
                                     </label>
                                     <select name="color" id="color"
                                             class="form-select border-gray-300 shadow-sm" required>
-                                        @foreach([
-                                            'red'=>'Rojo','yellow'=>'Amarillo','aqua'=>'Aqua',
-                                            'blue'=>'Azul','light-blue'=>'Azul Claro','green'=>'Verde',
-                                            'navy'=>'Militar','teal'=>'Verde Azulado','olive'=>'Verde Olivo',
-                                            'lime'=>'Lima','orange'=>'Naranja','fuchsia'=>'Fucsia',
-                                            'purple'=>'Morado','maroon'=>'Granada','black'=>'Negro',
-                                            'red-active'=>'Rojo Activo','green-active'=>'Verde Activo',
-                                            'blue-active'=>'Azul Activo','navy-active'=>'Militar Activo'
-                                        ] as $val => $label)
+                                        @foreach($colores as $val => $label)
                                             <option value="{{ $val }}"
                                                 {{ old('color', $modulo->color) === $val ? 'selected' : '' }}>
                                                 {{ $label }}
