@@ -96,6 +96,7 @@
                                                         'mCategoModulos'   => 'categoria_modulos.index',
                                                         'mConfiguracion' => 'configuracion_sistema.index',
                                                         'mModulos'         => 'modulos.index',
+                                                        'mPerfiles'        => 'perfiles.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

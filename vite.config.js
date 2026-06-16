@@ -43,6 +43,10 @@ export default defineConfig({
                 // Módulos CRUD Assets
                 'resources/css/modulos/modulos.css',
                 'resources/js/modulos/modulos.js',
+                // Perfiles Assets
+                'resources/css/perfiles/perfiles.css',
+                'resources/js/perfiles/perfiles.js',
+                'resources/js/perfiles/perfiles_modulos.js',
             ],
             refresh: true,
         }),

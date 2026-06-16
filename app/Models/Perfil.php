@@ -9,6 +9,15 @@ class Perfil extends Model
     protected $table = 'perfiles';
     public $timestamps = false;
 
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+        'fecha',
+        'hora',
+        'usuario',
+        'activo'
+    ];
+
     /**
      * Relación de muchos a muchos con Módulos (a través de modulo_perfil)
      */
