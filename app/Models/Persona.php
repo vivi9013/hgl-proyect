@@ -34,7 +34,8 @@ class Persona extends Model
         'municipio',
         'estado',
         'hora',
-        'usuario'
+        'usuario',
+        'estudiante',
     ];
 
     public function usuario()

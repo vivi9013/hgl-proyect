@@ -1,0 +1,186 @@
+/* ═══════════════════════════════════════════════
+   Módulo: Personas — Estilos personalizados
+   ═══════════════════════════════════════════════ */
+
+/* Transiciones de tarjeta */
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Focus modernos en inputs */
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Hover filas de tabla */
+#tbodyPersonas tr {
+    transition: background-color 0.2s ease;
+}
+#tbodyPersonas tr:hover {
+    background-color: rgba(49, 130, 206, 0.02) !important;
+}
+
+/* Botones de toggle (status / estudiante) */
+.btn-toggle-status,
+.btn-toggle-estudiante {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+.btn-toggle-status:hover,
+.btn-toggle-estudiante:hover {
+    transform: scale(1.15);
+}
+
+/* Ícono editar */
+.fa-pencil-square-o {
+    color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+.fa-pencil-square-o:hover {
+    color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* ── Sin tarjetas visuales (estilo plano consistente) ── */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Iconos de acento en negro */
+.text-primary,
+.fa-id-card,
+.fa-plus-circle,
+.fa-list,
+.fa-users {
+    color: #000000 !important;
+}
+
+/* Form Controls */
+.form-control,
+.form-select,
+textarea {
+    border-color: #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Botón Primario */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón Cancelar */
+.btn-light {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+.btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── Tabla ── */
+.table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+}
+.table th {
+    background-color: #f9fafb !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem !important;
+    border-bottom: 1.5px solid #e5e7eb !important;
+}
+.table td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.875rem;
+}
+.table-hover tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+/* ── Paginación ── */
+.pagination { margin: 0 !important; }
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+.bg-primary {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+.bg-primary-light {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}

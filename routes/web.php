@@ -19,6 +19,7 @@ use App\Http\Controllers\CategoriaModulos\CategoriaModulosController;
 use App\Http\Controllers\ConfiguracionSistema\ConfiguracionController;
 use App\Http\Controllers\Modulos\ModuloController;
 use App\Http\Controllers\Perfiles\PerfilController;
+use App\Http\Controllers\Personas\PersonaController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -149,6 +150,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::get('/{id}/modulos', 'agregarModulos')->name('modulos');
         Route::put('/{id}/modulos', 'actualizarModulos')->name('modulos.sync');
+    });
+
+    // Subgrupo: Personas
+    Route::prefix('personas')->name('personas.')->controller(PersonaController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/municipios', 'municipios')->name('municipios');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::patch('/{id}/estudiante', 'cambiarEstudiante')->name('estudiante');
     });
 
     // Módulo: Configuración General del Sistema
