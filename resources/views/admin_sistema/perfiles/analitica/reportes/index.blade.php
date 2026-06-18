@@ -7,13 +7,6 @@
     {{-- Encabezado de Navegación y Título Corporativo --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="{{ route('inicio') }}" class="text-decoration-none">Panel de Control</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('perfiles.index') }}" class="text-decoration-none">Catálogo de Perfiles</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Reportes</li>
-                </ol>
-            </nav>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-print text-primary me-2"></i>Módulo de Reportes
             </h1>
@@ -51,19 +44,6 @@
                     </a>
                 </div>
 
-            </div>
-        </div>
-
-        {{-- Espacio para futuros reportes --}}
-        <div class="col-12 col-md-6 col-lg-7">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex align-items-center justify-content-center border-dashed">
-                <div class="text-center text-muted py-4">
-                    <div class="mb-2">
-                        <i class="fa fa-sliders fa-2x text-light-gray"></i>
-                    </div>
-                    <h6 class="fw-bold mb-1">¿Necesitas filtros adicionales?</h6>
-                    <p class="small mb-0 px-3">Las consultas complejas o exportaciones a hojas de cálculo se configuran de forma modularizada conforme crezcan las necesidades del sistema.</p>
-                </div>
             </div>
         </div>
     </div>

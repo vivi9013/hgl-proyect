@@ -20,6 +20,7 @@ use App\Http\Controllers\ConfiguracionSistema\ConfiguracionController;
 use App\Http\Controllers\Modulos\ModuloController;
 use App\Http\Controllers\Perfiles\PerfilController;
 use App\Http\Controllers\Personas\PersonaController;
+use App\Http\Controllers\Proyectos\ProyectoController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -135,6 +136,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}/toggle', 'cambiarStatus')->name('toggle');
         Route::put('/{id}/proyectos', 'actualizarProyectos')->name('proyectos.sync');
         Route::put('/{id}/perfiles', 'actualizarPerfiles')->name('perfiles.sync');
+    });
+
+    // Subgrupo: Proyectos
+    Route::prefix('proyectos')->name('proyectos.')->controller(ProyectoController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/verificar', 'verificar')->name('verificar');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::put('/{id}/modulos', 'actualizarModulos')->name('modulos.sync');
     });
 
     // Subgrupo: Perfiles (Prefijo limpio adaptado)

@@ -208,7 +208,7 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('admin_formatos.carga_archivos.reportes', compact('categorias'));
+        return view('admin_formatos.carga_archivos.analitica.reportes.index', compact('categorias'));
     }
 
     public function imprimirReporte(Request $request)
@@ -224,7 +224,7 @@ class CargaArchivosController extends Controller
             ->orderBy('id_archivo', 'asc')
             ->get();
 
-        return view('admin_formatos.carga_archivos.reporte_impresion', compact('categoria', 'archivos'));
+        return view('admin_formatos.carga_archivos.analitica.reportes.impresion', compact('categoria', 'archivos'));
     }
 
     public function graficas()
@@ -239,6 +239,6 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('admin_formatos.carga_archivos.graficas', compact('categorias'));
+        return view('admin_formatos.carga_archivos.analitica.graficas', compact('categorias'));
     }
 }

@@ -229,7 +229,7 @@ class PersonaController extends Controller
     public function reportes()
     {
         $estados = DB::table('estados')->orderBy('estado')->pluck('estado', 'estado');
-        return view('admin_sistema.personas.analitica.reportes', compact('estados'));
+        return view('admin_sistema.personas.analitica.reportes.index', compact('estados'));
     }
 
     /**
@@ -252,7 +252,7 @@ class PersonaController extends Controller
         $personas = $query->get();
         $estados  = DB::table('estados')->orderBy('estado')->pluck('estado', 'estado');
 
-        return view('admin_sistema.personas.reportes.reporte_impresion', compact('personas', 'estados', 'sexo', 'estado'));
+        return view('admin_sistema.personas.analitica.reportes.impresion', compact('personas', 'estados', 'sexo', 'estado'));
     }
 
     /**
