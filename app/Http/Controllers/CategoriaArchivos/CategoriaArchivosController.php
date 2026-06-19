@@ -142,7 +142,7 @@ class CategoriaArchivosController extends Controller
      */
     public function reportes()
     {
-        return view('admin_formatos.categoria_archivos.reportes.reportes');
+        return view('admin_formatos.categoria_archivos.analitica.reportes.index');
     }
 
     /**
@@ -162,7 +162,7 @@ class CategoriaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get();
 
-        return view('admin_formatos.categoria_archivos.reportes.reporte_impresion', compact('categorias'));
+        return view('admin_formatos.categoria_archivos.analitica.reportes.impresion', compact('categorias'));
     }
 
     /**

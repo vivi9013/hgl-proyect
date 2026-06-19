@@ -318,7 +318,7 @@ class ModuloController extends Controller
             'categorias' => CategoriaModulo::whereHas('modulos')->count(),
         ];
 
-        return view('admin_sistema.modulos.reportes', compact('stats'));
+        return view('admin_sistema.modulos.analitica.reportes.index', compact('stats'));
     }
 
     /**
@@ -334,7 +334,7 @@ class ModuloController extends Controller
 
         $modulos = $query->get();
 
-        return view('admin_sistema.modulos.reportes.reporte_impresion', compact('modulos', 'tipo'));
+        return view('admin_sistema.modulos.analitica.reportes.impresion', compact('modulos', 'tipo'));
     }
 
     /**

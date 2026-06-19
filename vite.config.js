@@ -58,6 +58,13 @@ export default defineConfig({
                 'resources/css/perfiles/perfiles.css',
                 'resources/js/perfiles/perfiles.js',
                 'resources/js/perfiles/perfiles_modulos.js',
+                // Personas Assets
+                'resources/css/personas/personas.css',
+                'resources/js/personas/personas.js',
+                'resources/js/personas/personas_edit.js',
+                // Proyectos Assets
+                'resources/css/proyectos/proyectos.css',
+                'resources/js/proyectos/proyectos.js',
             ],
             refresh: true,
         }),

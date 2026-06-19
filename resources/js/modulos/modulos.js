@@ -34,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Abrir modal de alta automáticamente si hay errores de validación
+    const modalAltaEl = document.getElementById('modalAltaModulo');
+    if (modalAltaEl && modalAltaEl.dataset.autoOpen === 'true') {
+        const modalInstancia = new bootstrap.Modal(modalAltaEl);
+        modalInstancia.show();
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // A.2 SECCIÓN DESTACADA DESDE URL Y COMPORTAMIENTO DE COLAPSABLES
     // ─────────────────────────────────────────────────────────────────────────
@@ -370,6 +377,83 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         // En vistas donde no hay tabla (edición unificada), se enlazan los eventos alternar estado
         enlazarAlternarEstado();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // D.2 FORMULARIO DE TOGGLE ESTADO EN VISTA DE EDICIÓN
+    // ─────────────────────────────────────────────────────────────────────────
+    const formToggleEstado = document.getElementById('formToggleEstado');
+    if (formToggleEstado) {
+        formToggleEstado.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const url = this.getAttribute('action');
+            const tokenCsrf = this.querySelector('input[name="_token"]')?.value ?? '';
+            const esActivo = this.querySelector('.fa-toggle-on') !== null;
+            const accionTexto = esActivo ? 'desactivar' : 'activar';
+            const nombreModulo = document.getElementById('vistaPreviaNombre')?.textContent.trim() ?? '';
+
+            const ejecutarAccionEdit = () => {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': tokenCsrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: new FormData(formToggleEstado)
+                })
+                .then(respuesta => {
+                    if (!respuesta.ok) throw new Error('Error en el servidor');
+                    return respuesta.json();
+                })
+                .then(datos => {
+                    if (datos.success) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: '¡Estado actualizado!',
+                                text: datos.message,
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            window.location.reload();
+                        }
+                    }
+                })
+                .catch(() => {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', 'No se pudo actualizar el estado del módulo.', 'error');
+                    } else {
+                        alert('No se pudo actualizar el estado del módulo.');
+                    }
+                });
+            };
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: `¿${accionTexto.charAt(0).toUpperCase() + accionTexto.slice(1)} módulo?`,
+                    text: `"${nombreModulo}" será ${accionTexto}do del sistema.`,
+                    icon: esActivo ? 'warning' : 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Sí, ${accionTexto}`,
+                    cancelButtonText: 'Cancelar'
+                }).then(resultado => {
+                    if (resultado.isConfirmed) {
+                        ejecutarAccionEdit();
+                    }
+                });
+            } else {
+                if (confirm(`¿${accionTexto} el módulo "${nombreModulo}"?`)) {
+                    ejecutarAccionEdit();
+                }
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────

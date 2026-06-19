@@ -460,14 +460,12 @@
                         @method('PATCH')
                         @if($modulo->activo)
                             <button type="submit"
-                                    class="btn btn-outline-warning rounded-pill py-2 w-100 text-start px-3"
-                                    onclick="return confirm('¿Desactivar este módulo?')">
+                                    class="btn btn-outline-warning rounded-pill py-2 w-100 text-start px-3">
                                 <i class="fa fa-toggle-on me-2"></i>Desactivar Módulo
                             </button>
                         @else
                             <button type="submit"
-                                    class="btn btn-outline-success rounded-pill py-2 w-100 text-start px-3"
-                                    onclick="return confirm('¿Activar este módulo?')">
+                                    class="btn btn-outline-success rounded-pill py-2 w-100 text-start px-3">
                                 <i class="fa fa-toggle-off me-2"></i>Activar Módulo
                             </button>
                         @endif

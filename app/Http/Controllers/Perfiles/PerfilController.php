@@ -186,7 +186,7 @@ class PerfilController extends Controller
      */
     public function reportes()
     {
-        return view('admin_sistema.perfiles.analitica.reportes');
+        return view('admin_sistema.perfiles.analitica.reportes.index');
     }
 
     /**
@@ -195,7 +195,7 @@ class PerfilController extends Controller
     public function imprimir()
     {
         $perfiles = Perfil::orderBy('nombre', 'asc')->get();
-        return view('admin_sistema.perfiles.reportes.reporte_impresion', compact('perfiles'));
+        return view('admin_sistema.perfiles.analitica.reportes.impresion', compact('perfiles'));
     }
 
     /**

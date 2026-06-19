@@ -237,7 +237,7 @@ class CategoriaModulosController extends Controller
      */
     public function reportes()
     {
-        return view('admin_sistema.categoria_modulos.analitica.reportes');
+        return view('admin_sistema.categoria_modulos.analitica.reportes.index');
     }
 
     /**
@@ -246,7 +246,7 @@ class CategoriaModulosController extends Controller
     public function imprimir()
     {
         $categorias = CategoriaModulo::orderBy('categoria', 'asc')->get();
-        return view('admin_sistema.categoria_modulos.reportes.reporte_impresion', compact('categorias'));
+        return view('admin_sistema.categoria_modulos.analitica.reportes.impresion', compact('categorias'));
     }
 
     /**

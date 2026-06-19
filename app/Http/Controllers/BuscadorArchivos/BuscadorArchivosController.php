@@ -128,7 +128,7 @@ class BuscadorArchivosController extends Controller
      */
     public function reportes()
     {
-        return view('admin_formatos.buscador_archivos.reportes');
+        return view('admin_formatos.buscador_archivos.analitica.reportes.index');
     }
 
     /**
@@ -150,6 +150,6 @@ class BuscadorArchivosController extends Controller
             ->with('categoria')
             ->get();
 
-        return view('admin_formatos.buscador_archivos.reporte_impresion', compact('archivos'));
+        return view('admin_formatos.buscador_archivos.analitica.reportes.impresion', compact('archivos'));
     }
 }
