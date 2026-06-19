@@ -9,187 +9,244 @@ use Illuminate\Support\Facades\Auth;
 
 class AreaSurtimientoController extends Controller
 {
-    /**
-     * Muestra el listado de áreas de surtimiento.
-     */
+
     public function index(Request $request)
     {
+        // Obtiene el valor del parámetro "buscar" enviado en la petición.
+        // Si no existe asigna una cadena vacía ''.
         $buscar = $request->get('buscar', '');
 
+        // Crea una consulta sobre el modelo AreaSurtimiento.
+        // Ordena los registros por id_area_surtimiento de forma descendente.
         $query = AreaSurtimiento::orderBy('id_area_surtimiento', 'desc');
 
+        // Verifica que la variable buscar no esté vacía.
         if (!empty($buscar)) {
+
+            // Agrupa las condiciones de búsqueda dentro de una función anónima.
+            // use($buscar) permite utilizar la variable dentro de la función.
             $query->where(function ($q) use ($buscar) {
+
+                // Busca coincidencias parciales en el campo nombre.
                 $q->where('nombre', 'LIKE', "%{$buscar}%")
-                  ->orWhere('tipo', 'LIKE', "%{$buscar}%");
+
+                    // También busca coincidencias en el campo tipo.
+                    ->orWhere('tipo', 'LIKE', "%{$buscar}%");
             });
         }
 
-        // AJAX: devolver sugerencias JSON para el autocomplete del buscador
+        // Verifica si la petición fue realizada mediante AJAX.
         if ($request->ajax()) {
-            $sugerencias = $query->select('id_area_surtimiento', 'nombre', 'tipo', 'activo')
+
+            // Selecciona únicamente los campos indicados.
+            $sugerencias = $query->select(
+                    'id_area_surtimiento',
+                    'nombre',
+                    'tipo',
+                    'activo'
+                )
+
+                // Limita la consulta a 10 resultados.
                 ->limit(10)
+
+                // Ejecuta la consulta.
                 ->get()
+
+                // Recorre cada resultado y crea un nuevo arreglo.
                 ->map(fn($a) => [
-                    'id'     => $a->id_area_surtimiento,
+
+                    // Asigna el id del registro.
+                    'id' => $a->id_area_surtimiento,
+
+                    // Asigna el nombre.
                     'nombre' => $a->nombre,
-                    'tipo'   => $a->tipo,
+
+                    // Asigna el tipo.
+                    'tipo' => $a->tipo,
+
+                    // Asigna el estado.
                     'activo' => $a->activo,
                 ]);
+
+            // Devuelve los datos en formato JSON.
             return response()->json($sugerencias);
         }
 
-        $areas = $query->paginate(10)->withQueryString();
+        // Divide los resultados en páginas de 10 registros.
+        $areas = $query->paginate(10)
 
-        return view('inventario.areas_surtimiento.index', compact('areas', 'buscar'));
+            // Conserva los parámetros de búsqueda en la URL.
+            ->withQueryString();
+
+        // Retorna la vista y envía las variables areas y buscar.
+        return view(
+            'inventario.areas_surtimiento.index',
+            compact('areas', 'buscar')
+        );
     }
 
-    /**
-     * Guarda una nueva área de surtimiento en la base de datos.
-     */
     public function guardar(Request $request)
     {
+        // Valida los datos enviados desde el formulario.
         $request->validate([
+
+            // Campo obligatorio, debe ser texto y máximo 255 caracteres.
             'nombre' => 'required|string|max:255',
-            'tipo'   => 'required|string|max:100',
+
+            // Campo obligatorio, debe ser texto y máximo 100 caracteres.
+            'tipo' => 'required|string|max:100',
+
         ], [
+
+            // Mensajes personalizados de validación.
             'nombre.required' => 'El nombre del área es obligatorio.',
-            'nombre.max'      => 'El nombre no puede superar los 255 caracteres.',
-            'tipo.required'   => 'El tipo de área es obligatorio.',
-            'tipo.max'        => 'El tipo no puede superar los 100 caracteres.',
+            'nombre.max' => 'El nombre no puede superar los 255 caracteres.',
+            'tipo.required' => 'El tipo de área es obligatorio.',
+            'tipo.max' => 'El tipo no puede superar los 100 caracteres.',
         ]);
 
-        // Verificar duplicados por nombre y tipo (insensible a mayúsculas/minúsculas)
-        $existe = AreaSurtimiento::whereRaw('LOWER(nombre) = ?', [strtolower(trim($request->nombre))])
+        // Busca si ya existe un registro con el mismo nombre y tipo.
+        $existe = AreaSurtimiento::whereRaw(
+
+                // Convierte el campo nombre a minúsculas para comparar.
+                'LOWER(nombre) = ?',
+
+                // Convierte el nombre recibido a minúsculas y elimina espacios.
+                [strtolower(trim($request->nombre))]
+            )
+
+            // Compara el tipo recibido.
             ->where('tipo', $request->tipo)
+
+            // Devuelve true o false.
             ->exists();
 
+        // Si ya existe un registro igual.
         if ($existe) {
+
+            // Regresa a la página anterior.
             return redirect()->back()
+
+                // Conserva los datos capturados.
                 ->withInput()
-                ->withErrors(['nombre' => 'Esta área de surtimiento ya se encuentra registrada con ese tipo.']);
+
+                // Envía mensaje de error.
+                ->withErrors([
+                    'nombre' => 'Esta área de surtimiento ya se encuentra registrada con ese tipo.'
+                ]);
         }
 
+        // Crea un nuevo registro en la base de datos.
         AreaSurtimiento::create([
-            'nombre'         => trim($request->nombre),
-            'tipo'           => $request->tipo,
-            'activo'         => 1,
+
+            // Elimina espacios innecesarios del nombre.
+            'nombre' => trim($request->nombre),
+
+            // Guarda el tipo seleccionado.
+            'tipo' => $request->tipo,
+
+            // Guarda el estado activo.
+            'activo' => 1,
+
+            // Guarda la fecha actual.
             'fecha_registro' => now()->toDateString(),
-            'hora_registro'  => now()->toTimeString(),
-            'id_usuario'     => Auth::id() ?? 1,
+
+            // Guarda la hora actual.
+            'hora_registro' => now()->toTimeString(),
+
+            // Obtiene el id del usuario autenticado.
+            // Si es null usa el valor 1.
+            'id_usuario' => Auth::id() ?? 1,
         ]);
 
-        return redirect()
-            ->route('areas_surtimiento.index')
+        return redirect()->route('areas_surtimiento.index')
             ->with('exitog', 'El área de surtimiento se ha guardado correctamente.');
     }
 
-    /**
-     * Muestra el formulario de edición de un área de surtimiento.
-     */
-    public function editar($id)
-    {
-        $area = AreaSurtimiento::findOrFail($id);
-
-        return view('inventario.areas_surtimiento.editar', compact('area'));
-    }
-
-    /**
-     * Actualiza los datos de un área de surtimiento.
-     */
     public function actualizar(Request $request, $id)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'tipo'   => 'required|string|max:100',
-        ], [
-            'nombre.required' => 'El nombre del área es obligatorio.',
-            'nombre.max'      => 'El nombre no puede superar los 255 caracteres.',
-            'tipo.required'   => 'El tipo de área es obligatorio.',
-            'tipo.max'        => 'El tipo no puede superar los 100 caracteres.',
-        ]);
-
+        // Busca el registro por su id.
+        // Si no existe genera un error 404.
         $area = AreaSurtimiento::findOrFail($id);
 
-        // Verificar duplicados excluyendo el registro actual
-        $existe = AreaSurtimiento::whereRaw('LOWER(nombre) = ?', [strtolower(trim($request->nombre))])
-            ->where('tipo', $request->tipo)
-            ->where('id_area_surtimiento', '!=', $id)
-            ->exists();
-
-        if ($existe) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['nombre' => 'Ya existe otra área de surtimiento de ese tipo registrada con ese nombre.']);
-        }
-
+        // Actualiza los datos del registro encontrado.
         $area->update([
-            'nombre'         => trim($request->nombre),
-            'tipo'           => $request->tipo,
+
+            // Actualiza el nombre.
+            'nombre' => trim($request->nombre),
+
+            // Actualiza el tipo.
+            'tipo' => $request->tipo,
+
+            // Actualiza fecha.
             'fecha_registro' => now()->toDateString(),
-            'hora_registro'  => now()->toTimeString(),
-            'id_usuario'     => Auth::id() ?? 1,
+
+            // Actualiza hora.
+            'hora_registro' => now()->toTimeString(),
+
+            // Guarda el usuario que realizó la modificación.
+            'id_usuario' => Auth::id() ?? 1,
         ]);
 
-        return redirect()
-            ->route('areas_surtimiento.index')
+        return redirect()->route('areas_surtimiento.index')
             ->with('exito', 'El área de surtimiento se ha actualizado correctamente.');
     }
 
-    /**
-     * Alterna el estado activo/inactivo de un área de surtimiento.
-     */
     public function cambiarStatus($id)
     {
+        // Busca el registro por su id.
+        // Si no existe genera un error 404.
         $area = AreaSurtimiento::findOrFail($id);
-        $area->activo         = $area->activo == 1 ? 0 : 1;
+
+        // Cambia el estado activo/inactivo usando operador ternario.
+        $area->activo = $area->activo == 1 ? 0 : 1;
+
+        // Actualiza la fecha.
         $area->fecha_registro = now()->toDateString();
-        $area->hora_registro  = now()->toTimeString();
-        $area->id_usuario     = Auth::id() ?? 1;
+
+        // Actualiza la hora.
+        $area->hora_registro = now()->toTimeString();
+
+        // Guarda el usuario que realizó el cambio.
+        $area->id_usuario = Auth::id() ?? 1;
+
+        // Guarda los cambios en la base de datos.
         $area->save();
 
-        return redirect()
-            ->route('areas_surtimiento.index')
+        return redirect()->route('areas_surtimiento.index')
             ->with('exito', 'El estado del área de surtimiento se ha actualizado.');
     }
 
-    /**
-     * Verifica por AJAX si el nombre con cierto tipo ya está registrado.
-     */
     public function verificar(Request $request)
     {
+        // Obtiene el parámetro nombre desde la URL.
         $nombre = $request->query('nombre');
-        $tipo   = $request->query('tipo');
 
+        // Obtiene el parámetro tipo desde la URL.
+        $tipo = $request->query('tipo');
+
+        // Si falta alguno de los parámetros.
         if (!$nombre || !$tipo) {
-            return response()->json(['disponible' => false, 'error' => 'Parámetros ausentes']);
+
+            // Devuelve una respuesta JSON indicando error.
+            return response()->json([
+                'disponible' => false,
+                'error' => 'Parámetros ausentes'
+            ]);
         }
 
-        $existe = AreaSurtimiento::whereRaw('LOWER(nombre) = ?', [strtolower(trim($nombre))])
+        // Busca si ya existe un registro con el mismo nombre y tipo.
+        $existe = AreaSurtimiento::whereRaw(
+                'LOWER(nombre) = ?',
+                [strtolower(trim($nombre))]
+            )
             ->where('tipo', $tipo)
             ->exists();
 
-        return response()->json(['disponible' => !$existe]);
-    }
-
-    /**
-     * Genera el reporte/impresión de las áreas de surtimiento.
-     */
-    public function imprimir(Request $request)
-    {
-        $buscar = $request->get('buscar', '');
-
-        $query = AreaSurtimiento::orderBy('nombre', 'asc');
-
-        if (!empty($buscar)) {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('nombre', 'LIKE', "%{$buscar}%")
-                  ->orWhere('tipo', 'LIKE', "%{$buscar}%");
-            });
-        }
-
-        $areas = $query->get();
-
-        return view('inventario.areas_surtimiento.reporte_impresion', compact('areas', 'buscar'));
+        // Devuelve un JSON indicando si el registro está disponible.
+        // El operador ! invierte el valor booleano.
+        return response()->json([
+            'disponible' => !$existe
+        ]);
     }
 }

@@ -30,6 +30,17 @@ export default defineConfig({
                 // Devoluciones Assets
                 'resources/css/inventario/devoluciones/devoluciones.css',
                 'resources/js/inventario/devoluciones/devoluciones.js',
+                // Cendis Assets
+                'resources/css/inventario/entradas_cendis/entradas.css',
+                'resources/js/inventario/entradas_cendis/entradas.js',
+                // Insumos Assets
+                'resources/css/inventario/insumos/insumos.css',
+                'resources/js/inventario/insumos/insumos.js',
+
+                // Insumos por Área Assets
+                'resources/css/inventario/insumos_area/insumos_area.css',
+                'resources/js/inventario/insumos_area/insumos_area.js',
+
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/css/categoria_modulos/categoria_edit.css',

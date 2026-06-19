@@ -56,12 +56,7 @@ El proyecto cuenta con el framework de automatización en la carpeta `/skills/`.
   - **Assets de logos disponibles en `public/images/`:** `encabezado.jpg` (banner dual con ambos logos), `hgl.jpg`, `hgl1.jpg`, `ssnl.png` — extraídos de `newHGL.V4/images/`. **Estos assets serán reutilizados por el módulo de Configuración del Sistema.**
 - [x] **Gestión de Módulos (mModulos):** Migración quirúrgica del catálogo administrativo de módulos. Incluye CRUD completo con previsualización dinámica de tarjetas en tiempo real, asignación masiva de proyectos/perfiles vía transacciones y `sync()` de Eloquent, reportes premium imprimibles bajo `reporte_base` y gráficas interactivas analíticas agrupadas con Chart.js.
 - [x] **Gestión de Perfiles (mPerfiles):** Migración completa al estándar de Laravel. CRUD administrativo con listado paginado AJAX, buscador asíncrono, modal de alta, alternado de estado, asignación interactiva de módulos mediante `sync()`, reporte imprimible premium y gráficas unificadas con Chart.js.
-### En Desarrollo Actual
-- [ ] **Módulo de Citas / Pacientes:** Desarrollo de CRUD dinámico (usando modales AJAX y JS desacoplado).
-### Siguientes Pasos
-1.  Completar el flujo dinámico de CRUD en base de datos mysql para citas.
-2.  Estandarizar las vistas del resto de los módulos con Bootstrap e iconos dinámicos.
----
+
 ## 4. Historial de Cambios y Decisiones (Living Changelog)
 *(Por favor, registra aquí cada cambio significativo indicando la fecha, el autor o número de chat de IA y una breve descripción de los archivos afectados).*
 | Fecha (AAAA-MM-DD) | Autor / Rol | Cambios Realizados y Motivación | Archivos Afectados | Estado |

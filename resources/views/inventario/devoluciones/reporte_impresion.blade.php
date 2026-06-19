@@ -90,10 +90,12 @@
     <div class="no-print">
         <span class="print-title">⎙ Reporte de Devoluciones – HGL</span>
         <div style="display:flex; gap:10px;">
+            {{-- onclick="window.print()" dispara el diálogo de impresión nativo del navegador para el usuario. --}}
             <button class="btn-accion btn-imprimir" onclick="window.print()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                 Imprimir
             </button>
+            {{-- onclick="window.close()" cierra la pestaña actual del navegador. --}}
             <button class="btn-accion btn-cerrar" onclick="window.close()">✕ Cerrar</button>
         </div>
     </div>
@@ -105,6 +107,7 @@
             <div class="subtitulo">Sistema de Gestión de Inventario – Módulo de Devoluciones</div>
         </div>
         <div class="fecha-impresion">
+            {{-- now() es un helper de Laravel que obtiene un objeto Carbon con la fecha y hora actuales. --}}
             <strong>{{ now()->format('d/m/Y H:i') }}</strong>
             Fecha de impresión
         </div>
@@ -114,14 +117,18 @@
     <div class="titulo-reporte">
         <h1>Reporte de Devoluciones</h1>
         <div class="filtros">
+            {{-- @if evalúa si existen filtros de fechas para mostrarlos en el subencabezado del reporte. --}}
+            {{-- Carbon::parse() convierte los strings de fecha a Carbon para formatearlos de manera legible (d/m/Y). --}}
             @if($fechaInit || $fechaFin)
                 Período: {{ $fechaInit ? \Carbon\Carbon::parse($fechaInit)->format('d/m/Y') : '—' }}
                 al {{ $fechaFin ? \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') : '—' }}
                 &nbsp;&bull;&nbsp;
             @endif
+            {{-- @if evalúa si se filtró por un status particular. --}}
             @if($status)
                 Status: {{ $status }} &nbsp;&bull;&nbsp;
             @endif
+            {{-- count() obtiene la cantidad de devoluciones que componen la colección del reporte. --}}
             Total de registros: {{ $devoluciones->count() }}
             @if($devoluciones->count() >= 500)
                 (limitado a 500 registros)
@@ -138,20 +145,26 @@
                 <div class="etiqueta">Devoluciones</div>
             </div>
             <div class="resumen-item">
+                {{-- where() filtra la colección de devoluciones devolviendo únicamente los registros cuyo status es 'Terminado'. --}}
+                {{-- count() cuenta los elementos de esa colección filtrada. --}}
                 <div class="valor">{{ $devoluciones->where('status', 'Terminado')->count() }}</div>
                 <div class="etiqueta">Terminadas</div>
             </div>
             <div class="resumen-item">
+                {{-- where() filtra y count() cuenta las devoluciones con status en proceso de manera local en la colección. --}}
                 <div class="valor">{{ $devoluciones->where('status', 'En proceso')->count() }}</div>
                 <div class="etiqueta">En Proceso</div>
             </div>
             <div class="resumen-item">
+                {{-- sum() recorre la colección y acumula el total de insumos calculados por la función callback de conteo. --}}
+                {{-- Permite calcular la suma agregada del total de renglones de detalles de devolución en el reporte. --}}
                 <div class="valor">{{ $devoluciones->sum(fn($d) => $d->detalles->count()) }}</div>
                 <div class="etiqueta">Total Insumos</div>
             </div>
         </div>
 
         {{-- Tabla principal --}}
+        {{-- isEmpty() comprueba si no hay ningún registro en la colección de devoluciones para alertar al usuario. --}}
         @if($devoluciones->isEmpty())
             <p style="text-align:center; color:#64748b; padding: 20px 0;">
                 No hay devoluciones que coincidan con los filtros seleccionados.
@@ -171,20 +184,28 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- @foreach itera sobre la colección de devoluciones. --}}
+                    {{-- $i contiene el índice numérico de la iteración actual. --}}
                     @foreach($devoluciones as $i => $devolucion)
                         <tr>
                             <td>{{ $i + 1 }}</td>
-                            <td><span class="badge-folio">DEV-{{ str_pad($devolucion->id_devolucion, 5, '0', STR_PAD_LEFT) }}</span></td>
+                            <td>
+                                {{-- str_pad() rellena el ID con ceros a la izquierda hasta completar 5 dígitos para componer el folio. --}}
+                                <span class="badge-folio">DEV-{{ str_pad($devolucion->id_devolucion, 5, '0', STR_PAD_LEFT) }}</span>
+                            </td>
                             <td>{{ $devolucion->areaAlmacen->nombre ?? '—' }}</td>
                             <td>{{ $devolucion->areaAbastecimiento->nombre ?? '—' }}</td>
                             <td>{{ $devolucion->motivo->descripcion ?? '—' }}</td>
                             <td>{{ $devolucion->fecha_devolucion ? \Carbon\Carbon::parse($devolucion->fecha_devolucion)->format('d/m/Y') : '—' }}</td>
                             <td>
+                                {{-- El operador ternario condicional aplica la clase CSS 'status-terminado' si está finalizado. --}}
                                 <span class="badge-status {{ $devolucion->status === 'Terminado' ? 'status-terminado' : 'status-proceso' }}">
                                     {{ $devolucion->status }}
                                 </span>
                             </td>
                             <td>
+                                {{-- isNotEmpty() evalúa si la relación detalles de la devolución contiene registros agregados. --}}
+                                {{-- Si contiene registros, dibuja una subtabla anidada con el desglose de los insumos y sus cantidades devueltas. --}}
                                 @if($devolucion->detalles->isNotEmpty())
                                     <table class="sub-tabla">
                                         @foreach($devolucion->detalles as $detalle)
@@ -208,6 +229,7 @@
 
     <div class="pie-pagina">
         <span>Hospital General de Linares – Sistema HGL</span>
+        {{-- now() y format() imprimen la fecha y hora con segundos en el pie de página de impresión del reporte. --}}
         <span>Impreso el {{ now()->format('d/m/Y \a \l\a\s H:i:s') }}</span>
     </div>
 

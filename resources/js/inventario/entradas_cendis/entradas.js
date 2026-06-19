@@ -1,53 +1,9 @@
 /**
- * Lógica JavaScript para el módulo de Devoluciones de Insumos
+ * Lógica JavaScript para el módulo de Entrada de Insumos al Cendis
  * Inventario de Medicamentos y Material de Curación – HGL
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-
-    // ── 1.5. Validación Frontend del Modal "Nueva Devolución" ─────────────────
-    const formNuevaDevolucion = document.getElementById('formNuevaDevolucion');
-    if (formNuevaDevolucion) {
-        formNuevaDevolucion.addEventListener('submit', function (e) {
-            let isValid = true;
-            const areaAlmacen = document.getElementById('id_area_almacen');
-            const motivo = document.getElementById('id_motivo');
-
-            if (areaAlmacen) {
-                areaAlmacen.classList.remove('is-invalid');
-                if (!areaAlmacen.value) {
-                    areaAlmacen.classList.add('is-invalid');
-                    isValid = false;
-                }
-            }
-
-            if (motivo) {
-                motivo.classList.remove('is-invalid');
-                if (!motivo.value) {
-                    motivo.classList.add('is-invalid');
-                    isValid = false;
-                }
-            }
-
-            if (!isValid) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
-
-        const areaAlmacen = document.getElementById('id_area_almacen');
-        const motivo = document.getElementById('id_motivo');
-        if (areaAlmacen) {
-            areaAlmacen.addEventListener('change', function () {
-                if (areaAlmacen.value) areaAlmacen.classList.remove('is-invalid');
-            });
-        }
-        if (motivo) {
-            motivo.addEventListener('change', function () {
-                if (motivo.value) motivo.classList.remove('is-invalid');
-            });
-        }
-    }
 
     // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
@@ -60,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
             title: '¡Operación Exitosa!',
             text: msg,
             icon: 'success',
-            confirmButtonColor: '#1d4ed8',
+            confirmButtonColor: '#2b6cb0',
             confirmButtonText: 'Aceptar'
         });
     }
@@ -71,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
             title: '¡Operación Satisfactoria!',
             text: msg,
             icon: 'success',
-            confirmButtonColor: '#1d4ed8',
+            confirmButtonColor: '#2b6cb0',
             confirmButtonText: 'Aceptar'
         });
     }
@@ -82,15 +38,22 @@ document.addEventListener('DOMContentLoaded', function () {
             title: 'Aviso',
             text: msg,
             icon: 'warning',
-            confirmButtonColor: '#1d4ed8',
+            confirmButtonColor: '#2b6cb0',
             confirmButtonText: 'Aceptar'
         });
     }
 
-    // ── 2. Autocompletado del Buscador de Insumos (Detalle de Devolución) ──────
+    // ── 2. Autocompletado del Buscador de Insumos (Detalle de Entrada) ──────────
     const inputBuscarInsumo = document.getElementById('buscarInsumoDetalle');
     const inputIdInsumo = document.getElementById('id_insumo_detalle');
+    const inputDescripcion = document.getElementById('descripcion_insumo');
+    const inputTipo = document.getElementById('tipo_insumo');
+    const inputStock = document.getElementById('stock_insumo');
+    const inputSolicitado = document.getElementById('solicitado_detalle');
+    const inputCantidad = document.getElementById('cantidad_detalle');
+    const inputFaltante = document.getElementById('faltante_detalle');
     const sugerenciasDiv = document.getElementById('sugerenciasDetalle');
+    const areaAlmacenId = document.getElementById('id_area_almacen_active')?.value;
 
     let timeoutBusqueda = null;
 
@@ -102,12 +65,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (termino.length < 2) {
                 sugerenciasDiv.style.display = 'none';
                 sugerenciasDiv.innerHTML = '';
-                inputIdInsumo.value = '';
+                if (inputIdInsumo) inputIdInsumo.value = '';
                 return;
             }
 
             timeoutBusqueda = setTimeout(() => {
-                const url = `/devoluciones/buscar-insumos?q=${encodeURIComponent(termino)}`;
+                const url = `/entradas-cendis/buscar-insumos?q=${encodeURIComponent(termino)}`;
 
                 fetch(url, {
                     headers: {
@@ -124,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (!data || data.length === 0) {
                         sugerenciasDiv.style.display = 'none';
-                        inputIdInsumo.value = '';
+                        if (inputIdInsumo) inputIdInsumo.value = '';
                         return;
                     }
 
@@ -140,10 +103,27 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span class="badge bg-secondary text-white small">${insumo.tipo || 'Insumo'}</span>
                         `;
                         item.addEventListener('click', () => {
-                            inputBuscarInsumo.value = `[${insumo.clave}] ${insumo.descripcion}`;
-                            inputIdInsumo.value = insumo.id_insumo;
+                            inputBuscarInsumo.value = insumo.clave;
+                            if (inputIdInsumo) inputIdInsumo.value = insumo.id_insumo;
+                            if (inputDescripcion) inputDescripcion.value = insumo.descripcion;
+                            if (inputTipo) inputTipo.value = insumo.tipo || 'Insumo';
+                            
                             sugerenciasDiv.style.display = 'none';
                             sugerenciasDiv.innerHTML = '';
+
+                            // Consultar stock en el área de almacén activa
+                            if (areaAlmacenId && insumo.id_insumo) {
+                                fetch(`/entradas-cendis/consultar-stock?id_insumo=${insumo.id_insumo}&id_area_almacen=${areaAlmacenId}`)
+                                .then(res => res.json())
+                                .then(stockData => {
+                                    if (inputStock) inputStock.value = stockData.stock || 0;
+                                });
+                            }
+
+                            // Habilitar campos
+                            if (inputSolicitado) inputSolicitado.removeAttribute('disabled');
+                            if (inputCantidad) inputCantidad.removeAttribute('disabled');
+                            if (inputSolicitado) inputSolicitado.focus();
                         });
                         sugerenciasDiv.appendChild(item);
                     });
@@ -165,48 +145,71 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── 3. Validación de Insumo antes de enviar formulario de detalle ─────────
+    // ── 3. Cálculo de Faltante en tiempo real ──────────────────────────────────
+    const difCantidad = () => {
+        if (!inputSolicitado || !inputCantidad || !inputFaltante) return;
+        const solicitado = parseInt(inputSolicitado.value) || 0;
+        const entregado = parseInt(inputCantidad.value) || 0;
+        const faltante = solicitado - entregado;
+        inputFaltante.value = faltante >= 0 ? faltante : 0;
+    };
+
+    if (inputSolicitado && inputCantidad) {
+        inputSolicitado.addEventListener('input', difCantidad);
+        inputCantidad.addEventListener('input', difCantidad);
+    }
+
+    // ── 4. Validación de Insumo antes de enviar formulario de detalle ─────────
     const formAgregarInsumo = document.getElementById('formAgregarInsumo');
     if (formAgregarInsumo) {
         formAgregarInsumo.addEventListener('submit', function (e) {
             const idInsumo = inputIdInsumo ? inputIdInsumo.value : '';
-            const cantidad = document.getElementById('cantidad_detalle') ? parseInt(document.getElementById('cantidad_detalle').value) : 0;
+            const solicitado = inputSolicitado ? parseInt(inputSolicitado.value) : 0;
+            const cantidad = inputCantidad ? parseInt(inputCantidad.value) : 0;
 
             if (!idInsumo) {
                 e.preventDefault();
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'Insumo requerido',
-                        text: 'Debe seleccionar un insumo de la lista de sugerencias.',
+                        text: 'Debe seleccionar un insumo válido.',
                         icon: 'warning',
-                        confirmButtonColor: '#1d4ed8',
+                        confirmButtonColor: '#2b6cb0',
                         confirmButtonText: 'Entendido'
                     });
                 } else {
-                    alert('Debe seleccionar un insumo de la lista de sugerencias.');
+                    alert('Debe seleccionar un insumo válido.');
                 }
                 return;
             }
 
-            if (isNaN(cantidad) || cantidad <= 0) {
+            if (isNaN(solicitado) || solicitado < 0) {
                 e.preventDefault();
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: 'Cantidad inválida',
-                        text: 'La cantidad debe ser mayor a cero.',
-                        icon: 'warning',
-                        confirmButtonColor: '#1d4ed8',
-                        confirmButtonText: 'Entendido'
-                    });
-                } else {
-                    alert('La cantidad debe ser mayor a cero.');
-                }
+                Swal.fire({
+                    title: 'Cantidad solicitada inválida',
+                    text: 'La cantidad solicitada debe ser mayor o igual a cero.',
+                    icon: 'warning',
+                    confirmButtonColor: '#2b6cb0',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            if (isNaN(cantidad) || cantidad < 0) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Cantidad entregada inválida',
+                    text: 'La cantidad entregada debe ser mayor o igual a cero.',
+                    icon: 'warning',
+                    confirmButtonColor: '#2b6cb0',
+                    confirmButtonText: 'Entendido'
+                });
                 return;
             }
         });
     }
 
-    // ── 4. Confirmación SweetAlert2 para eliminar insumo de la devolución ─────
+    // ── 5. Confirmación SweetAlert2 para eliminar insumo de la entrada ──────────
     const btnEliminarDetalle = document.querySelectorAll('.btn-eliminar-detalle');
     btnEliminarDetalle.forEach(btn => {
         btn.addEventListener('click', function (e) {
@@ -218,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: '¿Quitar insumo?',
-                    html: `Se removerá <strong>"${insumo}"</strong> de esta devolución.`,
+                    html: `Se removerá <strong>"${insumo}"</strong> de esta entrada.`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc2626',
@@ -227,7 +230,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Enviar petición DELETE mediante fetch
                         fetch(url, {
                             method: 'POST',
                             headers: {
@@ -244,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     title: '¡Removido!',
                                     text: data.mensaje,
                                     icon: 'success',
-                                    confirmButtonColor: '#1d4ed8'
+                                    confirmButtonColor: '#2b6cb0'
                                 }).then(() => {
                                     window.location.reload();
                                 });
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else {
-                if (confirm(`¿Está seguro de que desea quitar "${insumo}" de la devolución?`)) {
+                if (confirm(`¿Está seguro de que desea quitar "${insumo}" de la entrada?`)) {
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = url;
@@ -273,23 +275,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ── 5. Confirmación SweetAlert2 para cancelar/reactivar devolución ─────────
-    const btnCancelar = document.querySelectorAll('.btn-cancelar-devolucion');
+    // ── 6. Confirmación SweetAlert2 para cancelar/reactivar entrada ──────────────
+    const btnCancelar = document.querySelectorAll('.btn-cancelar-entrada');
     btnCancelar.forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             const url = this.getAttribute('href');
-            const folio = this.getAttribute('data-folio') || 'devolución';
+            const folio = this.getAttribute('data-folio') || 'entrada';
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: '¿Cancelar devolución?',
-                    html: `Se marcará la devolución <strong>"${folio}"</strong> como Cancelada.`,
+                    title: '¿Cancelar entrada?',
+                    html: `Se marcará la entrada <strong>"${folio}"</strong> como Cancelada.`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc2626',
                     cancelButtonColor: '#6b7280',
-                    confirmButtonText: 'Sí, cancelar devolución',
+                    confirmButtonText: 'Sí, cancelar entrada',
                     cancelButtonText: 'No, conservar'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -297,27 +299,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else {
-                if (confirm(`¿Está seguro de que desea cancelar la devolución "${folio}"?`)) {
+                if (confirm(`¿Está seguro de que desea cancelar la entrada "${folio}"?`)) {
                     window.location.href = url;
                 }
             }
         });
     });
 
-    const btnReactivar = document.querySelectorAll('.btn-reactivar-devolucion');
+    const btnReactivar = document.querySelectorAll('.btn-reactivar-entrada');
     btnReactivar.forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             const url = this.getAttribute('href');
-            const folio = this.getAttribute('data-folio') || 'devolución';
+            const folio = this.getAttribute('data-folio') || 'entrada';
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: '¿Reactivar devolución?',
-                    html: `Se cambiará el estado de la devolución <strong>"${folio}"</strong> a Pendiente (En proceso).`,
+                    title: '¿Reactivar entrada?',
+                    html: `Se reactivará la entrada <strong>"${folio}"</strong> y volverá a estar En proceso.`,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#10b981',
+                    confirmButtonColor: '#2b6cb0',
                     cancelButtonColor: '#6b7280',
                     confirmButtonText: 'Sí, reactivar',
                     cancelButtonText: 'No, cancelar'
@@ -327,14 +329,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else {
-                if (confirm(`¿Está seguro de que desea reactivar la devolución "${folio}"?`)) {
+                if (confirm(`¿Está seguro de que desea reactivar la entrada "${folio}"?`)) {
                     window.location.href = url;
                 }
             }
         });
     });
 
-    // ── 6. Confirmación SweetAlert2 para finalizar devolución ──────────────────
+    // ── 7. Confirmación SweetAlert2 para finalizar entrada ────────────────────────
     const btnFinalizar = document.getElementById('btnFinalizar');
     const formFinalizar = document.getElementById('formFinalizarHidden');
 
@@ -344,13 +346,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: '¿Finalizar Devolución?',
+                    title: '¿Finalizar Entrada?',
                     text: 'Una vez finalizada, el stock del almacén se incrementará y no podrá agregar más insumos.',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#10b981',
+                    confirmButtonColor: '#2f855a',
                     cancelButtonColor: '#6b7280',
-                    confirmButtonText: 'Sí, finalizar devolución',
+                    confirmButtonText: 'Sí, finalizar entrada',
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -358,21 +360,84 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else {
-                if (confirm('¿Está seguro de finalizar esta devolución? Esto incrementará el stock del almacén.')) {
+                if (confirm('¿Está seguro de finalizar esta entrada? Esto incrementará el stock del almacén.')) {
                     formFinalizar.submit();
                 }
             }
         });
     }
 
-    // ── 7. Auto-envío de filtros de rango de fechas al cambiar ────────────────
+    // ── 8. Actualizar Cantidad en la tabla en tiempo real (onblur o change) ──────────
+    const inputsCantidadTabla = document.querySelectorAll('.cantidad-tabla-input');
+    inputsCantidadTabla.forEach(input => {
+        const updateVal = () => {
+            const url = input.getAttribute('data-url');
+            const prevVal = parseInt(input.getAttribute('data-prev')) || 0;
+            const val = parseInt(input.value) || 0;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            if (val < 0) {
+                Swal.fire('Cantidad inválida', 'La cantidad debe ser mayor o igual a cero.', 'warning');
+                input.value = prevVal;
+                return;
+            }
+
+            if (val === prevVal) return;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _method: 'PUT',
+                    cantidad: val
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) {
+                    input.setAttribute('data-prev', val);
+                    // Recalcular faltante en la fila si es visible
+                    const fila = input.closest('tr');
+                    const colSolicitado = fila.querySelector('.solicitado-col');
+                    const colFaltante = fila.querySelector('.faltante-col');
+                    if (colSolicitado && colFaltante) {
+                        const sol = parseInt(colSolicitado.textContent) || 0;
+                        const fal = sol - val;
+                        colFaltante.textContent = fal >= 0 ? fal : 0;
+                    }
+                    if (typeof alertify !== 'undefined') {
+                        alertify.set('notifier','position','bottom-left');
+                        alertify.success(data.mensaje);
+                    }
+                } else {
+                    Swal.fire('Error', data.mensaje, 'error');
+                    input.value = prevVal;
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Ocurrió un error al actualizar la cantidad.', 'error');
+                input.value = prevVal;
+            });
+        };
+
+        input.addEventListener('change', updateVal);
+        input.addEventListener('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                updateVal();
+                input.blur();
+            }
+        });
+    });
+
+    // ── 9. Auto-envío de filtros al cambiar ─────────────────────────────────────
     const fechaInicio = document.getElementById('fecha_inicio');
     const fechaFin = document.getElementById('fecha_fin');
     const formBuscar = document.getElementById('formBuscar');
-
-    const fechaInicioTerm = document.getElementById('fecha_inicio_term');
-    const fechaFinTerm = document.getElementById('fecha_fin_term');
-    const formBuscarTerminadas = document.getElementById('formBuscarTerminadas');
 
     const autoSubmitFecha = (inicioInput, finInput, form) => {
         if (!inicioInput || !finInput || !form) return;
@@ -381,17 +446,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const valFin = finInput.value;
 
         if (valInicio && valFin && valInicio > valFin) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Rango de fechas inválido',
-                    text: 'La fecha de inicio no puede ser posterior a la fecha de fin.',
-                    icon: 'warning',
-                    confirmButtonColor: '#1d4ed8',
-                    confirmButtonText: 'Aceptar'
-                });
-            } else {
-                alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
-            }
+            Swal.fire({
+                title: 'Rango de fechas inválido',
+                text: 'La fecha de inicio no puede ser posterior a la fecha de fin.',
+                icon: 'warning',
+                confirmButtonColor: '#2b6cb0',
+                confirmButtonText: 'Aceptar'
+            });
             inicioInput.value = '';
             finInput.value = '';
             return;
@@ -403,10 +464,5 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fechaInicio && fechaFin && formBuscar) {
         fechaInicio.addEventListener('change', () => autoSubmitFecha(fechaInicio, fechaFin, formBuscar));
         fechaFin.addEventListener('change', () => autoSubmitFecha(fechaInicio, fechaFin, formBuscar));
-    }
-
-    if (fechaInicioTerm && fechaFinTerm && formBuscarTerminadas) {
-        fechaInicioTerm.addEventListener('change', () => autoSubmitFecha(fechaInicioTerm, fechaFinTerm, formBuscarTerminadas));
-        fechaFinTerm.addEventListener('change', () => autoSubmitFecha(fechaInicioTerm, fechaFinTerm, formBuscarTerminadas));
     }
 });

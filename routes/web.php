@@ -26,6 +26,10 @@ use App\Http\Controllers\Inventario\AreaSurtimientoController;
 use App\Http\Controllers\Inventario\BajaInsumoController;
 use App\Http\Controllers\Inventario\DevolucionController;
 use App\Http\Controllers\Inventario\DetalleDevolucionController;
+use App\Http\Controllers\Inventario\EntradaCendisController;
+use App\Http\Controllers\Inventario\DetalleEntradaCendisController;
+use App\Http\Controllers\Inventario\InsumoController;
+use App\Http\Controllers\Inventario\InsumoAreaController;
 
 // Redirección raíz por defecto
 Route::get('/', function () {
@@ -217,6 +221,53 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'store')->name('store');         // Agregar insumo
         Route::put('/{id}', 'update')->name('update');   // Actualizar detalle
         Route::delete('/{id}', 'destroy')->name('destroy'); // Eliminar insumo
+    });
+
+    // ── Módulo: Entrada de Insumos al Cendis (Inventario) ──────────────────────
+    Route::prefix('entradas-cendis')->middleware('modulo:35')->name('entradas_cendis.')->controller(EntradaCendisController::class)->group(function () {
+        Route::get('/', 'index')->name('index');                              // Pendientes
+        Route::post('/', 'store')->name('store');                             // Crear nueva
+        Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos'); // Autocompletado
+        Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock'); // Consultar stock actual
+        Route::get('/terminadas', 'terminadas')->name('terminadas');          // Terminadas
+        Route::get('/reportes', 'reportes')->name('reportes');               // Vista reportes
+        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');      // Imprimir reporte
+        Route::get('/{id}/detalle', 'detalle')->name('detalle');             // Ver/agregar insumos
+        Route::post('/{id}/finalizar', 'finalizar')->name('finalizar');      // Finalizar entrada
+        Route::get('/{id}/comprobante', 'comprobante')->name('comprobante'); // Comprobante PDF
+        Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status'); // Alternar estado (Cancelar/Reactivar)
+    });
+
+    Route::prefix('detalle-entradas-cendis')->middleware('modulo:35')->name('detalle_entradas_cendis.')->controller(DetalleEntradaCendisController::class)->group(function () {
+        Route::post('/', 'store')->name('store');         // Agregar insumo
+        Route::put('/{id}', 'update')->name('update');   // Actualizar detalle
+        Route::delete('/{id}', 'destroy')->name('destroy'); // Eliminar insumo
+    });
+
+    // ── Módulo: Catálogo de Insumos (Inventario) ─────────────────────────────
+    Route::prefix('insumos')->middleware('modulo:32')->name('insumos.')->controller(InsumoController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::get('/{id}/status', 'cambiarStatus')->name('status');
+        Route::get('/verificar', 'verificar')->name('verificar');
+        Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Insumos por Área (Inventario) ─────────────────────────────
+    Route::prefix('insumos-area')->middleware('modulo:36')->name('insumos_area.')->controller(InsumoAreaController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/stock', 'updateStock')->name('update_stock');
+        Route::patch('/{id}/fondo-fijo', 'updateFondoFijo')->name('update_fondo_fijo');
+        Route::get('/buscar-insumos', 'buscarInsumosCatalog')->name('buscar_insumos');
+        Route::get('/verificar-clave', 'consultarInsumoClave')->name('verificar_clave');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/datos', 'obtenerReporteDatos')->name('reporte_datos');
+        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
     });
 
     // Subgrupo: Radiología RX (Prefijo limpio adaptado)

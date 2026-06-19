@@ -1,0 +1,160 @@
+/* Custom Styles for Insumos por Área Module */
+
+/* Thermometer icon styling */
+.thermometer-icon {
+    transition: color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    vertical-align: middle;
+}
+.thermometer-icon:hover {
+    transform: scale(1.2);
+}
+
+/* Percentage text badge */
+.badge-porcentaje {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+/* Stock status themes */
+.stock-muy-bajo {
+    background-color: #ffeef0 !important;
+    color: #d63031 !important;
+    border-color: #ff8787 !important;
+}
+.stock-muy-bajo-badge {
+    background-color: #d63031;
+    color: #ffffff;
+}
+
+.stock-bajo {
+    background-color: #fff4e6 !important;
+    color: #e67e22 !important;
+    border-color: #ffd8a8 !important;
+}
+.stock-bajo-badge {
+    background-color: #e67e22;
+    color: #ffffff;
+}
+
+.stock-regular {
+    background-color: #fef9e7 !important;
+    color: #f1c40f !important;
+    border-color: #fde3a7 !important;
+}
+.stock-regular-badge {
+    background-color: #f1c40f;
+    color: #2c3e50;
+}
+
+.stock-suficiente {
+    background-color: #eef9f0 !important;
+    color: #27ae60 !important;
+    border-color: #b2f2bb !important;
+}
+.stock-suficiente-badge {
+    background-color: #27ae60;
+    color: #ffffff;
+}
+
+.stock-excedido {
+    background-color: #edf2fa !important;
+    color: #2980b9 !important;
+    border-color: #a5d8ff !important;
+}
+.stock-excedido-badge {
+    background-color: #2980b9;
+    color: #ffffff;
+}
+
+/* Form Styling & Card Premium Layouts */
+.card-premium {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 24px;
+}
+
+.card-premium-header {
+    border-bottom: 1px solid #f1f2f6;
+    padding: 18px 24px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-premium-body {
+    padding: 24px;
+}
+
+/* Input fields inside table */
+.input-table-edit {
+    width: 90px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 4px 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.input-table-edit:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+    border-color: #3498db;
+    width: 100px;
+}
+
+/* Table styling adjustments */
+.table-insumos-area td {
+    vertical-align: middle !important;
+}
+
+/* Auto fill description indicators */
+.fill-success {
+    border-color: #2ecc71 !important;
+    background-color: #eefcf4 !important;
+}
+
+/* Modal styling */
+.modal-content-premium {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header-premium {
+    border-bottom: 1px solid #f1f2f6;
+    padding: 20px 24px;
+}
+
+.modal-body-premium {
+    padding: 24px;
+}
+
+.modal-footer-premium {
+    border-top: 1px solid #f1f2f6;
+    padding: 16px 24px;
+}
+
+/* Keyboard hint badge */
+.kbd-hint {
+    background-color: #f1f2f6;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    color: #333;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.8em;
+    line-height: 1.4;
+    padding: 0.1em 0.4em;
+    text-shadow: 0 1px 0 #fff;
+    white-space: nowrap;
+}

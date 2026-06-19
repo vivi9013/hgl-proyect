@@ -1,0 +1,136 @@
+/**
+ * Estilos para el módulo de Entrada de Insumos al Cendis
+ * HGL – Sistema de Gestión de Inventario
+ */
+
+/* ── Variables ─────────────────────────────────────────────────────────────── */
+:root {
+    --cendis-blue:       #2b6cb0;
+    --cendis-blue-light: #ebf8ff;
+    --cendis-blue-border:#bee3f8;
+    --cendis-success:    #2f855a;
+    --cendis-warning:    #c05621;
+    --cendis-border:     #e2e8f0;
+    --cendis-text-muted: #64748b;
+    --cendis-radius:     10px;
+}
+
+/* ── Tabla general ─────────────────────────────────────────────────────────── */
+#tablaEntradas thead th,
+#tablaDetalles thead th,
+.tabla-entradas thead th {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: #475569;
+    border-bottom: 2px solid var(--cendis-border);
+    padding: 0.75rem 0.6rem;
+}
+
+#tablaEntradas tbody tr,
+#tablaDetalles tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+#tablaEntradas tbody tr:hover,
+#tablaDetalles tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* ── Badges folio ───────────────────────────────────────────────────────────── */
+.folio-badge {
+    font-family: Arial, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--cendis-blue);
+    background-color: var(--cendis-blue-light);
+    border: 1px solid var(--cendis-blue-border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    display: inline-block;
+    letter-spacing: 0.02em;
+}
+
+/* ── Card del formulario de agregar insumo ─────────────────────────────────── */
+.card .card-header.bg-primary {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* ── Sugerencias de insumo (autocompletado) ────────────────────────────────── */
+#sugerenciasDetalle {
+    border: 1px solid var(--cendis-border);
+    border-radius: 0 0 8px 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1050;
+}
+
+#sugerenciasDetalle .list-group-item {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.12s;
+}
+
+#sugerenciasDetalle .list-group-item:hover {
+    background-color: var(--cendis-blue-light);
+}
+
+#sugerenciasDetalle .clave-badge {
+    font-family: monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--cendis-blue);
+    background: #bee3f8;
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+}
+
+/* ── Botones de acción ─────────────────────────────────────────────────────── */
+.btn-outline-primary:hover,
+.btn-outline-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Paginación negra sencilla ─────────────────────────────────────────────── */
+.pagination .page-link {
+    color: #000;
+    border-color: #dee2e6;
+    font-size: 0.82rem;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.pagination .page-link:hover {
+    background-color: #f1f5f9;
+    color: #000;
+}
+
+/* ── Indicador de status ───────────────────────────────────────────────────── */
+.badge.bg-warning.text-dark {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+}
+
+.badge.bg-success {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .d-flex.justify-content-md-end {
+        justify-content: flex-start !important;
+    }
+}
