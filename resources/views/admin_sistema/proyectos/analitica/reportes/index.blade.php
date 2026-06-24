@@ -21,12 +21,13 @@
             @include('layouts.reporte_index', [
                 'titulo' => 'Lista Completa de Proyectos',
                 'descripcion' => 'Imprime o genera el documento oficial con la lista completa de los proyectos registrados en el sistema. El listado se genera preordenado alfabéticamente por el nombre del proyecto para una auditoría visual óptima.',
-                'rutaImprimir' => route('proyectos.imprimir')
+                'rutaImprimir' => route('proyectos.imprimir'),
+                'rutaVolver'  => route('proyectos.index'),
+                'labelVolver' => 'Volver a proyectos',
             ])
         </div>
     </div>
 
 </div>
 
-@vite(['resources/css/categoria_modulos/categoria_reportes.css'])
 @endsection

@@ -21,12 +21,13 @@
             @include('layouts.reporte_index', [
                 'titulo' => 'Lista Completa de Módulos',
                 'descripcion' => 'Imprime una lista completa de los módulos contenidos en el sistema.',
-                'rutaImprimir' => route('modulos.reportes.imprimir', 'completa')
+                'rutaImprimir' => route('modulos.reportes.imprimir', 'completa'),
+                'rutaVolver'  => route('modulos.index'),
+                'labelVolver' => 'Volver a módulos',
             ])
         </div>
     </div>
 
 </div>
 
-@vite(['resources/css/categoria_modulos/categoria_reportes.css'])
 @endsection

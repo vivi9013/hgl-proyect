@@ -1,19 +1,19 @@
 /**
- * Lógica Javascript para el catálogo de Perfiles (JSON AJAX Render)
+ * Lógica Javascript para el módulo de Usuarios (JSON AJAX Render)
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    const inputNombre = document.getElementById('nombre');
+    const inputNombre = document.getElementById('username');
     const feedbackDisponibilidad = document.getElementById('feedbackDisponibilidad');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const btnGuardar = document.getElementById('btnGuardar');
 
     // === ELEMENTOS DE PAGINACIÓN ===
-    const tbody = document.getElementById('tbodyPerfiles');
+    const tbody = document.getElementById('tbodyUsuarios');
     const infoPaginacion = document.getElementById('infoPaginacion');
     const contenedorPaginacion = document.getElementById('contenedorPaginacion');
     const searchInput = document.getElementById('global-search');
-    const totalBadge = document.getElementById('totalPerfiles');
+    const totalBadge = document.getElementById('totalUsuarios');
 
     // 1. Mostrar SweetAlert2 si existen los divs de alerta de sesión
     const alertaExitog = document.getElementById('alertaExitog');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (alertaExitog && typeof Swal !== 'undefined') {
         Swal.fire({
             title: '¡Operación Satisfactoria!',
-            text: 'El registro se ha guardado correctamente.',
+            text: alertaExitog.getAttribute('data-message'),
             icon: 'success',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Aceptar'
@@ -32,22 +32,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (alertaExito && typeof Swal !== 'undefined') {
         Swal.fire({
             title: '¡Operación Satisfactoria!',
-            text: 'El registro se ha actualizado correctamente.',
+            text: alertaExito.getAttribute('data-message'),
             icon: 'success',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Aceptar'
         });
     }
 
-    // 2. Verificación de disponibilidad de nombre en tiempo real (AJAX)
+    // 2. Verificación de disponibilidad de nombre de usuario en tiempo real (AJAX)
     if (inputNombre && feedbackDisponibilidad && loadingSpinner && btnGuardar) {
         let timeoutId;
 
         inputNombre.addEventListener('input', function () {
             clearTimeout(timeoutId);
-            const nombre = this.value.trim();
+            const username = this.value.trim();
 
-            if (!nombre) {
+            if (!username) {
                 feedbackDisponibilidad.innerHTML = '';
                 inputNombre.classList.remove('is-valid', 'is-invalid');
                 btnGuardar.disabled = false;
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                fetch(`/perfiles/verificar?nombre=${encodeURIComponent(nombre)}`, {
+                fetch(`/usuarios/verificar?username=${encodeURIComponent(username)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -72,12 +72,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     loadingSpinner.style.display = 'none';
 
                     if (data.disponible) {
-                        feedbackDisponibilidad.innerHTML = '<span class="text-success-custom"><i class="fa fa-check-circle"></i> Nombre disponible</span>';
+                        feedbackDisponibilidad.innerHTML = '<span class="text-success-custom"><i class="fa fa-check-circle"></i> Nombre de usuario disponible</span>';
                         inputNombre.classList.remove('is-invalid');
                         inputNombre.classList.add('is-valid');
                         btnGuardar.disabled = false;
                     } else {
-                        feedbackDisponibilidad.innerHTML = '<span class="text-danger-custom"><i class="fa fa-times-circle"></i> Este perfil ya existe</span>';
+                        feedbackDisponibilidad.innerHTML = '<span class="text-danger-custom"><i class="fa fa-times-circle"></i> Este usuario ya está en uso</span>';
                         inputNombre.classList.remove('is-valid');
                         inputNombre.classList.add('is-invalid');
                         btnGuardar.disabled = true;
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     loadingSpinner.style.display = 'none';
-                    console.error('Error al verificar perfil:', error);
+                    console.error('Error al verificar usuario:', error);
                 });
             }, 300);
         });
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tbody.style.opacity = '0.5';
 
-        fetch(`/perfiles?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
+        fetch(`/usuarios?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
             headers: { 
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 4. Configurar listeners de status
+    // 4. Configurar listeners de status y de restablecer contraseña
     function enlazarEventosAcciones() {
         // Status Toggle
         const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
@@ -160,11 +160,10 @@ document.addEventListener('DOMContentLoaded', function () {
             nuevoLink.addEventListener('click', function (e) {
                 e.preventDefault();
                 const id = this.getAttribute('data-id');
-                const url = `/perfiles/${id}/status`;
+                const url = `/usuarios/${id}/status`;
                 
-                // Extraer el nombre del perfil del renglón correspondiente
                 const row = this.closest('tr');
-                const nombre = row.querySelector('td:nth-child(4)').textContent.trim();
+                const nombreUsuario = row.querySelector('td:nth-child(3)').textContent.trim();
                 const esInactivo = row.classList.contains('text-muted');
                 const activo = esInactivo ? 0 : 1;
 
@@ -212,8 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
-                        title: `¿Desea ${accion} el perfil?`,
-                        text: `El perfil "${nombre}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema y podría limitar accesos.`,
+                        title: `¿Desea ${accion} el usuario?`,
+                        text: `El usuario "${nombreUsuario}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema.`,
                         icon: iconType,
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
@@ -226,7 +225,79 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                 } else {
-                    if (confirm(`¿Está seguro de que desea ${accion} el perfil "${nombre}"?`)) {
+                    if (confirm(`¿Está seguro de que desea ${accion} el usuario "${nombreUsuario}"?`)) {
+                        runFetch();
+                    }
+                }
+            });
+        });
+
+        // Restablecer Password (Reiniciar)
+        const btnRestablecerList = document.querySelectorAll('.btn-restablecer-password');
+        btnRestablecerList.forEach(link => {
+            const nuevoLink = link.cloneNode(true);
+            link.parentNode.replaceChild(nuevoLink, link);
+
+            nuevoLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const url = `/usuarios/${id}/restablecer`;
+
+                const row = this.closest('tr');
+                const nombreUsuario = row.querySelector('td:nth-child(3)').textContent.trim();
+
+                const runFetch = () => {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Error al restablecer la contraseña');
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: '¡Operación Satisfactoria!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            } else {
+                                alert(data.message);
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        if (typeof Swal !== 'undefined') Swal.fire('Error', 'No se pudo restablecer la contraseña.', 'error');
+                    });
+                };
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '¿Desea reiniciar la contraseña del usuario?',
+                        text: `La contraseña del usuario "${nombreUsuario}" será restablecida al valor predeterminado configurado en el sistema y se le solicitará cambiarla en su próximo inicio de sesión.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, reiniciar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            runFetch();
+                        }
+                    });
+                } else {
+                    if (confirm(`¿Está seguro de reiniciar la contraseña del usuario "${nombreUsuario}"?`)) {
                         runFetch();
                     }
                 }

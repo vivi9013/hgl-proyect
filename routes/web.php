@@ -21,6 +21,7 @@ use App\Http\Controllers\Modulos\ModuloController;
 use App\Http\Controllers\Perfiles\PerfilController;
 use App\Http\Controllers\Personas\PersonaController;
 use App\Http\Controllers\Proyectos\ProyectoController;
+use App\Http\Controllers\Usuarios\UsuarioController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -96,7 +97,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/cargar/{id}', 'cargar')->name('cargar');
         Route::post('/subir-archivo/{id}', 'subirArchivo')->name('subir_archivo');
         Route::get('/reportes', 'reportes')->name('reportes');
-        Route::post('/reportes/imprimir', 'imprimirReporte')->name('imprimir');
+        Route::get('/reportes/imprimir', 'imprimirReporte')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
     });
     
@@ -183,6 +184,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::patch('/{id}/estudiante', 'cambiarEstudiante')->name('estudiante');
+    });
+
+    // Subgrupo: Usuarios
+    Route::prefix('usuarios')->name('usuarios.')->controller(UsuarioController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'guardar')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/verificar', 'verificar')->name('verificar');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::post('/{id}/restablecer', 'restablecerPassword')->name('restablecer');
     });
 
     // Módulo: Configuración General del Sistema

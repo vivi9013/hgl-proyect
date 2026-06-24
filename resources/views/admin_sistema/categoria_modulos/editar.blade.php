@@ -116,5 +116,5 @@
 </div>
 
 {{-- Inyección modularizada de estilos y comportamientos JS específicos para la edición --}}
-@vite(['resources/css/categoria_modulos/categoria_edit.css', 'resources/js/categoria_modulos/categoria_edit.js'])
+@vite(['resources/css/categoria_modulos/categoria.css', 'resources/js/categoria_modulos/categoria_edit.js'])
 @endsection

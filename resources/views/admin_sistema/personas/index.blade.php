@@ -93,13 +93,13 @@
                             <thead class="table-light text-uppercase text-secondary sticky-top bg-light" style="font-size: 0.75rem; letter-spacing: 0.05em;">
                                 <tr>
                                     <th class="ps-4" style="width: 55px;">#</th>
-                                    <th>Nombre Completo</th>
+                                    <th class="text-center" style="width: 100px;">Acciones</th>
+                                    <th class="text-center" style="width: 300px;">Nombre Completo</th>
                                     <th style="width: 80px;">Sexo</th>
                                     <th style="width: 80px;">Edad</th>
-                                    <th>Estado/Municipio</th>
+                                    <th class="text-center" style="width: 180px;">Estado/Municipio</th>
                                     <th class="text-center" style="width: 110px;">Estudiante</th>
                                     <th class="text-center" style="width: 90px;">Status</th>
-                                    <th class="text-center pe-4" style="width: 100px;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyPersonas">

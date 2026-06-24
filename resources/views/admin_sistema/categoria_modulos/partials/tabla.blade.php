@@ -8,6 +8,15 @@
         {{-- Índice incremental correcto basado en paginación --}}
         <td class="ps-4 fw-bold index-cell">{{ $row->orden }}</td>
         
+        {{-- Columna de Acciones Estándar --}}
+        <td class="text-center">
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{{ route('categoria_modulos.edit', $row->id_CategoriaModulo) }}" class="btn btn-sm btn-outline-dark border-0" title="Editar Categoría">
+                    <i class="fa fa-pencil-square-o"></i>
+                </a>
+            </div>
+        </td>
+
         <td>{{ $row->categoria }}</td>
         
         <td>{{ $row->proyecto }}</td>
@@ -31,16 +40,6 @@
                 @else
                     <i class="fa fa-square-o text-danger fs-5" title="Inactivo"></i>
                 @endif
-            </button>
-        </td>
-        
-        {{-- Columna de Acciones Estándar --}}
-        <td class="text-center pe-4">
-            <div class="d-flex justify-content-center gap-2">
-                <a href="{{ route('categoria_modulos.edit', $row->id_CategoriaModulo) }}" class="btn btn-sm btn-outline-dark border-0" title="Editar Categoría">
-                    <i class="fa fa-pencil-square-o"></i>
-                </a>
-            </div>
         </td>
     </tr>
 @endforeach

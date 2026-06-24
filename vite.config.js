@@ -43,8 +43,6 @@ export default defineConfig({
 
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
-                'resources/css/categoria_modulos/categoria_edit.css',
-                'resources/css/categoria_modulos/categoria_reportes.css',
                 'resources/js/categoria_modulos/categoria.js',
                 'resources/js/categoria_modulos/categoria_edit.js',
                 'resources/js/categoria_modulos/categoria_reportes.js',
@@ -65,6 +63,10 @@ export default defineConfig({
                 // Proyectos Assets
                 'resources/css/proyectos/proyectos.css',
                 'resources/js/proyectos/proyectos.js',
+                // Usuarios Assets
+                'resources/css/usuarios/usuarios.css',
+                'resources/js/usuarios/usuarios.js',
+                'resources/js/usuarios/usuarios_edit.js',
             ],
             refresh: true,
         }),

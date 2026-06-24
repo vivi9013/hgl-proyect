@@ -27,9 +27,14 @@ class User extends Authenticatable
         'nombre_usuario', 
         'contra',         // Tu columna de password se llama 'contra'
         'id_persona',
+        'id_perfil',
         'activo',
         'tema',
-        'primera'
+        'primera',
+        'fecha',
+        'hora',
+        'usuario',
+        'cambiar_contrasena'
     ];
 
     // 3. Ocultamos la contraseña para que no se filtre en consultas

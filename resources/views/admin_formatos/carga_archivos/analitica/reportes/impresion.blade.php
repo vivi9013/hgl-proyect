@@ -1,9 +1,9 @@
 @extends('layouts.reporte_base')
 
-@section('title', 'Reporte - Archivos por Categoría')
+@section('title', isset($categoria) ? 'Reporte - Archivos de ' . $categoria->categoria : 'Reporte - Lista de Archivos')
 
 @section('report_title')
-LISTA COMPLETA DE ARCHIVOS DE {{ strtoupper($categoria->categoria) }}
+{{ isset($categoria) ? 'LISTA COMPLETA DE ARCHIVOS DE ' . strtoupper($categoria->categoria) : 'LISTADO COMPLETO DE ARCHIVOS' }}
 @endsection
 
 @section('content')
@@ -12,7 +12,10 @@ LISTA COMPLETA DE ARCHIVOS DE {{ strtoupper($categoria->categoria) }}
         <tr>
             <th class="center" style="width:50px;">No.</th>
             <th>Nombre</th>
-            <th>Descripcion</th>
+            @if(!isset($categoria))
+                <th>Categoría</th>
+            @endif
+            <th>Descripción</th>
         </tr>
     </thead>
     <tbody>
@@ -20,12 +23,15 @@ LISTA COMPLETA DE ARCHIVOS DE {{ strtoupper($categoria->categoria) }}
             <tr>
                 <td class="num">{{ $index + 1 }}</td>
                 <td>{{ $archivo->nombre }}</td>
-                <td>{{ $archivo->descripcion_archivo }}</td>
+                @if(!isset($categoria))
+                    <td>{{ $archivo->categoria->categoria ?? 'Sin Categoría' }}</td>
+                @endif
+                <td>{{ $archivo->descripcion_archivo ?: 'Sin descripción registrada.' }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="3" style="text-align:center; padding:12px; color:#666;">
-                    No se encontraron archivos activos asociados a esta categoría.
+                <td colspan="{{ isset($categoria) ? 3 : 4 }}" style="text-align:center; padding:12px; color:#666;">
+                    No se encontraron archivos activos.
                 </td>
             </tr>
         @endforelse

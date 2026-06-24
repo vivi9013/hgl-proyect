@@ -96,11 +96,12 @@
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
                                 <tr>
                                     <th class="ps-4" style="width: 60px;">#</th>
-                                    <th>Perfil</th>
-                                    <th>Descripción</th>
-                                    <th class="text-center" style="width: 140px;">Total Módulos</th>
-                                    <th class="text-center" style="width: 100px;">Estado</th>
-                                    <th class="text-center pe-4" style="width: 150px;">Acciones</th>
+                                    <th class="text-center" style="width: 90px;">Editar</th>
+                                    <th class="text-center" style="width: 150px;">Agregar módulos</th>
+                                    <th class="text-center">Perfil</th>
+                                    <th class="text-center">Descripción</th>
+                                    <th class="text-center" style="width: 140px;">Total módulos</th>
+                                    <th class="text-center" style="width: 100px;">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyPerfiles">

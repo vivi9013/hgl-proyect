@@ -21,12 +21,14 @@
             @include('layouts.reporte_index', [
                 'titulo' => 'Lista Completa de Categorías',
                 'descripcion' => 'Imprime o genera el documento oficial con la lista completa de las categorías en las que se clasifican los módulos del sistema. El listado se genera preordenado de manera descendente por el nombre de la categoría para una auditoría visual óptima.',
-                'rutaImprimir' => route('categoria_modulos.imprimir')
+                'rutaImprimir' => route('categoria_modulos.imprimir'),
+                'rutaVolver'  => route('categoria_modulos.index'),
+                'labelVolver' => 'Volver a categorías',
             ])
         </div>
     </div>
 
 </div>
 
-@vite(['resources/css/categoria_modulos/categoria_reportes.css', 'resources/js/categoria_modulos/categoria_reportes.js'])
+@vite(['resources/css/categoria_modulos/categoria.css', 'resources/js/categoria_modulos/categoria_reportes.js'])
 @endsection

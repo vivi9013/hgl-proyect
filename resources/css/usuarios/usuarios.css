@@ -1,20 +1,20 @@
-/* Estilos personalizados para el módulo de Categoría de Archivos */
+/* ================================================================
+   Módulo de Usuarios — usuarios.css
+   Un solo archivo para todo el módulo, con scoping por contexto.
+   ================================================================ */
 
+/* ── Transición general de cards (todas las vistas) ── */
 .card {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.card:hover {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+/* ── Focus modernos (todas las vistas) ── */
+.form-control:focus, .form-select:focus, textarea:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Efectos de Focus Modernos */
-.form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-}
-
-/* Clases de retroalimentación personalizadas para AJAX */
+/* ── Feedback AJAX ── */
 .text-success-custom {
     color: #2f855a;
     font-weight: 500;
@@ -25,7 +25,7 @@
     font-weight: 500;
 }
 
-/* Animación del Spinner */
+/* ── Spinner ── */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -34,15 +34,16 @@
     animation: spin 1s linear infinite;
 }
 
-/* Hover en tabla y enlaces de acción */
-#tablaCategorias tbody tr {
+/* ── Hover tabla ── */
+#tbodyUsuarios tr {
     transition: background-color 0.2s ease;
 }
 
-#tablaCategorias tbody tr:hover {
+#tbodyUsuarios tr:hover {
     background-color: rgba(49, 130, 206, 0.02) !important;
 }
 
+/* ── Botones de acción en tabla ── */
 .btn-toggle-status {
     color: #4a5568;
     font-size: 1.25rem;
@@ -54,84 +55,32 @@
     transform: scale(1.1);
 }
 
-.btn-toggle-status[data-activo="1"] {
-    color: #38a169;
-}
-
-.btn-toggle-status[data-activo="0"] {
-    color: #a0aec0;
-}
-
-.fa-pencil-square-o {
+.fa-pencil-square-o, .fa-refresh {
     color: #000000 !important;
     font-size: 1.2rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.fa-pencil-square-o:hover {
+.fa-pencil-square-o:hover, .fa-refresh:hover {
     color: #4b5563 !important;
     transform: scale(1.15);
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-/* Evitar escala y sombras en hover */
-.card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Convertir cabeceras de tarjetas con bg-primary en elegantes títulos subrayados */
-.card-header.bg-primary {
-    background-color: transparent !important;
-    color: #000000 !important;
-    border-bottom: 2px solid #000000 !important;
-    padding-bottom: 0.5rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card-header.bg-primary h5 {
-    font-size: 1.1rem !important;
-    color: #000000 !important;
-}
-
-/* Modificar botones a color blanco/negro clásico en la cabecera */
-.card-header.bg-primary .btn-outline-light {
-    border-color: #000000 !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Iconos y textos de acento en Negro */
+/* ── Iconos y textos de acento en Negro (todas las vistas) ── */
 .text-primary,
 .fa-folder-open,
 .fa-plus-circle,
-.fa-list {
+.fa-list,
+.fa-user-plus {
     color: #000000 !important;
 }
 
-/* Form Controls */
-.form-control {
-    border-color: rgba(0, 0, 0, 0.35) !important;
+/* ── Form Controls (todas las vistas) ── */
+.form-control,
+.form-select,
+textarea {
+    border-color: #d1d5db !important;
     border-radius: 8px !important;
     box-shadow: none !important;
     padding: 0.6rem 0.95rem;
@@ -140,13 +89,9 @@
     background-color: #ffffff !important;
 }
 
-.form-control:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botón Guardar/Registrar (Primario): Azul con borde Negro */
-.btn-primary {
+/* ── Botones Primarios y Secundarios (solo en Catálogo y Edición) ── */
+.usuarios-index .btn-primary,
+.usuarios-edit .btn-primary {
     background-color: #0d6efd !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
@@ -154,30 +99,31 @@
     transition: all 0.2s ease-in-out;
 }
 
-.btn-primary:hover {
+.usuarios-index .btn-primary:hover,
+.usuarios-edit .btn-primary:hover {
     background-color: #0b5ed7 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
-/* Botón Cancelar/Volver: Blanco con bordes grises */
-.btn-light,
-.btn-outline-secondary {
+.usuarios-index .btn-light,
+.usuarios-edit .btn-light {
     background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-light:hover,
-.btn-outline-secondary:hover {
+.usuarios-index .btn-light:hover,
+.usuarios-edit .btn-light:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+/* ── Tablas (todas las vistas) ── */
 .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
@@ -209,7 +155,11 @@
     background-color: #f9fafb !important;
 }
 
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+.bg-light-gray {
+    background-color: #f3f4f6 !important;
+}
+
+/* ── Paginación (todas las vistas) ── */
 .pagination {
     margin: 0 !important;
 }
@@ -249,4 +199,44 @@
     color: #ffffff !important;
 }
 
+.bg-primary-light {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
 
+
+/* ================================================================
+   SCOPE: .usuarios-index  (Catálogo /usuarios)
+   Cards planas, sin sombra — diseño flat.
+   ================================================================ */
+
+.usuarios-index .card,
+.usuarios-index .card-header,
+.usuarios-index .card-body,
+.usuarios-index .card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.usuarios-index .card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+
+/* ================================================================
+   SCOPE: .usuarios-reportes  (Reportes /usuarios/reportes)
+   Cards con sombra y estilo box — coincide con layouts.reporte_index.
+   ================================================================ */
+
+.usuarios-reportes .card.border-0.shadow-sm {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usuarios-reportes .card.border-0.shadow-sm:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}

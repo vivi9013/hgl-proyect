@@ -21,12 +21,13 @@
             @include('layouts.reporte_index', [
                 'titulo' => 'Lista Completa de Perfiles',
                 'descripcion' => 'Imprime o genera el documento oficial con la lista completa de los perfiles y roles registrados en el sistema. El listado se genera preordenado alfabéticamente por el nombre del perfil para una auditoría visual óptima.',
-                'rutaImprimir' => route('perfiles.imprimir')
+                'rutaImprimir' => route('perfiles.imprimir'),
+                'rutaVolver'  => route('perfiles.index'),
+                'labelVolver' => 'Volver a perfiles',
             ])
         </div>
     </div>
 
 </div>
 
-@vite(['resources/css/categoria_modulos/categoria_reportes.css'])
 @endsection
