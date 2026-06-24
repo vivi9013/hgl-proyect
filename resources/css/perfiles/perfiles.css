@@ -1,9 +1,5 @@
 /* Estilos personalizados para el módulo de Perfiles */
 
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* Efectos de Focus Modernos */
 .form-control:focus, .form-select:focus, textarea:focus {
     border-color: #000000 !important;
@@ -21,14 +17,7 @@
     font-weight: 500;
 }
 
-/* Animación del Spinner */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
 
-.fa-spin {
-    animation: spin 1s linear infinite;
-}
 
 /* Hover en tabla y enlaces de acción */
 #tbodyPerfiles tr {
@@ -161,10 +150,6 @@ textarea {
     font-size: 0.875rem;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
-}
-
 /* Estilo para filas de módulos asignados */
 .table-success-custom {
     background-color: rgba(46, 204, 113, 0.08) !important;
@@ -212,4 +197,33 @@ textarea {
 
 .bg-primary-light {
     background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fondo de filas inactivas en tabla (bug fix: clase faltante) */
+.bg-light-gray {
+    background-color: #f3f4f6 !important;
+}
+
+/* ── BUSCADOR REACTIVO ── */
+.search-group {
+    min-width: 260px;
+    border: 1.5px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.search-group .form-control {
+    font-size: 0.85rem;
+    box-shadow: none !important;
+}
+
+/* ── MODAL DE ALTA ── */
+.modal-alta {
+    background-color: #ffffff;
+    border: 2px solid #000000 !important;
+}
+
+/* Botón de cierre del modal forzado a negro */
+.btn-close-dark {
+    filter: brightness(0);
 }

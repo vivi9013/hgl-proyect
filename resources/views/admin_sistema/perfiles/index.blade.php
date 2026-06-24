@@ -78,8 +78,8 @@
                         
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
                             {{-- Buscador Reactivo --}}
-                            <div class="input-group" style="min-width: 260px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
-                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar perfil..." style="font-size: 0.85rem; box-shadow: none;">
+                            <div class="input-group search-group">
+                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar perfil...">
                                 <span class="input-group-text bg-light border-0 py-0">
                                     <i class="fa fa-search text-dark"></i>
                                 </span>
@@ -130,12 +130,12 @@
     {{-- Modal: Registrar Nuevo Perfil --}}
     <div class="modal fade" id="modalAltaPerfil" tabindex="-1" aria-labelledby="modalAltaPerfilLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-3" style="background-color: #ffffff; border: 2px solid #000000 !important;">
+            <div class="modal-content border-0 shadow-lg rounded-3 modal-alta">
                 <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
                     <h5 class="modal-title fw-bold text-dark" id="modalAltaPerfilLabel">
                         <i class="fa fa-edit text-dark me-2"></i>Registrar Nuevo Perfil
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: brightness(0);"></button>
+                    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
                 <form id="formAltaPerfil" action="{{ route('perfiles.store') }}" method="POST" autocomplete="off">
