@@ -74,10 +74,9 @@
                             </span>
                         </div>
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
-                            <div class="input-group" style="min-width: 280px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
+                            <div class="input-group search-group">
                                 <input type="search" id="global-search" class="form-control bg-light border-0"
-                                       placeholder="Buscar nombre, RFC, CURP, email..."
-                                       style="font-size: 0.85rem; box-shadow: none;">
+                                       placeholder="Buscar nombre, RFC, CURP, email...">
                                 <span class="input-group-text bg-light border-0 py-0">
                                     <i class="fa fa-search text-dark"></i>
                                 </span>
@@ -90,7 +89,7 @@
                 <div class="card-body p-0 mt-2">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-uppercase text-secondary sticky-top bg-light" style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                            <thead class="table-light text-uppercase text-secondary sticky-top bg-light thead-personas">
                                 <tr>
                                     <th class="ps-4" style="width: 55px;">#</th>
                                     <th class="text-center" style="width: 100px;">Acciones</th>
@@ -125,12 +124,12 @@
     {{-- Modal: Registrar Nueva Persona --}}
     <div class="modal fade" id="modalAltaPersona" tabindex="-1" aria-labelledby="modalAltaPersonaLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg rounded-3" style="border: 2px solid #000 !important;">
+            <div class="modal-content border-0 shadow-lg rounded-3 modal-alta">
                 <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
                     <h5 class="modal-title fw-bold text-dark" id="modalAltaPersonaLabel">
                         <i class="fa fa-user-plus text-primary me-2"></i>Registrar Nueva Persona
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: brightness(0);"></button>
+                    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <form id="formAltaPersona" action="{{ route('personas.store') }}" method="POST" autocomplete="off">

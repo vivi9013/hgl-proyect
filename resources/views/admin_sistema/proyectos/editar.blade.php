@@ -30,7 +30,7 @@
 
             {{-- Sección 1: Datos del Proyecto --}}
             <div class="card mb-3">
-                <div class="card-header bg-white pt-3 px-4 pb-3" style="cursor:pointer;"
+                <div class="card-header bg-white pt-3 px-4 pb-3 card-header-collapse"
                      data-bs-toggle="collapse" data-bs-target="#collapseDatos"
                      aria-expanded="true" aria-controls="collapseDatos">
                     <div class="d-flex align-items-center justify-content-between">
@@ -74,7 +74,7 @@
 
             {{-- Sección 2: Asociación de Módulos --}}
             <div class="card mb-3">
-                <div class="card-header bg-white pt-3 px-4 pb-3" style="cursor:pointer;"
+                <div class="card-header bg-white pt-3 px-4 pb-3 card-header-collapse"
                      data-bs-toggle="collapse"
                      data-bs-target="#collapseModulos"
                      aria-expanded="{{ request()->query('seccion') === 'modulos' ? 'true' : 'false' }}"
@@ -97,7 +97,7 @@
                             @method('PUT')
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light text-uppercase" style="font-size:0.75rem;">
+                                    <thead class="table-light text-uppercase thead-proyectos">
                                         <tr>
                                             <th class="ps-3" style="width:60px;">
                                                 <input type="checkbox" id="seleccionarTodosModulos" class="form-check-input">

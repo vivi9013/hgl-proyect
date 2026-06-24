@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const row = this.closest('tr');
                 const nombre = row.querySelector('td:nth-child(3)')?.textContent.trim() ?? '';
                 const icono  = this.querySelector('i');
-                const esEstudiante = icono && icono.style.opacity !== '0.35';
+                const esEstudiante = icono && icono.classList.contains('text-primary');
                 const accion = esEstudiante ? 'quitar el rol de estudiante a' : 'asignar el rol de estudiante a';
 
                 const runFetch = () => {

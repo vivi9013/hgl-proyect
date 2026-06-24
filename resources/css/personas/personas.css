@@ -2,11 +2,6 @@
    Módulo: Personas — Estilos personalizados
    ═══════════════════════════════════════════════ */
 
-/* Transiciones de tarjeta */
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* Focus modernos en inputs */
 .form-control:focus,
 .form-select:focus,
@@ -15,12 +10,12 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Hover filas de tabla */
+/* Hover filas de tabla (selector único con color consistente) */
 #tbodyPersonas tr {
     transition: background-color 0.2s ease;
 }
 #tbodyPersonas tr:hover {
-    background-color: rgba(49, 130, 206, 0.02) !important;
+    background-color: #f9fafb !important;
 }
 
 /* Botones de toggle (status / estudiante) */
@@ -68,9 +63,7 @@ textarea:focus {
 /* Iconos de acento en negro */
 .text-primary,
 .fa-id-card,
-.fa-plus-circle,
-.fa-list,
-.fa-users {
+.fa-plus-circle {
     color: #000000 !important;
 }
 
@@ -87,7 +80,7 @@ textarea {
     background-color: #ffffff !important;
 }
 
-/* Botón Primario */
+/* Botón Primario — color negro (branding del módulo admin) */
 .btn-primary {
     background-color: #0d6efd !important;
     color: #ffffff !important;
@@ -96,8 +89,8 @@ textarea {
     transition: all 0.2s ease-in-out;
 }
 .btn-primary:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
+    background-color: #1a1a1a !important;
+    border-color: #1a1a1a !important;
     color: #ffffff !important;
 }
 
@@ -141,9 +134,6 @@ textarea {
     color: #374151 !important;
     font-size: 0.875rem;
 }
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
-}
 
 /* ── Paginación ── */
 .pagination { margin: 0 !important; }
@@ -180,4 +170,63 @@ textarea {
 }
 .bg-primary-light {
     background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fila de persona inactiva */
+.bg-light-gray {
+    background-color: #f3f4f6 !important;
+}
+
+/* ── Clases utilitarias extraídas de estilos inline ── */
+
+/* Buscador global en la cabecera de la tabla */
+.search-group {
+    min-width: 280px;
+    border: 1.5px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.search-group .form-control {
+    font-size: 0.85rem !important;
+    box-shadow: none !important;
+}
+
+/* Encabezado de tabla (thead) */
+.thead-personas {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+/* Modal de alta de persona */
+.modal-alta {
+    border: 2px solid #000 !important;
+}
+
+/* Botón de cierre del modal en modo oscuro */
+.btn-close-dark {
+    filter: brightness(0);
+}
+
+/* Icono de estudiante inactivo (no es estudiante) */
+.icon-no-estudiante {
+    opacity: 0.35;
+}
+
+/* Tarjetas de estadísticas en graficas.blade.php */
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Texto del centro del donut chart */
+.donut-center-label {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    pointer-events: none;
+}
+.donut-center-value {
+    font-size: 26px;
+    font-weight: bold;
+    color: #333;
 }

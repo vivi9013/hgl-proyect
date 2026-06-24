@@ -47,7 +47,7 @@
                 @if($row->estudiante == 1)
                     <i class="fa fa-graduation-cap text-primary fs-5" title="Es estudiante"></i>
                 @else
-                    <i class="fa fa-graduation-cap text-secondary fs-5" title="No es estudiante" style="opacity:0.35;"></i>
+                    <i class="fa fa-graduation-cap text-secondary icon-no-estudiante fs-5" title="No es estudiante"></i>
                 @endif
             </button>
         </td>
@@ -60,6 +60,7 @@
                 @else
                     <i class="fa fa-square-o text-danger fs-5" title="Inactivo"></i>
                 @endif
+            </button>
         </td>
     </tr>
 @endforeach

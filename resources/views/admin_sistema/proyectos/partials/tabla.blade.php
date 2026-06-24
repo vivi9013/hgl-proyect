@@ -5,14 +5,14 @@
             <a href="{{ route('proyectos.edit', $p->id_proyecto) }}"
                class="text-decoration-none"
                title="Editar proyecto">
-                <i class="fa fa-pencil-square-o fa-lg" style="color: #000;"></i>
+                <i class="fa fa-pencil-square-o fa-lg"></i>
             </a>
         </td>
         <td class="text-center">
             <a href="{{ route('proyectos.edit', $p->id_proyecto) }}?seccion=modulos"
                class="text-decoration-none"
                title="Gestionar Módulos">
-                <i class="fa fa-plus fa-lg" style="color: #0073b7;"></i>
+                <i class="fa fa-plus fa-lg btn-gestion-modulos"></i>
             </a>
         </td>
         <td class="fw-semibold">{{ $p->proyecto }}</td>
