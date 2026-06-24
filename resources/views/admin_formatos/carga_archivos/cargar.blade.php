@@ -12,13 +12,6 @@
             </h1>
             <p class="text-muted mb-0">Carga del archivo PDF correspondiente al registro: <strong>{{ $archivo->nombre }}</strong></p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('carga_archivos.index') }}"><i class="fa fa-upload"></i> Administración de Archivos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Subir PDF</li>
-            </ol>
-        </nav>
     </div>
 
     <!-- Contenido Principal -->

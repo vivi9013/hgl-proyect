@@ -1,18 +1,4 @@
 /* Estilos personalizados para el formulario de Carga de Archivos */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Efectos de Focus Modernos en Formularios */
-.form-control:focus,
-.form-select:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-}
 
 /* Animación del Spinner */
 @keyframes spin {
@@ -23,15 +9,6 @@
 
 .fa-spin {
     animation: spin 1s linear infinite;
-}
-
-/* Clases de utilidad */
-.text-success-custom {
-    color: #38a169;
-}
-
-.text-danger-custom {
-    color: #e53e3e;
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
@@ -53,12 +30,6 @@
     border: none !important;
     border-radius: 0.5rem !important; /* rounded-3 */
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important; /* shadow-sm */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.reporte-card:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
 }
 
 .reporte-card .card-header {
@@ -166,11 +137,6 @@
     /* ajuste dinámico */
 }
 
-/* Clase para forzar layout fijo – opcional */
-.table-fixed-layout {
-    table-layout: fixed !important;
-}
-
 .table th {
     background-color: #ede8de !important;
     color: #000000 !important;
@@ -274,12 +240,4 @@
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
-}
-
-/* Línea divisoria gris para separar secciones laterales en escritorio */
-@media (min-width: 1200px) {
-    .separator-border {
-        border-right: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-        padding-right: 2rem !important;
-    }
 }

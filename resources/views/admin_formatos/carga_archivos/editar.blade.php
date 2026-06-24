@@ -12,13 +12,6 @@
             </h1>
             <p class="text-muted mb-0">Actualización de datos para el archivo: {{ $archivo->nombre }}</p>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                <li class="breadcrumb-item"><a href="{{ route('inicio') }}"><i class="fa fa-dashboard"></i> Panel de Control</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('carga_archivos.index') }}"><i class="fa fa-upload"></i> Administración de Archivos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Modificar</li>
-            </ol>
-        </nav>
     </div>
 
     <!-- Formulario de Edición -->

@@ -1,13 +1,12 @@
 /* Estilos personalizados para el módulo de Categoría de Módulos (Catálogo, Edición y Reportes) */
 
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* Efectos de Focus Modernos */
-.form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+/* NOTA: El focus global de .form-control y .form-select ya está definido en app.css
+   Esta regla específica sobrescribe con borde negro para el módulo */
+.form-control:focus,
+.form-select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Clases de retroalimentación personalizadas para AJAX */
@@ -83,10 +82,9 @@
 }
 
 /* Iconos y textos de acento en Negro */
+/* NOTA: fa-folder-open-o (con -o) y fa-list-ul son los iconos reales en las vistas */
 .text-primary,
-.fa-folder-open,
 .fa-plus-circle,
-.fa-list,
 .fa-edit {
     color: #000000 !important;
 }
@@ -101,12 +99,6 @@
     font-size: 0.9rem;
     color: #000000 !important;
     background-color: #ffffff !important;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Botón Guardar (Primario): Azul con borde Negro */
@@ -168,10 +160,6 @@
     font-size: 0.875rem;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
-}
-
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
 .pagination {
     margin: 0 !important;
@@ -216,152 +204,8 @@
     background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-
-/* ========================================================
-   ESTILOS PARA REPORTE (De categoria_reportes.css)
-   ======================================================== */
-
-/* === TARJETAS DE REPORTE === */
-.reporte-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.reporte-card:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* === BORDE PUNTEADO PARA BLOQUES FUTUROS === */
-.border-dashed {
-    border: 2px dashed #dee2e6 !important;
-}
-
-/* === ICONO GRIS CLARO === */
-.text-light-gray {
-    color: #ced4da !important;
-}
-
-/* === ESTILOS DE IMPRESIÓN (reporte_impresion.blade.php) === */
-@media print {
-    body {
-        font-family: 'Arial', sans-serif;
-        font-size: 12pt;
-        color: #000;
-        background: #fff;
-    }
-
-    /* Ocultar elementos de navegación en impresión */
-    .navbar,
-    .sidebar,
-    .breadcrumb,
-    .btn,
-    .no-print {
-        display: none !important;
-    }
-
-    /* Cabecera del reporte */
-    .reporte-header {
-        text-align: center;
-        margin-bottom: 24pt;
-        border-bottom: 2px solid #000;
-        padding-bottom: 12pt;
-    }
-
-    .reporte-header h1 {
-        font-size: 18pt;
-        font-weight: bold;
-        margin: 0 0 4pt 0;
-    }
-
-    .reporte-header p {
-        font-size: 10pt;
-        margin: 0;
-        color: #555;
-    }
-
-    /* Tabla de impresión */
-    .table-reporte {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 16pt;
-    }
-
-    .table-reporte thead tr {
-        background-color: #333 !important;
-        color: #fff !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    .table-reporte th,
-    .table-reporte td {
-        border: 1px solid #999;
-        padding: 6pt 8pt;
-        text-align: left;
-        vertical-align: middle;
-    }
-
-    .table-reporte th {
-        font-size: 10pt;
-        font-weight: bold;
-    }
-
-    .table-reporte td {
-        font-size: 9pt;
-    }
-
-    /* Filas alternadas */
-    .table-reporte tbody tr:nth-child(even) {
-        background-color: #f5f5f5 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* Pie del reporte */
-    .reporte-footer {
-        margin-top: 20pt;
-        font-size: 9pt;
-        color: #666;
-        border-top: 1px solid #ccc;
-        padding-top: 8pt;
-        display: flex;
-        justify-content: space-between;
-    }
-}
-
-/* === VISTA PREVIA EN PANTALLA (antes de imprimir) === */
-.reporte-preview-container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.reporte-header-screen {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #dee2e6;
-}
-
-.reporte-header-screen h1 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #212529;
-}
-
-.reporte-header-screen p {
-    color: #6c757d;
-    font-size: 0.875rem;
-    margin: 0;
-}
-
-/* === ACCIONES DE IMPRESIÓN === */
-.btn-print-action {
-    border-radius: 20px;
-    padding: 0.5rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
+/* ── Fondo para filas inactivas en la tabla ── */
+/* Corrige el bug visual: $claseFila = 'text-muted bg-light-gray' en tabla.blade.php */
+.bg-light-gray {
+    background-color: #f9fafb !important;
 }
