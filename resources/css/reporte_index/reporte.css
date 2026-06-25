@@ -2,6 +2,42 @@
  * Estilos para el componente/layout reporte_index
  */
 
+/* === TARJETAS DE REPORTE (.reporte-card) ===
+ * Estilos base centralizados aquí para que cualquier módulo
+ * que use @include('layouts.reporte_index') los herede automáticamente,
+ * sin necesidad de redefinirlos en cada CSS de módulo.
+ */
+.reporte-card {
+    background-color: #ffffff !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reporte-card .card-header {
+    background-color: #ffffff !important;
+    border: none !important;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+}
+
+.reporte-card .card-body {
+    background-color: #ffffff !important;
+}
+
+.reporte-card .card-footer {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #e9ecef !important;
+    border-bottom-left-radius: 0.75rem !important;
+    border-bottom-right-radius: 0.75rem !important;
+}
+
+.reporte-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
 .btn-volver {
     color: #6c757d;
     font-weight: 500;
@@ -18,12 +54,3 @@
     color: #ffffff !important;
 }
 
-/* === TARJETAS DE REPORTE === */
-.reporte-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.reporte-card:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-}

@@ -9,8 +9,8 @@
     <thead>
         <tr>
             <th class="center" style="width:50px;">No</th>
-            <th>Categoría</th>
-            <th class="center" style="width:180px;">Cantidad de archivos</th>
+            <th class="center" style="width:100px;">Categoría</th>
+            <th class="center" style="width:100px;">Cantidad de archivos</th>
         </tr>
     </thead>
     <tbody>

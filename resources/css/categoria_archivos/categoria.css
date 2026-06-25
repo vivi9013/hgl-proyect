@@ -1,13 +1,5 @@
 /* Estilos personalizados para el módulo de Categoría de Archivos */
 
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.card:hover {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-}
-
 /* Efectos de Focus Modernos */
 .form-control:focus {
     border-color: #3182ce;
@@ -75,10 +67,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -88,10 +80,11 @@
 }
 
 /* Evitar escala y sombras en hover */
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
+
 
 /* Convertir cabeceras de tarjetas con bg-primary en elegantes títulos subrayados */
 .card-header.bg-primary {
@@ -243,10 +236,4 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
 

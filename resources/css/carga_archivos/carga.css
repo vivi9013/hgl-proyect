@@ -24,35 +24,12 @@
     padding-right: 0 !important;
 }
 
-/* === TARJETAS DE REPORTE === */
-.reporte-card {
-    background-color: #ffffff !important;
-    border: none !important;
-    border-radius: 0.5rem !important; /* rounded-3 */
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important; /* shadow-sm */
-}
-
-.reporte-card .card-header {
-    background-color: #ffffff !important;
-    border: none !important;
-}
-
-.reporte-card .card-body {
-    background-color: #ffffff !important;
-}
-
-.reporte-card .card-footer {
-    background-color: #f8f9fa !important; /* bg-light */
-    border-top: 1px solid #dee2e6 !important;
-    border-bottom-left-radius: 0.5rem !important;
-    border-bottom-right-radius: 0.5rem !important;
-}
-
 /* Evitar escala y sombras en hover */
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
+
 
 /* Iconos y textos de acento en Negro */
 .text-primary,

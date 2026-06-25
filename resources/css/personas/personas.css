@@ -44,10 +44,10 @@ textarea:focus {
 }
 
 /* ── Sin tarjetas visuales (estilo plano consistente) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -55,7 +55,7 @@ textarea:focus {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }

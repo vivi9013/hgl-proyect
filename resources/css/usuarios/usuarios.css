@@ -4,7 +4,7 @@
    ================================================================ */
 
 /* ── Transición general de cards (todas las vistas) ── */
-.card {
+.card:not(.reporte-card) {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
