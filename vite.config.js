@@ -67,6 +67,9 @@ export default defineConfig({
                 'resources/css/usuarios/usuarios.css',
                 'resources/js/usuarios/usuarios.js',
                 'resources/js/usuarios/usuarios_edit.js',
+                // Computadoras Assets
+                'resources/css/computadoras/computadoras.css',
+                'resources/js/computadoras/computadoras.js',
             ],
             refresh: true,
         }),
@@ -76,8 +79,5 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
-    build: {
-        outDir: 'public/build',
-        manifest: true,
-    },
+    
 });
