@@ -13,10 +13,13 @@
             </h1>
             <p class="text-muted mb-0">Gestione y distribuya los insumos en las diferentes áreas de almacén.</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
             <a href="{{ route('insumos_area.reportes') }}" class="btn btn-outline-primary rounded-pill shadow-sm" style="font-weight: 700;">
                 <i class="fa fa-line-chart me-1"></i> Ver Panel de Reportes
             </a>
+            <button type="button" class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignarInsumo" style="font-weight: 700;">
+                <i class="fa fa-plus-circle me-1"></i> Asignar Insumo
+            </button>
         </div>
     </div>
 
@@ -29,118 +32,6 @@
     @if(session('exito'))
         <div id="alertaExito" data-message="{{ session('exito') }}"></div>
     @endif
-
-    {{-- ── Tarjeta: Asignar Insumo a Área ── --}}
-    <div class="card card-premium">
-        <div class="card-premium-header bg-light">
-            <h5 class="mb-0 fw-bold text-dark">
-                <i class="fa fa-plus-circle text-primary me-2"></i>Asignar insumos a un Área
-            </h5>
-        </div>
-        <div class="card-premium-body">
-            <form action="{{ route('insumos_area.store') }}" method="POST" id="formAsignarInsumo">
-                @csrf
-                <input type="hidden" name="id_insumo" id="id_insumo" value="{{ old('id_insumo') }}">
-
-                <div class="row g-3">
-                    {{-- Combo: Área de Almacén --}}
-                    <div class="col-12 col-md-4">
-                        <label for="area_almacen_select" class="form-label fw-bold">Área de Almacén: <span class="text-danger">*</span></label>
-                        <select name="id_area_almacen" id="area_almacen_select" class="form-select @error('id_area_almacen') is-invalid @enderror" required>
-                            <option value="">-- Seleccionar Área --</option>
-                            @foreach($areasAlmacen as $area)
-                                <option value="{{ $area->id_area_almacen }}" {{ old('id_area_almacen') == $area->id_area_almacen ? 'selected' : '' }}>
-                                    {{ $area->nombre }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('id_area_almacen')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Clave del insumo (Doble clic abre modal) --}}
-                    <div class="col-12 col-md-4">
-                        <label for="cve_insumo" class="form-label fw-bold">
-                            Clave del Insumo: <span class="text-danger">*</span>
-                            <small class="text-muted fw-normal">(Doble clic para buscar)</small>
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white"><i class="fa fa-key text-muted"></i></span>
-                            <input 
-                                type="text" 
-                                name="cve_insumo" 
-                                id="cve_insumo" 
-                                class="form-control @error('id_insumo') is-invalid @enderror" 
-                                value="{{ old('cve_insumo') }}" 
-                                placeholder="Escriba clave y presione Enter" 
-                                disabled 
-                                required
-                                autocomplete="off"
-                            >
-                            @error('id_insumo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    {{-- Fondo Fijo --}}
-                    <div class="col-12 col-md-2">
-                        <label for="fondo_fijo_insumo" class="form-label fw-bold">Fondo Fijo: <span class="text-danger">*</span></label>
-                        <input 
-                            type="number" 
-                            name="fondo_fijo" 
-                            id="fondo_fijo_insumo" 
-                            class="form-control @error('fondo_fijo') is-invalid @enderror" 
-                            value="{{ old('fondo_fijo') }}" 
-                            placeholder="Ej. 100" 
-                            disabled 
-                            required 
-                            min="1"
-                        >
-                        @error('fondo_fijo')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Stock Inicial --}}
-                    <div class="col-12 col-md-2">
-                        <label for="stock_inicial_insumo" class="form-label fw-bold">Stock Inicial: <span class="text-danger">*</span></label>
-                        <input 
-                            type="number" 
-                            name="stock" 
-                            id="stock_inicial_insumo" 
-                            class="form-control @error('stock') is-invalid @enderror" 
-                            value="{{ old('stock', 0) }}" 
-                            disabled 
-                            required 
-                            min="0"
-                        >
-                        @error('stock')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Datos Informativos Deshabilitados --}}
-                    <div class="col-12 col-md-8">
-                        <label for="descripcion_insumo" class="form-label fw-bold">Descripción del Insumo:</label>
-                        <input type="text" id="descripcion_insumo" class="form-control bg-light" placeholder="Se rellenará automáticamente" readonly>
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label for="tipo" class="form-label fw-bold">Tipo:</label>
-                        <input type="text" id="tipo" class="form-control bg-light" placeholder="Se rellenará automáticamente" readonly>
-                    </div>
-                </div>
-
-                <div class="mt-4 text-end">
-                    <button type="submit" id="btnGuardarInfo" class="btn btn-primary px-4 py-2" disabled>
-                        <i class="fa fa-save me-1"></i> Guardar Asignación
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     {{-- ── Tarjeta: Filtro de Visualización e Historial ── --}}
     <div class="card card-premium">
@@ -258,10 +149,10 @@
                                 </td>
                                 <td class="text-center">
                                     <a href="{{ route('insumos_area.edit', $ia->id_insumo_area) }}" 
-                                       class="btn btn-sm btn-outline-primary rounded-circle" 
-                                       title="Editar área asignada"
-                                       style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
-                                        <i class="fa fa-pencil"></i>
+                                       class="btn btn-sm btn-outline-dark rounded-circle" 
+                                       title="Editar asignación"
+                                       style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-color: #000000; color: #000000;">
+                                        <i class="fa fa-pencil text-dark"></i>
                                     </a>
                                 </td>
                                 <td class="text-center fw-bold text-dark">{{ $ia->insumo->clave ?? '—' }}</td>
@@ -276,10 +167,10 @@
                                     <input 
                                         type="number" 
                                         id="stock_inicial_insumo{{ $ia->id_insumo_area }}" 
-                                        class="input-table-edit {{ $stockClass }}" 
+                                        class="input-table-edit {{ $stockClass }} input-inline-stock" 
                                         value="{{ $ia->stock }}"
-                                        onkeypress="guardarStockInicial('{{ $ia->id_insumo_area }}', '{{ $ia->fondo_fijo }}', event)" 
-                                        onblur="guardarStockInicial2('{{ $ia->id_insumo_area }}', '{{ $ia->fondo_fijo }}')"
+                                        data-id="{{ $ia->id_insumo_area }}"
+                                        data-fondo="{{ $ia->fondo_fijo }}"
                                         min="0"
                                     >
                                 </td>
@@ -287,9 +178,9 @@
                                     <input 
                                         type="number" 
                                         id="fondo_fijo{{ $ia->id_insumo_area }}" 
-                                        class="input-table-edit" 
+                                        class="input-table-edit input-inline-fondo" 
                                         value="{{ $ia->fondo_fijo }}"
-                                        onkeypress="guardarFondoFijo('{{ $ia->id_insumo_area }}', event)"
+                                        data-id="{{ $ia->id_insumo_area }}"
                                         min="1"
                                     >
                                 </td>
@@ -327,28 +218,129 @@
 
 </div>
 
-{{-- ── MODAL: Catálogo de Insumos (Doble Clic) ── --}}
-<div class="modal fade" id="modalInsumos" tabindex="-1" aria-labelledby="modalInsumosLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content modal-content-premium">
-            <div class="modal-header modal-header-premium bg-dark text-white">
-                <h5 class="modal-title fw-bold text-white" id="modalInsumosLabel">
-                    <i class="fa fa-list me-2"></i> Seleccionar Insumo del Catálogo
+{{-- ── MODAL: Asignar Insumo a Área ── --}}
+<div class="modal fade" id="modalAsignarInsumo" tabindex="-1" aria-labelledby="modalAsignarInsumoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="overflow: visible !important;">
+            <div class="modal-header bg-primary text-white border-0 py-3 px-4">
+                <h5 class="modal-title fw-bold text-white" id="modalAsignarInsumoLabel">
+                    <i class="fa fa-plus-circle me-2"></i>Asignar Insumo a Área
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body modal-body-premium p-0" id="listaInsumosContenido">
-                <div class="text-center py-4">
-                    <i class="fa fa-spinner fa-spin fa-2x text-muted mb-2"></i>
-                    <p class="mb-0 text-muted">Cargando catálogo de insumos...</p>
+            <form action="{{ route('insumos_area.store') }}" method="POST" id="formAsignarInsumo" novalidate>
+                @csrf
+                <input type="hidden" name="id_insumo" id="id_insumo" value="{{ old('id_insumo') }}">
+
+                <div class="modal-body p-4" style="overflow: visible !important;">
+                    <div class="row g-3">
+                        {{-- Combo: Área de Almacén --}}
+                        <div class="col-12 col-md-6">
+                            <label for="area_almacen_select" class="form-label fw-bold">Área de Almacén: <span class="text-danger">*</span></label>
+                            <select name="id_area_almacen" id="area_almacen_select" class="form-select @error('id_area_almacen') is-invalid @enderror" required>
+                                <option value="">-- Seleccionar Área --</option>
+                                @foreach($areasAlmacen as $area)
+                                    <option value="{{ $area->id_area_almacen }}" {{ old('id_area_almacen') == $area->id_area_almacen ? 'selected' : '' }}>
+                                        {{ $area->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_area_almacen')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Insumo autocomplete --}}
+                        <div class="col-12 col-md-6">
+                            <div class="form-group position-relative">
+                                <label for="buscarInsumo" class="form-label fw-bold">
+                                    Insumo (clave o descripción): <span class="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="buscarInsumo"
+                                    class="form-control @error('id_insumo') is-invalid @enderror"
+                                    placeholder="Buscar insumo… (doble clic para ver claves)"
+                                    autocomplete="off"
+                                    value="{{ old('buscarInsumo', '') }}"
+                                    required
+                                >
+                                <div id="sugerenciasInsumo" class="list-group position-absolute w-100" style="z-index:1060; display:none; max-height:220px; overflow-y:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                                @error('id_insumo')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+
+                                {{-- Panel de acceso rápido que se abre al hacer doble clic --}}
+                                <x-panel-claves :input-id="'buscarInsumo'" :panel-id="'panelClaves'" :endpoint="'/insumos-area/buscar-insumos'" :area-input-id="'area_almacen_select'" :columna-extra="'tipo'" />
+                            </div>
+                        </div>
+
+                        {{-- Fondo Fijo --}}
+                        <div class="col-12 col-md-6">
+                            <label for="fondo_fijo_insumo" class="form-label fw-bold">Fondo Fijo: <span class="text-danger">*</span></label>
+                            <input 
+                                type="number" 
+                                name="fondo_fijo" 
+                                id="fondo_fijo_insumo" 
+                                class="form-control @error('fondo_fijo') is-invalid @enderror" 
+                                value="{{ old('fondo_fijo') }}" 
+                                placeholder="Ej. 100" 
+                                required 
+                                min="1"
+                            >
+                            @error('fondo_fijo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Stock Inicial --}}
+                        <div class="col-12 col-md-6">
+                            <label for="stock_inicial_insumo" class="form-label fw-bold">Stock Inicial: <span class="text-danger">*</span></label>
+                            <input 
+                                type="number" 
+                                name="stock" 
+                                id="stock_inicial_insumo" 
+                                class="form-control @error('stock') is-invalid @enderror" 
+                                value="{{ old('stock', 0) }}" 
+                                required 
+                                min="0"
+                            >
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Datos Informativos Deshabilitados --}}
+                        <div class="col-12 col-md-8">
+                            <label for="descripcion_insumo" class="form-label fw-bold">Descripción del Insumo:</label>
+                            <input type="text" id="descripcion_insumo" class="form-control bg-light" placeholder="Se rellenará automáticamente" readonly>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label for="tipo" class="form-label fw-bold">Tipo:</label>
+                            <input type="text" id="tipo" class="form-control bg-light" placeholder="Se rellenará automáticamente" readonly>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer modal-footer-premium bg-light">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
+                <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="btnGuardarInfo" class="btn btn-primary">
+                        <i class="fa fa-save me-1"></i> Guardar Asignación
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+@if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('modalAsignarInsumo'));
+            myModal.show();
+        });
+    </script>
+@endif
 
 @if(session('exitog') || session('exito'))
     <script>

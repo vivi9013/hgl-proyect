@@ -27,11 +27,18 @@ class InsumoController extends Controller
 
         // Responder por AJAX si se requiere para el buscador local o dinámico
         if ($request->ajax()) {
+            $all = $request->boolean('all', false);
+
+            if ($all) {
+                $query = Insumo::orderBy('clave', 'asc');
+            }
+
             $sugerencias = $query->select('id_insumo', 'clave', 'descripcion', 'tipo', 'activo')
-                ->limit(10)
+                ->when(!$all, fn($q) => $q->limit(10))
                 ->get()
                 ->map(fn($item) => [
                     'id'          => $item->id_insumo,
+                    'id_insumo'   => $item->id_insumo,
                     'clave'       => $item->clave,
                     'descripcion' => $item->descripcion,
                     'tipo'        => $item->tipo,

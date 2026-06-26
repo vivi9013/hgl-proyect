@@ -93,11 +93,10 @@
                             <label for="buscarInsumoDetalle" class="form-label fw-bold small">
                                 Insumo (clave o descripción): <span class="text-danger">*</span>
                             </label>
-                            {{-- Input de búsqueda de insumo autocomplete interactivo. --}}
                             <input type="text"
                                    id="buscarInsumoDetalle"
                                    class="form-control"
-                                   placeholder="Buscar insumo… (mín. 2 caracteres)"
+                                   placeholder="Buscar insumo… (doble clic para ver claves)"
                                    autocomplete="off">
                             {{-- Input oculto necesario para enviar el identificador único del insumo seleccionado al backend. --}}
                             <input type="hidden" name="id_insumo" id="id_insumo_detalle">
@@ -105,6 +104,7 @@
                             <div id="sugerenciasDetalle" class="list-group position-absolute w-100"
                                  style="z-index:1060; display:none; max-height:200px; overflow-y:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             </div>
+                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/devoluciones/buscar-insumos'" :columna-extra="'none'" />
                             @error('id_insumo')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror

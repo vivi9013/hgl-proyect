@@ -41,6 +41,14 @@ export default defineConfig({
                 'resources/css/inventario/insumos_area/insumos_area.css',
                 'resources/js/inventario/insumos_area/insumos_area.js',
 
+                // Motivos de Devoluciones Assets
+                'resources/css/inventario/motivos/motivos.css',
+                'resources/js/inventario/motivos/motivos.js',
+
+                // Reportes de Inventario Assets
+                'resources/css/inventario/reportes/reportes.css',
+                'resources/js/inventario/reportes/reportes.js',
+
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/css/categoria_modulos/categoria_edit.css',

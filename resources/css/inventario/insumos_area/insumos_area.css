@@ -158,3 +158,48 @@
     text-shadow: 0 1px 0 #fff;
     white-space: nowrap;
 }
+
+/* Autocomplete suggestions dropdown */
+#sugerenciasInsumo {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+#sugerenciasInsumo .list-group-item {
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.15s ease;
+    text-align: left;
+}
+
+#sugerenciasInsumo .list-group-item:last-child {
+    border-bottom: none;
+}
+
+#sugerenciasInsumo .list-group-item:hover {
+    background-color: #f8fafc;
+}
+
+/* Claves panel adjustments */
+#panelClaves {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+#panelClaves table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 12px;
+}
+
+#panelClaves table td {
+    padding: 8px 12px;
+    vertical-align: middle;
+}

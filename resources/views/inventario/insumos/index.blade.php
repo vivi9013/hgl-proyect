@@ -40,7 +40,7 @@
                                 name="buscar"
                                 id="inputBuscar"
                                 class="form-control bg-light border-0"
-                                placeholder="Buscar por clave o descripción..."
+                                placeholder="Buscar por clave o descripción... (doble clic para ver claves)"
                                 value="{{ $buscar }}"
                                 autocomplete="off"
                                 style="font-size: 0.9rem; box-shadow: none;"
@@ -54,6 +54,7 @@
                                 <i class="fa fa-search text-dark"></i>
                             </button>
                         </div>
+                        <x-panel-claves :input-id="'inputBuscar'" :panel-id="'panelClaves'" :endpoint="'/insumos'" :columna-extra="'tipo'" />
                     </div>
                 </div>
             </form>

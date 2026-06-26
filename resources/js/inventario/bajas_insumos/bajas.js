@@ -1,3 +1,5 @@
+import { initPanelClaves } from '../shared/panel-claves.js';
+
 /**
  * Lógica JavaScript para el módulo de Bajas de Insumos
  * Inventario de Medicamentos y Material de Curación – HGL
@@ -343,146 +345,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fechaFin) fechaFin.addEventListener('change', (e) => autoSubmitFecha(e));
 
     // ── 7. Panel de claves (doble clic en buscarInsumo) ────────────────────
-    const panelClaves = document.getElementById('panelClaves');
-    const filasClaves = document.getElementById('filasClaves');
-    const panelClavesLoading = document.getElementById('panelClavesLoading');
-    const panelClavesVacio = document.getElementById('panelClavesVacio');
-    const filtroPanelClaves = document.getElementById('filtroPanelClaves');
-    const cerrarPanelClaves = document.getElementById('cerrarPanelClaves');
-
-    // Caché de datos cargados para el panel (evita repetir fetch al filtrar)
-    let clavesCache = [];
-
-    /**
-     * Renderiza las filas del panel filtrando por texto.
-     */
-    const renderizarFilas = (filtro = '') => {
-        const texto = filtro.toLowerCase().trim();
-        const datos = texto
-            ? clavesCache.filter(i =>
-                i.clave.toLowerCase().includes(texto) ||
-                i.descripcion.toLowerCase().includes(texto))
-            : clavesCache;
-
-        filasClaves.innerHTML = '';
-
-        if (datos.length === 0) {
-            panelClavesVacio.style.display = 'block';
-            return;
-        }
-        panelClavesVacio.style.display = 'none';
-
-        datos.forEach((insumo, idx) => {
-            const tr = document.createElement('tr');
-            tr.style.cssText = `cursor:pointer; transition:background 0.15s;`;
-            tr.innerHTML = `
-                <td style="padding:6px 10px; border-bottom:1px solid #f3f4f6; font-family:Arial,sans-serif; font-weight:600; color:#1d4ed8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${insumo.clave}</td>
-                <td style="padding:6px 10px; border-bottom:1px solid #f3f4f6; color:#374151; word-wrap:break-word; overflow-wrap:break-word; white-space:normal;">${insumo.descripcion}</td>
-                <td style="padding:6px 10px; border-bottom:1px solid #f3f4f6; text-align:center; white-space:nowrap;">
-                    ${insumo.stock !== undefined
-                    ? `<span style="background:${insumo.stock > 0 ? '#dcfce7' : '#fee2e2'}; color:${insumo.stock > 0 ? '#15803d' : '#dc2626'}; border-radius:12px; padding:2px 8px; font-size:0.75rem; font-weight:700;">${insumo.stock}</span>`
-                    : '—'}
-                </td>
-            `;
-            // Hover visual
-            tr.addEventListener('mouseenter', () => tr.style.background = '#eff6ff');
-            tr.addEventListener('mouseleave', () => tr.style.background = idx % 2 === 0 ? '#fff' : '#f9fafb');
-            tr.style.background = idx % 2 === 0 ? '#fff' : '#f9fafb';
-
-            // Al hacer clic → rellenar input
-            tr.addEventListener('click', () => {
-                if (inputBuscarInsumo) inputBuscarInsumo.value = `[${insumo.clave}] ${insumo.descripcion}`;
-                if (inputIdInsumo) inputIdInsumo.value = insumo.id_insumo;
-
-                if (insumo.stock !== undefined && selectArea?.value) {
-                    stockMaximo = parseInt(insumo.stock) || 0;
-                    if (stockDisponible) stockDisponible.textContent = stockMaximo;
-                    if (infoStock) infoStock.style.display = 'inline-block';
-                    if (inputCantidad) inputCantidad.setAttribute('max', stockMaximo);
-                }
-
-                panelClaves.style.display = 'none';
-                if (inputBuscarInsumo) inputBuscarInsumo.focus();
-            });
-
-            filasClaves.appendChild(tr);
-        });
-    };
-
-    /**
-     * Abre el panel y carga los datos desde el servidor.
-     */
-    const abrirPanelClaves = () => {
-        if (!panelClaves) return;
-
-        // Ocultar sugerencias normales si estaban visibles
-        if (sugerenciasDiv) sugerenciasDiv.style.display = 'none';
-
-        panelClaves.style.display = 'block';
-        filasClaves.innerHTML = '';
-        if (filtroPanelClaves) filtroPanelClaves.value = '';
-        panelClavesLoading.style.display = 'block';
-        panelClavesVacio.style.display = 'none';
-
-        const idArea = selectArea?.value || '';
-
-        // Aviso cuando no hay área seleccionada
-        const avisoArea = document.getElementById('avisoSinArea');
-        if (avisoArea) {
-            avisoArea.style.display = idArea ? 'none' : 'flex';
-        }
-
-        let url = `/bajas-insumos/buscar-insumos?all=1`;
-        if (idArea) url += `&id_area_almacen=${encodeURIComponent(idArea)}`;
-
-        fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        })
-            .then(res => { if (!res.ok) throw new Error('Error de servidor'); return res.json(); })
-            .then(data => {
-                panelClavesLoading.style.display = 'none';
-                clavesCache = data || [];
-                renderizarFilas();
-                if (filtroPanelClaves) filtroPanelClaves.focus();
-            })
-            .catch(() => {
-                panelClavesLoading.style.display = 'none';
-                filasClaves.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:14px;color:#dc2626;font-size:0.8rem;">Error al cargar las claves.</td></tr>`;
-            });
-    };
-
-    // Doble clic sobre el input → abrir panel
-    if (inputBuscarInsumo) {
-        inputBuscarInsumo.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            abrirPanelClaves();
-        });
-    }
-
-    // Filtro interno del panel (teclear filtra sin nueva petición)
-    if (filtroPanelClaves) {
-        filtroPanelClaves.addEventListener('input', () => {
-            renderizarFilas(filtroPanelClaves.value);
-        });
-        // Evitar que Enter cierre el modal
-        filtroPanelClaves.addEventListener('keydown', e => {
-            if (e.key === 'Enter') e.preventDefault();
-            if (e.key === 'Escape') panelClaves.style.display = 'none';
-        });
-    }
-
-    // Botón cerrar
-    if (cerrarPanelClaves) {
-        cerrarPanelClaves.addEventListener('click', () => {
-            panelClaves.style.display = 'none';
-        });
-    }
-
-    // Clic fuera del panel → cerrar
-    document.addEventListener('click', (e) => {
-        if (panelClaves && panelClaves.style.display === 'block') {
-            if (!panelClaves.contains(e.target) && e.target !== inputBuscarInsumo) {
-                panelClaves.style.display = 'none';
+    initPanelClaves({
+        panelId: 'panelClaves',
+        inputBuscarId: 'buscarInsumo',
+        inputHiddenId: 'id_insumo',
+        sugerenciasId: 'sugerenciasInsumo',
+        areaInputId: 'id_area_almacen',
+        endpoint: '/bajas-insumos/buscar-insumos',
+        columnaExtra: 'stock',
+        onSelect: (insumo) => {
+            const idArea = selectArea?.value || '';
+            if (insumo.stock !== undefined && idArea) {
+                stockMaximo = parseInt(insumo.stock) || 0;
+                if (stockDisponible) stockDisponible.textContent = stockMaximo;
+                if (infoStock) infoStock.style.display = 'inline-block';
+                if (inputCantidad) inputCantidad.setAttribute('max', stockMaximo);
             }
         }
     });
@@ -492,8 +369,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (modalAltaBaja) {
         modalAltaBaja.addEventListener('hidden.bs.modal', () => {
             // Cerrar panel de claves
+            const panelClaves = document.getElementById('panelClaves');
             if (panelClaves) panelClaves.style.display = 'none';
-            clavesCache = [];
 
             // Limpiar todos los campos del formulario
             if (selectArea) selectArea.value = '';
@@ -512,8 +389,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const formBajaEl = document.getElementById('formBaja');
             if (formBajaEl) {
                 formBajaEl.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-
             }
         });
     }

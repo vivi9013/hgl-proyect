@@ -1,29 +1,28 @@
-import { initPanelClaves } from '../shared/panel-claves.js';
-
 /**
- * Lógica JavaScript para el catálogo de Insumos
+ * Lógica JavaScript para el módulo de Motivos de Devoluciones
  * Inventario de Medicamentos y Material de Curación – HGL
  */
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const inputClave             = document.getElementById('clave');
-    const feedbackDisponibilidad = document.getElementById('feedbackDisponibilidad');
-    const loadingSpinner         = document.getElementById('loadingSpinner');
-    const btnGuardar             = document.getElementById('btnGuardar');
-    const insumoIdField          = document.getElementById('insumo_id'); // Presente solo en la vista de edición
+    const inputDescripcion         = document.getElementById('descripcion');
+    const selectModificar          = document.getElementById('modificar');
+    const feedbackDisponibilidad   = document.getElementById('feedbackDisponibilidad');
+    const loadingSpinner           = document.getElementById('loadingSpinner');
+    const btnGuardar               = document.getElementById('btnGuardar');
 
-    // ── 0. Filtrado en Tiempo Real (buscador local) ─────────────────────────
+    // ── 0. Filtrado en Tiempo Real ─────────────────────────────────────────────
     const inputBuscar = document.getElementById('inputBuscar');
     const formBuscar  = document.getElementById('formBuscar');
     if (inputBuscar && formBuscar) {
         inputBuscar.addEventListener('input', function () {
             const query = inputBuscar.value.toLowerCase().trim();
 
-            const rows = document.querySelectorAll('#tablaInsumos tbody tr');
+            // Filtrado local de filas de la tabla en tiempo real
+            const rows = document.querySelectorAll('#tablaMotivos tbody tr');
             let matchCount = 0;
             rows.forEach(row => {
-                // Ignorar la fila de mensaje
+                // Ignorar filas de mensaje
                 if (row.cells.length === 1 && row.cells[0].classList.contains('text-center')) {
                     return;
                 }
@@ -47,52 +46,35 @@ document.addEventListener('DOMContentLoaded', function () {
                     noRecordsRow = document.createElement('tr');
                     noRecordsRow.id = 'noLocalResultsRow';
                     noRecordsRow.innerHTML = `
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="fa fa-search fa-2x mb-2 d-block text-dark"></i>
-                            No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en la base de datos.
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fa fa-search fa-2x mb-2 d-block"></i>
+                            No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en el servidor.
                         </td>
                     `;
-                    document.querySelector('#tablaInsumos tbody').appendChild(noRecordsRow);
+                    document.querySelector('#tablaMotivos tbody').appendChild(noRecordsRow);
                 } else {
                     noRecordsRow.style.display = '';
                     noRecordsRow.querySelector('td').innerHTML = `
-                        <i class="fa fa-search fa-2x mb-2 d-block text-dark"></i>
-                        No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en la base de datos.
+                        <i class="fa fa-search fa-2x mb-2 d-block"></i>
+                        No se encontraron resultados locales para "${inputBuscar.value}". Presione Enter para buscar en el servidor.
                     `;
                 }
             } else if (noRecordsRow) {
                 noRecordsRow.style.display = 'none';
             }
         });
-
-        initPanelClaves({
-            panelId: 'panelClaves',
-            inputBuscarId: 'inputBuscar',
-            inputHiddenId: null,
-            sugerenciasId: null,
-            endpoint: '/insumos',
-            columnaExtra: 'tipo',
-            onSelect: (insumo) => {
-                if (inputBuscar) {
-                    inputBuscar.value = insumo.clave;
-                }
-                if (formBuscar) {
-                    formBuscar.submit();
-                }
-            }
-        });
     }
 
-    // ── 1. Alertas SweetAlert2 con sesión flash de Laravel ──────────────────
+    // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
     const alertaExito  = document.getElementById('alertaExito');
 
     if (alertaExitog && typeof Swal !== 'undefined') {
         Swal.fire({
             title: '¡Operación Satisfactoria!',
-            text: alertaExitog.getAttribute('data-message') || 'El insumo se ha guardado correctamente.',
+            text: 'El motivo se ha guardado correctamente.',
             icon: 'success',
-            confirmButtonColor: '#0d6efd',
+            confirmButtonColor: '#3085d6',
             confirmButtonText: 'Aceptar'
         });
     }
@@ -100,80 +82,77 @@ document.addEventListener('DOMContentLoaded', function () {
     if (alertaExito && typeof Swal !== 'undefined') {
         Swal.fire({
             title: '¡Operación Satisfactoria!',
-            text: alertaExito.getAttribute('data-message') || 'El insumo se ha actualizado correctamente.',
+            text: 'El motivo se ha actualizado correctamente.',
             icon: 'success',
-            confirmButtonColor: '#0d6efd',
+            confirmButtonColor: '#3085d6',
             confirmButtonText: 'Aceptar'
         });
     }
 
-    // ── 2. Verificación AJAX de disponibilidad de clave (debounce 300 ms) ────
-    if (inputClave && feedbackDisponibilidad && btnGuardar) {
+    // ── 2. Verificación AJAX de disponibilidad de descripción (debounce 300 ms) ─
+    if (inputDescripcion && feedbackDisponibilidad && loadingSpinner && btnGuardar) {
         let timeoutId;
 
-        inputClave.addEventListener('input', function () {
+        const realizarVerificacion = () => {
             clearTimeout(timeoutId);
-            const clave = this.value.trim();
+            const descripcion = inputDescripcion.value.trim();
 
-            if (!clave) {
+            if (!descripcion) {
                 feedbackDisponibilidad.innerHTML = '';
-                inputClave.classList.remove('is-valid', 'is-invalid');
+                inputDescripcion.classList.remove('is-valid', 'is-invalid');
                 btnGuardar.disabled = false;
                 return;
             }
 
             timeoutId = setTimeout(() => {
-                if (loadingSpinner) loadingSpinner.style.display = 'block';
+                loadingSpinner.style.display = 'block';
                 feedbackDisponibilidad.innerHTML = '';
 
-                let url = `/insumos/verificar?clave=${encodeURIComponent(clave)}`;
-                if (insumoIdField && insumoIdField.value) {
-                    url += `&id=${encodeURIComponent(insumoIdField.value)}`;
-                }
-
-                fetch(url, {
+                fetch(`/motivos/verificar?descripcion=${encodeURIComponent(descripcion)}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     }
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Error en la llamada al servidor');
+                    if (!response.ok) throw new Error('Error de servidor');
                     return response.json();
                 })
                 .then(data => {
-                    if (loadingSpinner) loadingSpinner.style.display = 'none';
+                    loadingSpinner.style.display = 'none';
 
                     if (data.disponible) {
                         feedbackDisponibilidad.innerHTML =
-                            '<span class="text-success-custom"><i class="fa fa-check-circle me-1"></i> Clave disponible</span>';
-                        inputClave.classList.remove('is-invalid');
-                        inputClave.classList.add('is-valid');
+                            '<span class="text-success-custom"><i class="fa fa-check-circle"></i> Descripción disponible</span>';
+                        inputDescripcion.classList.remove('is-invalid');
+                        inputDescripcion.classList.add('is-valid');
                         btnGuardar.disabled = false;
                     } else {
                         feedbackDisponibilidad.innerHTML =
-                            '<span class="text-danger-custom"><i class="fa fa-times-circle me-1"></i> Esta clave ya se encuentra registrada</span>';
-                        inputClave.classList.remove('is-valid');
-                        inputClave.classList.add('is-invalid');
+                            '<span class="text-danger-custom"><i class="fa fa-times-circle"></i> Este motivo ya se encuentra registrado</span>';
+                        inputDescripcion.classList.remove('is-valid');
+                        inputDescripcion.classList.add('is-invalid');
                         btnGuardar.disabled = true;
                     }
                 })
                 .catch(error => {
-                    if (loadingSpinner) loadingSpinner.style.display = 'none';
-                    console.error('Error al verificar la clave:', error);
+                    loadingSpinner.style.display = 'none';
+                    console.error('Error al verificar motivo:', error);
                 });
             }, 300);
-        });
+        };
+
+        inputDescripcion.addEventListener('input', realizarVerificacion);
     }
 
-    // ── 3. Confirmación SweetAlert2 + envío GET para cambiar status ───────────
+    // ── 3. Confirmación SweetAlert2 + envío GET para cambiar status ─────────────
     const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
     toggleStatusLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
 
             const url    = this.getAttribute('data-url');
-            const clave  = this.getAttribute('data-clave');
+            const nombre = this.getAttribute('data-nombre');
             const activo = parseInt(this.getAttribute('data-activo'));
 
             const accion         = activo === 1 ? 'desactivar' : 'activar';
@@ -186,11 +165,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: `¿Desea ${accion} el insumo?`,
-                    text: `El insumo con clave "${clave}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema.`,
+                    title: `¿Desea ${accion} el motivo?`,
+                    text: `El motivo "${nombre}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema.`,
                     icon: iconType,
                     showCancelButton: true,
-                    confirmButtonColor: '#0d6efd',
+                    confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: confirmBtnText,
                     cancelButtonText: 'Cancelar'
@@ -200,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
             } else {
-                if (confirm(`¿Está seguro de que desea ${accion} el insumo con clave "${clave}"?`)) {
+                if (confirm(`¿Está seguro de que desea ${accion} el motivo "${nombre}"?`)) {
                     doRequest();
                 }
             }

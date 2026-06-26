@@ -1,3 +1,5 @@
+import { initPanelClaves } from '../shared/panel-claves.js';
+
 /**
  * Lógica JavaScript para el módulo de Devoluciones de Insumos
  * Inventario de Medicamentos y Material de Curación – HGL
@@ -162,6 +164,16 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!inputBuscarInsumo.contains(e.target) && !sugerenciasDiv.contains(e.target)) {
                 sugerenciasDiv.style.display = 'none';
             }
+        });
+
+        // Inicializar panel de claves para devoluciones
+        initPanelClaves({
+            panelId: 'panelClavesDetalle',
+            inputBuscarId: 'buscarInsumoDetalle',
+            inputHiddenId: 'id_insumo_detalle',
+            sugerenciasId: 'sugerenciasDetalle',
+            endpoint: '/devoluciones/buscar-insumos',
+            columnaExtra: 'none'
         });
     }
 

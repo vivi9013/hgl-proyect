@@ -80,12 +80,13 @@
                             <input type="text"
                                    id="buscarInsumoDetalle"
                                    class="form-control"
-                                   placeholder="Buscar insumo… (mín. 2 caracteres)"
+                                   placeholder="Buscar insumo… (doble clic para ver claves)"
                                    autocomplete="off">
                             <input type="hidden" name="id_insumo" id="id_insumo_detalle">
                             <div id="sugerenciasDetalle" class="list-group position-absolute w-100"
                                  style="z-index:1060; display:none; max-height:220px; overflow-y:auto; box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
                             </div>
+                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/entradas-cendis/buscar-insumos'" :area-input-id="'id_area_almacen_active'" :columna-extra="'stock'" />
                             @error('id_insumo')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror

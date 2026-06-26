@@ -47,15 +47,21 @@
                                 <textarea class="form-control bg-light" rows="2" readonly>{{ $insumoArea->insumo->descripcion ?? '—' }}</textarea>
                             </div>
 
-                            {{-- Stock y Fondo Fijo Informativo --}}
+                            {{-- Stock y Fondo Fijo --}}
                             <div class="col-12 col-sm-6">
-                                <label class="form-label fw-bold text-muted small">Stock Actual:</label>
-                                <div class="form-control bg-light fw-semibold text-center">{{ $insumoArea->stock }}</div>
+                                <label for="stock" class="form-label fw-bold">Stock: <span class="text-danger">*</span></label>
+                                <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $insumoArea->stock) }}" required min="0">
+                                @error('stock')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             
                             <div class="col-12 col-sm-6">
-                                <label class="form-label fw-bold text-muted small">Fondo Fijo Actual:</label>
-                                <div class="form-control bg-light fw-semibold text-center">{{ $insumoArea->fondo_fijo }}</div>
+                                <label for="fondo_fijo" class="form-label fw-bold">Fondo Fijo: <span class="text-danger">*</span></label>
+                                <input type="number" name="fondo_fijo" id="fondo_fijo" class="form-control @error('fondo_fijo') is-invalid @enderror" value="{{ old('fondo_fijo', $insumoArea->fondo_fijo) }}" required min="1">
+                                @error('fondo_fijo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             {{-- Selección de Nueva Área --}}

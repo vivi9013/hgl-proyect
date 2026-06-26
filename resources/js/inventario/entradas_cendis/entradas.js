@@ -1,3 +1,5 @@
+import { initPanelClaves } from '../shared/panel-claves.js';
+
 /**
  * Lógica JavaScript para el módulo de Entrada de Insumos al Cendis
  * Inventario de Medicamentos y Material de Curación – HGL
@@ -141,6 +143,36 @@ document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', (e) => {
             if (!inputBuscarInsumo.contains(e.target) && !sugerenciasDiv.contains(e.target)) {
                 sugerenciasDiv.style.display = 'none';
+            }
+        });
+
+        // Inicializar panel de claves para CENDIS
+        initPanelClaves({
+            panelId: 'panelClavesDetalle',
+            inputBuscarId: 'buscarInsumoDetalle',
+            inputHiddenId: 'id_insumo_detalle',
+            sugerenciasId: 'sugerenciasDetalle',
+            areaInputId: 'id_area_almacen_active',
+            endpoint: '/entradas-cendis/buscar-insumos',
+            columnaExtra: 'stock',
+            onSelect: (insumo) => {
+                if (inputBuscarInsumo) inputBuscarInsumo.value = insumo.clave;
+                if (inputDescripcion) inputDescripcion.value = insumo.descripcion;
+                if (inputTipo) inputTipo.value = insumo.tipo || 'Insumo';
+                
+                // Consultar stock en el área de almacén activa
+                if (areaAlmacenId && insumo.id_insumo) {
+                    fetch(`/entradas-cendis/consultar-stock?id_insumo=${insumo.id_insumo}&id_area_almacen=${areaAlmacenId}`)
+                    .then(res => res.json())
+                    .then(stockData => {
+                        if (inputStock) inputStock.value = stockData.stock || 0;
+                    });
+                }
+
+                // Habilitar campos
+                if (inputSolicitado) inputSolicitado.removeAttribute('disabled');
+                if (inputCantidad) inputCantidad.removeAttribute('disabled');
+                if (inputSolicitado) inputSolicitado.focus();
             }
         });
     }

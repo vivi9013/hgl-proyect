@@ -320,48 +320,7 @@
                                 @enderror
 
                                 {{-- Panel de acceso rápido que se abre al hacer doble clic en el input de insumos --}}
-                                {{-- Permite listar directamente todas las claves e insumos asociados con su respectivo stock --}}
-                                <div id="panelClaves" style="display:none; position:absolute; left:0; top:calc(100% + 6px); z-index:1070; width:580px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.13); overflow:hidden;">
-                                    <div style="background:#1d4ed8; padding:8px 14px; display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="color:#fff; font-weight:700; font-size:0.82rem;">
-                                            <i class="fa fa-list-alt me-1"></i> Claves disponibles
-                                        </span>
-                                        <button type="button" id="cerrarPanelClaves" style="background:transparent; border:none; color:#fff; font-size:1rem; cursor:pointer; line-height:1;" title="Cerrar">
-                                            <i class="fa fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div style="padding:8px 10px; border-bottom:1px solid #e5e7eb;">
-                                        <input type="text" id="filtroPanelClaves" placeholder="Filtrar claves…" style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 10px; font-size:0.8rem; outline:none;">
-                                    </div>
-                                    {{-- Aviso sin área --}}
-                                    <div id="avisoSinArea" style="display:none; align-items:center; gap:8px; padding:7px 14px; background:#fffbeb; border-bottom:1px solid #fde68a; font-size:0.78rem; color:#92400e;">
-                                        <i class="fa fa-info-circle" style="color:#d97706;"></i>
-                                        <span>Selecciona primero un <strong>Área de Almacén</strong> para ver el stock real de cada insumo.</span>
-                                    </div>
-                                    <div id="cuerpoPanelClaves" style="max-height:260px; overflow-y:auto; overflow-x:hidden;">
-                                        <table style="width:100%; border-collapse:collapse; font-size:0.8rem; table-layout:fixed;">
-                                            <colgroup>
-                                                <col style="width:140px;">
-                                                <col style="width:360px;">
-                                                <col style="width:80px;">
-                                            </colgroup>
-                                            <thead>
-                                                <tr style="background:#f8fafc; position:sticky; top:0; z-index:1;">
-                                                    <th style="padding:6px 10px; text-align:left; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb; font-family:Arial,sans-serif;">Clave</th>
-                                                    <th style="padding:6px 10px; text-align:left; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb;">Descripcion</th>
-                                                    <th style="padding:6px 10px; text-align:center; color:#374151; font-weight:700; border-bottom:1px solid #e5e7eb;">Stock</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="filasClaves"></tbody>
-                                        </table>
-                                        <div id="panelClavesLoading" style="text-align:center; padding:18px; color:#6b7280; font-size:0.82rem;">
-                                            <i class="fa fa-circle-o-notch fa-spin me-1"></i> Cargando claves…
-                                        </div>
-                                        <div id="panelClavesVacio" style="display:none; text-align:center; padding:18px; color:#9ca3af; font-size:0.82rem;">
-                                            <i class="fa fa-search me-1"></i> Sin resultados
-                                        </div>
-                                    </div>
-                                </div>
+                                <x-panel-claves :input-id="'buscarInsumo'" :panel-id="'panelClaves'" :endpoint="'/bajas-insumos/buscar-insumos'" :area-input-id="'id_area_almacen'" :columna-extra="'stock'" />
                             </div>
                         </div>
 

@@ -96,6 +96,8 @@
                                                         'mEntradaInsumosCendis' => 'entradas_cendis.index',
                                                         'mInsumos'              => 'insumos.index',
                                                         'mInsumosArea'          => 'insumos_area.index',
+                                                        'mMotivos'              => 'motivos.index',
+                                                        'mReportes'             => 'reportes_inventario.index',
                                                         'mCategoModulos'        => 'categoria_modulos.index',
                                                         'mConfiguracion' => 'configuracion_sistema.index',
                                                         'mModulos'         => 'modulos.index',

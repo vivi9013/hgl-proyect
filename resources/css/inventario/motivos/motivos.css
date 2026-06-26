@@ -1,0 +1,369 @@
+/* ================================================================
+   Módulo: Motivos de Devoluciones
+   Inventario de Medicamentos y Material de Curación
+   Sigue el patrón clásico/profesional unificado del proyecto HGL
+   ================================================================ */
+
+/* ── Transición suave para tarjetas ── */
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ── Feedback AJAX ── */
+.text-success-custom {
+    color: #2f855a;
+    font-weight: 500;
+}
+
+.text-danger-custom {
+    color: #c53030;
+    font-weight: 500;
+}
+
+/* ── Animación Spinner ── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ── Hover en la tabla ── */
+#tablaMotivos tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#tablaMotivos tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.01) !important;
+}
+
+/* ── Icono de editar ── */
+.fa-pencil-square-o {
+    color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.fa-pencil-square-o:hover {
+    color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* ── Botón toggle de status ── */
+.btn-toggle-status {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.btn-toggle-status:hover {
+    transform: scale(1.1);
+}
+
+.btn-toggle-status[data-activo="1"] {
+    color: #38a169;
+}
+
+.btn-toggle-status[data-activo="0"] {
+    color: #a0aec0;
+}
+
+/* ================================================================
+   ESTILOS CLÁSICOS Y SIMPLES – Sin tarjetas pronunciadas,
+   iconos en negro, diseño plano y profesional
+   ================================================================ */
+
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Cabeceras tipo título subrayado en negro */
+.card-header.bg-primary {
+    background-color: transparent !important;
+    color: #000000 !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 0.5rem !important;
+    padding-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card-header.bg-primary h5 {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    color: #000000 !important;
+}
+
+.card-header.bg-primary .btn-outline-light {
+    border-color: #000000 !important;
+    color: #000000 !important;
+}
+
+.card-header.bg-primary .btn-outline-light:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Cabecera blanca del listado */
+.card-header.bg-white h5 {
+    font-size: 1.05rem !important;
+    font-weight: bold !important;
+    color: #000000 !important;
+}
+
+/* Iconos de acento en Negro */
+.text-primary,
+.fa-tags,
+.fa-plus-circle,
+.fa-list {
+    color: #000000 !important;
+}
+
+/* Form Controls */
+.form-control {
+    border-color: rgba(0, 0, 0, 0.35) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.form-control:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Botón Guardar (Primario): Azul con borde Negro */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón Cancelar/Volver: Blanco con bordes grises */
+.btn-light,
+.btn-outline-secondary {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover,
+.btn-outline-secondary:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── Tabla moderna con bordes sutiles ── */
+.table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+}
+
+.table th {
+    background-color: #f9fafb !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem !important;
+    border-bottom: 1.5px solid #e5e7eb !important;
+}
+
+.table td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.875rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+/* ── Paginación sencilla en negro ── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+/* ================================================================
+   MEJORAS VISUALES MODERNAS Y ATRACTIVAS (REEMPLAZO DE FUENTE SERIF)
+   ================================================================ */
+#tablaMotivos,
+.table,
+.table th,
+.table td,
+.badge,
+.btn,
+.form-control,
+.input-group,
+.page-link,
+.card-title {
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.table th {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #334155 !important;
+    font-size: 0.85rem !important;
+    vertical-align: middle !important;
+}
+
+.btn-outline-primary.rounded-circle {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.btn-outline-primary.rounded-circle:hover {
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+    background-color: #3b82f6 !important;
+}
+
+/* Badge para el tipo de modificar stock */
+.badge-tipo {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    font-weight: 600 !important;
+    padding: 0.25rem 0.6rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.78rem !important;
+}
+
+/* ── Status Badges premium ── */
+.badge-status-activo {
+    background-color: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1.5px solid #86efac !important;
+    font-weight: 700 !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.8rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 4px rgba(21, 128, 61, 0.15) !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+}
+.badge-status-activo:hover {
+    background-color: #86efac !important;
+    color: #14532d !important;
+    box-shadow: 0 3px 8px rgba(21, 128, 61, 0.28) !important;
+    transform: scale(1.06) !important;
+}
+.badge-status-activo .fa {
+    font-size: 0.85rem !important;
+}
+
+.badge-status-inactivo {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1.5px solid #fca5a5 !important;
+    font-weight: 700 !important;
+    padding: 0.35rem 0.85rem !important;
+    border-radius: 50rem !important;
+    font-size: 0.8rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 4px rgba(185, 28, 28, 0.15) !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+}
+.badge-status-inactivo:hover {
+    background-color: #fca5a5 !important;
+    color: #7f1d1d !important;
+    box-shadow: 0 3px 8px rgba(185, 28, 28, 0.28) !important;
+    transform: scale(1.06) !important;
+}
+.badge-status-inactivo .fa {
+    font-size: 0.85rem !important;
+}

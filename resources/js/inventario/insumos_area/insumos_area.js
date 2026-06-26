@@ -1,218 +1,241 @@
+import { initPanelClaves } from '../shared/panel-claves.js';
+
 /**
  * Lógica JavaScript para Insumos por Área
  * Inventario de Medicamentos y Material de Curación – HGL
  */
 
-window.llenarLista = function() {
-    fetch('/insumos-area/buscar-insumos', {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(insumos => {
-        let tbody = '';
-        insumos.forEach((insumo, index) => {
-            tbody += `
-                <tr>
-                    <td class="text-center">${index + 1}</td>
-                    <td class="text-center font-weight-bold">${insumo.clave}</td>
-                    <td>${insumo.descripcion}</td>
-                    <td class="text-center"><span class="badge bg-secondary">${insumo.tipo}</span></td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-success" 
-                                onclick="seleccionarIdInsumo('${insumo.id_insumo}', '${insumo.clave}', '${insumo.descripcion.replace(/'/g, "\\'")}', '${insumo.tipo}')">
-                            <i class="fa fa-check-square"></i> Seleccionar
-                        </button>
-                    </td>
-                </tr>
-            `;
+document.addEventListener('DOMContentLoaded', function () {
+
+    // --- 1. REFERENCIAS DE ELEMENTOS (MODAL DE ASIGNACIÓN) ---
+    const selectArea = document.getElementById('area_almacen_select');
+    const inputBuscarInsumo = document.getElementById('buscarInsumo');
+    const inputIdInsumo = document.getElementById('id_insumo');
+    const sugerenciasDiv = document.getElementById('sugerenciasInsumo');
+    const inputFondoFijo = document.getElementById('fondo_fijo_insumo');
+    const inputStockInicial = document.getElementById('stock_inicial_insumo');
+    const inputDescInsumo = document.getElementById('descripcion_insumo');
+    const inputTipoInsumo = document.getElementById('tipo');
+    const btnGuardarInfo = document.getElementById('btnGuardarInfo');
+    const formAsignar = document.getElementById('formAsignarInsumo');
+
+    // Panel de claves flotante (dentro del modal)
+    const panelClaves = document.getElementById('panelClaves');
+    const filasClaves = document.getElementById('filasClaves');
+    const panelClavesLoading = document.getElementById('panelClavesLoading');
+    const panelClavesVacio = document.getElementById('panelClavesVacio');
+    const filtroPanelClaves = document.getElementById('filtroPanelClaves');
+    const cerrarPanelClaves = document.getElementById('cerrarPanelClaves');
+
+    let timeoutBusqueda = null;
+    let clavesCache = [];
+
+    // --- 2. ALERTAS CON SWEETALERT2 ---
+    const alertaExitog = document.getElementById('alertaExitog');
+    const alertaExito = document.getElementById('alertaExito');
+
+    if (alertaExitog && typeof Swal !== 'undefined') {
+        const msg = alertaExitog.getAttribute('data-message') || 'Operación realizada correctamente.';
+        Swal.fire({
+            title: '¡Operación Satisfactoria!',
+            text: msg,
+            icon: 'success',
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'Aceptar'
         });
-
-        const htmlTable = `
-            <div class="p-3">
-                <table id="tablaInsumosModal" class="table table-striped table-bordered table-hover w-100">
-                    <thead>
-                        <tr class="table-dark">
-                            <th class="text-center">#</th>
-                            <th class="text-center">Clave</th>
-                            <th>Descripción</th>
-                            <th class="text-center">Tipo</th>
-                            <th class="text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tbody}
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        document.getElementById('listaInsumosContenido').innerHTML = htmlTable;
-        
-        // Inicializar DataTable en el modal si existe jquery / datatables
-        if ($.fn.DataTable) {
-            $('#tablaInsumosModal').DataTable({
-                "language": {
-                    "url": "/plugins/datatables/langauge/Spanish.json"
-                },
-                "pageLength": 10,
-                "lengthMenu": [5, 10, 25]
-            });
-        }
-        
-        const modal = new bootstrap.Modal(document.getElementById('modalInsumos'));
-        modal.show();
-    })
-    .catch(error => {
-        console.error('Error al cargar insumos:', error);
-        if (typeof alertify !== 'undefined') {
-            alertify.error('Error al cargar la lista de insumos.');
-        }
-    });
-};
-
-window.seleccionarIdInsumo = function(id, clave, descripcion, tipo) {
-    document.getElementById('id_insumo').value = id;
-    document.getElementById('cve_insumo').value = clave;
-    document.getElementById('descripcion_insumo').value = descripcion;
-    document.getElementById('tipo').value = tipo;
-
-    // Quitar estados anteriores de error/éxito
-    document.getElementById('cve_insumo').classList.remove('is-invalid');
-    document.getElementById('cve_insumo').classList.add('is-valid');
-
-    // Cerrar modal
-    const modalEl = document.getElementById('modalInsumos');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    if (modal) {
-        modal.hide();
     }
 
-    // Habilitar campos
-    document.getElementById('fondo_fijo_insumo').disabled = false;
-    document.getElementById('stock_inicial_insumo').disabled = false;
-    document.getElementById('fondo_fijo_insumo').value = '';
-    document.getElementById('fondo_fijo_insumo').focus();
+    if (alertaExito && typeof Swal !== 'undefined') {
+        const msg = alertaExito.getAttribute('data-message') || 'Operación realizada correctamente.';
+        Swal.fire({
+            title: '¡Operación Satisfactoria!',
+            text: msg,
+            icon: 'success',
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'Aceptar'
+        });
+    }
 
-    validarEspaciosVacios();
-};
+    // --- 3. AUTOCOMPLETADO DE INSUMOS ---
+    const resetearFormInsumo = () => {
+        if (inputIdInsumo) inputIdInsumo.value = '';
+        if (inputDescInsumo) inputDescInsumo.value = '';
+        if (inputTipoInsumo) inputTipoInsumo.value = '';
+        validarFormAsignar();
+    };
 
-window.seleccionarIdInsumoClave = function(e) {
-    if (e.key === 'Enter' || e.keyCode === 13 || e.key === 'Tab' || e.keyCode === 9) {
-        e.preventDefault();
-        const clave = document.getElementById('cve_insumo').value.trim();
+    const buscarInsumos = () => {
+        const query = (inputBuscarInsumo?.value || '').trim();
+        clearTimeout(timeoutBusqueda);
 
-        if (clave === "") {
-            if (typeof alertify !== 'undefined') {
-                alertify.error("Introduzca una clave");
+        if (query.length < 2) {
+            if (sugerenciasDiv) {
+                sugerenciasDiv.style.display = 'none';
+                sugerenciasDiv.innerHTML = '';
             }
             return;
         }
 
-        fetch(`/insumos-area/verificar-clave?clave=${encodeURIComponent(clave)}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.encontrado) {
-                document.getElementById('id_insumo').value = data.id_insumo;
-                document.getElementById('descripcion_insumo').value = data.descripcion;
-                document.getElementById('tipo').value = data.tipo;
-
-                document.getElementById('cve_insumo').classList.remove('is-invalid');
-                document.getElementById('cve_insumo').classList.add('is-valid');
-
-                document.getElementById('fondo_fijo_insumo').disabled = false;
-                document.getElementById('stock_inicial_insumo').disabled = false;
-                document.getElementById('fondo_fijo_insumo').focus();
-            } else {
-                if (typeof alertify !== 'undefined') {
-                    alertify.error("No se encuentra el insumo o no está activo");
+        timeoutBusqueda = setTimeout(() => {
+            fetch(`/insumos-area/buscar-insumos?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
-                document.getElementById('id_insumo').value = "";
-                document.getElementById('cve_insumo').value = "";
-                document.getElementById('descripcion_insumo').value = "";
-                document.getElementById('tipo').value = "";
-                document.getElementById('cve_insumo').classList.add('is-invalid');
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al consultar');
+                return res.json();
+            })
+            .then(data => {
+                if (sugerenciasDiv) {
+                    sugerenciasDiv.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        sugerenciasDiv.style.display = 'none';
+                        return;
+                    }
 
-                document.getElementById('fondo_fijo_insumo').disabled = true;
-                document.getElementById('stock_inicial_insumo').disabled = true;
+                    data.forEach(insumo => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'list-group-item list-group-item-action py-2';
+                        btn.innerHTML = `
+                            <span class="badge bg-secondary me-2">${insumo.clave}</span>
+                            <span>${insumo.descripcion}</span>
+                            <span class="badge bg-light text-dark border float-end">${insumo.tipo}</span>
+                        `;
+                        btn.addEventListener('click', () => {
+                            seleccionarInsumo(insumo.id_insumo, insumo.clave, insumo.descripcion, insumo.tipo);
+                        });
+                        sugerenciasDiv.appendChild(btn);
+                    });
+                    sugerenciasDiv.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        }, 300);
+    };
+
+    const seleccionarInsumo = (id, clave, descripcion, tipo) => {
+        if (inputIdInsumo) inputIdInsumo.value = id;
+        if (inputBuscarInsumo) inputBuscarInsumo.value = `[${clave}] ${descripcion}`;
+        if (inputDescInsumo) inputDescInsumo.value = descripcion;
+        if (inputTipoInsumo) inputTipoInsumo.value = tipo;
+
+        if (sugerenciasDiv) {
+            sugerenciasDiv.style.display = 'none';
+            sugerenciasDiv.innerHTML = '';
+        }
+
+        if (panelClaves) panelClaves.style.display = 'none';
+
+        if (inputFondoFijo) inputFondoFijo.focus();
+        validarFormAsignar();
+    };
+
+    if (inputBuscarInsumo) {
+        inputBuscarInsumo.addEventListener('input', () => {
+            resetearFormInsumo();
+            buscarInsumos();
+        });
+
+        // Cerrar sugerencias al dar clic fuera
+        document.addEventListener('click', (e) => {
+            if (!inputBuscarInsumo.contains(e.target) && sugerenciasDiv && !sugerenciasDiv.contains(e.target)) {
+                sugerenciasDiv.style.display = 'none';
             }
-            validarEspaciosVacios();
-        })
-        .catch(error => {
-            console.error('Error al consultar clave:', error);
         });
     }
-};
 
-window.validarClaveInput = function() {
-    const areaId = document.getElementById('area_almacen_select').value;
-    const cveInput = document.getElementById('cve_insumo');
+    // --- 4. PANEL DE ACCESO RÁPIDO A CLAVES ---
+    initPanelClaves({
+        panelId: 'panelClaves',
+        inputBuscarId: 'buscarInsumo',
+        inputHiddenId: 'id_insumo',
+        sugerenciasId: 'sugerenciasInsumo',
+        areaInputId: 'area_almacen_select',
+        endpoint: '/insumos-area/buscar-insumos',
+        columnaExtra: 'tipo',
+        onSelect: (insumo) => {
+            seleccionarInsumo(insumo.id_insumo, insumo.clave, insumo.descripcion, insumo.tipo);
+        }
+    });
 
-    if (areaId === "" || areaId == 0) {
-        cveInput.value = '';
-        cveInput.disabled = true;
-        document.getElementById('fondo_fijo_insumo').value = '';
-        document.getElementById('fondo_fijo_insumo').disabled = true;
-        document.getElementById('stock_inicial_insumo').value = '0';
-        document.getElementById('stock_inicial_insumo').disabled = true;
-        document.getElementById('descripcion_insumo').value = '';
-        document.getElementById('tipo').value = '';
-    } else {
-        cveInput.disabled = false;
-        cveInput.focus();
-    }
-    validarEspaciosVacios();
-};
+    // --- 5. VALIDACIÓN DEL FORMULARIO DE ASIGNACIÓN ---
+    const validarFormAsignar = () => {
+        const area = selectArea?.value || '';
+        const idInsumo = inputIdInsumo?.value || '';
+        const ff = parseInt(inputFondoFijo?.value) || 0;
+        const stock = parseInt(inputStockInicial?.value);
 
-window.validarCveEmpty = function() {
-    const clave = document.getElementById('cve_insumo').value.trim();
-    if (clave === '') {
-        document.getElementById('id_insumo').value = "";
-        document.getElementById('descripcion_insumo').value = "";
-        document.getElementById('tipo').value = "";
-        document.getElementById('fondo_fijo_insumo').value = '';
-        document.getElementById('fondo_fijo_insumo').disabled = true;
-        document.getElementById('stock_inicial_insumo').value = '0';
-        document.getElementById('stock_inicial_insumo').disabled = true;
-    }
-    validarEspaciosVacios();
-};
+        const disabled = !area || !idInsumo || ff <= 0 || isNaN(stock) || stock < 0;
+        if (btnGuardarInfo) btnGuardarInfo.disabled = disabled;
+    };
 
-window.validarEspaciosVacios = function() {
-    const idInsumo = document.getElementById('id_insumo').value;
-    const cveInsumo = document.getElementById('cve_insumo').value;
-    const stock = document.getElementById('stock_inicial_insumo').value;
-    const fondoFijo = document.getElementById('fondo_fijo_insumo').value;
-    const area = document.getElementById('area_almacen_select').value;
-    const btnGuardar = document.getElementById('btnGuardarInfo');
+    [selectArea, inputFondoFijo, inputStockInicial].forEach(el => {
+        if (el) {
+            el.addEventListener('change', validarFormAsignar);
+            el.addEventListener('input', validarFormAsignar);
+        }
+    });
 
-    if (!btnGuardar) return;
-
-    if (cveInsumo === '' || stock === '' || fondoFijo === '' || area === '' || area == 0 || fondoFijo <= 0 || idInsumo === '') {
-        btnGuardar.disabled = true;
-    } else {
-        btnGuardar.disabled = false;
-    }
-};
-
-// Guardar Stock Inline (AJAX PATCH)
-window.guardarStockInicial = function(id, fondoFijo, event) {
-    if (event.key === 'Enter' || event.keyCode === 13) {
-        event.preventDefault();
-        const input = document.getElementById(`stock_inicial_insumo${id}`);
-        const stockVal = parseInt(input.value);
-
-        if (isNaN(stockVal) || stockVal < 0) {
-            if (typeof alertify !== 'undefined') {
-                alertify.error("Cantidad de stock errónea.");
+    const modalAsignar = document.getElementById('modalAsignarInsumo');
+    if (modalAsignar) {
+        modalAsignar.addEventListener('hidden.bs.modal', () => {
+            if (panelClaves) panelClaves.style.display = 'none';
+            clavesCache = [];
+            if (formAsignar) {
+                formAsignar.reset();
+                if (inputIdInsumo) inputIdInsumo.value = '';
+                if (inputDescInsumo) inputDescInsumo.value = '';
+                if (inputTipoInsumo) inputTipoInsumo.value = '';
             }
+            validarFormAsignar();
+        });
+    }
+
+    // --- 6. EDICIÓN INLINE DE STOCK Y FONDO FIJO (EVENT LISTENERS EN TABLA) ---
+    const actualizarVisualPorcentaje = (id, porcentaje, stock) => {
+        const pctTd = document.getElementById(`porcentaje_fondof${id}`);
+        const icono = document.getElementById(`icono${id}`);
+        const stockInput = document.getElementById(`stock_inicial_insumo${id}`);
+
+        if (pctTd) {
+            pctTd.innerText = `${porcentaje.toFixed(1)} %`;
+        }
+
+        if (icono && stockInput) {
+            stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
+
+            if (porcentaje < 25) {
+                icono.className = "fa fa-thermometer-empty fa-2x thermometer-icon";
+                icono.style.color = "#d63031";
+                stockInput.classList.add('stock-muy-bajo');
+            } else if (porcentaje >= 25 && porcentaje < 50) {
+                icono.className = "fa fa-thermometer-quarter fa-2x thermometer-icon";
+                icono.style.color = "#e67e22";
+                stockInput.classList.add('stock-bajo');
+            } else if (porcentaje >= 50 && porcentaje < 75) {
+                icono.className = "fa fa-thermometer-half fa-2x thermometer-icon";
+                icono.style.color = "#f1c40f";
+                stockInput.classList.add('stock-regular');
+            } else if (porcentaje >= 75 && porcentaje <= 100) {
+                icono.className = "fa fa-thermometer-three-quarters fa-2x thermometer-icon";
+                icono.style.color = "#27ae60";
+                stockInput.classList.add('stock-suficiente');
+            } else {
+                icono.className = "fa fa-thermometer-full fa-2x thermometer-icon";
+                icono.style.color = "#2980b9";
+                stockInput.classList.add('stock-excedido');
+            }
+        }
+    };
+
+    const enviarStockAjax = (id, stockVal, inputEl) => {
+        if (isNaN(stockVal) || stockVal < 0) {
+            if (typeof alertify !== 'undefined') alertify.error("Cantidad de stock errónea.");
             return;
         }
 
@@ -231,67 +254,20 @@ window.guardarStockInicial = function(id, fondoFijo, event) {
         .then(response => response.json())
         .then(data => {
             if (data.ok) {
-                if (typeof alertify !== 'undefined') {
-                    alertify.success("Stock actualizado correctamente.");
-                }
                 actualizarVisualPorcentaje(id, data.porcentaje, data.stock);
-                input.blur();
+                inputEl.setAttribute('data-fondo', data.fondo_fijo);
+                if (typeof alertify !== 'undefined') alertify.success("Stock actualizado correctamente.");
             }
         })
         .catch(error => {
             console.error('Error al guardar stock:', error);
-            if (typeof alertify !== 'undefined') {
-                alertify.error("Error al actualizar el stock.");
-            }
+            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el stock.");
         });
-    }
-};
+    };
 
-window.guardarStockInicial2 = function(id, fondoFijo) {
-    const input = document.getElementById(`stock_inicial_insumo${id}`);
-    const stockVal = parseInt(input.value);
-
-    if (isNaN(stockVal) || stockVal < 0) {
-        if (typeof alertify !== 'undefined') {
-            alertify.error("Cantidad de stock errónea.");
-        }
-        return;
-    }
-
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    fetch(`/insumos-area/${id}/stock`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ stock: stockVal })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.ok) {
-            actualizarVisualPorcentaje(id, data.porcentaje, data.stock);
-        }
-    })
-    .catch(error => {
-        console.error('Error al guardar stock blur:', error);
-    });
-};
-
-// Guardar Fondo Fijo Inline (AJAX PATCH)
-window.guardarFondoFijo = function(id, event) {
-    if (event.key === 'Enter' || event.keyCode === 13) {
-        event.preventDefault();
-        const input = document.getElementById(`fondo_fijo${id}`);
-        const ffVal = parseInt(input.value);
-
+    const enviarFondoFijoAjax = (id, ffVal, inputEl) => {
         if (isNaN(ffVal) || ffVal <= 0) {
-            if (typeof alertify !== 'undefined') {
-                alertify.error("Fondo fijo erróneo (debe ser mayor a 0).");
-            }
+            if (typeof alertify !== 'undefined') alertify.error("Fondo fijo erróneo (debe ser mayor a 0).");
             return;
         }
 
@@ -310,61 +286,57 @@ window.guardarFondoFijo = function(id, event) {
         .then(response => response.json())
         .then(data => {
             if (data.ok) {
-                if (typeof alertify !== 'undefined') {
-                    alertify.success("Fondo Fijo actualizado correctamente.");
-                }
                 actualizarVisualPorcentaje(id, data.porcentaje, data.stock);
-                input.blur();
+                const stockInput = document.getElementById(`stock_inicial_insumo${id}`);
+                if (stockInput) {
+                    stockInput.setAttribute('data-fondo', data.fondo_fijo);
+                }
+                if (typeof alertify !== 'undefined') alertify.success("Fondo Fijo actualizado correctamente.");
             }
         })
         .catch(error => {
             console.error('Error al guardar fondo fijo:', error);
-            if (typeof alertify !== 'undefined') {
-                alertify.error("Error al actualizar el fondo fijo.");
+            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el fondo fijo.");
+        });
+    };
+
+    // Vincular event listeners a los inputs editables de la tabla
+    document.querySelectorAll('.input-inline-stock').forEach(input => {
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const val = parseInt(this.value);
+                enviarStockAjax(id, val, this);
+                this.blur();
             }
         });
-    }
-};
+        input.addEventListener('blur', function () {
+            const id = this.getAttribute('data-id');
+            const val = parseInt(this.value);
+            enviarStockAjax(id, val, this);
+        });
+    });
 
-// Función para actualizar termómetros visuales en la tabla
-window.actualizarVisualPorcentaje = function(id, porcentaje, stock) {
-    const pctTd = document.getElementById(`porcentaje_fondof${id}`);
-    const icono = document.getElementById(`icono${id}`);
-    const stockInput = document.getElementById(`stock_inicial_insumo${id}`);
+    document.querySelectorAll('.input-inline-fondo').forEach(input => {
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const val = parseInt(this.value);
+                enviarFondoFijoAjax(id, val, this);
+                this.blur();
+            }
+        });
+        input.addEventListener('blur', function () {
+            const id = this.getAttribute('data-id');
+            const val = parseInt(this.value);
+            enviarFondoFijoAjax(id, val, this);
+        });
+    });
+});
 
-    if (pctTd) {
-        pctTd.innerText = `${porcentaje.toFixed(1)} %`;
-    }
-
-    if (icono && stockInput) {
-        // Remover clases de color anteriores
-        stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
-
-        if (porcentaje < 25) {
-            icono.className = "fa fa-thermometer-empty fa-2x thermometer-icon";
-            icono.style.color = "#d63031";
-            stockInput.classList.add('stock-muy-bajo');
-        } else if (porcentaje >= 25 && porcentaje < 50) {
-            icono.className = "fa fa-thermometer-quarter fa-2x thermometer-icon";
-            icono.style.color = "#e67e22";
-            stockInput.classList.add('stock-bajo');
-        } else if (porcentaje >= 50 && porcentaje < 75) {
-            icono.className = "fa fa-thermometer-half fa-2x thermometer-icon";
-            icono.style.color = "#f1c40f";
-            stockInput.classList.add('stock-regular');
-        } else if (porcentaje >= 75 && porcentaje <= 100) {
-            icono.className = "fa fa-thermometer-three-quarters fa-2x thermometer-icon";
-            icono.style.color = "#27ae60";
-            stockInput.classList.add('stock-suficiente');
-        } else {
-            icono.className = "fa fa-thermometer-full fa-2x thermometer-icon";
-            icono.style.color = "#2980b9";
-            stockInput.classList.add('stock-excedido');
-        }
-    }
-};
-
-// Lógica de reportes interactivos por AJAX
+// --- 7. PANEL DE REPORTES (DEFINICIONES EN WINDOWS PARA REPORTES.BLADE.PHP) ---
 window.llenarListaReporte = function() {
     const areaId = document.getElementById('area_almacen_reporte').value;
     if (!areaId) return;
@@ -492,67 +464,3 @@ window.imprimirReporte = function() {
         }
     }
 };
-
-document.addEventListener('DOMContentLoaded', function () {
-    const selectArea = document.getElementById('area_almacen_select');
-    if (selectArea) {
-        selectArea.addEventListener('change', function() {
-            validarClaveInput();
-        });
-    }
-
-    const cveInput = document.getElementById('cve_insumo');
-    if (cveInput) {
-        cveInput.addEventListener('keypress', function(e) {
-            seleccionarIdInsumoClave(e);
-        });
-        cveInput.addEventListener('keyup', function() {
-            validarCveEmpty();
-        });
-        cveInput.addEventListener('dblclick', function() {
-            llenarLista();
-        });
-    }
-
-    const ffInput = document.getElementById('fondo_fijo_insumo');
-    if (ffInput) {
-        ffInput.addEventListener('keyup', function() {
-            validarEspaciosVacios();
-        });
-        ffInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault();
-                const stockInput = document.getElementById('stock_inicial_insumo');
-                if (stockInput) {
-                    stockInput.disabled = false;
-                    stockInput.focus();
-                }
-            }
-        });
-    }
-
-    const stockInput = document.getElementById('stock_inicial_insumo');
-    if (stockInput) {
-        stockInput.addEventListener('keyup', function() {
-            validarEspaciosVacios();
-        });
-        stockInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault();
-                const btnSave = document.getElementById('btnGuardarInfo');
-                if (btnSave && !btnSave.disabled) {
-                    btnSave.focus();
-                }
-            }
-        });
-    }
-
-    // Inicializar tooltips o datatables si existen
-    if (typeof $ !== 'undefined' && $.fn.DataTable && document.getElementById('tablaInsumosAreaPrincipal')) {
-        $('#tablaInsumosAreaPrincipal').DataTable({
-            "language": {
-                "url": "/plugins/datatables/langauge/Spanish.json"
-            }
-        });
-    }
-});

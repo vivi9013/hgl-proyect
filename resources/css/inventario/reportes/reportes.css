@@ -1,0 +1,154 @@
+/* ================================================================
+   Módulo: Reportes de Inventario
+   Inventario de Medicamentos y Material de Curación
+   Sigue el patrón clásico/profesional unificado del proyecto HGL
+   ================================================================ */
+
+/* ── Transición suave para tarjetas ── */
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ── Animación Spinner ── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ================================================================
+   ESTILOS CLÁSICOS Y SIMPLES – Sin tarjetas pronunciadas,
+   iconos en negro, diseño plano y profesional
+   ================================================================ */
+
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Cabeceras tipo título subrayado en negro */
+.card-header.bg-primary {
+    background-color: transparent !important;
+    color: #000000 !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 0.5rem !important;
+    padding-top: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card-header.bg-primary h5 {
+    font-size: 1.1rem !important;
+    font-weight: bold !important;
+    color: #000000 !important;
+    margin: 0 !important;
+}
+
+/* Iconos de acento en Negro */
+.text-primary,
+.fa-file-text-o,
+.fa-print {
+    color: #000000 !important;
+}
+
+/* Form Controls y Select2 */
+.form-control, .form-select, select {
+    border-color: rgba(0, 0, 0, 0.35) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.form-control:focus, .form-select:focus, select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Select2 personalizaciones */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid rgba(0, 0, 0, 0.35) !important;
+    border-radius: 8px !important;
+    min-height: 42px !important;
+    padding-top: 5px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #000000 !important;
+    font-size: 0.9rem !important;
+}
+
+/* Botón Guardar / Imprimir (Primario): Azul con borde Negro */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:disabled {
+    background-color: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    color: #9ca3af !important;
+    cursor: not-allowed;
+}
+
+/* Botón Secundario / Checkbox */
+.form-check-input {
+    border-color: rgba(0, 0, 0, 0.35) !important;
+}
+
+.form-check-input:checked {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Secciones separadas */
+.report-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.report-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #000000;
+    border-bottom: 2px solid #000000;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}

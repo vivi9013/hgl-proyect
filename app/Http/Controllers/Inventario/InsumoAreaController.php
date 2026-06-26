@@ -102,31 +102,41 @@ class InsumoAreaController extends Controller
     {
         $request->validate([
             'id_area_almacen' => 'required|integer',
+            'stock'           => 'required|integer|min:0',
+            'fondo_fijo'      => 'required|integer|min:1',
         ], [
             'id_area_almacen.required' => 'Debe seleccionar un área de almacén.',
+            'stock.required'           => 'El stock es obligatorio.',
+            'stock.min'                => 'El stock no puede ser negativo.',
+            'fondo_fijo.required'      => 'El fondo fijo es obligatorio.',
+            'fondo_fijo.min'           => 'El fondo fijo debe ser mayor a cero.',
         ]);
 
         $insumoArea = InsumoArea::findOrFail($id);
 
-        // Verificar que el nuevo área no genere un duplicado
-        $existe = InsumoArea::where('id_insumo', $insumoArea->id_insumo)
-            ->where('id_area_almacen', $request->id_area_almacen)
-            ->where('id_insumo_area', '!=', $id)
-            ->exists();
+        // Verificar que el nuevo área no genere un duplicado (solo si cambia de área)
+        if ($insumoArea->id_area_almacen != $request->id_area_almacen) {
+            $existe = InsumoArea::where('id_insumo', $insumoArea->id_insumo)
+                ->where('id_area_almacen', $request->id_area_almacen)
+                ->where('id_insumo_area', '!=', $id)
+                ->exists();
 
-        if ($existe) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['id_area_almacen' => 'Este insumo ya está asignado al área seleccionada.']);
+            if ($existe) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['id_area_almacen' => 'Este insumo ya está asignado al área seleccionada.']);
+            }
         }
 
         $insumoArea->update([
             'id_area_almacen' => $request->id_area_almacen,
+            'stock'           => $request->stock,
+            'fondo_fijo'      => $request->fondo_fijo,
         ]);
 
         return redirect()
             ->route('insumos_area.index')
-            ->with('exito', 'El área asignada se ha actualizado correctamente.');
+            ->with('exito', 'La asignación se ha actualizado correctamente.');
     }
 
     /**
@@ -187,12 +197,17 @@ class InsumoAreaController extends Controller
     public function buscarInsumosCatalog(Request $request)
     {
         $buscar = $request->get('q', '');
+        $all = $request->boolean('all', false);
+
+        if (!$all && strlen($buscar) < 2) {
+            return response()->json([]);
+        }
 
         $insumos = Insumo::where('activo', 1)
             ->when($buscar, fn($q) => $q->where('clave', 'LIKE', "%{$buscar}%")
                 ->orWhere('descripcion', 'LIKE', "%{$buscar}%"))
             ->orderBy('clave')
-            ->limit(50)
+            ->when(!$all, fn($q) => $q->limit(20))
             ->get(['id_insumo', 'clave', 'descripcion', 'tipo']);
 
         return response()->json($insumos);
