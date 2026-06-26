@@ -1,23 +1,10 @@
 /* Estilos personalizados para el módulo de Proyectos (Gestión CRUD) */
 
-#modulo-gestion-proyectos .card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* Efectos de Focus Modernos */
 #modulo-gestion-proyectos .form-control:focus,
 #modulo-gestion-proyectos .form-select:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Animación del Spinner */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-#modulo-gestion-proyectos .fa-spin {
-    animation: spin 1s linear infinite;
 }
 
 /* Hover en tabla y enlaces de acción */
@@ -26,7 +13,7 @@
 }
 
 #modulo-gestion-proyectos #cuerpoTablaProyectos tr:hover {
-    background-color: rgba(0, 0, 0, 0.01) !important;
+    background-color: #f9fafb !important;
 }
 
 #modulo-gestion-proyectos .btn-alternar-estado {
@@ -36,7 +23,7 @@
     display: inline-block;
 }
 
-#modulo-gestion-proyectos .btn-toggle-status:hover {
+#modulo-gestion-proyectos .btn-alternar-estado:hover {
     transform: scale(1.1);
 }
 
@@ -94,9 +81,7 @@
 /* Botón Guardar (Primario): Azul con borde Negro */
 #modulo-gestion-proyectos .btn-primary {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -113,7 +98,6 @@
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -206,4 +190,71 @@
 #modulo-gestion-proyectos .bg-primary {
     background-color: #000000 !important;
     color: #ffffff !important;
+}
+
+/* ── Clases utilitarias extraídas de estilos inline ── */
+
+/* Modal de alta de proyecto */
+#modulo-gestion-proyectos .modal-alta-proyecto {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Grupo del buscador global */
+#modulo-gestion-proyectos .search-group {
+    max-width: 280px;
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+#modulo-gestion-proyectos .search-group .form-control {
+    box-shadow: none !important;
+}
+
+/* Encabezados y pies de tabla con tamaños unificados */
+#modulo-gestion-proyectos .thead-proyectos,
+#modulo-gestion-proyectos .tfoot-proyectos {
+    font-size: 0.75rem;
+}
+
+/* Encabezado colapsable con cursor interactivo */
+#modulo-gestion-proyectos .card-header-collapse {
+    cursor: pointer;
+}
+
+/* Enlace a gestionar módulos (color azul personalizado) */
+#modulo-gestion-proyectos .btn-gestion-modulos {
+    color: #0073b7;
+}
+
+/* Elementos del gráfico analítico */
+.chart-container-donut {
+    min-height: 380px;
+}
+.chart-donut-wrapper {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+}
+.chart-center-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+    line-height: 1.2;
+    max-width: 180px;
+    word-wrap: break-word;
+}
+.chart-center-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333333;
+    margin-top: 4px;
+}
+.chart-container-bar {
+    min-height: 380px;
+}
+.chart-bar-wrapper {
+    width: 100%;
+    height: 320px;
+    position: relative;
 }

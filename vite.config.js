@@ -51,8 +51,6 @@ export default defineConfig({
 
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
-                'resources/css/categoria_modulos/categoria_edit.css',
-                'resources/css/categoria_modulos/categoria_reportes.css',
                 'resources/js/categoria_modulos/categoria.js',
                 'resources/js/categoria_modulos/categoria_edit.js',
                 'resources/js/categoria_modulos/categoria_reportes.js',
@@ -73,6 +71,13 @@ export default defineConfig({
                 // Proyectos Assets
                 'resources/css/proyectos/proyectos.css',
                 'resources/js/proyectos/proyectos.js',
+                // Usuarios Assets
+                'resources/css/usuarios/usuarios.css',
+                'resources/js/usuarios/usuarios.js',
+                'resources/js/usuarios/usuarios_edit.js',
+                // Impresoras Assets
+                'resources/css/control_insumos/impresoras/impresoras.css',
+                'resources/js/control_insumos/impresoras/impresoras.js',
             ],
             refresh: true,
         }),
@@ -82,8 +87,5 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
-    build: {
-        outDir: 'public/build',
-        manifest: true,
-    },
+    
 });

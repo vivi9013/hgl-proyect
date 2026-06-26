@@ -1,9 +1,5 @@
 /* Estilos personalizados para el módulo de Perfiles */
 
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* Efectos de Focus Modernos */
 .form-control:focus, .form-select:focus, textarea:focus {
     border-color: #000000 !important;
@@ -21,14 +17,7 @@
     font-weight: 500;
 }
 
-/* Animación del Spinner */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
 
-.fa-spin {
-    animation: spin 1s linear infinite;
-}
 
 /* Hover en tabla y enlaces de acción */
 #tbodyPerfiles tr {
@@ -63,10 +52,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -75,7 +64,7 @@
     padding-right: 0 !important;
 }
 
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
@@ -105,9 +94,7 @@ textarea {
 /* Botón Guardar (Primario): Azul con borde Negro */
 .btn-primary {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -124,7 +111,6 @@ textarea {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -162,10 +148,6 @@ textarea {
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
     font-size: 0.875rem;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
 }
 
 /* Estilo para filas de módulos asignados */
@@ -215,4 +197,33 @@ textarea {
 
 .bg-primary-light {
     background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fondo de filas inactivas en tabla (bug fix: clase faltante) */
+.bg-light-gray {
+    background-color: #f3f4f6 !important;
+}
+
+/* ── BUSCADOR REACTIVO ── */
+.search-group {
+    min-width: 260px;
+    border: 1.5px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.search-group .form-control {
+    font-size: 0.85rem;
+    box-shadow: none !important;
+}
+
+/* ── MODAL DE ALTA ── */
+.modal-alta {
+    background-color: #ffffff;
+    border: 2px solid #000000 !important;
+}
+
+/* Botón de cierre del modal forzado a negro */
+.btn-close-dark {
+    filter: brightness(0);
 }

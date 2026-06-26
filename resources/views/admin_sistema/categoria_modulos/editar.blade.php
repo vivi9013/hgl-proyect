@@ -7,13 +7,6 @@
     {{-- Encabezado de Navegación y Título --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="{{ route('inicio') }}" class="text-decoration-none">Panel de Control</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('categoria_modulos.index') }}" class="text-decoration-none">Categoría de Módulos</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edición</li>
-                </ol>
-            </nav>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-pencil-square-o text-primary me-2"></i>Actualización de Categoría
             </h1>
@@ -116,5 +109,5 @@
 </div>
 
 {{-- Inyección modularizada de estilos y comportamientos JS específicos para la edición --}}
-@vite(['resources/css/categoria_modulos/categoria_edit.css', 'resources/js/categoria_modulos/categoria_edit.js'])
+@vite(['resources/css/categoria_modulos/categoria.css', 'resources/js/categoria_modulos/categoria_edit.js'])
 @endsection

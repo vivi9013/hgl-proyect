@@ -214,15 +214,22 @@ class CargaArchivosController extends Controller
     public function imprimirReporte(Request $request)
     {
         $request->validate([
-            'tipo' => 'required|integer|exists:catego_archivos,id_catego_archivos'
+            'tipo' => 'nullable|integer|exists:catego_archivos,id_catego_archivos'
         ]);
 
-        $categoria = CategoArchivo::findOrFail($request->tipo);
-
-        $archivos = CargaArchivo::where('id_catego', $request->tipo)
-            ->where('activo', 1)
-            ->orderBy('id_archivo', 'asc')
-            ->get();
+        if ($request->filled('tipo')) {
+            $categoria = CategoArchivo::findOrFail($request->tipo);
+            $archivos = CargaArchivo::where('id_catego', $request->tipo)
+                ->where('activo', 1)
+                ->orderBy('id_archivo', 'asc')
+                ->get();
+        } else {
+            $categoria = null;
+            $archivos = CargaArchivo::with('categoria')
+                ->where('activo', 1)
+                ->orderBy('id_archivo', 'asc')
+                ->get();
+        }
 
         return view('admin_formatos.carga_archivos.analitica.reportes.impresion', compact('categoria', 'archivos'));
     }

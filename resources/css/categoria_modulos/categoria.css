@@ -1,13 +1,12 @@
-/* Estilos personalizados para el módulo de Categoría de Módulos */
-
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
+/* Estilos personalizados para el módulo de Categoría de Módulos (Catálogo, Edición y Reportes) */
 
 /* Efectos de Focus Modernos */
-.form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+/* NOTA: El focus global de .form-control y .form-select ya está definido en app.css
+   Esta regla específica sobrescribe con borde negro para el módulo */
+.form-control:focus,
+.form-select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Clases de retroalimentación personalizadas para AJAX */
@@ -65,10 +64,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -77,16 +76,16 @@
     padding-right: 0 !important;
 }
 
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
 
 /* Iconos y textos de acento en Negro */
+/* NOTA: fa-folder-open-o (con -o) y fa-list-ul son los iconos reales en las vistas */
 .text-primary,
-.fa-folder-open,
 .fa-plus-circle,
-.fa-list {
+.fa-edit {
     color: #000000 !important;
 }
 
@@ -102,18 +101,10 @@
     background-color: #ffffff !important;
 }
 
-.form-control:focus,
-.form-select:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
-}
-
 /* Botón Guardar (Primario): Azul con borde Negro */
 .btn-primary {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -130,7 +121,6 @@
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -168,10 +158,6 @@
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
     font-size: 0.875rem;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
@@ -216,4 +202,10 @@
 
 .bg-primary-light {
     background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ── Fondo para filas inactivas en la tabla ── */
+/* Corrige el bug visual: $claseFila = 'text-muted bg-light-gray' en tabla.blade.php */
+.bg-light-gray {
+    background-color: #f9fafb !important;
 }

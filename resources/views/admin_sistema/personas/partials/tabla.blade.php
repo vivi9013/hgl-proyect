@@ -9,26 +9,34 @@
             : '—';
     @endphp
     <tr class="{{ $claseFila }}">
-        <td class="ps-4 fw-bold index-cell">
-            {{ ($personas->currentPage() - 1) * $personas->perPage() + $loop->iteration }}
+         <td class="ps-4 fw-bold index-cell">
+             {{ ($personas->currentPage() - 1) * $personas->perPage() + $loop->iteration }}
+         </td>
+
+        {{-- Acciones --}}
+        <td class="text-center">
+            <a href="{{ route('personas.edit', $row->id) }}"
+               class="btn btn-sm btn-outline-dark border-0" title="Editar Persona">
+                <i class="fa fa-pencil-square-o"></i>
+            </a>
         </td>
 
-        <td>
-            <div class="fw-semibold">{{ $row->nombre }} {{ $row->ap_paterno }} {{ $row->ap_materno }}</div>
-            <small class="text-muted">{{ $row->e_mail }}</small>
-        </td>
+         <td class="text-center">
+             <div class="fw-semibold">{{ $row->nombre }} {{ $row->ap_paterno }} {{ $row->ap_materno }}</div>
+             <small class="text-muted">{{ $row->e_mail }}</small>
+         </td>
 
         <td>
             @if($row->sexo === 'M')
-                <span class="badge bg-info text-dark"><i class="fa fa-male me-1"></i>M</span>
+                <span>M</span>
             @else
-                <span class="badge bg-danger"><i class="fa fa-female me-1"></i>F</span>
+                <span>F</span>
             @endif
         </td>
 
         <td class="fw-semibold">{{ $edad }} años</td>
 
-        <td>
+        <td class="text-center">
             <span class="small">{{ $row->estado }}</span><br>
             <small class="text-muted">{{ $row->municipio }}</small>
         </td>
@@ -39,7 +47,7 @@
                 @if($row->estudiante == 1)
                     <i class="fa fa-graduation-cap text-primary fs-5" title="Es estudiante"></i>
                 @else
-                    <i class="fa fa-graduation-cap text-secondary fs-5" title="No es estudiante" style="opacity:0.35;"></i>
+                    <i class="fa fa-graduation-cap text-secondary icon-no-estudiante fs-5" title="No es estudiante"></i>
                 @endif
             </button>
         </td>
@@ -53,14 +61,6 @@
                     <i class="fa fa-square-o text-danger fs-5" title="Inactivo"></i>
                 @endif
             </button>
-        </td>
-
-        {{-- Acciones --}}
-        <td class="text-center pe-4">
-            <a href="{{ route('personas.edit', $row->id) }}"
-               class="btn btn-sm btn-outline-dark border-0" title="Editar Persona">
-                <i class="fa fa-pencil-square-o"></i>
-            </a>
         </td>
     </tr>
 @endforeach

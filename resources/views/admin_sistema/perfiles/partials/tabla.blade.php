@@ -7,15 +7,29 @@
         {{-- Índice incremental correcto basado en paginación --}}
         <td class="ps-4 fw-bold index-cell">{{ ($perfiles->currentPage() - 1) * $perfiles->perPage() + $loop->iteration }}</td>
         
-        <td class="fw-semibold">{{ $row->nombre }}</td>
+        {{-- Editar --}}
+        <td class="text-center">
+            <a href="{{ route('perfiles.edit', $row->id) }}" class="btn btn-sm btn-outline-dark border-0" title="Editar Perfil">
+                <i class="fa fa-pencil-square-o fs-5"></i>
+            </a>
+        </td>
+
+        {{-- Agregar módulos --}}
+        <td class="text-center">
+            <a href="{{ route('perfiles.modulos', $row->id) }}" class="btn btn-sm btn-outline-info border-0" title="Asignar Módulos">
+                <i class="fa fa-plus text-primary fs-5"></i>
+            </a>
+        </td>
+
+        {{-- Perfil --}}
+        <td class="fw-semibold text-center">{{ $row->nombre }}</td>
         
-        <td>{{ $row->descripcion }}</td>
+        {{-- Perfil (Descripción) --}}
+        <td class="text-center">{{ $row->descripcion }}</td>
 
         {{-- Total Módulos Asignados --}}
         <td class="text-center fw-bold">
-            <span class="badge rounded-pill bg-secondary px-3 py-1">
-                {{ $row->modulos_count }}
-            </span>
+            {{ $row->modulos_count }}
         </td>
         
         {{-- Columna interactiva: Status --}}
@@ -28,24 +42,12 @@
                 @endif
             </button>
         </td>
-        
-        {{-- Columna de Acciones Estándar --}}
-        <td class="text-center pe-4">
-            <div class="d-flex justify-content-center gap-2">
-                <a href="{{ route('perfiles.edit', $row->id) }}" class="btn btn-sm btn-outline-dark border-0" title="Editar Perfil">
-                    <i class="fa fa-pencil-square-o"></i>
-                </a>
-                <a href="{{ route('perfiles.modulos', $row->id) }}" class="btn btn-sm btn-outline-info border-0" title="Asignar Módulos">
-                    <i class="fa fa-plus text-primary"></i> Asignar Módulos
-                </a>
-            </div>
-        </td>
     </tr>
 @endforeach
 
 @if($perfiles->isEmpty())
     <tr>
-        <td colspan="6" class="text-center py-4 text-muted">
+        <td colspan="7" class="text-center py-4 text-muted">
             <i class="fa fa-exclamation-circle me-2"></i>No se encontraron perfiles registrados.
         </td>
     </tr>

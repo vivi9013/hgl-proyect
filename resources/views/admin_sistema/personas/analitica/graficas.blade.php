@@ -32,19 +32,19 @@
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-4">
             <div class="card border-0 shadow-sm rounded-3 bg-white text-center p-3">
-                <div class="text-primary fw-bold" style="font-size: 2rem;">{{ $totalActivos }}</div>
+                <div class="text-primary fw-bold stat-value">{{ $totalActivos }}</div>
                 <small class="text-muted fw-semibold">Personas Activas</small>
             </div>
         </div>
         <div class="col-6 col-md-4">
             <div class="card border-0 shadow-sm rounded-3 bg-white text-center p-3">
-                <div class="text-danger fw-bold" style="font-size: 2rem;">{{ $totalInactivos }}</div>
+                <div class="text-danger fw-bold stat-value">{{ $totalInactivos }}</div>
                 <small class="text-muted fw-semibold">Personas Inactivas</small>
             </div>
         </div>
         <div class="col-12 col-md-4">
             <div class="card border-0 shadow-sm rounded-3 bg-white text-center p-3">
-                <div class="text-success fw-bold" style="font-size: 2rem;">{{ $totalEstudiantes }}</div>
+                <div class="text-success fw-bold stat-value">{{ $totalEstudiantes }}</div>
                 <small class="text-muted fw-semibold">Estudiantes Activos</small>
             </div>
         </div>
@@ -65,9 +65,9 @@
                 <div class="card-body p-4 d-flex align-items-center justify-content-center" style="min-height: 340px;">
                     <div class="position-relative" style="width: 100%; max-width: 280px; aspect-ratio: 1 / 1;">
                         <canvas id="donutSexoChart"></canvas>
-                        <div class="position-absolute start-50 top-50 translate-middle text-center" style="pointer-events: none;">
-                            <div id="centerSexoLabel" style="font-size: 15px; font-weight: bold; color: #333;"></div>
-                            <div id="centerSexoValue" style="font-size: 26px; font-weight: bold; color: #333;"></div>
+                        <div class="position-absolute start-50 top-50 translate-middle text-center donut-center-label">
+                            <div id="centerSexoLabel" class="donut-center-label"></div>
+                            <div id="centerSexoValue" class="donut-center-value"></div>
                         </div>
                     </div>
                 </div>

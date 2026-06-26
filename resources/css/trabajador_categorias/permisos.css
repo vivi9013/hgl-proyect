@@ -1,10 +1,10 @@
 /* Estilos personalizados para el módulo de Permisos de Archivos */
 
-.card {
+.card:not(.reporte-card) {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.card:hover {
+.card:not(.reporte-card):hover {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
 }
 
@@ -44,10 +44,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -57,7 +57,7 @@
 }
 
 /* Evitar hover en tarjetas */
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }

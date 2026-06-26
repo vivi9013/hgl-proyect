@@ -18,40 +18,12 @@
     transform: translateY(0);
 }
 
-.btn-danger-gradient {
-    background: linear-gradient(135deg, #e53e3e 0%, #9b2c2c 100%);
-    border: none;
-    color: #fff;
-    font-weight: 500;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-danger-gradient:hover {
-    background: linear-gradient(135deg, #c53030 0%, #742a2a 100%);
-    color: #fff;
-    transform: translateY(-1.5px);
-    box-shadow: 0 4px 10px rgba(229, 62, 62, 0.35);
-}
-
-.bg-primary-gradient {
-    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
-    color: #fff !important;
-}
-
 /* Transiciones de Filas de la Tabla */
 .table-hover tbody tr {
     transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.table-hover tbody tr:hover {
-    background-color: #f7fafc !important;
-}
-
 /* Clases de Utilidad */
-.min-w-200 {
-    min-width: 200px;
-}
-
 .font-size-xs {
     font-size: 0.75rem;
 }
@@ -86,10 +58,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -97,15 +69,14 @@
 }
 
 /* Quitar padding lateral para que se alinee perfectamente en el body */
-.card-body {
+.card:not(.reporte-card) .card-body {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
 
 /* Iconos y textos de acento en Negro */
 .text-primary,
-.fa-search,
-.fa-filter {
+.fa-search {
     color: #000000 !important;
 }
 
@@ -116,18 +87,14 @@
 }
 
 /* Botones Primarios (Guardar/Actualizar): Azul con borde Negro */
-.btn-primary,
 .btn-primary-gradient {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-primary:hover,
 .btn-primary-gradient:hover {
     background-color: #0b5ed7 !important;
     border-color: #000000 !important;
@@ -136,18 +103,15 @@
 }
 
 /* Botones de Cancelar/Volver: Blanco con bordes grises */
-.btn-light,
 .btn-outline-secondary {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-light:hover,
 .btn-outline-secondary:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
@@ -194,16 +158,6 @@
     min-width: auto !important;
 }
 
-.table .rounded-circle {
-    padding: 0 !important;
-    width: 32px !important;
-    height: 32px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 50% !important;
-}
-
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
 .pagination {
     margin: 0 !important;
@@ -238,14 +192,3 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-/* Línea divisoria gris para separar secciones laterales en pantallas medianas y grandes */
-@media (min-width: 768px) {
-    .separator-border-md {
-        border-right: 1.5px solid #e2e8f0 !important;
-        padding-right: 2rem !important;
-    }
-}
-
-
-

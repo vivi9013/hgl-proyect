@@ -40,12 +40,12 @@
                     </h5>
                     <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-1.5 rounded-pill fw-bold">Pastel / Donut</span>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="min-height: 380px;">
-                    <div class="position-relative" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1;">
+                <div class="card-body p-4 d-flex align-items-center justify-content-center chart-container-donut">
+                    <div class="position-relative chart-donut-wrapper">
                         <canvas id="pastelChart"></canvas>
-                        <div id="chartCenterText" class="position-absolute start-50 top-50 translate-middle text-center" style="pointer-events: none; transform: translate(-50%, -50%);">
-                            <div id="chartCenterLabel" style="font-size: 16px; font-weight: bold; color: #333333; line-height: 1.2; max-width: 180px; word-wrap: break-word;"></div>
-                            <div id="chartCenterValue" style="font-size: 24px; font-weight: bold; color: #333333; margin-top: 4px;"></div>
+                        <div id="chartCenterText" class="position-absolute start-50 top-50 translate-middle text-center" style="pointer-events: none;">
+                            <div id="chartCenterLabel" class="chart-center-label"></div>
+                            <div id="chartCenterValue" class="chart-center-value"></div>
                         </div>
                     </div>
                 </div>
@@ -61,8 +61,8 @@
                     </h5>
                     <span class="badge bg-success bg-opacity-10 text-success px-3 py-1.5 rounded-pill fw-bold">Barras</span>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="min-height: 380px;">
-                    <div style="width: 100%; height: 320px; position: relative;">
+                <div class="card-body p-4 d-flex align-items-center justify-content-center chart-container-bar">
+                    <div class="chart-bar-wrapper">
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>

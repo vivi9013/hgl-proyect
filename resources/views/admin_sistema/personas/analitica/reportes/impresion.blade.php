@@ -1,22 +1,17 @@
 @extends('layouts.reporte_base')
 
-@section('title', 'Reporte - Padrón de Personas')
+@section('title', 'Reporte - Listado de Personas')
 
-@section('report_title', 'PADRÓN DE PERSONAS REGISTRADAS')
+@section('report_title', 'LISTA COMPLETA DE PERSONAS')
 
 @section('content')
 <table>
     <thead>
         <tr>
-            <th class="center" style="width:40px;">No</th>
-            <th>Nombre Completo</th>
-            <th class="center" style="width:50px;">Sexo</th>
-            <th class="center" style="width:80px;">F. Nacimiento</th>
-            <th style="width:100px;">RFC</th>
-            <th style="width:120px;">CURP</th>
-            <th>Estado / Municipio</th>
-            <th class="center" style="width:70px;">Estudiante</th>
-            <th class="center" style="width:60px;">Status</th>
+            <th class="center" style="width:50px;">No</th>
+            <th>Persona</th>
+            <th>Nacimiento</th>
+            <th>Telefono</th>
         </tr>
     </thead>
     <tbody>
@@ -24,20 +19,15 @@
             <tr>
                 <td class="num">{{ $index + 1 }}</td>
                 <td style="font-weight: bold;">
-                    {{ $row->ap_paterno }} {{ $row->ap_materno }}, {{ $row->nombre }}
+                    {{ $row->ap_paterno }} {{ $row->ap_materno }} {{ $row->nombre }}
                 </td>
-                <td class="center">{{ $row->sexo === 'M' ? 'Masc.' : 'Fem.' }}</td>
-                <td class="center">{{ $row->fecha_nac ? \Carbon\Carbon::parse($row->fecha_nac)->format('d/m/Y') : '—' }}</td>
-                <td>{{ $row->rfc }}</td>
-                <td>{{ $row->curp }}</td>
-                <td>{{ $row->estado }} / {{ $row->municipio }}</td>
-                <td class="center">{{ $row->estudiante == 1 ? 'Sí' : 'No' }}</td>
-                <td class="center">{{ $row->activo == 1 ? 'Activo' : 'Inactivo' }}</td>
+                <td>{{ $row->fecha_nac ?? '—' }}</td>
+                <td>{{ $row->telefono ?? '—' }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="9" style="text-align:center; padding:12px; color:#666;">
-                    No se encontraron personas con los filtros seleccionados.
+                <td colspan="4" style="text-align:center; padding:12px; color:#666;">
+                    No se encontraron personas registradas.
                 </td>
             </tr>
         @endforelse

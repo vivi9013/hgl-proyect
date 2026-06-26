@@ -89,6 +89,7 @@
                                                         'mPermisosArchivo' => 'trabajador_categorias.index',
                                                         'mRXestudios' => 'rx.index',
                                                         'mAreasAlmacen' => 'areas_almacen.index',
+                                                        'mComputadoras' => 'computadoras.index',
                                                         'mAreaSurtimiento' => 'areas_surtimiento.index',
                                                         'mCumpleanos' => 'cumpleanos.index',
                                                         'mBajasInsumos' => 'bajas_insumos.index',
@@ -99,11 +100,15 @@
                                                         'mMotivos'              => 'motivos.index',
                                                         'mReportes'             => 'reportes_inventario.index',
                                                         'mCategoModulos'        => 'categoria_modulos.index',
+                                                        'mDevoluciones'    => 'devoluciones.index',
+                                                        'mCategoModulos'   => 'categoria_modulos.index',
+                                                        'mUsuarios'        => 'usuarios.index',
                                                         'mConfiguracion' => 'configuracion_sistema.index',
                                                         'mModulos'         => 'modulos.index',
                                                         'mPerfiles'        => 'perfiles.index',
                                                         'mPersonas'        => 'personas.index',
                                                         'mProyectos'       => 'proyectos.index',
+                                                        'mImpresoras'      => 'impresoras.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

@@ -1,5 +1,6 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
+@import 'reporte_index/reporte.css';
 
 /* Variables y Estilos de Layout Globales */
 * {
@@ -366,7 +367,7 @@ textarea:focus {
 }
 
 /* Tarjetas y Contenedores */
-.card,
+.card:not(.reporte-card),
 .module-card,
 .accordion-item,
 .tema-card {

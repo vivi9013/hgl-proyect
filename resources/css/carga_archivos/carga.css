@@ -1,18 +1,4 @@
 /* Estilos personalizados para el formulario de Carga de Archivos */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Efectos de Focus Modernos en Formularios */
-.form-control:focus,
-.form-select:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-}
 
 /* Animación del Spinner */
 @keyframes spin {
@@ -25,20 +11,11 @@
     animation: spin 1s linear infinite;
 }
 
-/* Clases de utilidad */
-.text-success-custom {
-    color: #38a169;
-}
-
-.text-danger-custom {
-    color: #e53e3e;
-}
-
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -48,10 +25,11 @@
 }
 
 /* Evitar escala y sombras en hover */
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
+
 
 /* Iconos y textos de acento en Negro */
 .text-primary,
@@ -84,9 +62,7 @@
 /* Acentos y Botones Primarios: Azul con borde Negro */
 .btn-primary {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -106,7 +82,6 @@
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -137,11 +112,6 @@
     width: 100% !important;
     table-layout: auto !important;
     /* ajuste dinámico */
-}
-
-/* Clase para forzar layout fijo – opcional */
-.table-fixed-layout {
-    table-layout: fixed !important;
 }
 
 .table th {
@@ -247,12 +217,4 @@
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
-}
-
-/* Línea divisoria gris para separar secciones laterales en escritorio */
-@media (min-width: 1200px) {
-    .separator-border {
-        border-right: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-        padding-right: 2rem !important;
-    }
 }

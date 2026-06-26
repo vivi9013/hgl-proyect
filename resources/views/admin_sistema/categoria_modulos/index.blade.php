@@ -95,11 +95,11 @@
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
                                 <tr>
                                     <th class="ps-4" style="width: 60px;">#</th>
+                                    <th class="text-center" style="width: 100px;">Acciones</th>
                                     <th>Categoría</th>
                                     <th>Proyecto</th>
                                     <th class="text-center" style="width: 120px;">Panel Abierto</th>
                                     <th class="text-center" style="width: 100px;">Estado</th>
-                                    <th class="text-center pe-4" style="width: 100px;">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tbodyCategorias">

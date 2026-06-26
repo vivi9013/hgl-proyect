@@ -93,7 +93,7 @@
         /* Título del reporte */
         .report-title {
             text-align: center;
-            font-size: 12px;
+            font-size: 18px;
             margin: 0 0 15px 0;
             text-transform: uppercase;
             font-weight: bold;
@@ -157,9 +157,10 @@
             margin: 0;
         }
 
-        /* ── Ocultar headers y footers del navegador ── */
+        /* ── Márgenes de hoja al imprimir ── */
         @page {
-            margin: 0;
+            size: auto;
+           margin: 12mm 18mm 18mm 18mm;
         }
 
         /* ── Medios de impresión ── */
@@ -177,7 +178,7 @@
             .page {
                 max-width: 100%;
                 margin: 0;
-                padding: 12mm 18mm 18mm 20mm;
+                padding: 0;
             }
 
             table thead tr {

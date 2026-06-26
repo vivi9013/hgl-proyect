@@ -1,13 +1,5 @@
 /* Estilos personalizados para el módulo de Categoría de Archivos */
 
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.card:hover {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-}
-
 /* Efectos de Focus Modernos */
 .form-control:focus {
     border-color: #3182ce;
@@ -75,10 +67,10 @@
 }
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card,
-.card-header,
-.card-body,
-.card-footer {
+.card:not(.reporte-card),
+.card:not(.reporte-card) .card-header,
+.card:not(.reporte-card) .card-body,
+.card:not(.reporte-card) .card-footer {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -88,10 +80,11 @@
 }
 
 /* Evitar escala y sombras en hover */
-.card:hover {
+.card:not(.reporte-card):hover {
     transform: none !important;
     box-shadow: none !important;
 }
+
 
 /* Convertir cabeceras de tarjetas con bg-primary en elegantes títulos subrayados */
 .card-header.bg-primary {
@@ -107,7 +100,6 @@
 
 .card-header.bg-primary h5 {
     font-size: 1.1rem !important;
-    font-weight: bold !important;
     color: #000000 !important;
 }
 
@@ -146,12 +138,10 @@
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Botón Guardar (Primario): Azul con borde Negro */
+/* Botón Guardar/Registrar (Primario): Azul con borde Negro */
 .btn-primary {
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
     color: #ffffff !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -167,9 +157,7 @@
 .btn-light,
 .btn-outline-secondary {
     background-color: #ffffff !important;
-    border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
-    font-weight: bold !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
@@ -248,10 +236,4 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
 

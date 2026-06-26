@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 // Extraer el nombre del perfil del renglón correspondiente
                 const row = this.closest('tr');
-                const nombre = row.querySelector('td:nth-child(2)').textContent.trim();
+                const nombre = row.querySelector('td:nth-child(4)').textContent.trim();
                 const esInactivo = row.classList.contains('text-muted');
                 const activo = esInactivo ? 0 : 1;
 

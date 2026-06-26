@@ -1,4 +1,5 @@
-<div class="card border-0 shadow-sm rounded-3 bg-white h-100 d-flex flex-column justify-content-between">
+
+<div class="card reporte-card border-0 shadow-sm rounded-3 bg-white h-100 d-flex flex-column justify-content-between">
 
     {{-- Cabecera de la Tarjeta --}}
     <div>
@@ -19,7 +20,15 @@
     </div>
 
     {{-- Footer de Acción --}}
-    <div class="card-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end border-top">
+    <div class="card-footer bg-light border-0 py-3 px-4 rounded-bottom-3 border-top
+                d-flex align-items-center {{ isset($rutaVolver) ? 'justify-content-between' : 'justify-content-end' }}">
+
+        @isset($rutaVolver)
+            <a href="{{ $rutaVolver }}" class="btn-volver">
+                <i class="fa fa-arrow-left me-1"></i> {{ $labelVolver ?? 'Volver' }}
+            </a>
+        @endisset
+
         <a href="{{ $rutaImprimir }}" target="_blank" class="btn btn-primary py-2 px-4 rounded-pill shadow-sm">
             <i class="fa fa-print me-2"></i>{{ $labelBoton ?? 'Imprimir Reporte' }}
         </a>

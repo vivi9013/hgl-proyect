@@ -1,10 +1,10 @@
 /* ── Configuración General — Estilos planos del módulo ── */
 
-.card {
+.card:not(.reporte-card) {
     transition: box-shadow 0.2s ease;
 }
 
-.card:hover {
+.card:not(.reporte-card):hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
 }
 

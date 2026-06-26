@@ -1,0 +1,242 @@
+/* ================================================================
+   Módulo de Usuarios — usuarios.css
+   Un solo archivo para todo el módulo, con scoping por contexto.
+   ================================================================ */
+
+/* ── Transición general de cards (todas las vistas) ── */
+.card:not(.reporte-card) {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ── Focus modernos (todas las vistas) ── */
+.form-control:focus, .form-select:focus, textarea:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── Feedback AJAX ── */
+.text-success-custom {
+    color: #2f855a;
+    font-weight: 500;
+}
+
+.text-danger-custom {
+    color: #c53030;
+    font-weight: 500;
+}
+
+/* ── Spinner ── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ── Hover tabla ── */
+#tbodyUsuarios tr {
+    transition: background-color 0.2s ease;
+}
+
+#tbodyUsuarios tr:hover {
+    background-color: rgba(49, 130, 206, 0.02) !important;
+}
+
+/* ── Botones de acción en tabla ── */
+.btn-toggle-status {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.btn-toggle-status:hover {
+    transform: scale(1.1);
+}
+
+.fa-pencil-square-o, .fa-refresh {
+    color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.fa-pencil-square-o:hover, .fa-refresh:hover {
+    color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* ── Iconos y textos de acento en Negro (todas las vistas) ── */
+.text-primary,
+.fa-folder-open,
+.fa-plus-circle,
+.fa-list,
+.fa-user-plus {
+    color: #000000 !important;
+}
+
+/* ── Form Controls (todas las vistas) ── */
+.form-control,
+.form-select,
+textarea {
+    border-color: #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* ── Botones Primarios y Secundarios (solo en Catálogo y Edición) ── */
+.usuarios-index .btn-primary,
+.usuarios-edit .btn-primary {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.usuarios-index .btn-primary:hover,
+.usuarios-edit .btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.usuarios-index .btn-light,
+.usuarios-edit .btn-light {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.usuarios-index .btn-light:hover,
+.usuarios-edit .btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── Tablas (todas las vistas) ── */
+.table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+}
+
+.table th {
+    background-color: #f9fafb !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 1rem !important;
+    border-bottom: 1.5px solid #e5e7eb !important;
+}
+
+.table td {
+    padding: 1rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.875rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+.bg-light-gray {
+    background-color: #f3f4f6 !important;
+}
+
+/* ── Paginación (todas las vistas) ── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+.bg-primary {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.bg-primary-light {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+
+/* ================================================================
+   SCOPE: .usuarios-index  (Catálogo /usuarios)
+   Cards planas, sin sombra — diseño flat.
+   ================================================================ */
+
+.usuarios-index .card,
+.usuarios-index .card-header,
+.usuarios-index .card-body,
+.usuarios-index .card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.usuarios-index .card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+
+/* ================================================================
+   SCOPE: .usuarios-reportes  (Reportes /usuarios/reportes)
+   Cards con sombra y estilo box — coincide con layouts.reporte_index.
+   ================================================================ */
+
+.usuarios-reportes .card.border-0.shadow-sm {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usuarios-reportes .card.border-0.shadow-sm:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}

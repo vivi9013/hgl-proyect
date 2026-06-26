@@ -23,7 +23,9 @@
                 'titulo' => 'Lista Completa de Personas',
                 'descripcion' => 'Genera el listado oficial del padrón completo de personas registradas en el sistema. El reporte se ordena por apellido paterno de forma ascendente para una auditoría visual óptima.',
                 'rutaImprimir' => route('personas.imprimir'),
-                'labelBoton' => 'Imprimir Reporte Completo'
+                'labelBoton' => 'Imprimir Reporte Completo',
+                'rutaVolver'  => route('personas.index'),
+                'labelVolver' => 'Volver a personas',
             ])
         </div>
 
@@ -78,5 +80,4 @@
     </div>
 </div>
 
-@vite(['resources/css/categoria_modulos/categoria_reportes.css'])
 @endsection

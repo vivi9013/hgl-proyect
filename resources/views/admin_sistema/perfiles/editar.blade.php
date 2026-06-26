@@ -7,13 +7,6 @@
     {{-- Encabezado de Navegación y Título --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="{{ route('inicio') }}" class="text-decoration-none">Panel de Control</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('perfiles.index') }}" class="text-decoration-none">Catálogo de Perfiles</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edición</li>
-                </ol>
-            </nav>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-pencil-square-o text-primary me-2"></i>Actualización de Perfil
             </h1>

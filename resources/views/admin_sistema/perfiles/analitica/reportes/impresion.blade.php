@@ -11,7 +11,6 @@
             <th class="center" style="width:50px;">No</th>
             <th>Perfil</th>
             <th>Descripción</th>
-            <th class="center" style="width:100px;">Estado</th>
         </tr>
     </thead>
     <tbody>
@@ -20,17 +19,10 @@
                 <td class="num">{{ $index + 1 }}</td>
                 <td style="font-weight: bold;">{{ $row->nombre }}</td>
                 <td>{{ $row->descripcion }}</td>
-                <td class="center">
-                    @if ($row->activo == 1)
-                        Activo
-                    @else
-                        Inactivo
-                    @endif
-                </td>
             </tr>
         @empty
             <tr>
-                <td colspan="4" style="text-align:center; padding:12px; color:#666;">
+                <td colspan="3" style="text-align:center; padding:12px; color:#666;">
                     No se encontraron perfiles registrados.
                 </td>
             </tr>

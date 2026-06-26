@@ -56,7 +56,7 @@
     {{-- Modal de alta --}}
     <div class="modal fade" id="modalAltaProyecto" tabindex="-1" aria-labelledby="modalAltaProyectoLabel" aria-hidden="true" @if($errors->any()) data-auto-open="true" @endif>
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius:15px; overflow:hidden;">
+            <div class="modal-content border-0 shadow-lg modal-alta-proyecto">
                 <div class="modal-header bg-dark text-white border-0 py-3">
                     <h5 class="modal-title fw-bold" id="modalAltaProyectoLabel">
                         <i class="fa fa-edit me-2"></i>Registrar Nuevo Proyecto
@@ -106,9 +106,9 @@
                                 {{ $proyectos->total() }} Registros
                             </span>
                         </div>
-                        <div class="input-group" style="max-width:280px; border:1.5px solid #000; border-radius:8px; overflow:hidden;">
+                        <div class="input-group search-group">
                             <input type="search" id="busqueda-global" class="form-control bg-light border-0"
-                                   placeholder="Buscar proyecto..." style="box-shadow:none;">
+                                   placeholder="Buscar proyecto...">
                             <span class="input-group-text bg-light border-0">
                                 <i class="fa fa-search text-dark"></i>
                             </span>
@@ -118,7 +118,7 @@
                 <div class="card-body p-0 mt-2">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-uppercase" style="font-size:0.75rem;">
+                            <thead class="table-light text-uppercase thead-proyectos">
                                 <tr>
                                     <th class="text-center" style="width:50px;">#</th>
                                     <th class="text-center" style="width:80px;">Editar</th>
@@ -131,7 +131,7 @@
                             <tbody id="cuerpoTablaProyectos">
                                 @include('admin_sistema.proyectos.partials.tabla')
                             </tbody>
-                            <tfoot class="table-light text-uppercase" style="font-size:0.75rem;">
+                            <tfoot class="table-light text-uppercase tfoot-proyectos">
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-center">Editar</th>
