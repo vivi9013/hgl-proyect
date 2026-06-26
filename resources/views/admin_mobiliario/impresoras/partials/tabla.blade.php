@@ -9,10 +9,10 @@
             </a>
         </td>
         <td class="fw-semibold">{{ $imp->inventario }}</td>
-        <td>{{ $imp->marca }}</td>
-        <td>{{ $imp->modelo }}</td>
-        <td>{{ $imp->tipo }}</td>
         <td>{{ $imp->serie }}</td>
+        <td>{{ $imp->modelo }}</td>
+        <td>{{ $imp->marca }}</td>
+        <td>{{ $imp->descripcion ?? '' }}</td>
         <td>{{ $imp->tecnologia ?? 'N/A' }}</td>
         <td class="text-center">{{ $imp->consumible }}</td>
         <td class="text-center">
@@ -21,11 +21,6 @@
             </span>
         </td>
         <td class="font-monospace">{{ $imp->ip ?? 'N/A' }}</td>
-        <td class="text-center">
-            <span class="badge {{ $imp->comodato === 'Si' ? 'bg-info text-dark' : 'bg-light text-dark border' }}">
-                {{ $imp->comodato }}
-            </span>
-        </td>
         <td class="text-center">
             <button type="button"
                     class="btn btn-sm btn-alternar-estado border-0 bg-transparent p-0"
@@ -39,7 +34,7 @@
     </tr>
 @empty
     <tr>
-        <td colspan="13" class="text-center text-muted py-4">
+        <td colspan="12" class="text-center text-muted py-4">
             <i class="fa fa-print fa-2x mb-2 d-block"></i>
             No se encontraron impresoras en el catálogo.
         </td>

@@ -60,7 +60,7 @@ class ImpresoraController extends Controller
         // Respuesta AJAX (paginación asíncrona / búsqueda reactiva)
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'html'  => view('control_insumos.impresoras.partials.tabla', compact('impresoras'))->render(),
+                'html'  => view('admin_mobiliario.impresoras.partials.tabla', compact('impresoras'))->render(),
                 'links' => $impresoras->links('pagination::bootstrap-4')->render(),
                 'total' => $impresoras->total(),
                 'info'  => 'Mostrando ' . ($impresoras->firstItem() ?? 0)
@@ -71,7 +71,7 @@ class ImpresoraController extends Controller
 
         $inventario = $this->inventarioDisponible();
 
-        return view('control_insumos.impresoras.index', compact(
+        return view('admin_mobiliario.impresoras.index', compact(
             'impresoras',
             'inventario',
         ) + ['tipos' => self::TIPOS, 'consumibles' => self::CONSUMIBLES, 'redOpts' => self::RED, 'comodatoOpts' => self::COMODATO]);
@@ -110,7 +110,7 @@ class ImpresoraController extends Controller
             'comodato'    => trim($request->comodato),
             'fecha'       => now()->toDateString(),
             'hora'        => now()->toTimeString(),
-            'usuario'     => Auth::user()->nombre_usuario ?? 'sistema',
+            'usuario'     => Auth::id(),
             'activo'      => 1,
         ]);
 
@@ -125,7 +125,7 @@ class ImpresoraController extends Controller
         $impresora  = Impresora::findOrFail($id);
         $inventario = $this->inventarioDisponible($id);
 
-        return view('control_insumos.impresoras.editar', compact('impresora', 'inventario')
+        return view('admin_mobiliario.impresoras.editar', compact('impresora', 'inventario')
             + ['tipos' => self::TIPOS, 'consumibles' => self::CONSUMIBLES, 'redOpts' => self::RED, 'comodatoOpts' => self::COMODATO]);
     }
 
@@ -160,8 +160,7 @@ class ImpresoraController extends Controller
             'comodato'    => trim($request->comodato),
             'fecha'       => now()->toDateString(),
             'hora'        => now()->toTimeString(),
-            'usuario'     => Auth::user()->nombre_usuario ?? 'sistema',
-            'activo'      => 1,
+            'usuario'     => Auth::id(),
         ]);
 
         return redirect()
@@ -176,7 +175,7 @@ class ImpresoraController extends Controller
         $impresora->activo = ($impresora->activo == 1) ? 0 : 1;
         $impresora->fecha  = now()->toDateString();
         $impresora->hora   = now()->toTimeString();
-        $impresora->usuario = Auth::user()->nombre_usuario ?? 'sistema';
+        $impresora->usuario = Auth::id();
         $impresora->save();
 
         return response()->json([
@@ -214,7 +213,7 @@ class ImpresoraController extends Controller
             'en_red'    => Impresora::where('red', 'Si')->where('activo', 1)->count(),
         ];
 
-        return view('control_insumos.impresoras.analitica.reportes.index', compact('stats'));
+        return view('admin_mobiliario.impresoras.analitica.reportes.index', compact('stats'));
     }
 
     // ─── IMPRIMIR (reporte imprimible) ───────────────────────────────────────
@@ -222,7 +221,7 @@ class ImpresoraController extends Controller
     {
         $impresoras = Impresora::orderBy('id_impresora', 'desc')->get();
 
-        return view('control_insumos.impresoras.analitica.reportes.impresion', compact('impresoras'));
+        return view('admin_mobiliario.impresoras.analitica.reportes.impresion', compact('impresoras'));
     }
 
     // ─── GRÁFICAS ─────────────────────────────────────────────────────────────
@@ -250,7 +249,7 @@ class ImpresoraController extends Controller
             ->orderBy('total', 'desc')
             ->pluck('total', 'tipo');
 
-        return view('control_insumos.impresoras.analitica.graficas', compact(
+        return view('admin_mobiliario.impresoras.analitica.graficas', compact(
             'stats',
             'porTecnologia',
             'porTipo',

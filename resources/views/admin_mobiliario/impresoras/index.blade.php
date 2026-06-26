@@ -235,35 +235,33 @@
                                     <th class="text-center" style="width:50px;">#</th>
                                     <th class="text-center" style="width:80px;">Editar</th>
                                     <th>Inventario</th>
-                                    <th>Marca</th>
-                                    <th>Modelo</th>
-                                    <th>Tipo</th>
                                     <th>Serie</th>
+                                    <th>Modelo</th>
+                                    <th>Marca</th>
+                                    <th>Descripción</th>
                                     <th>Tecnología</th>
                                     <th class="text-center">Consumible</th>
-                                    <th class="text-center">Red</th>
+                                    <th class="text-center">Internet</th>
                                     <th>IP</th>
-                                    <th class="text-center">Comodato</th>
                                     <th class="text-center" style="width:100px;">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="cuerpoTablaImpresoras">
-                                @include('control_insumos.impresoras.partials.tabla')
+                                @include('admin_mobiliario.impresoras.partials.tabla')
                             </tbody>
                             <tfoot class="table-light text-uppercase tfoot-impresoras">
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-center">Editar</th>
                                     <th>Inventario</th>
-                                    <th>Marca</th>
-                                    <th>Modelo</th>
-                                    <th>Tipo</th>
                                     <th>Serie</th>
+                                    <th>Modelo</th>
+                                    <th>Marca</th>
+                                    <th>Descripción</th>
                                     <th>Tecnología</th>
                                     <th class="text-center">Consumible</th>
-                                    <th class="text-center">Red</th>
+                                    <th class="text-center">Internet</th>
                                     <th>IP</th>
-                                    <th class="text-center">Comodato</th>
                                     <th class="text-center">Status</th>
                                 </tr>
                             </tfoot>

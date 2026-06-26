@@ -22,7 +22,7 @@
                 <td>{{ $archivo->nombre }}</td>
                 <td>{{ $archivo->categoria->categoria }}</td>
                 <td>{{ $archivo->descripcion_archivo ?: 'Sin descripción registrada.' }}</td>
-                <td class="center">v{{ $archivo->version_archivo ?: '1' }}</td>
+                <td class="center">{{ $archivo->version_archivo ?: '1' }}</td>
             </tr>
         @empty
             <tr>
