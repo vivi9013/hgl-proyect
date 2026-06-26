@@ -89,6 +89,7 @@
                                                         'mPermisosArchivo' => 'trabajador_categorias.index',
                                                         'mRXestudios' => 'rx.index',
                                                         'mAreasAlmacen' => 'areas_almacen.index',
+                                                        'mComputadoras' => 'computadoras.index',
                                                         'mAreaSurtimiento' => 'areas_surtimiento.index',
                                                         'mCumpleanos' => 'cumpleanos.index',
                                                         'mBajasInsumos' => 'bajas_insumos.index',

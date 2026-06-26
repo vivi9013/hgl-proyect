@@ -22,6 +22,7 @@ use App\Http\Controllers\Perfiles\PerfilController;
 use App\Http\Controllers\Personas\PersonaController;
 use App\Http\Controllers\Proyectos\ProyectoController;
 use App\Http\Controllers\Usuarios\UsuarioController;
+use App\Http\Controllers\Computadoras\ComputadoraController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -345,5 +346,15 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/estudios/guardar', 'guardarEstudio')->name('estudios.guardar');
         Route::put('/estudios/actualizar/{id}', 'actualizarEstudio')->name('estudios.actualizar');
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
+    });
+
+    // ── Módulo: Computadoras (Mobiliario y Equipo) ──────────────────────────
+    Route::prefix('computadoras')->name('computadoras.')->controller(ComputadoraController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });
 });
