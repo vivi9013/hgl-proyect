@@ -67,6 +67,9 @@ export default defineConfig({
                 'resources/css/usuarios/usuarios.css',
                 'resources/js/usuarios/usuarios.js',
                 'resources/js/usuarios/usuarios_edit.js',
+                // Impresoras Assets
+                'resources/css/control_insumos/impresoras/impresoras.css',
+                'resources/js/control_insumos/impresoras/impresoras.js',
             ],
             refresh: true,
         }),

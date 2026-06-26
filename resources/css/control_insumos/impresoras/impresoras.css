@@ -1,0 +1,255 @@
+/* Estilos personalizados para el módulo de Impresoras (Control de Insumos) */
+
+/* Efectos de Focus Modernos */
+#modulo-impresoras .form-control:focus,
+#modulo-impresoras .form-select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Hover en tabla y enlaces de acción */
+#modulo-impresoras #cuerpoTablaImpresoras tr {
+    transition: background-color 0.2s ease;
+}
+
+#modulo-impresoras #cuerpoTablaImpresoras tr:hover {
+    background-color: #f9fafb !important;
+}
+
+#modulo-impresoras .btn-alternar-estado {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+#modulo-impresoras .btn-alternar-estado:hover {
+    transform: scale(1.1);
+}
+
+#modulo-impresoras .fa-pencil-square-o,
+#modulo-impresoras .fa-plus-circle {
+    color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+#modulo-impresoras .fa-pencil-square-o:hover,
+#modulo-impresoras .fa-plus-circle:hover {
+    color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
+#modulo-impresoras .card:not(.reporte-card),
+#modulo-impresoras .card:not(.reporte-card) .card-header,
+#modulo-impresoras .card:not(.reporte-card) .card-body,
+#modulo-impresoras .card:not(.reporte-card) .card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#modulo-impresoras .card:not(.reporte-card):hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Iconos y textos de acento en Negro */
+#modulo-impresoras .text-primary,
+#modulo-impresoras .fa-print,
+#modulo-impresoras .fa-list-ul {
+    color: #000000 !important;
+}
+
+/* Form Controls */
+#modulo-impresoras .form-control,
+#modulo-impresoras .form-select {
+    border-color: #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Botón Guardar (Primario): Azul con borde Negro */
+#modulo-impresoras .btn-primary {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#modulo-impresoras .btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón Cancelar/Volver: Blanco con bordes grises */
+#modulo-impresoras .btn-light {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#modulo-impresoras .btn-light:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+#modulo-impresoras .table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+#modulo-impresoras .table th {
+    background-color: #f9fafb !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.6rem !important;
+    border-bottom: 1.5px solid #e5e7eb !important;
+    white-space: normal !important;
+    overflow: visible !important;
+}
+
+#modulo-impresoras .table td {
+    padding: 0.5rem 0.6rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.82rem !important;
+    white-space: normal !important;
+    overflow: visible !important;
+}
+
+#modulo-impresoras .table-hover tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+#modulo-impresoras .table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+#modulo-impresoras .pagination {
+    margin: 0 !important;
+}
+
+#modulo-impresoras .pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#modulo-impresoras .pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+#modulo-impresoras .pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+#modulo-impresoras .pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+#modulo-impresoras .bg-primary {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* ── Clases utilitarias extraídas de estilos inline ── */
+
+/* Modal de alta */
+#modulo-impresoras .modal-alta-impresora {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Grupo del buscador global */
+#modulo-impresoras .search-group {
+    max-width: 280px;
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+#modulo-impresoras .search-group .form-control {
+    box-shadow: none !important;
+}
+
+/* Encabezados y pies de tabla con tamaños unificados */
+#modulo-impresoras .thead-impresoras,
+#modulo-impresoras .tfoot-impresoras {
+    font-size: 0.75rem;
+}
+
+/* Encabezado colapsable con cursor interactivo */
+#modulo-impresoras .card-header-collapse {
+    cursor: pointer;
+}
+
+/* Elementos del gráfico analítico */
+.chart-container-donut {
+    min-height: 380px;
+}
+.chart-donut-wrapper {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+}
+.chart-center-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+    line-height: 1.2;
+    max-width: 180px;
+    word-wrap: break-word;
+}
+.chart-center-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333333;
+    margin-top: 4px;
+}
+.chart-container-bar {
+    min-height: 380px;
+}
+.chart-bar-wrapper {
+    width: 100%;
+    height: 320px;
+    position: relative;
+}

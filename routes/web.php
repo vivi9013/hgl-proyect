@@ -33,6 +33,7 @@ use App\Http\Controllers\Inventario\EntradaCendisController;
 use App\Http\Controllers\Inventario\DetalleEntradaCendisController;
 use App\Http\Controllers\Inventario\InsumoController;
 use App\Http\Controllers\Inventario\InsumoAreaController;
+use App\Http\Controllers\ControlInsumos\ImpresoraController;
 
 // Redirección raíz por defecto
 Route::get('/', function () {
@@ -313,6 +314,19 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/datos', 'obtenerReporteDatos')->name('reporte_datos');
         Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Control de Insumos - Impresoras ──────────────────────────────
+    Route::prefix('control-insumos/impresoras')->name('impresoras.')->controller(ImpresoraController::class)->group(function () {
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/guardar',          'guardar')      ->name('store');
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
+        Route::get('/verificar-ip',      'verificarIp')  ->name('verificar_ip');
+        Route::get('/reportes',          'reportes')     ->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        Route::get('/graficas',          'graficas')     ->name('graficas');
     });
 
     // Subgrupo: Radiología RX (Prefijo limpio adaptado)

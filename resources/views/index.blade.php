@@ -105,6 +105,7 @@
                                                         'mPerfiles'        => 'perfiles.index',
                                                         'mPersonas'        => 'personas.index',
                                                         'mProyectos'       => 'proyectos.index',
+                                                        'mImpresoras'      => 'impresoras.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])
