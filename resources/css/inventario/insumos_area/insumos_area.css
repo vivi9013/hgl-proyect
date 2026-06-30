@@ -6,6 +6,7 @@
     display: inline-block;
     vertical-align: middle;
 }
+
 .thermometer-icon:hover {
     transform: scale(1.2);
 }
@@ -25,6 +26,7 @@
     color: #d63031 !important;
     border-color: #ff8787 !important;
 }
+
 .stock-muy-bajo-badge {
     background-color: #d63031;
     color: #ffffff;
@@ -35,6 +37,7 @@
     color: #e67e22 !important;
     border-color: #ffd8a8 !important;
 }
+
 .stock-bajo-badge {
     background-color: #e67e22;
     color: #ffffff;
@@ -45,6 +48,7 @@
     color: #f1c40f !important;
     border-color: #fde3a7 !important;
 }
+
 .stock-regular-badge {
     background-color: #f1c40f;
     color: #2c3e50;
@@ -55,6 +59,7 @@
     color: #27ae60 !important;
     border-color: #b2f2bb !important;
 }
+
 .stock-suficiente-badge {
     background-color: #27ae60;
     color: #ffffff;
@@ -65,33 +70,10 @@
     color: #2980b9 !important;
     border-color: #a5d8ff !important;
 }
+
 .stock-excedido-badge {
     background-color: #2980b9;
     color: #ffffff;
-}
-
-/* Form Styling & Card Premium Layouts */
-.card-premium {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    background: #ffffff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    margin-bottom: 24px;
-}
-
-.card-premium-header {
-    border-bottom: 1px solid #f1f2f6;
-    padding: 18px 24px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card-premium-body {
-    padding: 24px;
 }
 
 /* Input fields inside table */
@@ -104,6 +86,7 @@
     font-weight: 600;
     transition: all 0.2s ease;
 }
+
 .input-table-edit:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
@@ -148,7 +131,7 @@
     background-color: #f1f2f6;
     border: 1px solid #ccc;
     border-radius: 3px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
     color: #333;
     display: inline-block;
     font-family: inherit;

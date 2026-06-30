@@ -49,6 +49,10 @@ export default defineConfig({
                 'resources/css/inventario/reportes/reportes.css',
                 'resources/js/inventario/reportes/reportes.js',
 
+                // Pedidos Recibidos Assets
+                'resources/css/inventario/pedidos_recibidos/pedidos.css',
+                'resources/js/inventario/pedidos_recibidos/pedidos.js',
+
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/js/categoria_modulos/categoria.js',

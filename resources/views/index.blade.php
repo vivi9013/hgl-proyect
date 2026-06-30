@@ -99,6 +99,7 @@
                                                         'mInsumosArea'          => 'insumos_area.index',
                                                         'mMotivos'              => 'motivos.index',
                                                         'mReportes'             => 'reportes_inventario.index',
+                                                        'mPedidosRecibidos'     => 'pedidos_recibidos.index',
                                                         'mCategoModulos'        => 'categoria_modulos.index',
                                                         'mDevoluciones'    => 'devoluciones.index',
                                                         'mCategoModulos'   => 'categoria_modulos.index',

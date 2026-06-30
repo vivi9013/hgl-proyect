@@ -8,19 +8,18 @@
     {{-- ── Encabezado ── --}}
     <div class="mb-4">
         <h1 class="h3 mb-0 fw-bold">
-            <i class="fa fa-pencil text-primary me-2"></i> Editar Reubicación de Insumo
+            <i class="fa fa-pencil text-primary me-2"></i> Reubicación de Insumo
         </h1>
-        <p class="text-muted mb-0">Reasigne el insumo seleccionado a otra área de almacén activa.</p>
+        <p class="text-muted mb-0">Reasigne el insumo seleccionando a otra Área de Almacen activa.</p>
     </div>
 
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card card-premium">
-                <div class="card-premium-header bg-dark text-white">
-                    <h5 class="mb-0 fw-bold text-white">
-                        <i class="fa fa-edit me-2"></i> Detalles de Asignación
+    <div class="justify-content-center">
+            <div class=" card-premium">
+                <div class="card-premium-header">
+                    <h5 class="mb-2 fw-bold text-black">
+                        <i class="fa fa-edit me-1"></i> Detalles de Asignación
                     </h5>
                 </div>
                 <div class="card-premium-body">
@@ -94,7 +93,6 @@
                     </form>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 @endsection

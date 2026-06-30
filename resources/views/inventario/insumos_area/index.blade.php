@@ -34,8 +34,8 @@
     @endif
 
     {{-- ── Tarjeta: Filtro de Visualización e Historial ── --}}
-    <div class="card card-premium">
-        <div class="card-premium-header bg-white pb-0">
+    <div class="card-premium">
+        <div class="card-premium-header pb-0">
             <div class="row w-100 align-items-center g-3">
                 <div class="col-12 col-md-8">
                     <form method="GET" action="{{ route('insumos_area.index') }}" id="formBuscarFiltros">

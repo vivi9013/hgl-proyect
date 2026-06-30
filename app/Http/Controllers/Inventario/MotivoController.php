@@ -45,7 +45,6 @@ class MotivoController extends Controller
 
                 // Limita la consulta a 10 resultados.
                 ->limit(10)
-
                 // Ejecuta la consulta.
                 ->get()
 

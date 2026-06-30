@@ -7,7 +7,7 @@
 {{-- Pasa el título estático de la página al marcador @yield('title') de la cabecera HTML. --}}
 {{-- Define el título visible de la pestaña en el navegador web. --}}
 @section('title', 'Motivos de Devoluciones')
-
+ 
 {{-- @section y @endsection definen la sección principal de contenido dinámico. --}}
 {{-- Inserta toda la estructura HTML de la tabla, buscadores y modales en @yield('content') del layout. --}}
 {{-- Proporciona el cuerpo funcional de la administración de motivos de devoluciones. --}}

@@ -34,6 +34,9 @@ use App\Http\Controllers\Inventario\EntradaCendisController;
 use App\Http\Controllers\Inventario\DetalleEntradaCendisController;
 use App\Http\Controllers\Inventario\InsumoController;
 use App\Http\Controllers\Inventario\InsumoAreaController;
+use App\Http\Controllers\Inventario\MotivoController;
+use App\Http\Controllers\Inventario\ReporteInventarioController;
+use App\Http\Controllers\Inventario\PedidoRecibidoController;
 
 // Redirección raíz por defecto
 Route::get('/', function () {
@@ -42,6 +45,7 @@ Route::get('/', function () {
 
 // ── Redirects legacy (URLs del sistema antiguo) ────────────────────────────
 Route::get('/mMotivos', fn() => redirect()->route('motivos.index'));
+Route::get('/mPedidosRecibidos', fn() => redirect()->route('pedidos_recibidos.index'));
 
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -328,6 +332,28 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/datos', 'obtenerReporteDatos')->name('reporte_datos');
         Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Reportes de Inventario (mReportes) ────────────────────────
+    Route::prefix('reportes-inventario')->name('reportes_inventario.')->controller(ReporteInventarioController::class)->group(function () {
+        Route::get('/', 'index')->name('index');                                          // Vista principal
+        Route::get('/areas-abastecimiento', 'areasAbastecimiento')->name('areas_abastecimiento'); // AJAX
+        Route::get('/subareas/{idArea}', 'subareasAbastecimiento')->name('subareas');             // AJAX
+        Route::get('/areas-almacen', 'areasAlmacen')->name('areas_almacen');                      // AJAX
+        Route::get('/imprimir-entregas', 'imprimirEntregas')->name('imprimir_entregas');           // Reporte 1
+        Route::get('/imprimir-concentrado', 'imprimirConcentrado')->name('imprimir_concentrado'); // Reporte 2
+    });
+
+    // ── Módulo: Pedidos Recibidos (Inventario) ─────────────────────────────────
+    Route::prefix('pedidos-recibidos')->name('pedidos_recibidos.')->controller(PedidoRecibidoController::class)->group(function () {
+        Route::get('/', 'index')->name('index');                                            // Pendientes
+        Route::get('/aceptados', 'aceptados')->name('aceptados');                          // Surtidos/Aceptados
+        Route::get('/cancelados', 'cancelados')->name('cancelados');                       // Cancelados
+        Route::get('/{id}/detalle', 'detalle')->name('detalle');                           // Ver/Surtir detalle
+        Route::post('/{id}/liberar', 'liberar')->name('liberar');                          // Liberar pedido
+        Route::post('/{id}/cancelar', 'cancelar')->name('cancelar');                       // Cancelar pedido
+        Route::patch('/detalle/{id}/guardar-surtido', 'guardarSurtido')->name('guardar_surtido'); // AJAX surtido
+        Route::get('/{id}/comprobante', 'comprobante')->name('comprobante');               // Comprobante PDF
     });
 
     // Subgrupo: Radiología RX (Prefijo limpio adaptado)

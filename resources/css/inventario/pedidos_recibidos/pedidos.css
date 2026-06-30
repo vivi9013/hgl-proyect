@@ -1,0 +1,74 @@
+/**
+ * Estilos para el módulo de Pedidos Recibidos
+ * HGL – Sistema de Gestión de Inventario
+ */
+
+/* ── Tabla: borde inferior sutil entre filas ─────────────────────────────── */
+#tablaPedidos tbody tr,
+#tablaDetallesPedido tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+#tablaPedidos tbody tr:hover,
+#tablaDetallesPedido tbody tr:hover {
+    background-color: #f8f9ff !important;
+}
+
+/* ── Input de cantidad surtida ───────────────────────────────────────────── */
+.input-surtido:focus {
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 0 0 0.18rem rgba(29, 78, 216, 0.15) !important;
+}
+
+.input-surtido:disabled {
+    background-color: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0 !important;
+}
+
+/* ── Switch de habilitación ──────────────────────────────────────────────── */
+.check-habilitar:checked {
+    background-color: #16a34a;
+    border-color: #16a34a;
+}
+
+/* ── Botón liberar: verde cuando hay al menos un insumo surtido ──────────── */
+#btnLiberarPedido:not(:disabled) {
+    background-color: #16a34a;
+    border-color: #16a34a;
+}
+
+/* ── Paginación sencilla en negro ─────────────────────────────────────────── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}

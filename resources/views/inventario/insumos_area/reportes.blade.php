@@ -25,7 +25,7 @@
     <div class="row g-4">
         {{-- ── Panel de Filtros (Izquierda) ── --}}
         <div class="col-12 col-lg-4">
-            <div class="card card-premium h-100">
+            <div class=" card-premium h-100">
                 <div class="card-premium-header bg-light">
                     <h5 class="mb-0 fw-bold text-dark">
                         <i class="fa fa-sliders text-secondary me-2"></i> Filtros del Reporte
@@ -107,8 +107,8 @@
 
         {{-- ── Resultados (Derecha) ── --}}
         <div class="col-12 col-lg-8">
-            <div class="card card-premium h-100">
-                <div class="card-premium-header bg-white pb-2 d-flex justify-content-between align-items-center">
+            <div class="card-premium h-100">
+                <div class="card-premium-header pb-2 d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-dark">
                         <i class="fa fa-list text-secondary me-2"></i> Resultados de Consulta
                     </h5>
