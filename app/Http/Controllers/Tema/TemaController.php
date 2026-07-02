@@ -32,7 +32,7 @@ class TemaController extends Controller
             ['id' => 'yellow-light', 'nombre' => 'Amarillo Ligero', 'color' => '#f1c40f'],
         ];
 
-        return view('tema.index', compact('themes', 'user'));
+        return view('sidebar.tema.index', compact('themes', 'user'));
     }
 
     /**
@@ -83,6 +83,6 @@ class TemaController extends Controller
             's_colGr'     => $colores[1],
         ]);
 
-        return redirect()->route('cambiar_tema.index')->with('success', 'El tema del sistema ha sido modificado con éxito.');
+        return redirect()->route('tema.index')->with('success', 'El tema del sistema ha sido modificado con éxito.');
     }
 }

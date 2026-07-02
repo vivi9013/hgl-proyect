@@ -80,7 +80,7 @@
                             <i class="bi bi-check2-circle"></i> Seleccionado
                         </span>
                     @else
-                        <form action="{{ route('cambiar_tema.update') }}" method="POST">
+                        <form action="{{ route('tema.update') }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="color" value="{{ $tema['id'] }}">

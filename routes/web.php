@@ -75,8 +75,8 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::get('/cumpleanos', [CumpleanosController::class, 'index'])->name('cumpleanos.index');
     
     Route::controller(TemaController::class)->group(function () {
-        Route::get('/cambiar-tema', 'index')->name('cambiar_tema.index');
-        Route::patch('/cambiar-tema', 'update')->name('cambiar_tema.update');
+        Route::get('/cambiar-tema', 'index')->name('tema.index');
+        Route::patch('/cambiar-tema', 'update')->name('tema.update');
     });
 
     // Subgrupo: Mis Datos

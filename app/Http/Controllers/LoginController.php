@@ -73,7 +73,7 @@ class LoginController extends Controller
 
     public function showCambiarContra()
     {
-        return view('cambiar_contra.index');
+        return view('sidebar.cambiar_contra.index');
     }
 
     public function updatePassword(Request $request)
