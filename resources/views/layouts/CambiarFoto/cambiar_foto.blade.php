@@ -29,7 +29,6 @@
                     <div class="d-flex align-items-center">
                         <h5 class="card-title fw-bold mb-0"><i class="bi bi-images"></i> Modificar Fotografía Actual</h5>
                     </div>
-                    <span class="badge format-badge">¡Revisa los formatos disponibles!</span>
                 </div>
 
                 <!-- Body -->

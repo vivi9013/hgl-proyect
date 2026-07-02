@@ -23,7 +23,7 @@
             <div class="card border-0 shadow-sm rounded-3 bg-white">
                 <div class="card-header bg-white border-0 py-4 px-4">
                     <h5 class="card-title mb-0 fw-bold text-dark">
-                        <i class="fa fa-key text-secondary me-2"></i>Nueva contraseña
+                        <i class="fa fa-key text-secondary me-2 "></i>Nueva contraseña
                     </h5>
                 </div>
                 <div class="card-body px-4 pb-4 pt-0">

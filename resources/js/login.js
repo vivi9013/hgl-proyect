@@ -2,19 +2,21 @@ $(document).ready(function () {
     // Forzar que el check empiece desmarcado siempre
     $('#cambio').prop('checked', false);
 
-    $('form').submit(function (e) {
-        e.preventDefault();
+    $('form').submit(function (evento) {
+        evento.preventDefault();
 
-        const form = $(this);
-        const submitBtn = form.find('button[type="submit"]');
+
+        const formulario  = $(this);
+        const botonEnviar = formulario.find('button[type="submit"]');
 
         // Deshabilitar botón para evitar doble envío y errores de CSRF por peticiones concurrentes
-        submitBtn.prop('disabled', true).html('Ingresando');
+        botonEnviar.prop('disabled', true).html('Ingresando');
 
-        const loginUrl = form.attr('action');
-        const updatePasswordUrl = form.data('update-url');
-        const dashboardUrl = form.data('dashboard-url');
-        const logoutUrl = form.data('logout-url');
+        const loginUrl           = formulario.attr('action');
+        const urlActualizarPass  = formulario.data('update-url');
+        const dashboardUrl       = formulario.data('dashboard-url');
+        const urlCerrarSesion    = formulario.data('logout-url');
+        const urlCambiarContra   = formulario.data('url-cambiar-contra');
 
         const data = {
             _token: $('input[name="_token"]').val(),
@@ -27,16 +29,19 @@ $(document).ready(function () {
             type: 'POST',
             url: loginUrl,
             data: data,
-            success: function (res) {
-                const parts = res.resultado.split('|');
-                const opcion = parseInt(parts[0]);
+            success: function (respuesta) {
+                const partes = respuesta.resultado.split('|');
+                const opcion = parseInt(partes[0]);
 
                 switch (opcion) {
-                    case 1: // OBLIGATORIO (Sistema 1)
-                    case 4: // VOLUNTARIO (Sistema 1)
+                    case 1: // PRIMER INGRESO — redirección directa sin popup
+                        window.location.href = urlCambiarContra;
+                        break;
+
+                    case 4: // CAMBIO VOLUNTARIO (Check marcado)
                         Swal.fire({
-                            title: opcion == 1 ? 'Cambio Obligatorio' : 'Cambio de Contraseña',
-                            text: opcion == 1 ? 'Debes actualizar tu contraseña para continuar' : 'Has solicitado cambiar tu contraseña',
+                            title: 'Cambio de Contraseña',
+                            text: 'Has solicitado cambiar tu contraseña',
                             input: 'password',
                             inputAttributes: { autocomplete: 'new-password' },
                             inputPlaceholder: 'Ingresa tu nueva contraseña',
@@ -44,61 +49,56 @@ $(document).ready(function () {
                             confirmButtonText: 'Actualizar y Entrar',
                             cancelButtonText: 'Cancelar',
                             allowOutsideClick: false,
-                            inputValidator: (value) => {
-                                if (!value || value.length < 4) {
-                                    return 'Mínimo 4 caracteres'
+                            inputValidator: (valor) => {
+                                if (!valor || valor.length < 4) {
+                                    return 'Mínimo 4 caracteres';
                                 }
                             }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
+                        }).then((resultado) => {
+                            if (resultado.isConfirmed) {
                                 $.ajax({
                                     type: 'POST',
-                                    url: updatePasswordUrl,
+                                    url: urlActualizarPass,
                                     data: {
-                                        _token: res.new_token,
-                                        pass: result.value
+                                        _token: respuesta.new_token,
+                                        pass: resultado.value
                                     },
-                                    success: function (response) {
-                                        if (response.success) {
+                                    success: function (respuestaPass) {
+                                        if (respuestaPass.success) {
                                             Swal.fire('¡Éxito!', 'Contraseña actualizada', 'success').then(() => {
                                                 window.location.href = dashboardUrl;
                                             });
                                         } else {
-                                            Swal.fire('Error', response.message, 'error');
-                                            submitBtn.prop('disabled', false).html('Ingresar');
+                                            Swal.fire('Error', respuestaPass.message, 'error');
+                                            botonEnviar.prop('disabled', false).html('Ingresar');
                                         }
                                     },
                                     error: function () {
                                         Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
-                                        submitBtn.prop('disabled', false).html('Ingresar');
+                                        botonEnviar.prop('disabled', false).html('Ingresar');
                                     }
                                 });
                             } else {
-                                // Si cancela el cambio voluntario (opcion 4), entra igual al dashboard
-                                // Si es obligatorio (opcion 1), lo sacamos
-                                if (opcion == 4) {
-                                    window.location.href = dashboardUrl;
-                                } else {
-                                    window.location.href = logoutUrl;
-                                }
+                                // Si cancela el cambio voluntario, entra directo al panel
+                                window.location.href = dashboardUrl;
                             }
                         });
 
                         break;
 
-                    case 3: // EXITO DIRECTO (Sistema 1)
+                    case 3: // INGRESO DIRECTO AL PANEL
                         window.location.href = dashboardUrl;
                         break;
 
-                    case 2: // FALLO (Sistema 1)
+                    case 2: // CREDENCIALES INCORRECTAS
                         Swal.fire('Error', 'Usuario o contraseña incorrectos', 'error');
-                        submitBtn.prop('disabled', false).html('Ingresar');
+                        botonEnviar.prop('disabled', false).html('Ingresar');
                         break;
                 }
             },
             error: function () {
                 Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
-                submitBtn.prop('disabled', false).html('Ingresar');
+                botonEnviar.prop('disabled', false).html('Ingresar');
             }
         });
     });

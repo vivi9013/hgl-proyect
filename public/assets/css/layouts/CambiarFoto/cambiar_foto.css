@@ -1,17 +1,13 @@
-body {
-    background-color: #f5f0e8;
-}
+/* ────────────────────────────────────────────────────────────
+   Módulo: Cambiar Fotografía
+   NOTA: body background-color viene de app.css (no se repite aquí)
+──────────────────────────────────────────────────────────── */
 
-/* Card */
+/* Tarjeta: solo se limpia el fondo; el borde y radio los gestiona app.css */
 .card,
 .card-header,
 .card-body {
     background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
 }
 
 /* Header icon */
@@ -20,17 +16,6 @@ body {
     color: #000000;
     padding: 0.5rem;
     border-radius: 0.5rem;
-}
-
-/* Badge */
-.format-badge {
-    background-color: #f8f9fa;
-    color: #000000;
-    border: 1px solid #dee2e6;
-    border-radius: 50rem;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;
-    font-weight: bold;
 }
 
 /* Section titles */
@@ -167,7 +152,6 @@ body {
     color: #4b5563 !important;
     border-radius: 50rem;
     padding: 0.5rem 1.5rem;
-    font-weight: bold;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -188,16 +172,17 @@ body {
     color: #000000 !important;
 }
 
-/* Botón Guardar Cambios */
+/* Botón Guardar Cambios (fusionado) */
 #submit-upload-btn {
+    min-width: 200px;
     background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
+    border: 2px solid #d1d5db !important;
     color: #ffffff !important;
     border-radius: 50rem;
     padding: 0.5rem 1.5rem;
-    font-weight: bold;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     transition: all 0.2s ease-in-out;
 }
@@ -211,53 +196,14 @@ body {
     border-color: #000000 !important;
 }
 
+/* Separador */
 .divider {
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     margin: 1.5rem 0;
 }
 
-
-
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.pulse-avatar {
-    animation: pulseBorder 2s infinite;
-}
-
-@keyframes pulseBorder {
-    0% {
-        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 15px rgba(13, 110, 253, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
-    }
-}
-
-#submit-upload-btn {
-    min-width: 200px;
-    /* ajusta según el tamaño que quieras */
-    justify-content: center;
-    /* centra el contenido */
-}
-
-/* Requirements box */
+/* Requisitos */
 .requirements {
     background-color: #ede8de;
     padding: 1rem;
@@ -266,7 +212,7 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
-/* Override all blue utility classes in this module */
+/* Override clases azules de Bootstrap en este módulo */
 .text-primary,
 .btn-outline-primary {
     color: #000000 !important;
@@ -276,4 +222,26 @@ body {
 .btn-outline-primary:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseBorder {
+    0%   { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }
+    70%  { box-shadow: 0 0 0 15px rgba(13, 110, 253, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
+}
+
+.pulse-avatar {
+    animation: pulseBorder 2s infinite;
 }

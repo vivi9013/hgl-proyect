@@ -47,15 +47,18 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            // LOGICA CONSISTENTE: Solo si el usuario lo pide con el Check
-            $conta = 3; // Por defecto: entrar directo
-            
-            if ($request->cambio) {
+            // PRIORIDAD: si es el primer ingreso del usuario (primera == 1),
+            // se fuerza el cambio de contraseña obligatorio sin importar el check.
+            if ($user->primera == 1) {
+                $conta = 1; // Primer ingreso: redirigir al módulo de cambio de contraseña
+            } elseif ($request->cambio) {
                 $conta = 4; // Cambio voluntario (Check marcado)
+            } else {
+                $conta = 3; // Entrar directo al panel
             }
 
-            // Log discreto para que sepamos qué valor tiene la DB sin molestar al usuario
-            Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | Valor primera en DB: {$user->primera}");
+            // Log de diagnóstico para auditoría interna
+            Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | primera en BD: {$user->primera} | Respuesta: {$conta}");
 
 
             return response()->json([

@@ -81,6 +81,7 @@
 /* Botón Guardar (Primario): Azul con borde Negro */
 #modulo-gestion-proyectos .btn-primary {
     background-color: #0d6efd !important;
+    border: 2px solid #dbd1d1 !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;

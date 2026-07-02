@@ -94,6 +94,7 @@ textarea {
 /* Botón Guardar (Primario): Azul con borde Negro */
 .btn-primary {
     background-color: #0d6efd !important;
+    border: 2px solid #d1d5db !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
