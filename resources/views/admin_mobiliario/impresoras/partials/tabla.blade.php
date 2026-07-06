@@ -3,12 +3,12 @@
         <td class="text-center fw-bold">{{ $impresoras->firstItem() + $index }}</td>
         <td class="text-center">
             <a href="{{ route('impresoras.edit', $imp->id_impresora) }}"
-               class="text-decoration-none"
-               title="Editar impresora">
-                <i class="fa fa-pencil-square-o fa-lg"></i>
+               class="btn btn-sm btn-outline-secondary rounded-circle"
+               title="Editar registro">
+                <i class="fa fa-pencil"></i>
             </a>
         </td>
-        <td class="fw-semibold">{{ $imp->inventario }}</td>
+        <td class="fw-semibold text-dark">{{ $imp->inventario }}</td>
         <td>{{ $imp->serie }}</td>
         <td>{{ $imp->modelo }}</td>
         <td>{{ $imp->marca }}</td>
@@ -20,16 +20,19 @@
                 {{ $imp->red }}
             </span>
         </td>
-        <td class="font-monospace">{{ $imp->ip ?? 'N/A' }}</td>
-        <td class="text-center">
-            <button type="button"
-                    class="btn btn-sm btn-alternar-estado border-0 bg-transparent p-0"
-                    data-id="{{ $imp->id_impresora }}"
-                    data-marca-modelo="{{ $imp->marca }} {{ $imp->modelo }}"
-                    data-activo="{{ $imp->activo }}"
-                    title="{{ $imp->activo ? 'Desactivar' : 'Activar' }}">
-                <i class="fa {{ $imp->activo ? 'fa-check-square-o text-success' : 'fa-square-o text-muted' }} fa-lg"></i>
-            </button>
+        <td class="font-monospace"><code>{{ $imp->ip ?? 'N/A' }}</code></td>
+        <td class="text-center pe-4">
+            <a href="{{ route('impresoras.status', $imp->id_impresora) }}"
+               class="btn-toggle-status badge {{ $imp->activo == 1 ? 'bg-success' : 'bg-danger' }} text-decoration-none py-2 px-3 rounded-pill shadow-sm"
+               data-id="{{ $imp->id_impresora }}"
+               data-url="{{ route('impresoras.status', $imp->id_impresora) }}"
+               data-nombre="{{ $imp->inventario }}"
+               data-marca-modelo="{{ $imp->marca }} {{ $imp->modelo }}"
+               data-activo="{{ $imp->activo }}"
+               title="{{ $imp->activo == 1 ? 'Click para desactivar' : 'Click para activar' }}">
+                <i class="fa {{ $imp->activo == 1 ? 'fa-check-circle' : 'fa-times-circle' }} me-1"></i>
+                {{ $imp->activo == 1 ? 'Activo' : 'Inactivo' }}
+            </a>
         </td>
     </tr>
 @empty

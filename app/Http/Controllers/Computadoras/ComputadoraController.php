@@ -274,6 +274,14 @@ class ComputadoraController extends Controller
     }
 
     /**
+     * Muestra el panel de reportes de computadoras.
+     */
+    public function reportes()
+    {
+        return view('admin_mobiliario.computadoras.analitica.reportes.index');
+    }
+
+    /**
      * Genera el reporte para impresión.
      */
     public function imprimir(Request $request)
@@ -294,6 +302,6 @@ class ComputadoraController extends Controller
 
         $computadoras = $query->get();
 
-        return view('admin_mobiliario.computadoras.reporte_impresion', compact('computadoras', 'buscar'));
+        return view('admin_mobiliario.computadoras.analitica.reportes.impresion', compact('computadoras', 'buscar'));
     }
 }

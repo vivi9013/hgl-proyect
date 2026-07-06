@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // C. ALTERNAR ESTADO (botones .btn-alternar-estado en la tabla)
     // ─────────────────────────────────────────────────────────────────────────
     function enlazarAlternarEstado() {
-        document.querySelectorAll('.btn-alternar-estado').forEach(boton => {
+        document.querySelectorAll('.btn-toggle-status').forEach(boton => {
             const clon = boton.cloneNode(true);
             boton.parentNode.replaceChild(clon, boton);
 

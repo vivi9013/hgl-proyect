@@ -23,6 +23,8 @@ use App\Http\Controllers\Personas\PersonaController;
 use App\Http\Controllers\Proyectos\ProyectoController;
 use App\Http\Controllers\Usuarios\UsuarioController;
 use App\Http\Controllers\Computadoras\ComputadoraController;
+use App\Http\Controllers\Mobiliario\MobiliarioController;
+use App\Http\Controllers\ControlInsumos\ImpresoraController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -46,6 +48,7 @@ Route::get('/', function () {
 // ── Redirects legacy (URLs del sistema antiguo) ────────────────────────────
 Route::get('/mMotivos', fn() => redirect()->route('motivos.index'));
 Route::get('/mPedidosRecibidos', fn() => redirect()->route('pedidos_recibidos.index'));
+Route::get('/mImpresoras', fn() => redirect()->route('impresoras.index'));
 
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -381,6 +384,31 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
-        Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Control de Insumos - Impresoras ──────────────────────────────
+    Route::prefix('control-insumos/impresoras')->name('impresoras.')->controller(ImpresoraController::class)->group(function () {
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/guardar',          'guardar')      ->name('store');
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
+        Route::get('/verificar-ip',      'verificarIp')  ->name('verificar_ip');
+        Route::get('/reportes',          'reportes')     ->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        Route::get('/graficas',          'graficas')     ->name('graficas');
+    });
+
+    // ── Módulo: Mobiliario General ──────────────────────────────────────────
+    Route::prefix('mobiliario')->name('mobiliario.')->controller(MobiliarioController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'guardar')->name('store');
+        Route::get('/{id}/edit', 'editar')->name('edit');
+        Route::put('/{id}', 'actualizar')->name('update');
+        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
     });
 });

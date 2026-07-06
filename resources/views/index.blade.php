@@ -90,6 +90,7 @@
                                                         'mRXestudios' => 'rx.index',
                                                         'mAreasAlmacen' => 'areas_almacen.index',
                                                         'mComputadoras' => 'computadoras.index',
+                                                        'mMobiliario' => 'mobiliario.index',
                                                         'mAreaSurtimiento' => 'areas_surtimiento.index',
                                                         'mCumpleanos' => 'cumpleanos.index',
                                                         'mBajasInsumos' => 'bajas_insumos.index',

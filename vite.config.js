@@ -82,6 +82,12 @@ export default defineConfig({
                 // Impresoras Assets
                 'resources/css/control_insumos/impresoras/impresoras.css',
                 'resources/js/control_insumos/impresoras/impresoras.js',
+                // Computadoras Assets
+                'resources/css/computadoras/computadoras.css',
+                'resources/js/computadoras/computadoras.js',
+                // Mobiliario General Assets
+                'resources/css/mobiliario/mobiliario.css',
+                'resources/js/mobiliario/mobiliario.js',
             ],
             refresh: true,
         }),
