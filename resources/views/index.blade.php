@@ -103,7 +103,6 @@
                                                         'mPedidosRecibidos'     => 'pedidos_recibidos.index',
                                                         'mCategoModulos'        => 'categoria_modulos.index',
                                                         'mDevoluciones'    => 'devoluciones.index',
-                                                        'mCategoModulos'   => 'categoria_modulos.index',
                                                         'mUsuarios'        => 'usuarios.index',
                                                         'mConfiguracion' => 'configuracion_sistema.index',
                                                         'mModulos'         => 'modulos.index',
@@ -111,6 +110,8 @@
                                                         'mPersonas'        => 'personas.index',
                                                         'mProyectos'       => 'proyectos.index',
                                                         'mImpresoras'      => 'impresoras.index',
+                                                        'mInsumosImpresoras' => 'insumos_impresoras.index',
+                                                        'mMovimientosInsumos' => 'movimientos_insumos.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

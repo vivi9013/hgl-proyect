@@ -25,6 +25,8 @@ use App\Http\Controllers\Usuarios\UsuarioController;
 use App\Http\Controllers\Computadoras\ComputadoraController;
 use App\Http\Controllers\Mobiliario\MobiliarioController;
 use App\Http\Controllers\ControlInsumos\ImpresoraController;
+use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
+use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -229,6 +231,27 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes',          'reportes')     ->name('reportes');
         Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
         Route::get('/graficas',          'graficas')     ->name('graficas');
+    });
+
+    // ── Control Insumos: Catálogo de Insumos de Impresora (ID: 49) ───────────
+    Route::prefix('control-insumos/insumos-impresoras')->middleware('modulo:49')->name('insumos_impresoras.')->controller(InsumoImpresoraController::class)->group(function () {
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/guardar',          'guardar')      ->name('store');
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
+        Route::get('/buscar',            'buscar')       ->name('buscar');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+    });
+
+    // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 51) ──
+    Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:51')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/guardar',          'guardar')      ->name('store');
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/cancelar',   'cancelar')     ->name('cancelar');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
     });
 
     // ── Admin Formatos: Buscador de Archivos (ID: 26) ────────────────────────
