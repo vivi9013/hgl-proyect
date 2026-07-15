@@ -27,7 +27,7 @@ class MovimientoInsumoController extends Controller
         $status      = $request->input('status', []);      // [] | ['1'] | ['0'] | ['1','0']
 
         // ── Consulta base unificada con filtros en cascada ──────────────────
-        $query = MovimientoInsumo::with('insumo', 'impresora')
+        $query = MovimientoInsumo::with('insumo')
             ->orderBy('id_movimiento', 'desc');
 
         if (!empty($buscar)) {
@@ -86,7 +86,6 @@ class MovimientoInsumoController extends Controller
             'cantidad'            => 'required|integer|min:1',
             'fecha_movimiento'    => 'required|date',
             'proveedor'           => 'nullable|string|max:150',
-            'id_impresora'        => 'nullable|integer|exists:impresoras,id_impresora',
         ];
 
         $request->validate($rules, [
@@ -109,8 +108,7 @@ class MovimientoInsumoController extends Controller
                     'tipo'                => $tipo,
                     'concepto'            => trim($request->concepto),
                     'cantidad'            => $cantidad,
-                    'id_impresora'        => $request->id_impresora ?? null,
-                    'proveedor'           => trim($request->proveedor ?? ''),
+                    'proveedor'           => $request->filled('proveedor') ? trim($request->proveedor) : null,
                     'fecha_movimiento'    => $request->fecha_movimiento,
                     'activo'              => 1,
                     'fecha'               => now()->toDateString(),
@@ -271,9 +269,9 @@ class MovimientoInsumoController extends Controller
                 $mov->fecha_movimiento = $request->fecha_movimiento;
 
                 if ($nuevoTipo === 'Entrada') {
-                    $mov->proveedor = trim($request->proveedor ?? '');
+                    $mov->proveedor = $request->filled('proveedor') ? trim($request->proveedor) : null;
                 } else {
-                    $mov->proveedor = '';
+                    $mov->proveedor = null;
                 }
 
                 $mov->fecha            = now()->toDateString();
@@ -312,7 +310,7 @@ class MovimientoInsumoController extends Controller
         $fechaFin    = $request->get('fecha_fin', '');
         $status      = $request->input('status', []);
 
-        $query = MovimientoInsumo::with('insumo', 'impresora')
+        $query = MovimientoInsumo::with('insumo')
             ->orderBy('fecha_movimiento', 'desc')
             ->limit(500);
 

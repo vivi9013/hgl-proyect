@@ -43,23 +43,12 @@
         {{-- Cantidad --}}
         <td class="text-center fw-bold">{{ $mov->cantidad }}</td>
 
-        {{-- Proveedor / Impresora --}}
+        {{-- Proveedor --}}
         <td class="small">
-            @if($mov->tipo === 'Entrada')
-                @if($mov->proveedor)
-                    <i class="fa fa-truck text-muted me-1"></i>{{ $mov->proveedor }}
-                @else
-                    <span class="text-muted">—</span>
-                @endif
+            @if($mov->tipo === 'Entrada' && $mov->proveedor)
+                <i class="fa fa-truck text-muted me-1"></i>{{ $mov->proveedor }}
             @else
-                @if($mov->impresora)
-                    <i class="fa fa-print text-muted me-1"></i>{{ $mov->impresora->marca }} {{ $mov->impresora->modelo }}
-                    @if($mov->impresora->inventario)
-                        <br><small class="text-muted">Inv: {{ $mov->impresora->inventario }}</small>
-                    @endif
-                @else
-                    <span class="text-muted">—</span>
-                @endif
+                <span class="text-muted">—</span>
             @endif
         </td>
 

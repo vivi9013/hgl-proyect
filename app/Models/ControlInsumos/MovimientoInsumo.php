@@ -15,7 +15,6 @@ class MovimientoInsumo extends Model
         'tipo',        // Entrada / Salida
         'concepto',    // Compra, Donación, Uso, Por daño
         'cantidad',
-        'id_impresora',
         'proveedor',
         'fecha_movimiento',
         'activo',      // 1: Activo, 0: Cancelado
@@ -31,12 +30,4 @@ class MovimientoInsumo extends Model
         return $this->belongsTo(InsumoImpresora::class, 'id_insumo_impresora', 'id_insumo_impresora');
     }
 
-    public function impresora()
-    {
-        return $this->belongsTo(
-            \App\Models\ControlInsumos\Impresora::class,
-            'id_impresora',
-            'id_impresora'
-        );
-    }
 }

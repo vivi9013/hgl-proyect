@@ -12,7 +12,7 @@
             <th>Insumo</th>
             <th style="width:70px;">Concepto</th>
             <th class="center" style="width:50px;">Cant.</th>
-            <th>Impresora / Proveedor</th>
+            <th>Proveedor</th>
             <th class="center" style="width:70px;">Fecha</th>
             <th class="center" style="width:60px;">Status</th>
         </tr>
@@ -33,9 +33,7 @@
                 <td>{{ $mov->concepto }}</td>
                 <td class="center">{{ $mov->cantidad }}</td>
                 <td>
-                    @if($mov->impresora)
-                        {{ $mov->impresora->marca }} {{ $mov->impresora->modelo }}
-                    @elseif($mov->proveedor)
+                    @if($mov->tipo === 'Entrada' && $mov->proveedor)
                         {{ $mov->proveedor }}
                     @else
                         —
