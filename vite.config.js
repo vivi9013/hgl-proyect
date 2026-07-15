@@ -82,6 +82,12 @@ export default defineConfig({
                 // Impresoras Assets
                 'resources/css/control_insumos/impresoras/impresoras.css',
                 'resources/js/control_insumos/impresoras/impresoras.js',
+                // Insumos de Impresora (Catálogo) Assets
+                'resources/css/control_insumos/insumos_impresoras/insumos_impresoras.css',
+                'resources/js/control_insumos/insumos_impresoras/insumos_impresoras.js',
+                // Movimientos de Insumos (Entradas/Salidas) Assets
+                'resources/css/control_insumos/movimientos_insumos/movimientos_insumos.css',
+                'resources/js/control_insumos/movimientos_insumos/movimientos_insumos.js',
                 // Computadoras Assets
                 'resources/css/computadoras/computadoras.css',
                 'resources/js/computadoras/computadoras.js',

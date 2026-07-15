@@ -1,0 +1,86 @@
+#modulo-movimientos-insumos .search-group {
+    max-width: 280px;
+    border: 1.5px solid #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#modulo-movimientos-insumos .btn-primary {
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Fila cancelada */
+#modulo-movimientos-insumos .fila-cancelada td {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* ── Flatpickr — campo unificado de rango de fechas ── */
+#modulo-movimientos-insumos #filtro-fecha-rango {
+    cursor: pointer;
+}
+#modulo-movimientos-insumos .flatpickr-calendar {
+    font-size: 0.825rem;
+}
+/* Asegurar que el calendario y dropdown no queden cortados */
+#modulo-movimientos-insumos .card-header {
+    overflow: visible;
+}
+
+/* Estilos personalizados para el panel de Filtros desplegable */
+#dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#dropdownFiltros .form-check-input:checked {
+    background-color: #212529;
+    border-color: #212529;
+}
+#dropdownFiltros .form-check-label {
+    user-select: none;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ── Estilos de Flatpickr con Barra Lateral ── */
+.flatpickr-calendar.has-sidebar {
+    width: 438px !important;
+    padding-left: 130px !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.flatpickr-sidebar {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 130px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 12px 8px;
+    border-right: 1px solid #e2e8f0;
+    background: #f8fafc;
+    justify-content: space-between;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* Forzar que la cabecera y el calendario tengan su ancho nativo y se alineen a la derecha */
+.flatpickr-calendar.has-sidebar .flatpickr-months,
+.flatpickr-calendar.has-sidebar .flatpickr-innerContainer {
+    width: 308px !important;
+    margin-left: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Alinear la flecha de retroceso con el inicio del mes a la derecha del sidebar */
+.flatpickr-calendar.has-sidebar .flatpickr-prev-month {
+    left: 130px !important;
+}
