@@ -1,3 +1,18 @@
+/* Estilos personalizados para el módulo de Tipo de Mobiliario, alineados al diseño unificado */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Efectos de Focus Modernos en Formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
 .card,
@@ -20,21 +35,17 @@
 
 /* Iconos y textos de acento en Negro */
 .text-primary,
-.fa-desktop,
+.fa-crosshairs,
 .fa-info-circle,
-.fa-barcode,
-.fa-building-o,
-.fa-cogs,
-.fa-hashtag,
-.fa-hospital-o,
-.fa-building,
-.fa-user,
-.fa-align-left,
-.fa-id-card-o,
-.fa-windows,
-.fa-globe,
-.fa-microchip,
-.fa-hdd-o {
+.fa-tag,
+.fa-pencil-square-o,
+.fa-pencil,
+.fa-edit,
+.fa-save,
+.fa-times,
+.fa-calendar,
+.fa-clock-o,
+.fa-list-ul {
     color: #000000 !important;
 }
 
@@ -54,6 +65,11 @@
 .form-select:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.form-control:disabled {
+    background-color: #f9f9f9 !important;
+    color: #9ca3af !important;
 }
 
 /* Acentos y Botones Primarios: Azul con borde Negro */
@@ -123,8 +139,6 @@
     padding: 0.5rem 0.5rem !important;
     border-bottom: 1.5px solid #c5b99a !important;
     white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
 }
 
 .table td {
@@ -133,15 +147,13 @@
     color: #374151 !important;
     font-size: 0.82rem !important;
     white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
 }
 
 .table-hover tbody tr:hover {
     background-color: #ede8de !important;
 }
 
-/* Ajuste de botones dentro de la tabla para ser compactos */
+/* Ajuste de botones dentro de la tabla */
 .table .btn-sm,
 .table .btn {
     padding: 0.2rem 0.4rem !important;
@@ -160,22 +172,14 @@
     font-size: 0.7rem !important;
 }
 
-/* Badges dentro de la tabla más compactos */
+/* Badges dentro de la tabla */
 .table .badge {
     font-size: 0.7rem !important;
     padding: 0.25rem 0.5rem !important;
     white-space: nowrap;
 }
 
-/* Texto truncado dentro de la tabla */
-.table .text-truncate {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal !important;
-}
-
-/* Ajuste del contenedor para evitar scroll horizontal */
+/* Ajuste del contenedor */
 .table-responsive {
     overflow-x: hidden !important;
 }
@@ -215,10 +219,11 @@
     border-color: #e5e7eb !important;
 }
 
-/* Línea divisoria gris para separar secciones laterales en escritorio */
-@media (min-width: 1200px) {
-    .separator-border {
-        border-right: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-        padding-right: 2rem !important;
-    }
+/* ── FEEDBACK VALIDACIÓN EN TIEMPO REAL ── */
+#tipoFeedback.text-success {
+    color: #16a34a !important;
+}
+
+#tipoFeedback.text-danger {
+    color: #dc2626 !important;
 }

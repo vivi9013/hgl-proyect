@@ -1,3 +1,38 @@
+/* Estilos personalizados para el módulo de Monitores, unificados al diseño clásico y plano */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Efectos de Focus en Formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Animación del Spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Clases de utilidad */
+.text-success-custom {
+    color: #38a169;
+}
+
+.text-danger-custom {
+    color: #e53e3e;
+}
 
 /* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
 .card,
@@ -20,7 +55,7 @@
 
 /* Iconos y textos de acento en Negro */
 .text-primary,
-.fa-desktop,
+.fa-television,
 .fa-info-circle,
 .fa-barcode,
 .fa-building-o,
@@ -30,11 +65,8 @@
 .fa-building,
 .fa-user,
 .fa-align-left,
-.fa-id-card-o,
-.fa-windows,
-.fa-globe,
-.fa-microchip,
-.fa-hdd-o {
+.fa-pie-chart,
+.fa-bar-chart {
     color: #000000 !important;
 }
 
@@ -101,7 +133,7 @@
     color: #ffffff !important;
 }
 
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+/* ── TABLAS CON BORDE SUTIL ── */
 .table {
     border: 1px solid #c5b99a !important;
     border-radius: 8px !important;
@@ -141,7 +173,7 @@
     background-color: #ede8de !important;
 }
 
-/* Ajuste de botones dentro de la tabla para ser compactos */
+/* Ajuste de botones en la tabla */
 .table .btn-sm,
 .table .btn {
     padding: 0.2rem 0.4rem !important;
@@ -160,27 +192,17 @@
     font-size: 0.7rem !important;
 }
 
-/* Badges dentro de la tabla más compactos */
 .table .badge {
     font-size: 0.7rem !important;
     padding: 0.25rem 0.5rem !important;
     white-space: nowrap;
 }
 
-/* Texto truncado dentro de la tabla */
-.table .text-truncate {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal !important;
-}
-
-/* Ajuste del contenedor para evitar scroll horizontal */
 .table-responsive {
     overflow-x: hidden !important;
 }
 
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+/* ── PAGINACIÓN EN NEGRO ── */
 .pagination {
     margin: 0 !important;
 }
@@ -215,10 +237,30 @@
     border-color: #e5e7eb !important;
 }
 
-/* Línea divisoria gris para separar secciones laterales en escritorio */
-@media (min-width: 1200px) {
-    .separator-border {
-        border-right: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-        padding-right: 2rem !important;
-    }
+/* ── ESTILOS DE GRÁFICAS (CHART.JS) ── */
+.chart-container-donut,
+.chart-container-bar {
+    min-height: 360px;
+}
+
+.chart-donut-wrapper {
+    width: 280px;
+    height: 280px;
+}
+
+.chart-bar-wrapper {
+    width: 100%;
+    height: 320px;
+}
+
+.chart-center-label {
+    font-size: 0.85rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.chart-center-value {
+    font-size: 1.8rem;
+    color: #111827;
+    font-weight: 700;
 }

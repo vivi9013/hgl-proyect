@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Actualizar URL del botón de imprimir para conservar los filtros de búsqueda aplicados
         if (btnImprimirReporte) {
-            btnImprimirReporte.href = `/mobiliario/reporte/imprimir?${queryParams.toString()}`;
+            btnImprimirReporte.href = `/mobiliario/reportes/imprimir?${queryParams.toString()}`;
         }
 
         fetch(`/mobiliario?${queryParams.toString()}`, {
@@ -198,5 +198,104 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicializar confirmaciones
     enlazarConfirmacionesStatus();
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INICIALIZACIÓN DE CHART.JS (GRÁFICAS ANALÍTICAS)
+    // ─────────────────────────────────────────────────────────────────────────
+    const canvasDonut = document.getElementById('donutEstadoChart');
+    const canvasTipo  = document.getElementById('barTipoChart');
+    const canvasMarca = document.getElementById('barMarcaChart');
+    const canvasArea  = document.getElementById('barAreaChart');
+
+    const coloresPremium = [
+        '#1f2937', '#3b82f6', '#10b981', '#f59e0b',
+        '#ef4444', '#6366f1', '#8b5cf6', '#ec4899',
+    ];
+
+    // 1. DONUT – Estado General (Activos / Inactivos)
+    if (canvasDonut && typeof Chart !== 'undefined') {
+        const centerLabel = document.getElementById('donutCenterLabel');
+        const centerValue = document.getElementById('donutCenterValue');
+        const datosEstado  = JSON.parse(canvasDonut.dataset.json || '{}');
+        const labelsEstado = Object.keys(datosEstado);
+        const valuesEstado = Object.values(datosEstado);
+        const totalEstado  = valuesEstado.reduce((a, b) => a + b, 0);
+
+        if (centerValue) centerValue.textContent = totalEstado;
+
+        new Chart(canvasDonut.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labelsEstado,
+                datasets: [{
+                    data: valuesEstado,
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => {
+                                const v = ctx.raw || 0;
+                                const pct = totalEstado > 0 ? ((v / totalEstado) * 100).toFixed(1) : 0;
+                                return ` ${ctx.label}: ${v} (${pct}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%',
+                onHover: (event, els) => {
+                    if (els.length > 0) {
+                        const i = els[0].index;
+                        const v = valuesEstado[i];
+                        const pct = totalEstado > 0 ? ((v / totalEstado) * 100).toFixed(1) : 0;
+                        if (centerLabel) centerLabel.textContent = labelsEstado[i];
+                        if (centerValue) centerValue.textContent = `${v} (${pct}%)`;
+                    } else {
+                        if (centerLabel) centerLabel.textContent = 'Total';
+                        if (centerValue) centerValue.textContent = totalEstado;
+                    }
+                }
+            }
+        });
+    }
+
+    // Helper para crear barras rápidamente
+    function crearBarChart(canvas, color, etiqueta) {
+        if (!canvas || typeof Chart === 'undefined') return;
+        const datos  = JSON.parse(canvas.dataset.json || '{}');
+        const labels = Object.keys(datos);
+        const values = Object.values(datos);
+        new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{ label: etiqueta, data: values, backgroundColor: color, borderWidth: 0, borderRadius: 6, barPercentage: 0.55 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, color: '#4b5563' }, grid: { color: '#f3f4f6' } },
+                    x: { ticks: { color: '#4b5563', font: { weight: 'bold', size: 10 } }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // 2. BARRAS – Por Tipo de Mobiliario
+    crearBarChart(canvasTipo,  '#3b82f6', 'Mobiliario');
+    // 3. BARRAS – Por Marca
+    crearBarChart(canvasMarca, '#f59e0b', 'Mobiliario');
+    // 4. BARRAS – Por Área
+    crearBarChart(canvasArea,  '#1f2937', 'Mobiliario');
 
 });

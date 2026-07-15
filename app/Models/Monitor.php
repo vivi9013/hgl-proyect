@@ -4,25 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Computadora extends Model
+class Monitor extends Model
 {
-    protected $table = 'computadoras';
-    protected $primaryKey = 'id_computadora';
+    protected $table = 'monitores';
+    protected $primaryKey = 'id_monitor';
 
     // Desactivamos timestamps automáticos ya que el legacy maneja fecha y hora manualmente
     public $timestamps = false;
 
     protected $fillable = [
         'inventario',
-        'so',
-        'ram',
-        'disco_duro',
-        'ip',
+        'serie',
+        'modelo',
+        'marca',
+        'descripcion',
         'tipo',
-        'nombre_equipo',
-        'activo',
         'fecha',
         'hora',
+        'activo',
         'usuario'
     ];
 

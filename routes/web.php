@@ -24,7 +24,9 @@ use App\Http\Controllers\Proyectos\ProyectoController;
 use App\Http\Controllers\Usuarios\UsuarioController;
 use App\Http\Controllers\Computadoras\ComputadoraController;
 use App\Http\Controllers\Mobiliario\MobiliarioController;
+use App\Http\Controllers\Mobiliario\TipoMobiliarioController;
 use App\Http\Controllers\ControlInsumos\ImpresoraController;
+use App\Http\Controllers\Monitores\MonitorController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -45,10 +47,13 @@ Route::get('/', function () {
     return redirect()->route('inicio');
 });
 
+
 // ── Redirects legacy (URLs del sistema antiguo) ────────────────────────────
 Route::get('/mMotivos', fn() => redirect()->route('motivos.index'));
 Route::get('/mPedidosRecibidos', fn() => redirect()->route('pedidos_recibidos.index'));
 Route::get('/mImpresoras', fn() => redirect()->route('impresoras.index'));
+Route::get('/mMonitores', fn() => redirect()->route('monitores.index'));
+Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'));
 
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -198,19 +203,23 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
 
     // ── Mobiliario y Equipo: Mobiliario General (ID: 21) ─────────────────────
     Route::prefix('mobiliario')->middleware('modulo:21')->name('mobiliario.')->controller(MobiliarioController::class)->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/', 'guardar')->name('store');
-        Route::get('/{id}/edit', 'editar')->name('edit');
-        Route::put('/{id}', 'actualizar')->name('update');
-        Route::patch('/{id}/status', 'cambiarStatus')->name('status');
-        Route::get('/reportes', 'reportes')->name('reportes');
-        Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');
+        // Rutas estáticas primero
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/',                 'guardar')      ->name('store');
+        Route::get('/graficas',          'graficas')     ->name('graficas');
+        Route::get('/reportes',          'reportes')     ->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        // Rutas con parámetros al final
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
     });
 
     // ── Mobiliario y Equipo: Computadoras (ID: 22) ───────────────────────────
     Route::prefix('computadoras')->middleware('modulo:22')->name('computadoras.')->controller(ComputadoraController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'guardar')->name('store');
+        Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
@@ -229,6 +238,34 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes',          'reportes')     ->name('reportes');
         Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
         Route::get('/graficas',          'graficas')     ->name('graficas');
+    });
+
+    // ── Mobiliario y Equipo: Tipo de Mobiliario (ID: 25) ─────────────────────
+    Route::prefix('tipo-mobiliario')->middleware('modulo:25')->name('tipo_mobiliario.')->controller(TipoMobiliarioController::class)->group(function () {
+        // Rutas estáticas primero (antes de las rutas con parámetros /{id})
+        Route::get('/',                  'index')        ->name('index');
+        Route::post('/guardar',          'guardar')      ->name('store');
+        Route::get('/graficas',          'graficas')     ->name('graficas');
+        Route::get('/verificar',         'verificar')    ->name('verificar');
+        Route::get('/reportes',          'reportes')     ->name('reportes');
+        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        // Rutas con parámetros al final
+        Route::get('/{id}/edit',         'editar')       ->name('edit');
+        Route::put('/{id}',              'actualizar')   ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
+    });
+
+    // ── Mobiliario y Equipo: Monitores (ID: 24) ──────────────────────────────
+    Route::prefix('monitores')->middleware('modulo:24')->name('monitores.')->controller(MonitorController::class)->group(function () {
+        Route::get('/',                     'index')              ->name('index');
+        Route::post('/guardar',             'guardar')            ->name('store');
+        Route::get('/{id}/edit',            'editar')             ->name('edit');
+        Route::put('/{id}',                 'actualizar')         ->name('update');
+        Route::patch('/{id}/status',        'cambiarStatus')      ->name('status');
+        Route::get('/mobiliario-info/{inv}','getMobiliarioInfo')  ->name('mobiliario_info');
+        Route::get('/reportes',             'reportes')           ->name('reportes');
+        Route::get('/reportes/imprimir',    'imprimir')           ->name('imprimir');
+        Route::get('/graficas',             'graficas')           ->name('graficas');
     });
 
     // ── Admin Formatos: Buscador de Archivos (ID: 26) ────────────────────────

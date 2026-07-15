@@ -119,8 +119,6 @@ class ComputadoraController extends Controller
                     'ram' => $request->ram,
                     'disco_duro' => $request->disco_duro,
                     'ip' => $request->ip,
-                    'tecnologia' => '',
-                    'internet' => '',
                     'tipo' => $request->tipo,
                     'nombre_equipo' => $request->nombre_equipo,
                     'activo' => 1,
@@ -303,5 +301,45 @@ class ComputadoraController extends Controller
         $computadoras = $query->get();
 
         return view('admin_mobiliario.computadoras.analitica.reportes.impresion', compact('computadoras', 'buscar'));
+    }
+
+    /**
+     * Muestra las gráficas analíticas del módulo de computadoras.
+     */
+    public function graficas()
+    {
+        $stats = [
+            'total'     => Computadora::count(),
+            'activos'   => Computadora::where('activo', 1)->count(),
+            'inactivos' => Computadora::where('activo', 0)->count(),
+        ];
+
+        // 1. Distribución por Sistema Operativo
+        $porSO = Computadora::selectRaw('COALESCE(NULLIF(so, ""), "Desconocido") as so_name, COUNT(*) as total')
+            ->groupBy('so_name')
+            ->orderBy('total', 'desc')
+            ->pluck('total', 'so_name');
+
+        // 2. Distribución por Marca (vía Mobiliario)
+        $porMarca = Computadora::join('mobiliario', 'computadoras.inventario', '=', 'mobiliario.inventario')
+            ->selectRaw('COALESCE(NULLIF(mobiliario.marca, ""), "Sin Marca") as marca_name, COUNT(*) as total')
+            ->groupBy('marca_name')
+            ->orderBy('total', 'desc')
+            ->pluck('total', 'marca_name');
+
+        // 3. Distribución por Área (vía Mobiliario y Areas)
+        $porArea = Computadora::join('mobiliario', 'computadoras.inventario', '=', 'mobiliario.inventario')
+            ->join('areas', 'mobiliario.id_area', '=', 'areas.id')
+            ->selectRaw('areas.area as area_name, COUNT(*) as total')
+            ->groupBy('area_name')
+            ->orderBy('total', 'desc')
+            ->pluck('total', 'area_name');
+
+        return view('admin_mobiliario.computadoras.analitica.graficas', compact(
+            'stats',
+            'porSO',
+            'porMarca',
+            'porArea'
+        ));
     }
 }

@@ -37,6 +37,11 @@
                         <i class="fa fa-plus-circle me-2"></i> Registrar Computadora
                     </button>
 
+                    {{-- Gráficas --}}
+                    <a href="{{ route('computadoras.graficas') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
+                        <i class="fa fa-pie-chart me-2 text-warning"></i> Gráficas
+                    </a>
+
                     {{-- Reportes --}}
                     <a href="{{ route('computadoras.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap" id="btnImprimirReporte">
                         <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes

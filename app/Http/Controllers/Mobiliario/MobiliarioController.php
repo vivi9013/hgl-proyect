@@ -10,7 +10,6 @@ use App\Models\Persona;
 use App\Models\Departamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MobiliarioController extends Controller
 {
@@ -220,6 +219,55 @@ class MobiliarioController extends Controller
                 ->route('mobiliario.index')
                 ->withErrors(['error' => 'Error al cambiar el estado: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Muestra las gráficas analíticas del módulo de mobiliario general.
+     */
+    public function graficas()
+    {
+        // Estadísticas generales
+        $total    = Mobiliario::count();
+        $activos  = Mobiliario::where('activo', 1)->count();
+        $inactivos = Mobiliario::where('activo', 0)->count();
+
+        $stats = compact('total', 'activos', 'inactivos');
+
+        // Donut: activos vs inactivos
+        $porEstado = [
+            'Activos'   => $activos,
+            'Inactivos' => $inactivos,
+        ];
+
+        // Barras: top 8 por tipo de mobiliario
+        $porTipo = DB::table('mobiliario')
+            ->join('tipo_mobiliario', 'mobiliario.id_tipo_mobiliario', '=', 'tipo_mobiliario.id')
+            ->select('tipo_mobiliario.tipo', DB::raw('COUNT(*) as total'))
+            ->groupBy('tipo_mobiliario.tipo')
+            ->orderByDesc('total')
+            ->limit(8)
+            ->pluck('total', 'tipo');
+
+        // Barras: top 8 por marca
+        $porMarca = DB::table('mobiliario')
+            ->select('marca', DB::raw('COUNT(*) as total'))
+            ->groupBy('marca')
+            ->orderByDesc('total')
+            ->limit(8)
+            ->pluck('total', 'marca');
+
+        // Barras: top 8 por área (PK es 'id' en la tabla areas)
+        $porArea = DB::table('mobiliario')
+            ->join('areas', 'mobiliario.id_area', '=', 'areas.id')
+            ->select('areas.area', DB::raw('COUNT(*) as total'))
+            ->groupBy('areas.area')
+            ->orderByDesc('total')
+            ->limit(8)
+            ->pluck('total', 'area');
+
+        return view('admin_mobiliario.mobiliario.analitica.graficas', compact(
+            'stats', 'porEstado', 'porTipo', 'porMarca', 'porArea'
+        ));
     }
 
     /**

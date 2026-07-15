@@ -54,7 +54,7 @@
                         @if($comp->mobiliario)
                             {{ $comp->mobiliario->area ? $comp->mobiliario->area->area : 'N/A' }}
                             @if($comp->mobiliario->departamento)
-                                <br><small style="color: #666;">({{ $comp->mobiliario->departamento->departamento }})</small>
+                                <br><small style="color: #666;">({{ $comp->mobiliario->departamento->nombre }})</small>
                             @endif
                         @else
                             N/A

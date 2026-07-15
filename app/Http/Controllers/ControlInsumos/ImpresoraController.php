@@ -122,10 +122,9 @@ class ImpresoraController extends Controller
     // ─── EDITAR (formulario) ─────────────────────────────────────────────────
     public function editar(int $id)
     {
-        $impresora  = Impresora::findOrFail($id);
-        $inventario = $this->inventarioDisponible($id);
+        $impresora = Impresora::findOrFail($id);
 
-        return view('admin_mobiliario.impresoras.editar', compact('impresora', 'inventario')
+        return view('admin_mobiliario.impresoras.editar', compact('impresora')
             + ['tipos' => self::TIPOS, 'consumibles' => self::CONSUMIBLES, 'redOpts' => self::RED, 'comodatoOpts' => self::COMODATO]);
     }
 
@@ -206,14 +205,7 @@ class ImpresoraController extends Controller
     // ─── REPORTES (panel de estadísticas) ────────────────────────────────────
     public function reportes()
     {
-        $stats = [
-            'total'     => Impresora::count(),
-            'activas'   => Impresora::where('activo', 1)->count(),
-            'inactivas' => Impresora::where('activo', 0)->count(),
-            'en_red'    => Impresora::where('red', 'Si')->where('activo', 1)->count(),
-        ];
-
-        return view('admin_mobiliario.impresoras.analitica.reportes.index', compact('stats'));
+        return view('admin_mobiliario.impresoras.analitica.reportes.index');
     }
 
     // ─── IMPRIMIR (reporte imprimible) ───────────────────────────────────────
@@ -227,13 +219,6 @@ class ImpresoraController extends Controller
     // ─── GRÁFICAS ─────────────────────────────────────────────────────────────
     public function graficas()
     {
-        $stats = [
-            'total'     => Impresora::count(),
-            'activas'   => Impresora::where('activo', 1)->count(),
-            'inactivas' => Impresora::where('activo', 0)->count(),
-            'en_red'    => Impresora::where('red', 'Si')->where('activo', 1)->count(),
-        ];
-
         // Agrupado por tecnología
         $porTecnologia = Impresora::selectRaw('tecnologia, COUNT(*) as total')
             ->whereNotNull('tecnologia')
@@ -250,7 +235,6 @@ class ImpresoraController extends Controller
             ->pluck('total', 'tipo');
 
         return view('admin_mobiliario.impresoras.analitica.graficas', compact(
-            'stats',
             'porTecnologia',
             'porTipo',
         ));

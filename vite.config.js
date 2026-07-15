@@ -88,6 +88,12 @@ export default defineConfig({
                 // Mobiliario General Assets
                 'resources/css/mobiliario/mobiliario.css',
                 'resources/js/mobiliario/mobiliario.js',
+                // Tipo de Mobiliario Assets
+                'resources/css/tipo_mobiliario/tipo_mobiliario.css',
+                'resources/js/tipo_mobiliario/tipo_mobiliario.js',
+                // Monitores Assets
+                'resources/css/monitores/monitores.css',
+                'resources/js/monitores/monitores.js',
             ],
             refresh: true,
         }),
