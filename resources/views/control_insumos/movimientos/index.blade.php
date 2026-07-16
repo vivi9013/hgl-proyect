@@ -9,6 +9,8 @@
     <div id="alertaError" data-message="{{ $errors->first() }}" style="display:none;"></div>
 @endif
 
+
+
 <div class="container-fluid py-4" id="modulo-movimientos-insumos">
 
     {{-- Cabecera --}}
@@ -80,7 +82,7 @@
                             {{-- Proveedor --}}
                             <div class="col-12">
                                 <label for="select_proveedor_entrada" class="form-label fw-bold text-secondary">Proveedor / Fuente:</label>
-                                <select id="select_proveedor_entrada" class="form-select mb-2">
+                                <select id="select_proveedor_entrada" class="form-select mb-2" disabled>
                                     <option value="">Seleccione un proveedor...</option>
                                     <option value="Tigre">Tigre</option>
                                     <option value="Premium">Premium</option>
@@ -91,7 +93,7 @@
                                 {{-- Campo de texto libre, visible sólo al elegir "Otro" --}}
                                 <input type="text" name="proveedor" id="proveedor_entrada"
                                        class="form-control d-none"
-                                       placeholder="Escribe el nombre del proveedor...">
+                                       placeholder="Escribe el nombre del proveedor..." disabled>
                             </div>
 
 
@@ -493,8 +495,7 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    @vite(['resources/css/control_insumos/movimientos_insumos/movimientos_insumos.css',
+            'resources/js/control_insumos/movimientos_insumos/movimientos_insumos.js'])
 @endpush
-
-@vite(['resources/css/control_insumos/movimientos_insumos/movimientos_insumos.css',
-        'resources/js/control_insumos/movimientos_insumos/movimientos_insumos.js'])
 @endsection

@@ -1,6 +1,5 @@
-import * as bootstrap from 'bootstrap';
-
 document.addEventListener('DOMContentLoaded', function () {
+    const bs = window.bootstrap || bootstrap;
 
     // ─────────────────────────────────────────────────────────────────────────
     // A. ALERTAS DE SESIÓN
@@ -344,8 +343,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Abrir modal de forma segura (Bootstrap 5)
             const modalEl   = document.getElementById('modalEditarMovimiento');
-            let   modalInst = bootstrap.Modal.getInstance(modalEl);
-            if (!modalInst) modalInst = new bootstrap.Modal(modalEl);
+            let   modalInst = bs.Modal.getInstance(modalEl);
+            if (!modalInst) modalInst = new bs.Modal(modalEl);
             modalInst.show();
         })
         .catch(err => {
@@ -389,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(datos => {
                 if (datos.success) {
                     const modalEl   = document.getElementById('modalEditarMovimiento');
-                    const modalInst = bootstrap.Modal.getInstance(modalEl);
+                    const modalInst = bs.Modal.getInstance(modalEl);
                     if (modalInst) modalInst.hide();
                     cargarMovimientos();
                     if (typeof Swal !== 'undefined') {
@@ -452,6 +451,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const formSalida           = document.getElementById('formSalida');
     let stockActual = 0;
 
+    // Helpers para bloquear/desbloquear campos de Salida
+    function bloquearCamposSalida() {
+        [selectConceptoSalida, inputCantidadSalida, inputFechaSalida].forEach(el => {
+            if (!el) return;
+            el.disabled = true;
+            el.style.opacity = '0.5';
+            el.style.pointerEvents = 'none';
+        });
+        if (inputCantidadSalida) inputCantidadSalida.value = '';
+        if (selectConceptoSalida) selectConceptoSalida.value = '';
+        if (panelInfoInsumo) panelInfoInsumo.style.display = 'none';
+        stockActual = 0;
+    }
+
+    function desbloquearCamposSalida() {
+        [selectConceptoSalida, inputCantidadSalida, inputFechaSalida].forEach(el => {
+            if (!el) return;
+            el.disabled = false;
+            el.style.opacity = '';
+            el.style.pointerEvents = '';
+        });
+    }
+
+    // Estado inicial: bloqueados
+    bloquearCamposSalida();
+
     function validarCantidadSalida() {
         if (!inputCantidadSalida) return true;
         const cantVal  = parseInt(inputCantidadSalida.value) || 0;
@@ -476,16 +501,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const opt = this.options[this.selectedIndex];
             const id  = this.value;
             if (!id) {
-                if (panelInfoInsumo)    panelInfoInsumo.style.display = 'none';
-                if (inputCantidadSalida) { inputCantidadSalida.disabled = true; inputCantidadSalida.value = ''; }
-                if (selectConceptoSalida) { selectConceptoSalida.disabled = true; selectConceptoSalida.value = ''; }
-                if (inputFechaSalida)    inputFechaSalida.disabled = true;
-                stockActual = 0;
+                bloquearCamposSalida();
                 return;
             }
-            if (selectConceptoSalida) selectConceptoSalida.disabled = false;
-            if (inputCantidadSalida)  inputCantidadSalida.disabled  = false;
-            if (inputFechaSalida)     inputFechaSalida.disabled     = false;
+            desbloquearCamposSalida();
             const hojas       = opt.dataset.hojas       || '';
             const tiempo      = opt.dataset.tiempo      || '';
             const stock       = opt.dataset.stock       || '0';
@@ -526,26 +545,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────────────────────
     // I. MODAL ENTRADA — habilitar/deshabilitar campos al seleccionar insumo
     // ─────────────────────────────────────────────────────────────────────────
-    const selectInsumoEntrada   = document.getElementById('id_insumo_impresora_entrada');
-    const selectConceptoEntrada = document.getElementById('concepto_entrada');
-    const inputCantidadEntrada  = document.getElementById('cantidad_entrada');
-    const inputFechaEntrada     = document.getElementById('fecha_entrada');
+    // ─────────────────────────────────────────────────────────────────────────
+    // I. MODAL ENTRADA — habilitar/deshabilitar campos al seleccionar insumo
+    // ─────────────────────────────────────────────────────────────────────────
+    const selectInsumoEntrada    = document.getElementById('id_insumo_impresora_entrada');
+    const selectConceptoEntrada  = document.getElementById('concepto_entrada');
+    const inputCantidadEntrada   = document.getElementById('cantidad_entrada');
+    const inputFechaEntrada      = document.getElementById('fecha_entrada');
+    const selectProveedorEntrada = document.getElementById('select_proveedor_entrada');
+    const inputProveedorEntrada  = document.getElementById('proveedor_entrada');
+
+    function bloquearCamposEntrada() {
+        [selectConceptoEntrada, inputCantidadEntrada, inputFechaEntrada, selectProveedorEntrada, inputProveedorEntrada].forEach(el => {
+            if (!el) return;
+            el.disabled = true;
+            el.style.opacity = '0.5';
+            el.style.pointerEvents = 'none';
+        });
+        if (selectConceptoEntrada) selectConceptoEntrada.value = '';
+        if (inputCantidadEntrada)  inputCantidadEntrada.value  = '';
+        if (selectProveedorEntrada) selectProveedorEntrada.value = '';
+        if (inputProveedorEntrada) {
+            inputProveedorEntrada.value = '';
+            inputProveedorEntrada.classList.add('d-none');
+        }
+    }
+
+    function desbloquearCamposEntrada() {
+        [selectConceptoEntrada, inputCantidadEntrada, inputFechaEntrada, selectProveedorEntrada, inputProveedorEntrada].forEach(el => {
+            if (!el) return;
+            el.disabled = false;
+            el.style.opacity = '';
+            el.style.pointerEvents = '';
+        });
+    }
+
+    // Estado inicial: bloqueados
+    bloquearCamposEntrada();
 
     if (selectInsumoEntrada) {
         selectInsumoEntrada.addEventListener('change', function () {
-            const disabled = !this.value;
-            if (selectConceptoEntrada) { selectConceptoEntrada.disabled = disabled; if (disabled) selectConceptoEntrada.value = ''; }
-            if (inputCantidadEntrada)  { inputCantidadEntrada.disabled  = disabled; if (disabled) inputCantidadEntrada.value  = ''; }
-            if (inputFechaEntrada)       inputFechaEntrada.disabled = disabled;
+            if (!this.value) {
+                bloquearCamposEntrada();
+            } else {
+                desbloquearCamposEntrada();
+            }
         });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
     // J. PROVEEDOR — select + campo libre "Otro" (modal Entrada)
     // ─────────────────────────────────────────────────────────────────────────
-    const selectProveedorEntrada = document.getElementById('select_proveedor_entrada');
-    const inputProveedorEntrada  = document.getElementById('proveedor_entrada');
-
     if (selectProveedorEntrada && inputProveedorEntrada) {
         selectProveedorEntrada.addEventListener('change', function () {
             if (this.value === 'Otro') {

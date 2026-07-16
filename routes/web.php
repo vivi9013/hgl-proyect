@@ -484,3 +484,8 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
     });
 });
+
+Route::get('/log-js-error', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Log::error('JS DIAGNOSTIC: ' . $request->input('error') . ' en L: ' . $request->input('line') . ' C: ' . $request->input('col') . ' en archivo: ' . $request->input('file'));
+    return response()->json(['status' => 'logged']);
+});
