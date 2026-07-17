@@ -15,6 +15,34 @@ class MovimientoInsumoController extends Controller
     private const CONCEPTOS_ENTRADA = ['Compra', 'Donación'];
     private const CONCEPTOS_SALIDA  = ['Uso', 'Por daño', 'Donación'];
 
+    /** Definición de columnas — fuente única de verdad para SSR y AJAX */
+    private const COLUMNAS = [
+        ['label' => '#',         'tipo' => 'indice',        'centrado' => true, 'ancho' => '48px'],
+        ['label' => 'Acciones',  'tipo' => 'personalizado', 'centrado' => true, 'ancho' => '105px',
+         'vista' => 'control_insumos.movimientos.partials.celdas-movimiento',
+         'vista_datos' => ['celda' => 'acciones']],
+        ['label' => 'Tipo',      'tipo' => 'personalizado', 'centrado' => true, 'ancho' => '100px',
+         'vista' => 'control_insumos.movimientos.partials.celdas-movimiento',
+         'vista_datos' => ['celda' => 'tipo']],
+        ['label' => 'Insumo',    'tipo' => 'texto-combo',
+         'principal'         => 'insumo.modelo',
+         'secundario_campos' => ['insumo.color', 'insumo.familia'],
+         'separador'         => ' · ',
+         'fallback'          => '—'],
+        ['label' => 'Concepto',  'tipo' => 'texto',  'campo' => 'concepto'],
+        ['label' => 'Cantidad',  'tipo' => 'texto',  'campo' => 'cantidad',
+         'centrado' => true, 'clase' => 'fw-bold', 'ancho' => '80px'],
+        ['label' => 'Proveedor', 'tipo' => 'personalizado',
+         'vista' => 'control_insumos.movimientos.partials.celdas-movimiento',
+         'vista_datos' => ['celda' => 'proveedor']],
+        ['label' => 'Fecha',     'tipo' => 'personalizado', 'centrado' => true, 'ancho' => '100px',
+         'vista' => 'control_insumos.movimientos.partials.celdas-movimiento',
+         'vista_datos' => ['celda' => 'fecha']],
+        ['label' => 'Estado',    'tipo' => 'personalizado', 'centrado' => true, 'ancho' => '115px',
+         'vista' => 'control_insumos.movimientos.partials.celdas-movimiento',
+         'vista_datos' => ['celda' => 'estado']],
+    ];
+
     // ─── INDEX ────────────────────────────────────────────────────────────────
     public function index(Request $request)
     {
@@ -51,15 +79,22 @@ class MovimientoInsumoController extends Controller
 
         // ── Petición AJAX (paginación + filtros) ────────────────────────────
         if ($request->ajax() || $request->wantsJson()) {
-            $movimientos = $query->paginate(15);
+            $filas = $query->paginate(15);
 
             return response()->json([
-                'html'  => view('control_insumos.movimientos.partials.tabla', compact('movimientos'))->render(),
-                'links' => $movimientos->links('pagination::bootstrap-4')->render(),
-                'total' => $movimientos->total(),
-                'info'  => 'Mostrando ' . ($movimientos->firstItem() ?? 0)
-                           . ' a ' . ($movimientos->lastItem() ?? 0)
-                           . ' de ' . $movimientos->total() . ' registros',
+                'html'  => view('components.tabla-dinamica', [
+                    'columnas'          => self::COLUMNAS,
+                    'filas'             => $filas,
+                    'soloCuerpo'        => true,
+                    'claseFilaInactiva' => 'fila-cancelada',
+                    'vacio'             => 'No se encontraron movimientos con los filtros seleccionados.',
+                    'vacoIcono'         => 'fa-exchange',
+                ])->render(),
+                'links' => $filas->links('pagination::bootstrap-4')->render(),
+                'total' => $filas->total(),
+                'info'  => 'Mostrando ' . ($filas->firstItem() ?? 0)
+                           . ' a ' . ($filas->lastItem() ?? 0)
+                           . ' de ' . $filas->total() . ' registros',
             ]);
         }
 
@@ -68,6 +103,7 @@ class MovimientoInsumoController extends Controller
         $insumos     = InsumoImpresora::where('activo', 1)->orderBy('modelo')->get();
         return view('control_insumos.movimientos.index', [
             'movimientos'       => $movimientos,
+            'columnas'          => self::COLUMNAS,
             'insumos'           => $insumos,
             'conceptosEntrada'  => self::CONCEPTOS_ENTRADA,
             'conceptosSalida'   => self::CONCEPTOS_SALIDA,

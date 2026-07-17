@@ -37,13 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const filtroFechaRango = document.getElementById('filtro-fecha-rango');
     const btnImprimir      = document.querySelector('a[href*="imprimir"]');
 
-    const btnFiltrosDropdown     = document.getElementById('btnFiltrosDropdown');
-    const btnFiltrosLabel        = document.getElementById('btnFiltrosLabel');
-    const linkLimpiarFiltrosMenu = document.getElementById('linkLimpiarFiltrosMenu');
-    const btnCancelarFiltrosMenu = document.getElementById('btnCancelarFiltrosMenu');
-    const btnAplicarFiltrosMenu  = document.getElementById('btnAplicarFiltrosMenu');
-
-    let fpInstancia = null;
+    const dropdownFiltros = document.getElementById('dropdownFiltros');
 
     // ─────────────────────────────────────────────────────────────────────────
     // C. HELPER — debounce
@@ -56,14 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────────────────────
     // D. TABLA — filtros + paginación AJAX
     // ─────────────────────────────────────────────────────────────────────────
-    function actualizarDropdownLabel() {
-        if (!btnFiltrosLabel) return;
-        const total = document.querySelectorAll('.chk-tipo:checked, .chk-concepto:checked, .chk-status:checked').length;
-        btnFiltrosLabel.textContent = total === 0 ? 'Todos los movimientos' : `Filtros activos (${total})`;
-    }
-
     function obtenerFiltros() {
-        const fechas  = fpInstancia ? fpInstancia.selectedDates : [];
+        const fp      = filtroFechaRango?._flatpickr;
+        const fechas  = fp ? fp.selectedDates : [];
         const fInicio = fechas[0] ? fechas[0].toISOString().split('T')[0] : '';
         const fFin    = fechas[1] ? fechas[1].toISOString().split('T')[0] : '';
         return {
@@ -133,31 +122,21 @@ document.addEventListener('DOMContentLoaded', function () {
         filtroBuscar.addEventListener('input', demorarEjecucion(() => cargarMovimientos(1), 320));
     }
 
-    if (btnAplicarFiltrosMenu) {
-        btnAplicarFiltrosMenu.addEventListener('click', () => {
-            actualizarDropdownLabel();
+    // Escuchar eventos de filtros reutilizables
+    if (dropdownFiltros) {
+        dropdownFiltros.addEventListener('filtros:aplicar', () => {
             cargarMovimientos(1);
-            if (btnFiltrosDropdown) btnFiltrosDropdown.click();
         });
-    }
-
-    if (btnCancelarFiltrosMenu) {
-        btnCancelarFiltrosMenu.addEventListener('click', () => {
-            if (btnFiltrosDropdown) btnFiltrosDropdown.click();
-        });
-    }
-
-    document.querySelectorAll('.chk-tipo, .chk-concepto, .chk-status').forEach(chk => {
-        chk.addEventListener('change', actualizarDropdownLabel);
-    });
-
-    if (linkLimpiarFiltrosMenu) {
-        linkLimpiarFiltrosMenu.addEventListener('click', e => {
-            e.preventDefault();
+        dropdownFiltros.addEventListener('filtros:limpiar', () => {
             if (filtroBuscar) filtroBuscar.value = '';
-            document.querySelectorAll('.chk-tipo, .chk-concepto, .chk-status').forEach(chk => { chk.checked = false; });
-            actualizarDropdownLabel();
-            if (fpInstancia) fpInstancia.clear();
+            const fp = filtroFechaRango?._flatpickr;
+            if (fp) fp.clear();
+            cargarMovimientos(1);
+        });
+    }
+
+    if (filtroFechaRango) {
+        filtroFechaRango.addEventListener('change', () => {
             cargarMovimientos(1);
         });
     }
@@ -545,9 +524,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────────────────────
     // I. MODAL ENTRADA — habilitar/deshabilitar campos al seleccionar insumo
     // ─────────────────────────────────────────────────────────────────────────
-    // ─────────────────────────────────────────────────────────────────────────
-    // I. MODAL ENTRADA — habilitar/deshabilitar campos al seleccionar insumo
-    // ─────────────────────────────────────────────────────────────────────────
     const selectInsumoEntrada    = document.getElementById('id_insumo_impresora_entrada');
     const selectConceptoEntrada  = document.getElementById('concepto_entrada');
     const inputCantidadEntrada   = document.getElementById('cantidad_entrada');
@@ -608,76 +584,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // K. FLATPICKR — rango de fechas con accesos rápidos
-    // ─────────────────────────────────────────────────────────────────────────
-    if (filtroFechaRango && typeof flatpickr !== 'undefined') {
-        fpInstancia = flatpickr(filtroFechaRango, {
-            mode: 'range',
-            dateFormat: 'Y-m-d',
-            locale: flatpickr.l10ns.es ?? 'default',
-            allowInput: false,
-            disableMobile: true,
-            showMonths: 1,
-            onChange: function (selectedDates) {
-                if (selectedDates.length === 2 || selectedDates.length === 0) {
-                    cargarMovimientos(1);
-                }
-            },
-            onReady: function (selectedDates, dateStr, fp) {
-                fp.calendarContainer.classList.add('has-sidebar');
-
-                const sidebar = document.createElement('div');
-                sidebar.className = 'flatpickr-sidebar';
-                sidebar.style.cssText = 'display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;';
-
-                const topGroup = document.createElement('div');
-                topGroup.style.cssText = 'display:flex;flex-direction:column;gap:4px;';
-
-                const shortcuts = [
-                    { label: 'Hoy',             fn: fp => { const h = new Date(); fp.setDate([h, h], true); } },
-                    { label: 'Ayer',             fn: fp => { const a = new Date(); a.setDate(a.getDate()-1); fp.setDate([a, a], true); } },
-                    { label: 'Semana pasada',    fn: fp => { const h = new Date(), i = new Date(); i.setDate(h.getDate()-7); fp.setDate([i, h], true); } },
-                    { label: 'Mes pasado',       fn: fp => { const h = new Date(); fp.setDate([new Date(h.getFullYear(), h.getMonth()-1, 1), new Date(h.getFullYear(), h.getMonth(), 0)], true); } },
-                    { label: 'Último trimestre', fn: fp => { const h = new Date(), i = new Date(); i.setDate(h.getDate()-90); fp.setDate([i, h], true); } },
-                ];
-
-                const btnStyle = 'background:none;border:none;padding:6px 8px;text-align:left;font-size:0.8rem;color:#475569;cursor:pointer;border-radius:6px;transition:background 0.15s,color 0.15s;font-weight:500;font-family:inherit;width:100%;';
-
-                shortcuts.forEach(s => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.textContent = s.label;
-                    btn.style.cssText = btnStyle;
-                    btn.addEventListener('mouseover', () => { btn.style.background = '#f1f5f9'; btn.style.color = '#0f172a'; });
-                    btn.addEventListener('mouseout',  () => { btn.style.background = 'none';    btn.style.color = '#475569'; });
-                    btn.addEventListener('click',     () => { s.fn(fp); fp.close(); });
-                    topGroup.appendChild(btn);
-                });
-
-                const resetBtn = document.createElement('button');
-                resetBtn.type = 'button';
-                resetBtn.textContent = 'Restablecer';
-                resetBtn.style.cssText = 'background:none;border:none;padding:6px 8px;text-align:left;font-size:0.8rem;color:#2563eb;cursor:pointer;border-radius:6px;transition:background 0.15s,color 0.15s;font-weight:600;font-family:inherit;width:100%;margin-top:12px;';
-                resetBtn.addEventListener('mouseover', () => { resetBtn.style.background = '#eff6ff'; resetBtn.style.color = '#1d4ed8'; });
-                resetBtn.addEventListener('mouseout',  () => { resetBtn.style.background = 'none';    resetBtn.style.color = '#2563eb'; });
-                resetBtn.addEventListener('click',     () => { fp.clear(); fp.close(); });
-
-                sidebar.appendChild(topGroup);
-                sidebar.appendChild(resetBtn);
-                fp.calendarContainer.insertBefore(sidebar, fp.calendarContainer.firstChild);
-            },
-        });
-    }
-
-    // Cerrar Flatpickr al hacer clic fuera
-    document.addEventListener('mousedown', function (e) {
-        if (fpInstancia && fpInstancia.isOpen) {
-            const clicEnInput      = filtroFechaRango && filtroFechaRango.contains(e.target);
-            const clicEnCalendario = fpInstancia.calendarContainer && fpInstancia.calendarContainer.contains(e.target);
-            if (!clicEnInput && !clicEnCalendario) fpInstancia.close();
-        }
-    });
 
 });

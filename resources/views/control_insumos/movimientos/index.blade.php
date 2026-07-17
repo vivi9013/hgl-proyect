@@ -323,103 +323,60 @@
                     <div class="row g-2 align-items-end" id="panelFiltros">
 
                         {{-- Búsqueda por insumo --}}
-                        <div class="col-12 col-md-4">
-                            <label class="form-label small fw-semibold text-secondary mb-1">
-                                <i class="fa fa-search me-1"></i>Buscar insumo
-                            </label>
-                            <input type="search" id="filtro-buscar"
-                                   class="form-control form-control-sm bg-light border-0"
-                                   placeholder="Modelo del insumo...">
-                        </div>
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar insumo" placeholder="Modelo del insumo..." />
 
                         {{-- Filtro Desplegable Premium --}}
-                        <div class="col-12 col-md-4">
-                            <label class="form-label small fw-semibold text-secondary mb-1">
-                                <i class="fa fa-filter me-1"></i>Filtrar por categoría
-                            </label>
-                            <div class="dropdown w-100" id="dropdownFiltros">
-                                <button class="btn btn-sm btn-light border w-100 text-start d-flex justify-content-between align-items-center dropdown-toggle" 
-                                        type="button" 
-                                        id="btnFiltrosDropdown" 
-                                        data-bs-toggle="dropdown" 
-                                        data-bs-auto-close="outside" 
-                                        aria-expanded="false"
-                                        style="height: 31px; font-size: 0.875rem;">
-                                    <span id="btnFiltrosLabel">Todos los movimientos</span>
-                                </button>
-                                
-                                <div class="dropdown-menu p-3 shadow-lg border-0" aria-labelledby="btnFiltrosDropdown" style="width: 290px; border-radius: 12px; font-size: 0.85rem;">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                        <span class="fw-bold text-dark">Categorías</span>
-                                        <a href="#" id="linkLimpiarFiltrosMenu" class="text-decoration-none text-primary small fw-semibold">Limpiar todo</a>
-                                    </div>
-                                    
-                                    <!-- Grupo: Tipo -->
-                                    <div class="mb-2">
-                                        <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Tipo</span>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-tipo" type="checkbox" value="Entrada" id="chkTipoEntrada">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkTipoEntrada">Entradas</label>
-                                        </div>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-tipo" type="checkbox" value="Salida" id="chkTipoSalida">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkTipoSalida">Salidas</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Grupo: Concepto -->
-                                    <div class="mb-2">
-                                        <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Concepto</span>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-concepto" type="checkbox" value="Compra" id="chkConceptoCompra">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkConceptoCompra">Compra</label>
-                                        </div>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-concepto" type="checkbox" value="Donación" id="chkConceptoDonacion">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkConceptoDonacion">Donación</label>
-                                        </div>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-concepto" type="checkbox" value="Uso" id="chkConceptoUso">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkConceptoUso">Uso</label>
-                                        </div>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-concepto" type="checkbox" value="Por daño" id="chkConceptoDano">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkConceptoDano">Por daño</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Grupo: Estado -->
-                                    <div class="mb-3">
-                                        <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Estado</span>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-status" type="checkbox" value="1" id="chkStatusActivo">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkStatusActivo">Activos</label>
-                                        </div>
-                                        <div class="form-check py-1">
-                                            <input class="form-check-input chk-status" type="checkbox" value="0" id="chkStatusCancelado">
-                                            <label class="form-check-label text-dark cursor-pointer" for="chkStatusCancelado">Cancelados</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Footer -->
-                                    <div class="d-flex gap-2 pt-2 border-top">
-                                        <button type="button" id="btnCancelarFiltrosMenu" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Cancelar</button>
-                                        <button type="button" id="btnAplicarFiltrosMenu" class="btn btn-sm btn-dark w-50 rounded-pill text-white">Aplicar</button>
-                                    </div>
+                        <x-filtro-dropdown id="dropdownFiltros" label="Filtrar por categoría" labelDefault="Todos los movimientos">
+                            <!-- Grupo: Tipo -->
+                            <div class="mb-2">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Tipo</span>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-tipo" type="checkbox" value="Entrada" id="chkTipoEntrada">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkTipoEntrada">Entradas</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-tipo" type="checkbox" value="Salida" id="chkTipoSalida">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkTipoSalida">Salidas</label>
                                 </div>
                             </div>
-                        </div>
+                            
+                            <!-- Grupo: Concepto -->
+                            <div class="mb-2">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Concepto</span>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-concepto" type="checkbox" value="Compra" id="chkConceptoCompra">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkConceptoCompra">Compra</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-concepto" type="checkbox" value="Donación" id="chkConceptoDonacion">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkConceptoDonacion">Donación</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-concepto" type="checkbox" value="Uso" id="chkConceptoUso">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkConceptoUso">Uso</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-concepto" type="checkbox" value="Por daño" id="chkConceptoDano">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkConceptoDano">Por daño</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Grupo: Estado -->
+                            <div class="mb-3">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Estado</span>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-status" type="checkbox" value="1" id="chkStatusActivo">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkStatusActivo">Activos</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-status" type="checkbox" value="0" id="chkStatusCancelado">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkStatusCancelado">Cancelados</label>
+                                </div>
+                            </div>
+                        </x-filtro-dropdown>
 
                         {{-- Rango de fechas (Flatpickr) --}}
-                        <div class="col-12 col-md-3">
-                            <label class="form-label small fw-semibold text-secondary mb-1">
-                                <i class="fa fa-calendar me-1"></i>Rango de fechas
-                            </label>
-                            <input type="text" id="filtro-fecha-rango"
-                                   class="form-control form-control-sm bg-light border-0"
-                                   placeholder="Seleccionar rango..."
-                                   readonly>
-                        </div>
+                        <x-filtro-fecha-rango id="filtro-fecha-rango" />
 
                     </div>
                     {{-- /panelFiltros --}}
@@ -447,25 +404,17 @@
                     </div>
                 </div>
 
-                {{-- Tabla --}}
+                {{-- Tabla — columnas definidas en MovimientoInsumoController::COLUMNAS --}}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light text-uppercase small">
-                            <tr>
-                                <th class="text-center" style="width:48px;">#</th>
-                                <th class="text-center" style="width:105px;">Acciones</th>
-                                <th class="text-center" style="width:100px;">Tipo</th>
-                                <th>Insumo</th>
-                                <th>Concepto</th>
-                                <th class="text-center" style="width:80px;">Cantidad</th>
-                                <th>Proveedor</th>
-                                <th class="text-center" style="width:100px;">Fecha</th>
-                                <th class="text-center" style="width:115px;">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cuerpoTablaMovimientos">
-                            @include('control_insumos.movimientos.partials.tabla', ['movimientos' => $movimientos])
-                        </tbody>
+                        <x-tabla-dinamica
+                            :columnas="$columnas"
+                            :filas="$movimientos"
+                            tbodyId="cuerpoTablaMovimientos"
+                            claseFilaInactiva="fila-cancelada"
+                            vacio="No se encontraron movimientos con los filtros seleccionados."
+                            vacoIcono="fa-exchange"
+                        />
                     </table>
                 </div>
 
