@@ -43,17 +43,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const cuerpoTabla           = document.getElementById('cuerpoTablaInsumos');
     const infoPaginacion        = document.getElementById('infoPaginacion');
     const contenedorPaginacion  = document.getElementById('contenedorPaginacion');
-    const entradaBusqueda       = document.getElementById('busqueda-global');
     const etiquetaTotal         = document.getElementById('totalInsumos');
+    const filtroBuscar          = document.getElementById('filtro-buscar');
+    const filtroFechaRango      = document.getElementById('filtro-fecha-rango');
+    const dropdownFiltros       = document.getElementById('dropdownFiltros');
+
+    // Inicializar Flatpickr compartido
+    if (window.inicializarFlatpickrCompartido) {
+        window.inicializarFlatpickrCompartido();
+    }
+
+    function obtenerFiltros() {
+        const fp      = filtroFechaRango?._flatpickr;
+        const fechas  = fp ? fp.selectedDates : [];
+        const fInicio = fechas[0] ? new Date(fechas[0].getTime() - fechas[0].getTimezoneOffset() * 60000).toISOString().split('T')[0] : '';
+        const fFin    = fechas[1] ? new Date(fechas[1].getTime() - fechas[1].getTimezoneOffset() * 60000).toISOString().split('T')[0] : '';
+        return {
+            buscar:       filtroBuscar?.value.trim() ?? '',
+            familia:      Array.from(document.querySelectorAll('.chk-familia:checked')).map(el => el.value),
+            status:       Array.from(document.querySelectorAll('.chk-status:checked')).map(el => el.value),
+            fecha_inicio: fInicio,
+            fecha_fin:    fFin,
+        };
+    }
 
     function cargarPagina(pagina = 1) {
         if (!cuerpoTabla) return;
 
-        const buscar = entradaBusqueda ? entradaBusqueda.value.trim() : '';
+        const f = obtenerFiltros();
+        const params = new URLSearchParams({ page: pagina });
+        if (f.buscar)       params.set('buscar', f.buscar);
+        f.familia.forEach(v => params.append('familia[]', v));
+        f.status.forEach(v =>  params.append('status[]',  v));
+        if (f.fecha_inicio) params.set('fecha_inicio', f.fecha_inicio);
+        if (f.fecha_fin)    params.set('fecha_fin',    f.fecha_fin);
+
         cuerpoTabla.style.opacity    = '0.4';
         cuerpoTabla.style.transition = 'opacity 0.2s';
 
-        fetch(`/control-insumos/insumos-impresoras?buscar=${encodeURIComponent(buscar)}&page=${pagina}`, {
+        fetch(`/control-insumos/insumos-impresoras?${params}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
         .then(r => { if (!r.ok) throw new Error('Error en el servidor'); return r.json(); })
@@ -153,8 +181,27 @@ document.addEventListener('DOMContentLoaded', function () {
         return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), ms); };
     }
 
-    if (entradaBusqueda) {
-        entradaBusqueda.addEventListener('input', demorarEjecucion(() => cargarPagina(1), 320));
+    if (filtroBuscar) {
+        filtroBuscar.addEventListener('input', demorarEjecucion(() => cargarPagina(1), 320));
+    }
+
+    // Escuchar eventos de filtros reutilizables
+    if (dropdownFiltros) {
+        dropdownFiltros.addEventListener('filtros:aplicar', () => {
+            cargarPagina(1);
+        });
+        dropdownFiltros.addEventListener('filtros:limpiar', () => {
+            if (filtroBuscar) filtroBuscar.value = '';
+            const fp = filtroFechaRango?._flatpickr;
+            if (fp) fp.clear();
+            cargarPagina(1);
+        });
+    }
+
+    if (filtroFechaRango) {
+        filtroFechaRango.addEventListener('change', () => {
+            cargarPagina(1);
+        });
     }
 
     if (cuerpoTabla) {

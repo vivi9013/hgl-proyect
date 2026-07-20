@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const dropdownFiltros = document.getElementById('dropdownFiltros');
 
+    // Inicializar Flatpickr compartido
+    if (window.inicializarFlatpickrCompartido) {
+        window.inicializarFlatpickrCompartido();
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // C. HELPER — debounce
     // ─────────────────────────────────────────────────────────────────────────
@@ -53,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function obtenerFiltros() {
         const fp      = filtroFechaRango?._flatpickr;
         const fechas  = fp ? fp.selectedDates : [];
-        const fInicio = fechas[0] ? fechas[0].toISOString().split('T')[0] : '';
-        const fFin    = fechas[1] ? fechas[1].toISOString().split('T')[0] : '';
+        const fInicio = fechas[0] ? new Date(fechas[0].getTime() - fechas[0].getTimezoneOffset() * 60000).toISOString().split('T')[0] : '';
+        const fFin    = fechas[1] ? new Date(fechas[1].getTime() - fechas[1].getTimezoneOffset() * 60000).toISOString().split('T')[0] : '';
         return {
             buscar:       filtroBuscar?.value.trim() ?? '',
             tipo:         Array.from(document.querySelectorAll('.chk-tipo:checked')).map(el => el.value),

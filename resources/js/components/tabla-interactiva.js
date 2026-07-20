@@ -27,12 +27,9 @@
  *   - [data-rol="fecha-rango"]    -> Inicializa Flatpickr en español con accesos rápidos.
  *   - [data-rol="filtro-dropdown"] -> Controla el dropdown de checkboxes y contadores.
  */
-document.addEventListener('DOMContentLoaded', () => {
-    // ─────────────────────────────────────────────────────────────────────────
-    // 1. AUTO-INICIALIZACIÓN DE FLATPICKR (fecha-rango)
-    // ─────────────────────────────────────────────────────────────────────────
+window.inicializarFlatpickrCompartido = function () {
     document.querySelectorAll('input[data-rol="fecha-rango"]').forEach(input => {
-        if (typeof flatpickr === 'undefined') return;
+        if (typeof flatpickr === 'undefined' || input._flatpickr) return;
 
         const fpInstancia = flatpickr(input, {
             mode: 'range',
@@ -94,6 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Guardar referencia en el input por si los scripts de módulo necesitan acceder
         input._flatpickr = fpInstancia;
     });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Intentar inicialización automática inicial
+    window.inicializarFlatpickrCompartido();
 
     // Cierre seguro de calendarios al hacer clic afuera
     document.addEventListener('mousedown', function (e) {

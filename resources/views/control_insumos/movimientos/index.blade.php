@@ -404,17 +404,10 @@
                     </div>
                 </div>
 
-                {{-- Tabla — columnas definidas en MovimientoInsumoController::COLUMNAS --}}
+                {{-- Tabla de movimientos --}}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <x-tabla-dinamica
-                            :columnas="$columnas"
-                            :filas="$movimientos"
-                            tbodyId="cuerpoTablaMovimientos"
-                            claseFilaInactiva="fila-cancelada"
-                            vacio="No se encontraron movimientos con los filtros seleccionados."
-                            vacoIcono="fa-exchange"
-                        />
+                        @include('control_insumos.movimientos.partials.tabla')
                     </table>
                 </div>
 

@@ -21,35 +21,7 @@
         </div>
     </div>
 
-    {{-- Fila de acciones --}}
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card p-4 h-100 d-flex justify-content-center">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="fa fa-info-circle fa-lg text-dark"></i>
-                    <div>
-                        <h6 class="fw-bold mb-1">Registra un insumo</h6>
-                        <p class="text-muted small mb-0">Agrega tóneres, cartuchos o cintas al catálogo con su modelo, color, compatibilidad y rendimiento estimado.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card p-4 h-100 d-flex justify-content-center">
-                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                    <button type="button"
-                            class="btn btn-primary px-3 py-2 rounded-pill shadow-sm text-nowrap"
-                            data-bs-toggle="modal" data-bs-target="#modalAltaInsumo">
-                        <i class="fa fa-plus-circle me-2"></i>Registrar Insumo
-                    </button>
-                    <a href="{{ route('insumos_impresoras.imprimir') }}" target="_blank"
-                       class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm text-nowrap">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i>Imprimir Catálogo
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     {{-- Modal de alta --}}
     <div class="modal fade" id="modalAltaInsumo" tabindex="-1" aria-labelledby="modalAltaInsumoLabel" aria-hidden="true"
@@ -148,9 +120,9 @@
     {{-- Tabla principal --}}
     <div class="row g-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-3">
                             <h5 class="card-title mb-0 fw-bold">
                                 <i class="fa fa-list-ul me-2"></i>Catálogo de Insumos
@@ -159,12 +131,67 @@
                                 {{ $insumos->total() }} Registros
                             </span>
                         </div>
-                        <div class="input-group search-group">
-                            <input type="search" id="busqueda-global" class="form-control bg-light border-0"
-                                   placeholder="Buscar insumo...">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="fa fa-search text-dark"></i>
-                            </span>
+                    </div>
+
+                    {{-- ── Panel de filtros avanzados ──────────────────────────── --}}
+                    <div class="row g-2 align-items-end" id="panelFiltros">
+
+                        {{-- Búsqueda por insumo --}}
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar insumo" placeholder="Modelo, color o compatibilidad..." />
+
+                        {{-- Filtro Desplegable Premium --}}
+                        <x-filtro-dropdown id="dropdownFiltros" label="Filtrar por categoría" labelDefault="Todos los insumos">
+                            <!-- Grupo: Familia -->
+                            <div class="mb-2">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Familia</span>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Tóner" id="chkFamiliaToner">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaToner">Tóner</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Cartucho" id="chkFamiliaCartucho">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaCartucho">Cartucho</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Cinta" id="chkFamiliaCinta">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaCinta">Cinta</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Grupo: Estado -->
+                            <div class="mb-3">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Estado</span>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-status" type="checkbox" value="1" id="chkStatusActivo">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkStatusActivo">Activos</label>
+                                </div>
+                                <div class="form-check py-1">
+                                    <input class="form-check-input chk-status" type="checkbox" value="0" id="chkStatusInactivo">
+                                    <label class="form-check-label text-dark cursor-pointer" for="chkStatusInactivo">Inactivos</label>
+                                </div>
+                            </div>
+                        </x-filtro-dropdown>
+
+                        {{-- Rango de fechas (Flatpickr) --}}
+                        <x-filtro-fecha-rango id="filtro-fecha-rango" label="Fecha de registro" />
+
+                    </div>
+                    {{-- /panelFiltros --}}
+
+                    {{-- Acciones secundarias --}}
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm text-nowrap"
+                                    data-bs-toggle="modal" data-bs-target="#modalAltaInsumo">
+                                <i class="fa fa-plus-circle me-1"></i>Registrar Insumo
+                            </button>
+                        </div>
+                        <div>
+                            <a href="{{ route('insumos_impresoras.imprimir') }}" target="_blank"
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir Catálogo
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -208,6 +235,14 @@
 
 </div>
 
-@vite(['resources/css/control_insumos/insumos_impresoras/insumos_impresoras.css',
-        'resources/js/control_insumos/insumos_impresoras/insumos_impresoras.js'])
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    @vite(['resources/css/control_insumos/insumos_impresoras/insumos_impresoras.css',
+            'resources/js/control_insumos/insumos_impresoras/insumos_impresoras.js'])
+@endpush
 @endsection

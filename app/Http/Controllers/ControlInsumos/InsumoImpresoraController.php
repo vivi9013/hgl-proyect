@@ -15,18 +15,37 @@ class InsumoImpresoraController extends Controller
     // ─── INDEX ───────────────────────────────────────────────────────────────
     public function index(Request $request)
     {
-        $buscar = $request->get('buscar');
+        $buscar      = trim($request->get('buscar', ''));
+        $familia     = $request->input('familia', []);   // [] | ['Tóner'] | ['Cartucho', 'Cinta'] …
+        $status      = $request->input('status', []);    // [] | ['1'] | ['0'] | ['1','0']
+        $fechaInicio = $request->get('fecha_inicio', '');
+        $fechaFin    = $request->get('fecha_fin', '');
 
         $query = InsumoImpresora::orderBy('id_insumo_impresora', 'desc');
 
         if (!empty($buscar)) {
-            $b = trim($buscar);
-            $query->where(function ($q) use ($b) {
-                $q->where('modelo',             'like', "%{$b}%")
-                  ->orWhere('color',              'like', "%{$b}%")
-                  ->orWhere('familia',            'like', "%{$b}%")
-                  ->orWhere('modelos_compatibles','like', "%{$b}%");
+            $query->where(function ($q) use ($buscar) {
+                $q->where('modelo',             'like', "%{$buscar}%")
+                  ->orWhere('color',              'like', "%{$buscar}%")
+                  ->orWhere('familia',            'like', "%{$buscar}%")
+                  ->orWhere('modelos_compatibles','like', "%{$buscar}%");
             });
+        }
+
+        if (!empty($familia)) {
+            $query->whereIn('familia', (array) $familia);
+        }
+
+        if (!empty($status)) {
+            $query->whereIn('activo', array_map('intval', $status));
+        }
+
+        if (!empty($fechaInicio)) {
+            $query->where('fecha', '>=', $fechaInicio);
+        }
+
+        if (!empty($fechaFin)) {
+            $query->where('fecha', '<=', $fechaFin);
         }
 
         $insumos = $query->paginate(10);
@@ -48,6 +67,7 @@ class InsumoImpresoraController extends Controller
             'colores'  => self::COLORES,
         ]);
     }
+
 
     // ─── GUARDAR ─────────────────────────────────────────────────────────────
     public function guardar(Request $request)
