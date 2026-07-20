@@ -1,12 +1,6 @@
 /* Estilos personalizados para el módulo de Categoría de Archivos */
 
-/* Efectos de Focus Modernos */
-#modulo-categoria-archivos .form-control:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
-}
-
-/* Clases de retroalimentación personalizadas para AJAX */
+/* Clases de retroalimentación personalizadas para AJAX (propias del módulo) */
 #modulo-categoria-archivos .text-success-custom {
     color: #2f855a;
     font-weight: 500;
@@ -26,15 +20,13 @@
     animation: spin 1s linear infinite;
 }
 
-/* Hover en tabla y enlaces de acción */
+/* Transición de hover en filas — el color de hover lo da Bootstrap (table-hover) por defecto,
+   igual que en movimientos_insumos */
 #modulo-categoria-archivos tbody tr {
     transition: background-color 0.2s ease;
 }
 
-#modulo-categoria-archivos tbody tr:hover {
-    background-color: rgba(49, 130, 206, 0.02) !important;
-}
-
+/* Icono de estado activo/inactivo — propio del módulo (no existe equivalente en la referencia) */
 #modulo-categoria-archivos .btn-toggle-status {
     color: #4a5568;
     font-size: 1.25rem;
@@ -54,6 +46,7 @@
     color: #a0aec0;
 }
 
+/* Icono de editar — propio del módulo (no existe equivalente en la referencia) */
 #modulo-categoria-archivos .fa-pencil-square-o {
     color: #000000 !important;
     font-size: 1.2rem;
@@ -66,124 +59,17 @@
     transform: scale(1.15);
 }
 
-/* Iconos de acento */
-#modulo-categoria-archivos .fa-folder-open,
-#modulo-categoria-archivos .fa-list-ul {
-    color: inherit;
-}
-
-/* Form Controls */
-#modulo-categoria-archivos .form-control {
-    border-color: rgba(0, 0, 0, 0.35) !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-    padding: 0.6rem 0.95rem;
-    font-size: 0.9rem;
-    color: #000000 !important;
-    background-color: #ffffff !important;
-}
-
-#modulo-categoria-archivos .form-control:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botón Guardar/Registrar (Primario): Azul con borde Negro */
+/* Botón Guardar/Registrar (Primario) — mismo estándar que movimientos_insumos:
+   solo forma (píldora) y espaciado; el color lo da Bootstrap por defecto. */
 #modulo-categoria-archivos .btn-primary {
-    background-color: #0d6efd !important;
-    border: 2px solid #d1d5db !important;
-    color: #ffffff !important;
     border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
+    padding: 0.4rem 1.0rem !important;
 }
 
-#modulo-categoria-archivos .btn-primary:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Botón Cancelar/Volver: Blanco con bordes grises */
+/* Botón Cancelar/Volver — mismo estándar que movimientos_insumos */
 #modulo-categoria-archivos .btn-light,
 #modulo-categoria-archivos .btn-outline-secondary {
-    background-color: #ffffff !important;
-    color: #4b5563 !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
-}
-
-#modulo-categoria-archivos .btn-light:hover,
-#modulo-categoria-archivos .btn-outline-secondary:hover {
-    background-color: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #000000 !important;
-}
-
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-#modulo-categoria-archivos .table {
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    overflow: hidden !important;
-    background-color: #ffffff !important;
-}
-
-#modulo-categoria-archivos .table th {
-    background-color: #f9fafb !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-    border-bottom: 1.5px solid #e5e7eb !important;
-}
-
-#modulo-categoria-archivos .table td {
-    padding: 1rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    color: #374151 !important;
-    font-size: 0.875rem;
-}
-
-#modulo-categoria-archivos .table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
-}
-
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-#modulo-categoria-archivos .pagination {
-    margin: 0 !important;
-}
-
-#modulo-categoria-archivos .pagination .page-link {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.4rem 0.85rem !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    margin: 0 2px !important;
-    transition: all 0.2s ease-in-out;
-}
-
-#modulo-categoria-archivos .pagination .page-link:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-#modulo-categoria-archivos .pagination .page-item.active .page-link {
-    background-color: #000000 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-#modulo-categoria-archivos .pagination .page-item.disabled .page-link {
-    color: #9ca3af !important;
-    background-color: #f9fafb !important;
-    border-color: #e5e7eb !important;
 }

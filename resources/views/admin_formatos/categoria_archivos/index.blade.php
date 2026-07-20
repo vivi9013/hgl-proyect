@@ -116,7 +116,7 @@
                 {{-- Tabla de categorías --}}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead>
+                         <thead class="table-light text-uppercase small text-secondary">
                             <tr>
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 80px;" class="text-center">Editar</th>

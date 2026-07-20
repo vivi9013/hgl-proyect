@@ -161,7 +161,7 @@
                 {{-- Tabla de archivos --}}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead>
+                        <thead class="table-light text-uppercase small text-secondary">
                             <tr>
                                 <th class="ps-4" style="width: 50px;">#</th>
                                 <th>Nombre</th>

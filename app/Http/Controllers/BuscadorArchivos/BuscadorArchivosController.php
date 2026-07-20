@@ -55,7 +55,7 @@ class BuscadorArchivosController extends Controller
             return response()->json(['error' => 'No autorizado'], 401);
         }
         $idPersona = $user->id_persona;
-        $categoriaFiltro = $request->get('categoria', 'Todos');
+        $categoriaFiltro = $request->input('categoria', []);
         $buscar = $request->get('buscar');
 
         // Validar permisos del trabajador
@@ -66,10 +66,9 @@ class BuscadorArchivosController extends Controller
             ->whereIn('id_catego', $categoriasPermitidasIds)
             ->with('categoria');
 
-        if ($categoriaFiltro !== 'Todos') {
-            $query->whereHas('categoria', function ($q) use ($categoriaFiltro) {
-                $q->where('categoria', $categoriaFiltro);
-            });
+        // Aplicar filtro por categorías seleccionadas (dropdown de checkboxes)
+        if (!empty($categoriaFiltro)) {
+            $query->whereIn('id_catego', $categoriaFiltro);
         }
 
         // Filtro por Buscador (Seguridad sin fisuras: encapsulado en un closure)
@@ -83,7 +82,13 @@ class BuscadorArchivosController extends Controller
 
         $archivos = $query->paginate(10);
 
-        return view('admin_formatos.buscador_archivos.partials.tabla', compact('archivos'));
+        return response()->json([
+            'html'  => view('admin_formatos.buscador_archivos.partials.tabla', compact('archivos'))->render(),
+            'total' => $archivos->total(),
+            'info'  => 'Mostrando ' . ($archivos->firstItem() ?? 0) . ' a ' . ($archivos->lastItem() ?? 0)
+                . ' de ' . $archivos->total() . ' registros',
+            'links' => (string) $archivos->appends($request->except('page'))->links('pagination::bootstrap-4'),
+        ]);
     }
 
     /**
