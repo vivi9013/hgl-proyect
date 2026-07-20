@@ -1,16 +1,3 @@
-{{-- Datos de transporte ocultos para el Javascript (patrón idéntico a carga_archivos) --}}
-<tr id="datosPaginacionTransporte" style="display: none;"
-    data-total="{{ $trabajadores->total() }}"
-    data-info="Mostrando {{ $trabajadores->firstItem() ?? 0 }} a {{ $trabajadores->lastItem() ?? 0 }} de {{ $trabajadores->total() }} trabajadores">
-    <td>
-        <div id="htmlLinksPaginacion">
-            {{-- Renderiza los enlaces nativos de Bootstrap modificados por Laravel --}}
-            {{ $trabajadores->links('pagination::bootstrap-4') }}
-        </div>
-    </td>
-</tr>
-
-{{-- Cuerpo real de la Tabla --}}
 @forelse($trabajadores as $index => $trabajador)
     <tr>
         {{-- Cálculo del índice continuo respetando la paginación de 10 --}}

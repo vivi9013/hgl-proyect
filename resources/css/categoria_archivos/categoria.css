@@ -1,18 +1,18 @@
 /* Estilos personalizados para el módulo de Categoría de Archivos */
 
 /* Efectos de Focus Modernos */
-.form-control:focus {
+#modulo-categoria-archivos .form-control:focus {
     border-color: #3182ce;
     box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
 }
 
 /* Clases de retroalimentación personalizadas para AJAX */
-.text-success-custom {
+#modulo-categoria-archivos .text-success-custom {
     color: #2f855a;
     font-weight: 500;
 }
 
-.text-danger-custom {
+#modulo-categoria-archivos .text-danger-custom {
     color: #c53030;
     font-weight: 500;
 }
@@ -22,108 +22,58 @@
     to { transform: rotate(360deg); }
 }
 
-.fa-spin {
+#modulo-categoria-archivos .fa-spin {
     animation: spin 1s linear infinite;
 }
 
 /* Hover en tabla y enlaces de acción */
-#tablaCategorias tbody tr {
+#modulo-categoria-archivos tbody tr {
     transition: background-color 0.2s ease;
 }
 
-#tablaCategorias tbody tr:hover {
+#modulo-categoria-archivos tbody tr:hover {
     background-color: rgba(49, 130, 206, 0.02) !important;
 }
 
-.btn-toggle-status {
+#modulo-categoria-archivos .btn-toggle-status {
     color: #4a5568;
     font-size: 1.25rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.btn-toggle-status:hover {
+#modulo-categoria-archivos .btn-toggle-status:hover {
     transform: scale(1.1);
 }
 
-.btn-toggle-status[data-activo="1"] {
+#modulo-categoria-archivos .btn-toggle-status[data-activo="1"] {
     color: #38a169;
 }
 
-.btn-toggle-status[data-activo="0"] {
+#modulo-categoria-archivos .btn-toggle-status[data-activo="0"] {
     color: #a0aec0;
 }
 
-.fa-pencil-square-o {
+#modulo-categoria-archivos .fa-pencil-square-o {
     color: #000000 !important;
     font-size: 1.2rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.fa-pencil-square-o:hover {
+#modulo-categoria-archivos .fa-pencil-square-o:hover {
     color: #4b5563 !important;
     transform: scale(1.15);
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-/* Evitar escala y sombras en hover */
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-
-/* Convertir cabeceras de tarjetas con bg-primary en elegantes títulos subrayados */
-.card-header.bg-primary {
-    background-color: transparent !important;
-    color: #000000 !important;
-    border-bottom: 2px solid #000000 !important;
-    padding-bottom: 0.5rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card-header.bg-primary h5 {
-    font-size: 1.1rem !important;
-    color: #000000 !important;
-}
-
-/* Modificar botones a color blanco/negro clásico en la cabecera */
-.card-header.bg-primary .btn-outline-light {
-    border-color: #000000 !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Iconos y textos de acento en Negro */
-.text-primary,
-.fa-folder-open,
-.fa-plus-circle,
-.fa-list {
-    color: #000000 !important;
+/* Iconos de acento */
+#modulo-categoria-archivos .fa-folder-open,
+#modulo-categoria-archivos .fa-list-ul {
+    color: inherit;
 }
 
 /* Form Controls */
-.form-control {
+#modulo-categoria-archivos .form-control {
     border-color: rgba(0, 0, 0, 0.35) !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -133,13 +83,13 @@
     background-color: #ffffff !important;
 }
 
-.form-control:focus {
+#modulo-categoria-archivos .form-control:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Botón Guardar/Registrar (Primario): Azul con borde Negro */
-.btn-primary {
+#modulo-categoria-archivos .btn-primary {
     background-color: #0d6efd !important;
     border: 2px solid #d1d5db !important;
     color: #ffffff !important;
@@ -148,15 +98,15 @@
     transition: all 0.2s ease-in-out;
 }
 
-.btn-primary:hover {
+#modulo-categoria-archivos .btn-primary:hover {
     background-color: #0b5ed7 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
 /* Botón Cancelar/Volver: Blanco con bordes grises */
-.btn-light,
-.btn-outline-secondary {
+#modulo-categoria-archivos .btn-light,
+#modulo-categoria-archivos .btn-outline-secondary {
     background-color: #ffffff !important;
     color: #4b5563 !important;
     border-radius: 50rem !important;
@@ -164,15 +114,15 @@
     transition: all 0.2s ease-in-out;
 }
 
-.btn-light:hover,
-.btn-outline-secondary:hover {
+#modulo-categoria-archivos .btn-light:hover,
+#modulo-categoria-archivos .btn-outline-secondary:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
 /* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
+#modulo-categoria-archivos .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
     border-collapse: separate !important;
@@ -181,7 +131,7 @@
     background-color: #ffffff !important;
 }
 
-.table th {
+#modulo-categoria-archivos .table th {
     background-color: #f9fafb !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -192,23 +142,23 @@
     border-bottom: 1.5px solid #e5e7eb !important;
 }
 
-.table td {
+#modulo-categoria-archivos .table td {
     padding: 1rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
     font-size: 0.875rem;
 }
 
-.table-hover tbody tr:hover {
+#modulo-categoria-archivos .table-hover tbody tr:hover {
     background-color: #f9fafb !important;
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
+#modulo-categoria-archivos .pagination {
     margin: 0 !important;
 }
 
-.pagination .page-link {
+#modulo-categoria-archivos .pagination .page-link {
     color: #000000 !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
@@ -220,21 +170,20 @@
     transition: all 0.2s ease-in-out;
 }
 
-.pagination .page-link:hover {
+#modulo-categoria-archivos .pagination .page-link:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
     border-color: #000000 !important;
 }
 
-.pagination .page-item.active .page-link {
+#modulo-categoria-archivos .pagination .page-item.active .page-link {
     background-color: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
-.pagination .page-item.disabled .page-link {
+#modulo-categoria-archivos .pagination .page-item.disabled .page-link {
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-

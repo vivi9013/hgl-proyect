@@ -1,4 +1,4 @@
-/* Estilos personalizados para el formulario de Carga de Archivos */
+/* Estilos personalizados para el módulo de Carga de Archivos */
 
 /* Animación del Spinner */
 @keyframes spin {
@@ -7,43 +7,49 @@
     }
 }
 
-.fa-spin {
+#modulo-carga-archivos .fa-spin {
     animation: spin 1s linear infinite;
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+/* Botón Guardar/Registrar (Primario): Azul con borde gris */
+#modulo-carga-archivos .btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #d1d5db !important;
+    color: #ffffff !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
 }
 
-/* Evitar escala y sombras en hover */
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
+#modulo-carga-archivos .btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
 }
 
+/* Botones de Cancelar o Submódulos: Blanco con borde gris */
+#modulo-carga-archivos .btn-light,
+#modulo-carga-archivos .btn-outline-secondary,
+#modulo-carga-archivos .btn-outline-success {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
 
-/* Iconos y textos de acento en Negro */
-.text-primary,
-.fa-upload,
-.fa-info-circle,
-.fa-folder-open-o,
-.fa-file-text-o,
-.fa-code-fork {
+#modulo-carga-archivos .btn-light:hover,
+#modulo-carga-archivos .btn-outline-secondary:hover,
+#modulo-carga-archivos .btn-outline-success:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
 /* Input Fields */
-.form-control,
-.form-select {
+#modulo-carga-archivos .form-control,
+#modulo-carga-archivos .form-select {
     border-color: rgba(0, 0, 0, 0.35) !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -53,57 +59,14 @@
     background-color: #ffffff !important;
 }
 
-.form-control:focus,
-.form-select:focus {
+#modulo-carga-archivos .form-control:focus,
+#modulo-carga-archivos .form-select:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Acentos y Botones Primarios: Azul con borde Negro */
-.btn-primary {
-    background-color: #0d6efd !important;
-    border: 2px solid #d1d5db !important;
-    color: #ffffff !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Botones de Cancelar o Submódulos: Blanco con borde Gris */
-.btn-light,
-.btn-outline-primary,
-.btn-outline-secondary,
-.btn-outline-success {
-    background-color: #ffffff !important;
-    border: 2px solid #d1d5db !important;
-    color: #4b5563 !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-light:hover,
-.btn-outline-primary:hover,
-.btn-outline-secondary:hover,
-.btn-outline-success:hover {
-    background-color: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #000000 !important;
-}
-
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
 /* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
+#modulo-carga-archivos .table {
     border: 1px solid #c5b99a !important;
     border-radius: 8px !important;
     border-collapse: separate !important;
@@ -115,7 +78,7 @@
     /* ajuste dinámico */
 }
 
-.table th {
+#modulo-carga-archivos .table th {
     background-color: #ede8de !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -130,7 +93,7 @@
     text-overflow: clip !important;
 }
 
-.table td {
+#modulo-carga-archivos .table td {
     padding: 0.45rem 0.5rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
@@ -141,19 +104,19 @@
     text-overflow: clip !important;
 }
 
-.table-hover tbody tr:hover {
+#modulo-carga-archivos .table-hover tbody tr:hover {
     background-color: #ede8de !important;
 }
 
 /* Ajuste de botones dentro de la tabla para ser compactos */
-.table .btn-sm,
-.table .btn {
+#modulo-carga-archivos .table .btn-sm,
+#modulo-carga-archivos .table .btn {
     padding: 0.2rem 0.4rem !important;
     font-size: 0.7rem !important;
     min-width: auto !important;
 }
 
-.table .rounded-circle {
+#modulo-carga-archivos .table .rounded-circle {
     padding: 0 !important;
     width: 28px !important;
     height: 28px !important;
@@ -165,14 +128,14 @@
 }
 
 /* Badges dentro de la tabla más compactos */
-.table .badge {
+#modulo-carga-archivos .table .badge {
     font-size: 0.7rem !important;
     padding: 0.25rem 0.5rem !important;
     white-space: nowrap;
 }
 
 /* Texto truncado dentro de la tabla */
-.table .text-truncate {
+#modulo-carga-archivos .table .text-truncate {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -181,16 +144,16 @@
 }
 
 /* Ajuste del contenedor para evitar scroll horizontal */
-.table-responsive {
+#modulo-carga-archivos .table-responsive {
     overflow-x: hidden !important;
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
+#modulo-carga-archivos .pagination {
     margin: 0 !important;
 }
 
-.pagination .page-link {
+#modulo-carga-archivos .pagination .page-link {
     color: #000000 !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
@@ -202,20 +165,32 @@
     transition: all 0.2s ease-in-out;
 }
 
-.pagination .page-link:hover {
+#modulo-carga-archivos .pagination .page-link:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
     border-color: #000000 !important;
 }
 
-.pagination .page-item.active .page-link {
+#modulo-carga-archivos .pagination .page-item.active .page-link {
     background-color: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
-.pagination .page-item.disabled .page-link {
+#modulo-carga-archivos .pagination .page-item.disabled .page-link {
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
+}
+
+/* Panel de filtros desplegable */
+#modulo-carga-archivos #dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#modulo-carga-archivos #dropdownFiltros .form-check-input:checked {
+    background-color: #212529;
+    border-color: #212529;
+}
+#modulo-carga-archivos .cursor-pointer {
+    cursor: pointer;
 }

@@ -1,15 +1,3 @@
-{{-- Datos de transporte ocultos para que el JS controle la paginación --}}
-<tr id="datosPaginacionTransporte" style="display: none;"
-    data-total="{{ $categorias->total() }}"
-    data-info="Mostrando {{ $categorias->firstItem() ?? 0 }} a {{ $categorias->lastItem() ?? 0 }} de {{ $categorias->total() }} categorías">
-    <td colspan="3">
-        <div id="htmlLinksPaginacion">
-            {{ $categorias->links('pagination::bootstrap-4') }}
-        </div>
-    </td>
-</tr>
-
-{{-- Renglones de la matriz --}}
 @forelse($categorias as $index => $cat)
     @php
         $tieneAcceso = $trabajador->categorias->contains($cat->id_catego_archivos);

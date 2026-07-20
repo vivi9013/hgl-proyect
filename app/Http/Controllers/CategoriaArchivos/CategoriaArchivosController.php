@@ -26,9 +26,15 @@ class CategoriaArchivosController extends Controller
 
         $categorias = $query->paginate(10);
 
-        // Si la petición viene por AJAX (para cambiar de página o buscar), retornamos la vista parcial
+        // Si la petición viene por AJAX (para cambiar de página o buscar), retornamos JSON
         if ($request->ajax() || $request->wantsJson()) {
-            return view('admin_formatos.categoria_archivos.partials.tabla', compact('categorias'));
+            return response()->json([
+                'html'  => view('admin_formatos.categoria_archivos.partials.tabla', compact('categorias'))->render(),
+                'total' => $categorias->total(),
+                'info'  => 'Mostrando ' . ($categorias->firstItem() ?? 0) . ' a ' . ($categorias->lastItem() ?? 0)
+                    . ' de ' . $categorias->total() . ' registros',
+                'links' => (string) $categorias->links('pagination::bootstrap-4'),
+            ]);
         }
         return view('admin_formatos.categoria_archivos.index', compact('categorias'));
     }

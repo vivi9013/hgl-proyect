@@ -5,20 +5,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     // === SELECTORES GLOBAL DE ESTADOS (MEMORIA) ===
     const categoriasSeleccionadas = new Set();
-    
+
     // El formulario y contenedor de inputs
     const formAsignar = document.getElementById('formAsignarCategorias');
     const inputsDestinoOcultos = document.getElementById('inputsDestinoOcultos');
 
-    // Nodos de la tabla asíncrona
+    // Nodos de la tabla asíncrona (solo una de las dos existe en cada página)
     const tbody = document.getElementById('tbodyAsignacion');
     const tbodyTrabajadores = document.getElementById('tbodyTrabajadores');
     const totalTrabajadoresBadge = document.getElementById('totalTrabajadores');
-    const searchInput = document.getElementById('global-search');
+    const filtroBuscar = document.getElementById('filtro-buscar');
     const contador = document.getElementById('contadorSeleccionados');
     const infoPaginacion = document.getElementById('infoPaginacion');
     const contenedorPaginacion = document.getElementById('contenedorPaginacion');
-    
+
     const btnMarcarTodos = document.getElementById('btnMarcarTodos');
     const btnDesmarcarTodos = document.getElementById('btnDesmarcarTodos');
 
@@ -34,38 +34,38 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────
-    // GESTIÓN DE MEMORIA VIRTUAL DE CHECKBOXES
+    // HELPER — debounce
+    // ─────────────────────────────────────────────────────────
+    function demorarEjecucion(fn, ms) {
+        let timer;
+        return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), ms); };
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // GESTIÓN DE MEMORIA VIRTUAL DE CHECKBOXES (solo vista Asignar)
     // ─────────────────────────────────────────────────────────
     function inicializarMemoriaDesdeDOM() {
         if (!tbody) return;
         // Captura el estado cargado inicialmente por Laravel
-        const checkboxesActuales = tbody.querySelectorAll('.chk-permiso');
-        checkboxesActuales.forEach(chk => {
-            if (chk.checked) {
-                categoriasSeleccionadas.add(chk.value);
-            }
+        tbody.querySelectorAll('.chk-permiso').forEach(chk => {
+            if (chk.checked) categoriasSeleccionadas.add(chk.value);
         });
         actualizarContadorInterfaz();
     }
 
     function actualizarContadorInterfaz() {
-        if (contador) {
-            contador.textContent = categoriasSeleccionadas.size;
-        }
+        if (contador) contador.textContent = categoriasSeleccionadas.size;
     }
 
     function sincronizarCheckboxesVisuales() {
         if (!tbody) return;
-        const checkboxesActuales = tbody.querySelectorAll('.chk-permiso');
-        
-        checkboxesActuales.forEach(chk => {
+        tbody.querySelectorAll('.chk-permiso').forEach(chk => {
+            const row = chk.closest('.fila-categoria');
             if (categoriasSeleccionadas.has(chk.value)) {
                 chk.checked = true;
-                const row = chk.closest('.fila-categoria');
                 if (row) row.classList.add('table-success-soft');
             } else {
                 chk.checked = false;
-                const row = chk.closest('.fila-categoria');
                 if (row) row.classList.remove('table-success-soft');
             }
         });
@@ -73,9 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function enlazarEventosCheckboxes() {
         if (!tbody) return;
-        const checkboxesActuales = tbody.querySelectorAll('.chk-permiso');
-        
-        checkboxesActuales.forEach(chk => {
+        tbody.querySelectorAll('.chk-permiso').forEach(chk => {
             chk.addEventListener('change', function () {
                 const row = this.closest('.fila-categoria');
                 if (this.checked) {
@@ -122,157 +120,110 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────
-    // MOTOR DE PAGINACIÓN ASÍNCRONA (AJAX)
+    // MOTOR DE PAGINACIÓN + FILTROS AJAX (respuesta JSON estándar)
     // ─────────────────────────────────────────────────────────
-    function cargarPaginaAsignacion(numeroPagina = 1) {
-        if (!tbody) return;
-        tbody.style.opacity = '0.5';
-
-        // Captura la URI actual del formulario de asignación
-        const urlAsignar = window.location.pathname;
-        const buscar = searchInput ? searchInput.value : '';
-
-        fetch(`${urlAsignar}?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Error recuperando la matriz.');
-            return response.text();
-        })
-        .then(html => {
-            tbody.style.opacity = '1';
-            tbody.innerHTML = html;
-
-            const elTransporte = document.getElementById('datosPaginacionTransporte');
-            if (elTransporte) {
-                const textoInfo = elTransporte.getAttribute('data-info');
-                const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
-
-                if (infoPaginacion) infoPaginacion.textContent = textoInfo;
-                if (contenedorPaginacion) {
-                    contenedorPaginacion.innerHTML = htmlLinks;
-                    asignarEventosEnlaces();
-                }
-
-                // Sincronizar UI con la memoria virtual y volver a registrar listeners
-                sincronizarCheckboxesVisuales();
-                enlazarEventosCheckboxes();
-            }
-        })
-        .catch(err => {
-            tbody.style.opacity = '1';
-            console.error('Error paginando matriz de asignación:', err);
-        });
+    function obtenerFiltros() {
+        return { buscar: filtroBuscar?.value.trim() ?? '' };
     }
 
-    function cargarPaginaTrabajadores(numeroPagina = 1) {
-        if (!tbodyTrabajadores) return;
-        tbodyTrabajadores.style.opacity = '0.5';
-
-        const buscar = searchInput ? searchInput.value : '';
-
-        fetch(`/permisos-archivo?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Error recuperando la lista de trabajadores.');
-            return response.text();
-        })
-        .then(html => {
-            tbodyTrabajadores.style.opacity = '1';
-            tbodyTrabajadores.innerHTML = html;
-
-            const elTransporte = document.getElementById('datosPaginacionTransporte');
-            if (elTransporte) {
-                const totalGlobal = parseInt(elTransporte.getAttribute('data-total'));
-                const textoInfo = elTransporte.getAttribute('data-info');
-                const htmlLinks = document.getElementById('htmlLinksPaginacion').innerHTML;
-
-                if (totalTrabajadoresBadge) {
-                    totalTrabajadoresBadge.textContent = `${totalGlobal} ${totalGlobal === 1 ? 'Registro' : 'Registros'}`;
-                }
-                if (infoPaginacion) infoPaginacion.textContent = textoInfo;
-                if (contenedorPaginacion) {
-                    contenedorPaginacion.innerHTML = htmlLinks;
-                    asignarEventosEnlaces();
-                }
-            } else {
-                if (totalTrabajadoresBadge) totalTrabajadoresBadge.textContent = '0 Registros';
-                if (infoPaginacion) infoPaginacion.textContent = "Mostrando 0 a 0 de 0 trabajadores";
-                if (contenedorPaginacion) contenedorPaginacion.innerHTML = '';
-            }
-        })
-        .catch(err => {
-            tbodyTrabajadores.style.opacity = '1';
-            console.error('Error paginando lista de trabajadores:', err);
-        });
-    }
-
-    function asignarEventosEnlaces() {
+    function asignarEventosEnlaces(cargarPagina) {
         if (!contenedorPaginacion) return;
         contenedorPaginacion.querySelectorAll('a.page-link').forEach(enlace => {
             enlace.addEventListener('click', function (e) {
                 e.preventDefault();
-                const urlObj = new URL(this.href);
-                const paginaDestino = urlObj.searchParams.get('page');
-                if (paginaDestino) {
-                    if (tbodyTrabajadores) {
-                        cargarPaginaTrabajadores(paginaDestino);
-                    } else if (tbody) {
-                        cargarPaginaAsignacion(paginaDestino);
-                    }
-                }
+                const p = new URL(this.href).searchParams.get('page');
+                if (p) cargarPagina(p);
             });
         });
+    }
+
+    // Vista Asignar (matriz de categorías de un trabajador)
+    function cargarPaginaAsignacion(pagina = 1) {
+        if (!tbody) return;
+        const f = obtenerFiltros();
+        const params = new URLSearchParams({ page: pagina });
+        if (f.buscar) params.set('buscar', f.buscar);
+
+        tbody.style.opacity = '0.4';
+        tbody.style.transition = 'opacity 0.2s';
+
+        fetch(`${window.location.pathname}?${params}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(datos => {
+            tbody.style.opacity = '1';
+            tbody.innerHTML = datos.html;
+            if (infoPaginacion) infoPaginacion.textContent = datos.info;
+            if (contenedorPaginacion) {
+                contenedorPaginacion.innerHTML = datos.links;
+                asignarEventosEnlaces(cargarPaginaAsignacion);
+            }
+            // Sincronizar UI con la memoria virtual y volver a registrar listeners
+            sincronizarCheckboxesVisuales();
+            enlazarEventosCheckboxes();
+        })
+        .catch(() => { tbody.style.opacity = '1'; });
+    }
+
+    // Vista Index (lista de trabajadores)
+    function cargarPaginaTrabajadores(pagina = 1) {
+        if (!tbodyTrabajadores) return;
+        const f = obtenerFiltros();
+        const params = new URLSearchParams({ page: pagina });
+        if (f.buscar) params.set('buscar', f.buscar);
+
+        tbodyTrabajadores.style.opacity = '0.4';
+        tbodyTrabajadores.style.transition = 'opacity 0.2s';
+
+        fetch(`/permisos-archivo?${params}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(datos => {
+            tbodyTrabajadores.style.opacity = '1';
+            tbodyTrabajadores.innerHTML = datos.html;
+            if (totalTrabajadoresBadge) totalTrabajadoresBadge.textContent = `${datos.total} ${datos.total === 1 ? 'Registro' : 'Registros'}`;
+            if (infoPaginacion) infoPaginacion.textContent = datos.info;
+            if (contenedorPaginacion) {
+                contenedorPaginacion.innerHTML = datos.links;
+                asignarEventosEnlaces(cargarPaginaTrabajadores);
+            }
+        })
+        .catch(() => { tbodyTrabajadores.style.opacity = '1'; });
+    }
+
+    // Listener de filtro (debounce) — dispara la carga que corresponda a la página actual
+    if (filtroBuscar) {
+        filtroBuscar.addEventListener('input', demorarEjecucion(() => {
+            if (tbodyTrabajadores) cargarPaginaTrabajadores(1);
+            else if (tbody) cargarPaginaAsignacion(1);
+        }, 320));
+    }
+
+    // Paginación inicial (SSR): los enlaces ya vienen del render de Laravel al cargar la página
+    if (contenedorPaginacion) {
+        if (tbodyTrabajadores) asignarEventosEnlaces(cargarPaginaTrabajadores);
+        else if (tbody) asignarEventosEnlaces(cargarPaginaAsignacion);
     }
 
     // ─────────────────────────────────────────────────────────
     // PREPARACIÓN DE ENVÍO DE DATOS POST (INYECCIÓN DE CHECKS)
     // ─────────────────────────────────────────────────────────
     if (formAsignar) {
-        formAsignar.addEventListener('submit', function (e) {
-            // Limpiar inyecciones anteriores por seguridad
+        formAsignar.addEventListener('submit', function () {
             if (inputsDestinoOcultos) inputsDestinoOcultos.innerHTML = '';
-
-            // Generar un input hidden por cada ID almacenado en la memoria virtual
             categoriasSeleccionadas.forEach(idCategoria => {
                 const inputHidden = document.createElement('input');
                 inputHidden.type = 'hidden';
                 inputHidden.name = 'categorias[]';
                 inputHidden.value = idCategoria;
-                if (inputsDestinoOcultos) {
-                    inputsDestinoOcultos.appendChild(inputHidden);
-                }
+                if (inputsDestinoOcultos) inputsDestinoOcultos.appendChild(inputHidden);
             });
         });
-    }
-
-    // Función debounce para evitar ráfagas de peticiones
-    function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(function () {
-            if (tbodyTrabajadores) {
-                cargarPaginaTrabajadores(1);
-            } else if (tbody) {
-                cargarPaginaAsignacion(1);
-            }
-        }, 300));
     }
 
     // Inicialización al cargar la página
     inicializarMemoriaDesdeDOM();
     enlazarEventosCheckboxes();
-
-    const elTransporteInicial = document.getElementById('datosPaginacionTransporte');
-    if (elTransporteInicial && contenedorPaginacion) {
-        contenedorPaginacion.innerHTML = document.getElementById('htmlLinksPaginacion').innerHTML;
-        asignarEventosEnlaces();
-    }
 });
