@@ -41,24 +41,6 @@
     transform: scale(1.15);
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-#modulo-gestion-proyectos .card,
-#modulo-gestion-proyectos .card-header,
-#modulo-gestion-proyectos .card-body,
-#modulo-gestion-proyectos .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-#modulo-gestion-proyectos .card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
 /* Iconos y textos de acento en Negro */
 #modulo-gestion-proyectos .text-primary,
 #modulo-gestion-proyectos .fa-folder,
@@ -188,28 +170,12 @@
     border-color: #e5e7eb !important;
 }
 
-#modulo-gestion-proyectos .bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
 /* ── Clases utilitarias extraídas de estilos inline ── */
 
 /* Modal de alta de proyecto */
 #modulo-gestion-proyectos .modal-alta-proyecto {
     border-radius: 15px;
     overflow: hidden;
-}
-
-/* Grupo del buscador global */
-#modulo-gestion-proyectos .search-group {
-    max-width: 280px;
-    border: 1.5px solid #000;
-    border-radius: 8px;
-    overflow: hidden;
-}
-#modulo-gestion-proyectos .search-group .form-control {
-    box-shadow: none !important;
 }
 
 /* Encabezados y pies de tabla con tamaños unificados */

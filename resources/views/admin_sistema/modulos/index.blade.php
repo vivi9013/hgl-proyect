@@ -22,48 +22,6 @@
         </div>
     </div>
 
-    {{-- Panel Informativo y de Acciones Rápidas --}}
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary-light p-3 rounded-circle text-primary">
-                        <i class="fa fa-info-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">Administración de Módulos</h6>
-                        <p class="text-muted small mb-0">Permite registrar módulos del sistema, asignarlos a proyectos y perfiles, configurar su icono, color y categoría.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
-                    {{-- Botón Alta de Módulo --}}
-                    <button type="button"
-                            class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap"
-                            data-bs-toggle="modal" data-bs-target="#modalAltaModulo">
-                        <i class="fa fa-plus-circle me-2"></i>Registrar Nuevo Módulo
-                    </button>
-
-                    {{-- Submódulo: Reportes --}}
-                    <a href="{{ route('modulos.reportes') }}"
-                       class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i>Reportes
-                    </a>
-
-                    {{-- Submódulo: Gráficas --}}
-                    <a href="{{ route('modulos.graficas') }}"
-                       class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-bar-chart me-2 text-success"></i>Gráficas
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
 {{-- ================================================================
      MODAL: Registrar Nuevo Módulo
      ================================================================ --}}
@@ -226,30 +184,38 @@
     <div class="row g-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fa fa-list-ul me-2"></i>Lista de Módulos
+                        </h5>
+                    </div>
 
-                        <div class="d-flex align-items-center gap-3">
-                            <h5 class="card-title mb-0 fw-bold text-dark">
-                                <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Módulos
-                            </h5>
-                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalModulos">
-                                {{ $modulos->total() }} Registros
-                            </span>
+                    {{-- ── Panel de filtros ────────────────────────────────────── --}}
+                    <div class="row g-2 align-items-end" id="panelFiltros">
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar módulo" placeholder="Módulo o categoría..." clase="col-12 col-md-4" />
+                    </div>
+                    {{-- /panelFiltros --}}
+
+                    {{-- Acciones secundarias (Registrar, Reportes, Gráficas) --}}
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm text-nowrap"
+                                    data-bs-toggle="modal" data-bs-target="#modalAltaModulo">
+                                <i class="fa fa-plus-circle me-1"></i>Registrar Nuevo Módulo
+                            </button>
                         </div>
-
-                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
-                            {{-- Buscador Reactivo --}}
-                            <div class="input-group" style="min-width: 260px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
-                                <input type="search" id="busqueda-global" class="form-control bg-light border-0"
-                                       placeholder="Buscar módulo o categoría..."
-                                       style="font-size: 0.85rem; box-shadow: none;">
-                                <span class="input-group-text bg-light border-0 py-0">
-                                    <i class="fa fa-search text-dark"></i>
-                                </span>
-                            </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('modulos.graficas') }}"
+                               class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-bar-chart me-1"></i>Gráficas
+                            </a>
+                            <a href="{{ route('modulos.reportes') }}"
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                            </a>
                         </div>
-
                     </div>
                 </div>
 
@@ -295,15 +261,15 @@
                     </div>
                 </div>
 
-                {{-- Footer con Paginación --}}
+                {{-- Pie: info + paginación --}}
                 <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
-                    <div class="text-muted small" id="infoPaginacion">
+                    <div class="text-muted small" id="infoPaginacionModulos">
                         Mostrando {{ $modulos->firstItem() ?? 0 }} a {{ $modulos->lastItem() ?? 0 }} de {{ $modulos->total() }} registros
                     </div>
                     <nav aria-label="Paginacion de modulos">
-                        <ul class="pagination mb-0" id="contenedorPaginacion">
-                            {{-- Sincronizado dinámicamente por JS --}}
-                        </ul>
+                        <div id="paginacionModulos">
+                            {{ $modulos->links('pagination::bootstrap-4') }}
+                        </div>
                     </nav>
                 </div>
 

@@ -9,11 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnGuardar = document.getElementById('btnGuardar');
 
     // === ELEMENTOS DE PAGINACIÓN ===
-    const tbody = document.getElementById('tbodyPerfiles');
-    const infoPaginacion = document.getElementById('infoPaginacion');
-    const contenedorPaginacion = document.getElementById('contenedorPaginacion');
-    const searchInput = document.getElementById('global-search');
-    const totalBadge = document.getElementById('totalPerfiles');
+    const tbody = document.getElementById('cuerpoTablaPerfiles');
+    const infoPaginacion = document.getElementById('infoPaginacionPerfiles');
+    const contenedorPaginacion = document.getElementById('paginacionPerfiles');
+    const searchInput = document.getElementById('filtro-buscar');
 
     // 1. Mostrar SweetAlert2 si existen los divs de alerta de sesión
     const alertaExitog = document.getElementById('alertaExitog');
@@ -113,9 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tbody.style.opacity = '1';
             tbody.innerHTML = data.html;
 
-            if (totalBadge) {
-                totalBadge.textContent = `${data.total} ${data.total === 1 ? 'Registro' : 'Registros'}`;
-            }
             if (infoPaginacion) {
                 infoPaginacion.textContent = data.info;
             }
@@ -249,8 +245,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300));
     }
 
-    // Carga inicial de paginación
-    const activePageLink = contenedorPaginacion?.querySelector('.page-item.active .page-link');
-    const initPage = activePageLink ? parseInt(activePageLink.textContent) : 1;
-    cargarPagina(initPage);
+    // Carga inicial: la tabla y la paginación ya vienen renderizadas por el servidor (SSR),
+    // solo se enlazan los eventos de acciones y de los links de paginación existentes.
+    enlazarEventosAcciones();
+    asignarEventosEnlaces();
 });

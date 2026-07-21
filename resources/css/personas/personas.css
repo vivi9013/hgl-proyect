@@ -3,74 +3,50 @@
    ═══════════════════════════════════════════════ */
 
 /* Focus modernos en inputs */
-.form-control:focus,
-.form-select:focus,
-textarea:focus {
+#modulo-personas .form-control:focus,
+#modulo-personas .form-select:focus,
+#modulo-personas textarea:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Hover filas de tabla (selector único con color consistente) */
-#tbodyPersonas tr {
+#modulo-personas #cuerpoTablaPersonas tr {
     transition: background-color 0.2s ease;
 }
-#tbodyPersonas tr:hover {
+#modulo-personas #cuerpoTablaPersonas tr:hover {
     background-color: #f9fafb !important;
 }
 
 /* Botones de toggle (status / estudiante) */
-.btn-toggle-status,
-.btn-toggle-estudiante {
+#modulo-personas .btn-toggle-status,
+#modulo-personas .btn-toggle-estudiante {
     color: #4a5568;
     font-size: 1.25rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
-.btn-toggle-status:hover,
-.btn-toggle-estudiante:hover {
+#modulo-personas .btn-toggle-status:hover,
+#modulo-personas .btn-toggle-estudiante:hover {
     transform: scale(1.15);
 }
 
 /* Ícono editar */
-.fa-pencil-square-o {
+#modulo-personas .fa-pencil-square-o {
     color: #000000 !important;
     font-size: 1.2rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
-.fa-pencil-square-o:hover {
+#modulo-personas .fa-pencil-square-o:hover {
     color: #4b5563 !important;
     transform: scale(1.15);
 }
 
-/* ── Sin tarjetas visuales (estilo plano consistente) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Iconos de acento en negro */
-.text-primary,
-.fa-id-card,
-.fa-plus-circle {
-    color: #000000 !important;
-}
-
 /* Form Controls */
-.form-control,
-.form-select,
-textarea {
+#modulo-personas .form-control,
+#modulo-personas .form-select,
+#modulo-personas textarea {
     border-color: #d1d5db !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -80,8 +56,8 @@ textarea {
     background-color: #ffffff !important;
 }
 
-/* Botón Primario — color negro (branding del módulo admin) */
-.btn-primary {
+/* Botón Primario */
+#modulo-personas .btn-primary {
     background-color: #0d6efd !important;
     border: 2px solid #dbd1d1 !important;
     color: #ffffff !important;
@@ -89,14 +65,16 @@ textarea {
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
-.btn-primary:hover {
+#modulo-personas .btn-primary:hover {
     background-color: #1a1a1a !important;
     border-color: #1a1a1a !important;
     color: #ffffff !important;
 }
 
-/* Botón Cancelar */
-.btn-light {
+/* Botón Cancelar / Reportes */
+#modulo-personas .btn-light,
+#modulo-personas .btn-outline-secondary,
+#modulo-personas .btn-outline-success {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
@@ -104,14 +82,16 @@ textarea {
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
-.btn-light:hover {
+#modulo-personas .btn-light:hover,
+#modulo-personas .btn-outline-secondary:hover,
+#modulo-personas .btn-outline-success:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
 /* ── Tabla ── */
-.table {
+#modulo-personas .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
     border-collapse: separate !important;
@@ -119,7 +99,7 @@ textarea {
     overflow: hidden !important;
     background-color: #ffffff !important;
 }
-.table th {
+#modulo-personas .table th {
     background-color: #f9fafb !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -129,7 +109,7 @@ textarea {
     padding: 1rem !important;
     border-bottom: 1.5px solid #e5e7eb !important;
 }
-.table td {
+#modulo-personas .table td {
     padding: 1rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
@@ -137,8 +117,8 @@ textarea {
 }
 
 /* ── Paginación ── */
-.pagination { margin: 0 !important; }
-.pagination .page-link {
+#modulo-personas .pagination { margin: 0 !important; }
+#modulo-personas .pagination .page-link {
     color: #000000 !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
@@ -149,69 +129,54 @@ textarea {
     margin: 0 2px !important;
     transition: all 0.2s ease-in-out;
 }
-.pagination .page-link:hover {
+#modulo-personas .pagination .page-link:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
     border-color: #000000 !important;
 }
-.pagination .page-item.active .page-link {
+#modulo-personas .pagination .page-item.active .page-link {
     background-color: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
-.pagination .page-item.disabled .page-link {
+#modulo-personas .pagination .page-item.disabled .page-link {
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
 
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-.bg-primary-light {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
 /* Fila de persona inactiva */
-.bg-light-gray {
+#modulo-personas .bg-light-gray {
     background-color: #f3f4f6 !important;
 }
 
-/* ── Clases utilitarias extraídas de estilos inline ── */
-
-/* Buscador global en la cabecera de la tabla */
-.search-group {
-    min-width: 280px;
-    border: 1.5px solid #000;
-    border-radius: 10px;
-    overflow: hidden;
-}
-.search-group .form-control {
-    font-size: 0.85rem !important;
-    box-shadow: none !important;
-}
-
-/* Encabezado de tabla (thead) */
-.thead-personas {
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-}
-
 /* Modal de alta de persona */
-.modal-alta {
+#modulo-personas .modal-alta {
     border: 2px solid #000 !important;
 }
 
 /* Botón de cierre del modal en modo oscuro */
-.btn-close-dark {
+#modulo-personas .btn-close-dark {
     filter: brightness(0);
 }
 
 /* Icono de estudiante inactivo (no es estudiante) */
-.icon-no-estudiante {
+#modulo-personas .icon-no-estudiante {
     opacity: 0.35;
 }
+
+/* Panel de filtros desplegable */
+#modulo-personas #dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#modulo-personas .cursor-pointer {
+    cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════
+   Vistas de analítica (graficas.blade.php) — fuera del
+   contenedor #modulo-personas, no forman parte del listado
+   ═══════════════════════════════════════════════ */
 
 /* Tarjetas de estadísticas en graficas.blade.php */
 .stat-value {

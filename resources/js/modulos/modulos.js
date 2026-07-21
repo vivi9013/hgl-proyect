@@ -231,10 +231,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // C. TABLA: PAGINACIÓN ASÍNCRONA Y BÚSQUEDA
     // ─────────────────────────────────────────────────────────────────────────
     const cuerpoTabla = document.getElementById('cuerpoTablaModulos');
-    const infoPaginacionElemento = document.getElementById('infoPaginacion');
-    const contenedorPaginas = document.getElementById('contenedorPaginacion');
-    const entradaBusqueda = document.getElementById('busqueda-global');
-    const etiquetaTotal = document.getElementById('totalModulos');
+    const infoPaginacionElemento = document.getElementById('infoPaginacionModulos');
+    const contenedorPaginas = document.getElementById('paginacionModulos');
+    const entradaBusqueda = document.getElementById('filtro-buscar');
 
     function cargarPagina(numeroPagina = 1) {
         if (!cuerpoTabla) return;
@@ -257,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
             cuerpoTabla.style.opacity = '1';
             cuerpoTabla.innerHTML = datos.html;
 
-            if (etiquetaTotal)            etiquetaTotal.textContent = `${datos.total} Registros`;
             if (infoPaginacionElemento)    infoPaginacionElemento.textContent = datos.info;
             if (contenedorPaginas)  {
                 contenedorPaginas.innerHTML = datos.links;
@@ -367,16 +365,11 @@ document.addEventListener('DOMContentLoaded', function () {
         entradaBusqueda.addEventListener('input', demorarEjecucion(() => cargarPagina(1), 320));
     }
 
-    // Inicialización: Solo si el cuerpo de la tabla existe en la vista
+    // Inicialización: la tabla y la paginación ya vienen renderizadas por el servidor (SSR),
+    // solo se enlazan los eventos de acciones y de los links de paginación existentes.
+    enlazarAlternarEstado();
     if (cuerpoTabla) {
-        const paginaInicial = contenedorPaginas
-            ?.querySelector('.page-item.active .page-link')
-            ?.textContent?.trim() ?? '1';
-        cargarPagina(paginaInicial);
         asignarEventosPaginacion();
-    } else {
-        // En vistas donde no hay tabla (edición unificada), se enlazan los eventos alternar estado
-        enlazarAlternarEstado();
     }
 
     // ─────────────────────────────────────────────────────────────────────────

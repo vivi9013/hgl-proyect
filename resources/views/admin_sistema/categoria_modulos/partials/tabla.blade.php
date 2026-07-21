@@ -40,6 +40,7 @@
                 @else
                     <i class="fa fa-square-o text-danger fs-5" title="Inactivo"></i>
                 @endif
+            </button>
         </td>
     </tr>
 @endforeach
