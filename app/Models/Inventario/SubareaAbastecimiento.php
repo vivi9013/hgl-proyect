@@ -28,6 +28,7 @@ class SubareaAbastecimiento extends Model
     protected $fillable = [
         'id_area_abastecimiento',
         'nombre',
+        'siglas',
         'activo',
     ];
 

@@ -32,6 +32,8 @@ class AreaAbastecimiento extends Model
 
     /**
      * Subáreas que pertenecen a esta área.
+     * NOTA: La tabla legacy `subareas_abastecimiento` no tiene columna `id_area_abastecimiento`.
+     * Esta relación requiere migración que añada dicha FK. Por ahora retorna colección vacía.
      */
     public function subareas()
     {
