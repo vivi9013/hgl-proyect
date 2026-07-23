@@ -61,3 +61,30 @@
         display: none !important;
     }
 }
+
+/* Paginación interna de insumos (por tarjeta de subárea) */
+.controles-paginacion {
+    flex-wrap: nowrap;
+    gap: 2px;
+}
+
+.controles-paginacion .page-link {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.controles-paginacion .page-item.disabled .page-link {
+    cursor: default;
+    color: #adb5bd;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.controles-paginacion .page-item.active .page-link {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}
+

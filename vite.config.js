@@ -130,6 +130,9 @@ export default defineConfig({
                 // Almacén de Subáreas Assets
                 'resources/css/peticion_insumos/almacen_subareas/almacen_subareas.css',
                 'resources/js/peticion_insumos/almacen_subareas/almacen_subareas.js',
+                // Plantillas de Pedido Assets
+                'resources/css/peticion_insumos/plantillas_pedido/plantillas_pedido.css',
+                'resources/js/peticion_insumos/plantillas_pedido/plantillas_pedido.js',
                 // Áreas de Abastecimiento Assets
                 'resources/css/peticion_insumos/areas_abastecimiento/areas_abastecimiento.css',
                 'resources/js/peticion_insumos/areas_abastecimiento/areas_abastecimiento.js',

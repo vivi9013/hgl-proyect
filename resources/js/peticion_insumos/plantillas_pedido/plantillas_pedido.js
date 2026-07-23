@@ -3,115 +3,125 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: ASIGNAR INSUMO A SUBÁREA (MODAL)
+    // LÓGICA: ASIGNAR INSUMO A PLANTILLA (AJAX)
     // ─────────────────────────────────────────────────────────
+    let idPlantillaActual = null;
+
     document.addEventListener('click', function (e) {
-        const btnAdd = e.target.closest('.btn-agregar-insumo');
-        if (!btnAdd) return;
-
+        const btn = e.target.closest('.btn-agregar-insumo');
+        if (!btn) return;
         e.preventDefault();
-        const idAlmacen = btnAdd.getAttribute('data-id');
-        const subareaNombre = btnAdd.getAttribute('data-subarea') || '';
 
-        const formAdd = document.getElementById('formAgregarInsumo');
-        const spanNombre = document.getElementById('nombreSubareaModal');
+        idPlantillaActual = btn.getAttribute('data-id');
+        const nombre = btn.getAttribute('data-nombre') || '';
 
-        if (formAdd) {
-            formAdd.action = `/peticion-insumos/almacen-subareas/${idAlmacen}/insumo`;
-        }
-        if (spanNombre) {
-            spanNombre.textContent = subareaNombre;
-        }
+        const spanNombre = document.getElementById('nombrePlantillaModal');
+        if (spanNombre) spanNombre.textContent = nombre;
 
         const modalEl = document.getElementById('modalAgregarInsumo');
         if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
+            new bootstrap.Modal(modalEl).show();
         }
     });
 
-    // ─────────────────────────────────────────────────────────
-    // LÓGICA: EDITAR DETALLE (STOCK Y FONDO FIJO VIA AJAX)
-    // ─────────────────────────────────────────────────────────
-    document.addEventListener('click', function (e) {
-        const btnEdit = e.target.closest('.btn-editar-detalle');
-        if (!btnEdit) return;
-
-        e.preventDefault();
-        const idDetalle = btnEdit.getAttribute('data-id');
-        const cantidad = btnEdit.getAttribute('data-cantidad');
-        const fondo = btnEdit.getAttribute('data-fondo');
-
-        document.getElementById('edit_detalle_id').value = idDetalle;
-        document.getElementById('edit_cantidad').value = cantidad;
-        document.getElementById('edit_fondo_fijo').value = fondo;
-
-        const modalEl = document.getElementById('modalEditarDetalle');
-        if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
-    });
-
-    const formEditarDetalle = document.getElementById('formEditarDetalle');
-    if (formEditarDetalle) {
-        formEditarDetalle.addEventListener('submit', function (e) {
+    const formAgregar = document.getElementById('formAgregarInsumo');
+    if (formAgregar) {
+        formAgregar.addEventListener('submit', function (e) {
             e.preventDefault();
-            const idDetalle = document.getElementById('edit_detalle_id').value;
-            const cantidad = document.getElementById('edit_cantidad').value;
-            const fondo = document.getElementById('edit_fondo_fijo').value;
+            if (!idPlantillaActual) return;
 
-            fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
-                method: 'PUT',
+            const idInsumo  = document.getElementById('id_insumo').value;
+            const cantidad  = document.getElementById('cantidad').value;
+
+            fetch(`/peticion-insumos/plantillas-pedido/${idPlantillaActual}/insumo`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ cantidad: cantidad, fondo_fijo: fondo })
+                body: JSON.stringify({ id_insumo: idInsumo, cantidad: cantidad })
             })
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    const modalEl = document.getElementById('modalEditarDetalle');
+                    const modalEl = document.getElementById('modalAgregarInsumo');
                     if (modalEl && typeof bootstrap !== 'undefined') {
                         const modal = bootstrap.Modal.getInstance(modalEl);
                         if (modal) modal.hide();
                     }
+                    formAgregar.reset();
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
-                            title: '¡Actualizado!',
+                            title: '¡Asignado!',
                             text: data.mensaje,
                             icon: 'success',
                             confirmButtonColor: '#2b6cb0'
-                        }).then(() => {
-                            recargarTabla();
-                        });
+                        }).then(() => recargarTabla());
                     } else {
-                        alert(data.mensaje);
                         recargarTabla();
                     }
                 }
             })
-            .catch(err => {
-                console.error('Error al actualizar detalle:', err);
-            });
+            .catch(err => console.error('Error al asignar insumo:', err));
         });
     }
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: ELIMINAR DETALLE DE SUBÁREA VIA AJAX
+    // LÓGICA: EDITAR CANTIDAD DE DETALLE (AJAX inline)
     // ─────────────────────────────────────────────────────────
     document.addEventListener('click', function (e) {
-        const btnDelete = e.target.closest('.btn-eliminar-detalle');
-        if (!btnDelete) return;
-
+        const btn = e.target.closest('.btn-guardar-detalle');
+        if (!btn) return;
         e.preventDefault();
-        const idDetalle = btnDelete.getAttribute('data-id');
+
+        const idDetalle = btn.getAttribute('data-id');
+        const fila      = btn.closest('tr');
+        const cantidad  = fila?.querySelector('.input-cantidad')?.value ?? 0;
+
+        fetch(`/peticion-insumos/plantillas-pedido/detalle/${idDetalle}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ cantidad: cantidad })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '¡Actualizado!',
+                        text: data.mensaje,
+                        icon: 'success',
+                        confirmButtonColor: '#2b6cb0',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => recargarTabla());
+                } else {
+                    recargarTabla();
+                }
+            }
+        })
+        .catch(err => console.error('Error al actualizar detalle:', err));
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // LÓGICA: ELIMINAR DETALLE DE PLANTILLA (AJAX)
+    // ─────────────────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-eliminar-detalle');
+        if (!btn) return;
+        e.preventDefault();
+
+        const idDetalle = btn.getAttribute('data-id');
 
         const doDelete = () => {
-            fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
+            fetch(`/peticion-insumos/plantillas-pedido/detalle/${idDetalle}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -123,33 +133,26 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success) {
                     if (typeof Swal !== 'undefined') {
-                        Swal.fire('¡Eliminado!', data.mensaje, 'success').then(() => {
-                            recargarTabla();
-                        });
+                        Swal.fire('¡Eliminado!', data.mensaje, 'success').then(() => recargarTabla());
                     } else {
-                        alert(data.mensaje);
                         recargarTabla();
                     }
                 }
             })
-            .catch(err => {
-                console.error('Error al eliminar detalle:', err);
-            });
+            .catch(err => console.error('Error al eliminar detalle:', err));
         };
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title: '¿Quitar insumo de la subárea?',
-                text: 'El insumo dejará de pertenecer al inventario de esta subárea.',
+                title: '¿Quitar insumo de la plantilla?',
+                text: 'El insumo dejará de pertenecer a esta plantilla de pedido.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Sí, quitar',
                 cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) doDelete();
-            });
+            }).then(result => { if (result.isConfirmed) doDelete(); });
         } else {
             if (confirm('¿Está seguro de quitar este insumo?')) doDelete();
         }
@@ -158,10 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────
     // LÓGICA: FILTROS EN TIEMPO REAL (ÁREA, SUBÁREA, BUSCAR, ESTATUS)
     // ─────────────────────────────────────────────────────────
-    const contenedor   = document.getElementById('contenedor-tabla-almacenes');
+    const contenedor   = document.getElementById('contenedor-tabla-plantillas');
     const selectArea    = document.getElementById('filter-area');
     const selectSubarea = document.getElementById('filter-subarea');
-    const inputBuscar   = document.getElementById('buscar-almacen');
+    const inputBuscar   = document.getElementById('buscar-plantilla');
     const checksStatus  = document.querySelectorAll('.filter-status-checkbox');
 
     let debounceBuscar;
@@ -186,11 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const params = recolectarParametros(extra);
         const url = `${contenedor.dataset.endpoint}?${params.toString()}`;
 
-        // Cancela la petición anterior si sigue en vuelo (ya quedó obsoleta)
         controladorActual?.abort();
         controladorActual = new AbortController();
-
-        // Marca esta petición como "la más reciente"; solo ella podrá pintar resultados
         const idPeticion = ++peticionActual;
 
         contenedor.style.opacity = '0.5';
@@ -202,9 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(r => r.json())
             .then(data => {
-                // Si mientras esperábamos ya se disparó una petición más nueva, ignorar esta respuesta
                 if (idPeticion !== peticionActual) return;
-
                 contenedor.innerHTML = data.html;
                 contenedor.style.opacity = '1';
                 const nuevaUrl = params.toString() ? `?${params.toString()}` : location.pathname;
@@ -213,13 +211,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 inicializarPaginacionInsumos(contenedor);
             })
             .catch(err => {
-                if (err.name === 'AbortError') return; // cancelación intencional, no es un error real
-                console.error('Error al recargar tabla de almacenes:', err);
+                if (err.name === 'AbortError') return;
+                console.error('Error al recargar tabla de plantillas:', err);
                 if (idPeticion === peticionActual) contenedor.style.opacity = '1';
             });
     }
 
-    // Re-vincula los links de paginación externa (Laravel) tras cada recarga AJAX
     function vincularPaginacionExterna() {
         if (!contenedor) return;
         contenedor.querySelectorAll('.pagination a.page-link').forEach(a => {
@@ -236,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectSubarea.innerHTML = '<option value="">Cargando...</option>';
         selectSubarea.disabled = true;
 
-        fetch(`/peticion-insumos/almacen-subareas/subareas-por-area?id_area_abastecimiento=${idArea}`, {
+        fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${idArea}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
             .then(r => r.json())
@@ -256,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     };
 
-    // Área: recarga subáreas Y dispara filtro en tiempo real
     selectArea?.addEventListener('change', function () {
         if (this.value) {
             cargarSubareas(this.value);
@@ -267,22 +263,19 @@ document.addEventListener('DOMContentLoaded', function () {
         recargarTabla();
     });
 
-    // Subárea: dispara filtro en tiempo real
     selectSubarea?.addEventListener('change', () => recargarTabla());
 
-    // Buscar: tiempo real con debounce (no requiere botón)
     inputBuscar?.addEventListener('input', () => {
         clearTimeout(debounceBuscar);
         debounceBuscar = setTimeout(() => recargarTabla(), 350);
     });
 
-    // Estatus (Activo/Inactivo): tiempo real
     checksStatus.forEach(chk => chk.addEventListener('change', () => recargarTabla()));
 
     vincularPaginacionExterna();
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: PAGINACIÓN INTERNA DE INSUMOS (10 POR PÁGINA, POR TARJETA)
+    // LÓGICA: PAGINACIÓN INTERNA DE INSUMOS (POR TARJETA)
     // ─────────────────────────────────────────────────────────
     function inicializarPaginacionInsumos(scope = document) {
         scope.querySelectorAll('.tabla-insumos-paginada').forEach(cont => {
@@ -299,13 +292,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Calcula qué números de página mostrar: siempre 1 y la última,
-            // + 1 antes/después de la página actual, y "…" donde se salte un rango.
             function calcularRangoPaginas(pagina) {
                 const rango = new Set([1, totalPaginas, pagina, pagina - 1, pagina + 1]);
-                return [...rango]
-                    .filter(p => p >= 1 && p <= totalPaginas)
-                    .sort((a, b) => a - b);
+                return [...rango].filter(p => p >= 1 && p <= totalPaginas).sort((a, b) => a - b);
             }
 
             function crearItem(etiquetaHtml, { activo = false, deshabilitado = false, onClick = null } = {}) {
@@ -365,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inicializarPaginacionInsumos();
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: CONFIRMACIÓN SweetAlert2 AL ALTERNAR STATUS
+    // LÓGICA: ALTERNAR ESTADO VIA AJAX
     // ─────────────────────────────────────────────────────────
     document.addEventListener('click', function (e) {
         const toggleBtn = e.target.closest('.btn-toggle-status');
@@ -389,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
                     if (typeof Swal !== 'undefined') {
@@ -398,47 +387,28 @@ document.addEventListener('DOMContentLoaded', function () {
                             text: data.mensaje,
                             icon: 'success',
                             confirmButtonColor: '#2b6cb0'
-                        }).then(() => {
-                            recargarTabla();
-                        });
+                        }).then(() => recargarTabla());
                     } else {
-                        alert(data.mensaje);
                         recargarTabla();
                     }
                 }
             })
-            .catch(err => {
-                console.error('Error:', err);
-            });
+            .catch(err => console.error('Error:', err));
         };
 
         if (typeof Swal !== 'undefined') {
             Swal.fire({
-                title:             `¿Desea ${accion} el almacén de la subárea?`,
-                text:              `El almacén "${nombre}" cambiará de estado.`,
-                icon:              iconType,
-                showCancelButton:  true,
+                title: `¿Desea ${accion} la plantilla?`,
+                text: `La plantilla "${nombre}" cambiará de estado.`,
+                icon: iconType,
+                showCancelButton: true,
                 confirmButtonColor: '#2b6cb0',
-                cancelButtonColor:  '#d33',
+                cancelButtonColor: '#d33',
                 confirmButtonText: confirmBtnText,
-                cancelButtonText:  'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) doRequest();
-            });
+                cancelButtonText: 'Cancelar'
+            }).then(result => { if (result.isConfirmed) doRequest(); });
         } else {
-            if (confirm(`¿Desea ${accion} el almacén "${nombre}"?`)) doRequest();
+            if (confirm(`¿Desea ${accion} la plantilla "${nombre}"?`)) doRequest();
         }
     });
-
-    // Reabrir modal en caso de rebote con errores
-    const pageErrors = document.getElementById('hasFormErrors');
-    if (pageErrors && pageErrors.dataset.errors === '1') {
-        const modalEl = document.getElementById('modalRegistrarAlmacen');
-        if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
-    }
-
 });
-

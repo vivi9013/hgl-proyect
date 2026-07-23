@@ -41,6 +41,7 @@ use App\Http\Controllers\Trabajadores\TrabajadorController;
 use App\Http\Controllers\PeticionInsumos\AlmacenSubareaController;
 use App\Http\Controllers\PeticionInsumos\AreaAbastecimientoController;
 use App\Http\Controllers\PeticionInsumos\SubareaAbastecimientoController;
+use App\Http\Controllers\PeticionInsumos\PlantillaPedidoController;
 
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
@@ -304,10 +305,22 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/{id}/insumo',          'agregarInsumo')     ->name('insumo.store');
         Route::put('/detalle/{id}',          'actualizarDetalle') ->name('detalle.update');
         Route::delete('/detalle/{id}',       'eliminarDetalle')   ->name('detalle.destroy');
-        Route::get('/graficas',              'graficas')          ->name('graficas');
         Route::get('/reportes',              'reportes')          ->name('reportes');
         Route::get('/reportes/imprimir',     'imprimir')          ->name('imprimir');
         Route::patch('/{id}/status',         'cambiarStatus')     ->name('status');
+    });
+
+    // ── Petición de Insumos: Plantillas de Pedido (ID: 39) ──────────────────────
+    Route::prefix('peticion-insumos/plantillas-pedido')->middleware('modulo:39')->name('plantillas_pedido.')->controller(PlantillaPedidoController::class)->group(function () {
+        Route::get('/',                          'index')            ->name('index');
+        Route::post('/guardar',                  'guardar')          ->name('store');
+        Route::get('/subareas-por-area',         'subareasPorArea')  ->name('subareas_por_area');
+        Route::post('/{id}/insumo',              'agregarInsumo')    ->name('insumo.store');
+        Route::put('/detalle/{id}',              'actualizarDetalle')->name('detalle.update');
+        Route::delete('/detalle/{id}',           'eliminarDetalle')  ->name('detalle.destroy');
+        Route::get('/reportes',                  'reportes')         ->name('reportes');
+        Route::get('/reportes/imprimir',         'imprimir')         ->name('imprimir');
+        Route::patch('/{id}/status',             'cambiarStatus')    ->name('status');
     });
 
     // ── Petición de Insumos: Áreas de Abastecimiento (ID: 36) ──────────────────

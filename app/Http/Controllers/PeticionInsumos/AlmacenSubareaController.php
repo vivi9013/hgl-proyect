@@ -306,37 +306,4 @@ class AlmacenSubareaController extends Controller
         return view('peticion_insumos.almacen_subareas.analitica.reportes.impresion', compact('almacenes'));
     }
 
-    /**
-     * Muestra las gráficas estadísticas del almacén de subáreas con Chart.js.
-     */
-    public function graficas()
-    {
-        $totalActivos = AlmacenSubarea::where('activo', 1)->count();
-        $totalInactivos = AlmacenSubarea::where('activo', 0)->count();
-
-        // Top 10 subáreas por total de insumos registrados
-        $porSubarea = DB::table('almacen_subareas as a')
-            ->join('subareas_abastecimiento as s', 'a.id_subarea_abastecimiento', '=', 's.id_subarea_abastecimiento')
-            ->leftJoin('detalle_almacen_subareas as d', 'a.id_almacen_subarea', '=', 'd.id_almacen_subarea')
-            ->select('s.nombre as label', DB::raw('count(d.id_detalle_almacen_subarea) as total'))
-            ->groupBy('a.id_almacen_subarea', 's.nombre')
-            ->orderBy('total', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Top insumos con menor stock relativo a su fondo fijo
-        $insumosBajos = DB::table('detalle_almacen_subareas as d')
-            ->join('insumos as i', 'd.id_insumo', '=', 'i.id_insumo')
-            ->select('i.descripcion as label', 'd.cantidad', 'd.fondo_fijo')
-            ->where('d.cantidad', '<', DB::raw('d.fondo_fijo'))
-            ->limit(10)
-            ->get();
-
-        return view('peticion_insumos.almacen_subareas.analitica.graficas', compact(
-            'totalActivos',
-            'totalInactivos',
-            'porSubarea',
-            'insumosBajos'
-        ));
-    }
 }
