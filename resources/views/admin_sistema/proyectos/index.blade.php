@@ -21,38 +21,6 @@
         </div>
     </div>
 
-    {{-- Fila de acciones --}}
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card p-4 h-100 d-flex justify-content-center">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="fa fa-info-circle fa-lg text-dark"></i>
-                    <div>
-                        <h6 class="fw-bold mb-1">Registra un nuevo proyecto</h6>
-                        <p class="text-muted small mb-0">Complete la información del proyecto a registrar dentro de la plataforma.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6">
-            <div class="card p-4 h-100 d-flex justify-content-center">
-                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                    <button type="button"
-                            class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap"
-                            data-bs-toggle="modal" data-bs-target="#modalAltaProyecto">
-                        <i class="fa fa-plus-circle me-2"></i>Registrar Nuevo Proyecto
-                    </button>
-                    <a href="{{ route('proyectos.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i>Reportes
-                    </a>
-                    <a href="{{ route('proyectos.graficas') }}" class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-bar-chart me-2 text-success"></i>Gráficas
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Modal de alta --}}
     <div class="modal fade" id="modalAltaProyecto" tabindex="-1" aria-labelledby="modalAltaProyectoLabel" aria-hidden="true" @if($errors->any()) data-auto-open="true" @endif>
         <div class="modal-dialog modal-dialog-centered">
@@ -95,23 +63,38 @@
     {{-- Tabla principal --}}
     <div class="row g-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <h5 class="card-title mb-0 fw-bold">
-                                <i class="fa fa-list-ul me-2"></i>Lista de proyectos
-                            </h5>
-                            <span class="badge bg-dark rounded-pill px-3 py-2" id="totalProyectos">
-                                {{ $proyectos->total() }} Registros
-                            </span>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fa fa-list-ul me-2"></i>Lista de proyectos
+                        </h5>
+                    </div>
+
+                    {{-- ── Panel de filtros ────────────────────────────────────── --}}
+                    <div class="row g-2 align-items-end" id="panelFiltros">
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar proyecto" placeholder="Nombre del proyecto..." clase="col-12 col-md-4" />
+                    </div>
+                    {{-- /panelFiltros --}}
+
+                    {{-- Acciones secundarias (Registrar, Reportes, Gráficas) --}}
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm text-nowrap"
+                                    data-bs-toggle="modal" data-bs-target="#modalAltaProyecto">
+                                <i class="fa fa-plus-circle me-1"></i>Registrar Nuevo Proyecto
+                            </button>
                         </div>
-                        <div class="input-group search-group">
-                            <input type="search" id="busqueda-global" class="form-control bg-light border-0"
-                                   placeholder="Buscar proyecto...">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="fa fa-search text-dark"></i>
-                            </span>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('proyectos.graficas') }}"
+                               class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-bar-chart me-1"></i>Gráficas
+                            </a>
+                            <a href="{{ route('proyectos.reportes') }}"
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -145,11 +128,11 @@
                     </div>
                 </div>
                 <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center">
-                    <div class="text-muted small" id="infoPaginacion">
+                    <div class="text-muted small" id="infoPaginacionProyectos">
                         Mostrando {{ $proyectos->firstItem() ?? 0 }} a {{ $proyectos->lastItem() ?? 0 }} de {{ $proyectos->total() }} registros
                     </div>
                     <nav aria-label="Paginacion de proyectos">
-                        <div id="contenedorPaginacion">
+                        <div id="paginacionProyectos">
                             {{ $proyectos->links('pagination::bootstrap-4') }}
                         </div>
                     </nav>

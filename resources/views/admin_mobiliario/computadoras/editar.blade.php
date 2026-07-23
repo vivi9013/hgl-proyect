@@ -127,7 +127,7 @@
                                     <option value="">-- Seleccione Departamento --</option>
                                     @foreach($departamentos as $dep)
                                         <option value="{{ $dep->id }}" {{ old('id_departamento', $computadora->mobiliario ? $computadora->mobiliario->id_departamento : '') == $dep->id ? 'selected' : '' }}>
-                                            {{ $dep->departamento }}
+                                            {{ $dep->nombre }}
                                         </option>
                                     @endforeach
                                 </select>

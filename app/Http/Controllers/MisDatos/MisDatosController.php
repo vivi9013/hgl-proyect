@@ -31,7 +31,7 @@ class MisDatosController extends Controller
         // Consultar los estados de manera óptima desde sepomex
         $estados = Sepomex::estadosUnicos();
 
-        return view('mis_datos.index', compact('persona', 'estados'));
+        return view('sidebar.mis_datos.index', compact('persona', 'estados'));
     }
 
     /**

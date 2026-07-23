@@ -1,21 +1,19 @@
 /* Estilos personalizados para el módulo de Categoría de Módulos (Catálogo, Edición y Reportes) */
 
 /* Efectos de Focus Modernos */
-/* NOTA: El focus global de .form-control y .form-select ya está definido en app.css
-   Esta regla específica sobrescribe con borde negro para el módulo */
-.form-control:focus,
-.form-select:focus {
+#modulo-categoria-modulos .form-control:focus,
+#modulo-categoria-modulos .form-select:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Clases de retroalimentación personalizadas para AJAX */
-.text-success-custom {
+#modulo-categoria-modulos .text-success-custom {
     color: #2f855a;
     font-weight: 500;
 }
 
-.text-danger-custom {
+#modulo-categoria-modulos .text-danger-custom {
     color: #c53030;
     font-weight: 500;
 }
@@ -25,73 +23,47 @@
     to { transform: rotate(360deg); }
 }
 
-.fa-spin {
+#modulo-categoria-modulos .fa-spin {
     animation: spin 1s linear infinite;
 }
 
 /* Hover en tabla y enlaces de acción */
-#tbodyCategorias tr {
+#modulo-categoria-modulos #cuerpoTablaCategorias tr {
     transition: background-color 0.2s ease;
 }
 
-#tbodyCategorias tr:hover {
+#modulo-categoria-modulos #cuerpoTablaCategorias tr:hover {
     background-color: rgba(49, 130, 206, 0.02) !important;
 }
 
-.btn-toggle-status,
-.btn-toggle-colapsar {
+#modulo-categoria-modulos .btn-toggle-status,
+#modulo-categoria-modulos .btn-toggle-colapsar {
     color: #4a5568;
     font-size: 1.25rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.btn-toggle-status:hover,
-.btn-toggle-colapsar:hover {
+#modulo-categoria-modulos .btn-toggle-status:hover,
+#modulo-categoria-modulos .btn-toggle-colapsar:hover {
     transform: scale(1.1);
 }
 
-.fa-pencil-square-o {
+#modulo-categoria-modulos .fa-pencil-square-o {
     color: #000000 !important;
     font-size: 1.2rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.fa-pencil-square-o:hover {
+#modulo-categoria-modulos .fa-pencil-square-o:hover {
     color: #4b5563 !important;
     transform: scale(1.15);
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Iconos y textos de acento en Negro */
-/* NOTA: fa-folder-open-o (con -o) y fa-list-ul son los iconos reales en las vistas */
-.text-primary,
-.fa-plus-circle,
-.fa-edit {
-    color: #000000 !important;
-}
-
 /* Form Controls */
-.form-control,
-.form-select {
+#modulo-categoria-modulos .form-control,
+#modulo-categoria-modulos .form-select {
     border-color: #d1d5db !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -102,22 +74,25 @@
 }
 
 /* Botón Guardar (Primario): Azul con borde Negro */
-.btn-primary {
+#modulo-categoria-modulos .btn-primary {
     background-color: #0d6efd !important;
+    border: 2px solid #d1d5db !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-primary:hover {
+#modulo-categoria-modulos .btn-primary:hover {
     background-color: #0b5ed7 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
 /* Botón Cancelar/Volver: Blanco con bordes grises */
-.btn-light {
+#modulo-categoria-modulos .btn-light,
+#modulo-categoria-modulos .btn-outline-secondary,
+#modulo-categoria-modulos .btn-outline-success {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
@@ -126,14 +101,16 @@
     transition: all 0.2s ease-in-out;
 }
 
-.btn-light:hover {
+#modulo-categoria-modulos .btn-light:hover,
+#modulo-categoria-modulos .btn-outline-secondary:hover,
+#modulo-categoria-modulos .btn-outline-success:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
 /* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
+#modulo-categoria-modulos .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
     border-collapse: separate !important;
@@ -142,7 +119,7 @@
     background-color: #ffffff !important;
 }
 
-.table th {
+#modulo-categoria-modulos .table th {
     background-color: #f9fafb !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -153,7 +130,7 @@
     border-bottom: 1.5px solid #e5e7eb !important;
 }
 
-.table td {
+#modulo-categoria-modulos .table td {
     padding: 1rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
@@ -161,11 +138,11 @@
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
+#modulo-categoria-modulos .pagination {
     margin: 0 !important;
 }
 
-.pagination .page-link {
+#modulo-categoria-modulos .pagination .page-link {
     color: #000000 !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
@@ -177,35 +154,34 @@
     transition: all 0.2s ease-in-out;
 }
 
-.pagination .page-link:hover {
+#modulo-categoria-modulos .pagination .page-link:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
     border-color: #000000 !important;
 }
 
-.pagination .page-item.active .page-link {
+#modulo-categoria-modulos .pagination .page-item.active .page-link {
     background-color: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
-.pagination .page-item.disabled .page-link {
+#modulo-categoria-modulos .pagination .page-item.disabled .page-link {
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
 
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.bg-primary-light {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
 /* ── Fondo para filas inactivas en la tabla ── */
 /* Corrige el bug visual: $claseFila = 'text-muted bg-light-gray' en tabla.blade.php */
-.bg-light-gray {
+#modulo-categoria-modulos .bg-light-gray {
     background-color: #f9fafb !important;
+}
+
+/* Panel de filtros desplegable */
+#modulo-categoria-modulos #dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#modulo-categoria-modulos .cursor-pointer {
+    cursor: pointer;
 }

@@ -1,39 +1,14 @@
-/* Estilos y Gradientes Premium (Evitamos colores aburridos y planos) */
-.btn-primary-gradient {
-    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
-    border: none;
-    color: #fff;
-    font-weight: 500;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+/* Estilos personalizados para el módulo de Buscador de Archivos */
+
+/* Transición de hover en filas — el color de hover lo da Bootstrap (table-hover) por defecto,
+   igual que en movimientos_insumos / categoria_archivos */
+#modulo-buscador-archivos tbody tr {
+    transition: background-color 0.2s ease-in-out;
 }
 
-.btn-primary-gradient:hover {
-    background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%);
-    color: #fff;
-    transform: translateY(-1.5px);
-    box-shadow: 0 4px 10px rgba(49, 130, 206, 0.35);
-}
-
-.btn-primary-gradient:active {
-    transform: translateY(0);
-}
-
-/* Transiciones de Filas de la Tabla */
-.table-hover tbody tr {
-    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
-
-/* Clases de Utilidad */
-.font-size-xs {
-    font-size: 0.75rem;
-}
-
-.letter-spacing-1 {
-    letter-spacing: 0.05em;
-}
-
-/* Estilo para las pilas de FontAwesome */
-.fa-stack {
+/* Soporte de íconos apilados de FontAwesome (usado en "archivo no disponible"),
+   funcional — necesario para que .fa-stack se vea bien */
+#modulo-buscador-archivos .fa-stack {
     display: inline-block;
     height: 2em;
     line-height: 2em;
@@ -42,153 +17,40 @@
     width: 2.5em;
 }
 
-.fa-stack-1x, .fa-stack-2x {
+#modulo-buscador-archivos .fa-stack-1x,
+#modulo-buscador-archivos .fa-stack-2x {
     left: 0;
     position: absolute;
     text-align: center;
     width: 100%;
 }
 
-.fa-stack-1x {
+#modulo-buscador-archivos .fa-stack-1x {
     line-height: inherit;
 }
 
-.fa-stack-2x {
+#modulo-buscador-archivos .fa-stack-2x {
     font-size: 1.5em;
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
+/* Botón de Descargar (equivalente a btn-primary) — mismo estándar que movimientos_insumos:
+   mismo azul/hover que Bootstrap por defecto, solo forma píldora y espaciado. */
+#modulo-buscador-archivos .btn-primary-gradient {
+    background-color: #0d6efd;
+    border: none;
+    color: #ffffff;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
 }
 
-/* Quitar padding lateral para que se alinee perfectamente en el body */
-.card:not(.reporte-card) .card-body {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+#modulo-buscador-archivos .btn-primary-gradient:hover {
+    background-color: #0b5ed7;
+    color: #ffffff;
 }
 
-/* Iconos y textos de acento en Negro */
-.text-primary,
-.fa-search {
-    color: #000000 !important;
-}
-
-/* Badges y acentos */
-.bg-primary-gradient {
-    background: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Botones Primarios (Guardar/Actualizar): Azul con borde Negro */
-.btn-primary-gradient {
+/* Badge de total de registros — mismo azul primario que el resto de la app (antes estaba en negro) */
+#modulo-buscador-archivos .bg-primary-gradient {
     background-color: #0d6efd !important;
     color: #ffffff !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-primary-gradient:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-    transform: translateY(-1px);
-}
-
-/* Botones de Cancelar/Volver: Blanco con bordes grises */
-.btn-outline-secondary {
-    background-color: #ffffff !important;
-    border: 2px solid #d1d5db !important;
-    color: #4b5563 !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-outline-secondary:hover {
-    background-color: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #000000 !important;
-}
-
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
-    border: 1px solid #c5b99a !important;
-    border-radius: 8px !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    overflow: hidden !important;
-    background-color: #f5f0e8 !important;
-}
-
-.table th {
-    background-color: #ede8de !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    padding: 0.6rem 0.8rem !important;
-    border-bottom: 1.5px solid #c5b99a !important;
-}
-
-.table td {
-    padding: 0.5rem 0.8rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    color: #374151 !important;
-    font-size: 0.85rem !important;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #ede8de !important;
-}
-
-/* Ajuste de botones dentro de la tabla para evitar que se deformen */
-.table .btn-sm,
-.table .btn {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.75rem !important;
-    min-width: auto !important;
-}
-
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
-    margin: 0 !important;
-}
-
-.pagination .page-link {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.4rem 0.85rem !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    margin: 0 2px !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.pagination .page-link:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: #000000 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.pagination .page-item.disabled .page-link {
-    color: #9ca3af !important;
-    background-color: #f9fafb !important;
-    border-color: #e5e7eb !important;
 }

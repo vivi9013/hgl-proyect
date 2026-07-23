@@ -53,7 +53,7 @@
         </li>
 
         <li class="nav-item mb-2">
-          <a href="{{ route('cambiar_tema.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('cambiar_tema.*') ? 'active-menu-item' : 'text-dark' }}">
+          <a href="{{ route('tema.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('tema.*') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-palette-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cambiar Tema</span>
           </a>

@@ -74,14 +74,18 @@ class LoginController extends Controller
                 Log::warning('No se pudo registrar actividad de inicio de sesión: ' . $e->getMessage());
             }
 
-            // LOGICA CONSISTENTE: Solo si el usuario lo pide con el Check
-            $conta = 3; // Por defecto: entrar directo
-            
-            if ($request->cambio) {
+            // PRIORIDAD: si es el primer ingreso del usuario (primera == 1),
+            // se fuerza el cambio de contraseña obligatorio sin importar el check.
+            if ($user->primera == 1) {
+                $conta = 1; // Primer ingreso: redirigir al módulo de cambio de contraseña
+            } elseif ($request->cambio) {
                 $conta = 4; // Cambio voluntario (Check marcado)
+            } else {
+                $conta = 3; // Entrar directo al panel
             }
 
-            Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | Valor primera en DB: {$user->primera}");
+            // Log de diagnóstico para auditoría interna
+            Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | primera en BD: {$user->primera} | Respuesta: {$conta}");
 
             return response()->json([
                 'resultado' => $conta . '|' . $user->id,
@@ -95,7 +99,7 @@ class LoginController extends Controller
 
     public function showCambiarContra()
     {
-        return view('cambiar_contra.index');
+        return view('sidebar.cambiar_contra.index');
     }
 
     public function updatePassword(Request $request)

@@ -178,4 +178,183 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar confirmaciones
     enlazarConfirmacionesStatus();
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // D. INICIALIZACIÓN DE CHART.JS (ESTADÍSTICAS)
+    // ─────────────────────────────────────────────────────────────────────────
+    const canvasPastel = document.getElementById('pastelChart');
+    const canvasBarra = document.getElementById('barChart');
+    const canvasArea = document.getElementById('areaChart');
+
+    if (canvasPastel && canvasBarra && canvasArea && typeof Chart !== 'undefined') {
+        const centerLabel = document.getElementById('chartCenterLabel');
+        const centerValue = document.getElementById('chartCenterValue');
+
+        // Leer datos desde atributos HTML
+        const datosSO = JSON.parse(canvasPastel.dataset.json || '{}');
+        const labelsSO = Object.keys(datosSO);
+        const valuesSO = Object.values(datosSO);
+        const totalSO = valuesSO.reduce((a, b) => a + b, 0);
+
+        const datosMarca = JSON.parse(canvasBarra.dataset.json || '{}');
+        const labelsMarca = Object.keys(datosMarca);
+        const valuesMarca = Object.values(datosMarca);
+
+        const datosArea = JSON.parse(canvasArea.dataset.json || '{}');
+        const labelsArea = Object.keys(datosArea);
+        const valuesArea = Object.values(datosArea);
+
+        // Inicializar texto del centro del pastel
+        if (centerLabel) centerLabel.textContent = 'Total Equipos';
+        if (centerValue) centerValue.textContent = totalSO;
+
+        // Colores premium y sobrios
+        const coloresPremium = [
+            '#1f2937', // Gris muy oscuro
+            '#3b82f6', // Azul primario
+            '#10b981', // Verde esmeralda
+            '#f59e0b', // Amarillo
+            '#ef4444', // Rojo
+            '#6366f1', // Indigo
+            '#8b5cf6', // Violeta
+            '#ec4899', // Rosa
+            '#14b8a6', // Turquesa
+            '#f97316', // Naranja
+        ];
+
+        // 1. PASTEL CHART (DONUT) - Sistemas Operativos
+        new Chart(canvasPastel.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labelsSO,
+                datasets: [{
+                    data: valuesSO,
+                    backgroundColor: coloresPremium,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const valor = context.raw || 0;
+                                const porcentaje = ((valor / totalSO) * 100).toFixed(1);
+                                return ` ${context.label}: ${valor} (${porcentaje}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%',
+                onHover: (event, chartElements) => {
+                    if (chartElements.length > 0) {
+                        const index = chartElements[0].index;
+                        const label = labelsSO[index];
+                        const val = valuesSO[index];
+                        const percent = ((val / totalSO) * 100).toFixed(1);
+                        if (centerLabel) centerLabel.textContent = label;
+                        if (centerValue) centerValue.textContent = `${val} (${percent}%)`;
+                    } else {
+                        if (centerLabel) centerLabel.textContent = 'Total Equipos';
+                        if (centerValue) centerValue.textContent = totalSO;
+                    }
+                }
+            }
+        });
+
+        // 2. BAR CHART - Distribución por Marca
+        new Chart(canvasBarra.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labelsMarca,
+                datasets: [{
+                    label: 'Cantidad de Equipos',
+                    data: valuesMarca,
+                    backgroundColor: '#3b82f6',
+                    borderWidth: 0,
+                    borderRadius: 6,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#4b5563'
+                        },
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#4b5563',
+                            font: { weight: 'bold' }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 3. AREA/BAR CHART - Distribución por Área
+        new Chart(canvasArea.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labelsArea,
+                datasets: [{
+                    label: 'Cantidad de Equipos',
+                    data: valuesArea,
+                    backgroundColor: '#1f2937',
+                    borderWidth: 0,
+                    borderRadius: 4,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#4b5563'
+                        },
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#4b5563',
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
 });

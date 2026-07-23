@@ -249,22 +249,6 @@
                             <tbody id="cuerpoTablaImpresoras">
                                 @include('admin_mobiliario.impresoras.partials.tabla')
                             </tbody>
-                            <tfoot class="table-light text-uppercase tfoot-impresoras">
-                                <tr>
-                                    <th class="text-center">#</th>
-                                    <th class="text-center">Editar</th>
-                                    <th>Inventario</th>
-                                    <th>Serie</th>
-                                    <th>Modelo</th>
-                                    <th>Marca</th>
-                                    <th>Descripción</th>
-                                    <th>Tecnología</th>
-                                    <th class="text-center">Consumible</th>
-                                    <th class="text-center">Internet</th>
-                                    <th>IP</th>
-                                    <th class="text-center">Status</th>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div>

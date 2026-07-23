@@ -16,16 +16,6 @@
     background-color: #f9fafb !important;
 }
 
-#modulo-impresoras .btn-alternar-estado {
-    color: #4a5568;
-    font-size: 1.25rem;
-    transition: color 0.2s ease, transform 0.2s ease;
-    display: inline-block;
-}
-
-#modulo-impresoras .btn-alternar-estado:hover {
-    transform: scale(1.1);
-}
 
 #modulo-impresoras .fa-pencil-square-o,
 #modulo-impresoras .fa-plus-circle {
@@ -211,16 +201,10 @@
     box-shadow: none !important;
 }
 
-/* Encabezados y pies de tabla con tamaños unificados */
-#modulo-impresoras .thead-impresoras,
-#modulo-impresoras .tfoot-impresoras {
+#modulo-impresoras .thead-impresoras {
     font-size: 0.75rem;
 }
 
-/* Encabezado colapsable con cursor interactivo */
-#modulo-impresoras .card-header-collapse {
-    cursor: pointer;
-}
 
 /* Elementos del gráfico analítico */
 .chart-container-donut {

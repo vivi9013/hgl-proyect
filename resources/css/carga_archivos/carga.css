@@ -1,220 +1,76 @@
-/* Estilos personalizados para el formulario de Carga de Archivos */
+/* Estilos personalizados para el módulo de Categoría de Archivos */
+
+/* Clases de retroalimentación personalizadas para AJAX (propias del módulo) */
+#modulo-categoria-archivos .text-success-custom {
+    color: #2f855a;
+    font-weight: 500;
+}
+
+#modulo-categoria-archivos .text-danger-custom {
+    color: #c53030;
+    font-weight: 500;
+}
 
 /* Animación del Spinner */
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
-.fa-spin {
+#modulo-categoria-archivos .fa-spin {
     animation: spin 1s linear infinite;
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+/* Transición de hover en filas — el color de hover lo da Bootstrap (table-hover) por defecto,
+   igual que en movimientos_insumos */
+#modulo-categoria-archivos tbody tr {
+    transition: background-color 0.2s ease;
 }
 
-/* Evitar escala y sombras en hover */
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
+/* Icono de estado activo/inactivo — propio del módulo (no existe equivalente en la referencia) */
+#modulo-categoria-archivos .btn-toggle-status {
+    color: #4a5568;
+    font-size: 1.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
 }
 
+#modulo-categoria-archivos .btn-toggle-status:hover {
+    transform: scale(1.1);
+}
 
-/* Iconos y textos de acento en Negro */
-.text-primary,
-.fa-upload,
-.fa-info-circle,
-.fa-folder-open-o,
-.fa-file-text-o,
-.fa-code-fork {
+#modulo-categoria-archivos .btn-toggle-status[data-activo="1"] {
+    color: #38a169;
+}
+
+#modulo-categoria-archivos .btn-toggle-status[data-activo="0"] {
+    color: #a0aec0;
+}
+
+/* Icono de editar — propio del módulo (no existe equivalente en la referencia) */
+#modulo-categoria-archivos .fa-pencil-square-o {
     color: #000000 !important;
+    font-size: 1.2rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
 }
 
-/* Input Fields */
-.form-control,
-.form-select {
-    border-color: rgba(0, 0, 0, 0.35) !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-    padding: 0.6rem 0.95rem;
-    font-size: 0.9rem;
-    color: #000000 !important;
-    background-color: #ffffff !important;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Acentos y Botones Primarios: Azul con borde Negro */
-.btn-primary {
-    background-color: #0d6efd !important;
-    color: #ffffff !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Botones de Cancelar o Submódulos: Blanco con borde Gris */
-.btn-light,
-.btn-outline-primary,
-.btn-outline-secondary,
-.btn-outline-success {
-    background-color: #ffffff !important;
-    border: 2px solid #d1d5db !important;
+#modulo-categoria-archivos .fa-pencil-square-o:hover {
     color: #4b5563 !important;
+    transform: scale(1.15);
+}
+
+/* Botón Guardar/Registrar (Primario) — mismo estándar que movimientos_insumos:
+   solo forma (píldora) y espaciado; el color lo da Bootstrap por defecto. */
+#modulo-categoria-archivos .btn-primary {
+    border-radius: 50rem !important;
+    padding: 0.4rem 1.0rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Botón Cancelar/Volver — mismo estándar que movimientos_insumos */
+#modulo-categoria-archivos .btn-light,
+#modulo-categoria-archivos .btn-outline-secondary {
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
-}
-
-.btn-light:hover,
-.btn-outline-primary:hover,
-.btn-outline-secondary:hover,
-.btn-outline-success:hover {
-    background-color: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #000000 !important;
-}
-
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
-    border: 1px solid #c5b99a !important;
-    border-radius: 8px !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    overflow: hidden !important;
-    background-color: #f5f0e8 !important;
-    width: 100% !important;
-    table-layout: auto !important;
-    /* ajuste dinámico */
-}
-
-.table th {
-    background-color: #ede8de !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    padding: 0.5rem 0.5rem !important;
-    border-bottom: 1.5px solid #c5b99a !important;
-    white-space: normal !important;
-    /* permite saltos de línea */
-    overflow: visible !important;
-    text-overflow: clip !important;
-}
-
-.table td {
-    padding: 0.45rem 0.5rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    color: #374151 !important;
-    font-size: 0.82rem !important;
-    white-space: normal !important;
-    /* evita scroll horizontal */
-    overflow: visible !important;
-    text-overflow: clip !important;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #ede8de !important;
-}
-
-/* Ajuste de botones dentro de la tabla para ser compactos */
-.table .btn-sm,
-.table .btn {
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.7rem !important;
-    min-width: auto !important;
-}
-
-.table .rounded-circle {
-    padding: 0 !important;
-    width: 28px !important;
-    height: 28px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 50% !important;
-    font-size: 0.7rem !important;
-}
-
-/* Badges dentro de la tabla más compactos */
-.table .badge {
-    font-size: 0.7rem !important;
-    padding: 0.25rem 0.5rem !important;
-    white-space: nowrap;
-}
-
-/* Texto truncado dentro de la tabla */
-.table .text-truncate {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal !important;
-    /* ahora permite varias líneas */
-}
-
-/* Ajuste del contenedor para evitar scroll horizontal */
-.table-responsive {
-    overflow-x: hidden !important;
-}
-
-/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
-    margin: 0 !important;
-}
-
-.pagination .page-link {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.4rem 0.85rem !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    margin: 0 2px !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.pagination .page-link:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: #000000 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.pagination .page-item.disabled .page-link {
-    color: #9ca3af !important;
-    background-color: #f9fafb !important;
-    border-color: #e5e7eb !important;
 }

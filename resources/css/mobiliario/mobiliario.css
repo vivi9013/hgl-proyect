@@ -1,0 +1,241 @@
+/* Estilos personalizados para el módulo de Mobiliario, alineados al diseño unificado */
+
+/* Efectos de Focus Modernos en Formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Animación del Spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+
+/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Evitar escala y sombras en hover */
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Iconos y textos de acento en Negro */
+.text-primary,
+.fa-cubes,
+.fa-info-circle,
+.fa-barcode,
+.fa-tag,
+.fa-building-o,
+.fa-cogs,
+.fa-hashtag,
+.fa-hospital-o,
+.fa-building,
+.fa-user,
+.fa-align-left,
+.fa-list {
+    color: #000000 !important;
+}
+
+/* Input Fields */
+.form-control,
+.form-select {
+    border-color: rgba(0, 0, 0, 0.35) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    padding: 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #000000 !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Acentos y Botones Primarios: Azul con borde Negro */
+.btn-primary {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botones de Cancelar o Submódulos: Blanco con borde Gris */
+.btn-light,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover,
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover,
+.btn-outline-success:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+.bg-primary {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+.table {
+    border: 1px solid #c5b99a !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #f5f0e8 !important;
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+.table th {
+    background-color: #ede8de !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.5rem !important;
+    border-bottom: 1.5px solid #c5b99a !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+.table td {
+    padding: 0.45rem 0.5rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.82rem !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #ede8de !important;
+}
+
+/* Ajuste de botones dentro de la tabla para ser compactos */
+.table .btn-sm,
+.table .btn {
+    padding: 0.2rem 0.4rem !important;
+    font-size: 0.7rem !important;
+    min-width: auto !important;
+}
+
+.table .rounded-circle {
+    padding: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    font-size: 0.7rem !important;
+}
+
+/* Badges dentro de la tabla más compactos */
+.table .badge {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.5rem !important;
+    white-space: nowrap;
+}
+
+/* Texto truncado dentro de la tabla */
+.table .text-truncate {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal !important;
+}
+
+/* Ajuste del contenedor para evitar scroll horizontal */
+.table-responsive {
+    overflow-x: hidden !important;
+}
+
+/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+/* Línea divisoria gris para separar secciones laterales en escritorio */
+@media (min-width: 1200px) {
+    .separator-border {
+        border-right: 1.5px solid rgba(0, 0, 0, 0.2) !important;
+        padding-right: 2rem !important;
+    }
+}

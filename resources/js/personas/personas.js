@@ -7,11 +7,10 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ── Referencias DOM ──────────────────────────────────────────────────────
-    const tbody               = document.getElementById('tbodyPersonas');
-    const infoPaginacion      = document.getElementById('infoPaginacion');
-    const contenedorPaginacion = document.getElementById('contenedorPaginacion');
-    const searchInput         = document.getElementById('global-search');
-    const totalBadge          = document.getElementById('totalPersonas');
+    const tbody               = document.getElementById('cuerpoTablaPersonas');
+    const infoPaginacion      = document.getElementById('infoPaginacionPersonas');
+    const contenedorPaginacion = document.getElementById('paginacionPersonas');
+    const searchInput         = document.getElementById('filtro-buscar');
 
     // Alertas de sesión (SweetAlert2)
     const alertaExitog = document.getElementById('alertaExitog');
@@ -126,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function () {
             tbody.style.opacity = '1';
             tbody.innerHTML = data.html;
 
-            if (totalBadge)          totalBadge.textContent = `${data.total} ${data.total === 1 ? 'Registro' : 'Registros'}`;
             if (infoPaginacion)       infoPaginacion.textContent = data.info;
             if (contenedorPaginacion) {
                 contenedorPaginacion.innerHTML = data.links;
@@ -275,7 +273,8 @@ document.addEventListener('DOMContentLoaded', function () {
         searchInput.addEventListener('input', debounce(() => cargarPagina(1), 350));
     }
 
-    // ── Carga inicial ────────────────────────────────────────────────────────
-    const activeLink = contenedorPaginacion?.querySelector('.page-item.active .page-link');
-    cargarPagina(activeLink ? parseInt(activeLink.textContent) : 1);
+    // ── Carga inicial: la tabla y la paginación ya vienen renderizadas por el
+    // servidor (SSR); solo se enlazan los eventos de acciones y de los links.
+    enlazarEventosAcciones();
+    asignarEventosEnlaces();
 });

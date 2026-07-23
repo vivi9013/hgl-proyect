@@ -18,8 +18,6 @@ class Computadora extends Model
         'ram',
         'disco_duro',
         'ip',
-        'tecnologia',
-        'internet',
         'tipo',
         'nombre_equipo',
         'activo',

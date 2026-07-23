@@ -43,10 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // B. TABLA: PAGINACIÓN ASÍNCRONA Y BÚSQUEDA
     // ─────────────────────────────────────────────────────────────────────────
     const cuerpoTabla = document.getElementById('cuerpoTablaProyectos');
-    const infoPaginacionElemento = document.getElementById('infoPaginacion');
-    const contenedorPaginas = document.getElementById('contenedorPaginacion');
-    const entradaBusqueda = document.getElementById('busqueda-global');
-    const etiquetaTotal = document.getElementById('totalProyectos');
+    const infoPaginacionElemento = document.getElementById('infoPaginacionProyectos');
+    const contenedorPaginas = document.getElementById('paginacionProyectos');
+    const entradaBusqueda = document.getElementById('filtro-buscar');
 
     function cargarPagina(numeroPagina = 1) {
         if (!cuerpoTabla) return;
@@ -69,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
             cuerpoTabla.style.opacity = '1';
             cuerpoTabla.innerHTML = datos.html;
 
-            if (etiquetaTotal)            etiquetaTotal.textContent = `${datos.total} Registros`;
             if (infoPaginacionElemento)    infoPaginacionElemento.textContent = datos.info;
             if (contenedorPaginas)  {
                 contenedorPaginas.innerHTML = datos.links;

@@ -1,6 +1,7 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 @import 'reporte_index/reporte.css';
+@import 'components/tabla-interactiva.css';
 
 /* Variables y Estilos de Layout Globales */
 * {

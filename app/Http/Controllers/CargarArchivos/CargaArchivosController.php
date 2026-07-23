@@ -21,17 +21,15 @@ class CargaArchivosController extends Controller
             ->get(['id_catego_archivos', 'categoria']);
 
         // Captura de variables para el filtro dinámico
-        $categoriaFiltro = $request->get('categoria', 'Todos');
+        $categoriaFiltro = $request->input('categoria', []);
         $buscar = $request->get('buscar');
 
         $query = CargaArchivo::with('categoria')
             ->orderBy('id_archivo', 'desc');
 
-        // Aplicar filtro por categoría si no es "Todos"
-        if ($categoriaFiltro !== 'Todos') {
-            $query->whereHas('categoria', function ($q) use ($categoriaFiltro) {
-                $q->where('categoria', $categoriaFiltro);
-            });
+        // Aplicar filtro por categorías seleccionadas (dropdown de checkboxes)
+        if (!empty($categoriaFiltro)) {
+            $query->whereIn('id_catego', $categoriaFiltro);
         }
 
         // Aplicar término de búsqueda si existe
@@ -45,9 +43,15 @@ class CargaArchivosController extends Controller
 
         $archivos = $query->paginate(10);
 
-        // Si la petición viene por AJAX, retornamos exclusivamente la vista parcial de la tabla
+        // Si la petición viene por AJAX, retornamos JSON con el HTML compilado
         if ($request->ajax() || $request->wantsJson()) {
-            return view('admin_formatos.carga_archivos.partials.tabla', compact('archivos'));
+            return response()->json([
+                'html'  => view('admin_formatos.carga_archivos.partials.tabla', compact('archivos'))->render(),
+                'total' => $archivos->total(),
+                'info'  => 'Mostrando ' . ($archivos->firstItem() ?? 0) . ' a ' . ($archivos->lastItem() ?? 0)
+                    . ' de ' . $archivos->total() . ' registros',
+                'links' => (string) $archivos->links('pagination::bootstrap-4'),
+            ]);
         }
 
         return view('admin_formatos.carga_archivos.index', compact('categorias', 'archivos'));

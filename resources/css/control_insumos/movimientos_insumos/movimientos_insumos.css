@@ -1,0 +1,38 @@
+#modulo-movimientos-insumos .btn-primary {
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Fila cancelada */
+#modulo-movimientos-insumos .fila-cancelada td {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* ── Flatpickr — campo unificado de rango de fechas ── */
+#modulo-movimientos-insumos #filtro-fecha-rango {
+    cursor: pointer;
+}
+#modulo-movimientos-insumos .flatpickr-calendar {
+    font-size: 0.825rem;
+}
+/* Asegurar que el calendario y dropdown no queden cortados */
+#modulo-movimientos-insumos .card-header {
+    overflow: visible;
+}
+
+/* Estilos personalizados para el panel de Filtros desplegable */
+#dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#dropdownFiltros .form-check-input:checked {
+    background-color: #212529;
+    border-color: #212529;
+}
+#dropdownFiltros .form-check-label {
+    user-select: none;
+}
+.cursor-pointer {
+    cursor: pointer;
+}

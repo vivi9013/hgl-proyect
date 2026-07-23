@@ -84,7 +84,7 @@ class ImpresoraController extends Controller
             'inventario'  => 'required|string|max:50|unique:impresoras,inventario',
             'tipo'        => 'required|string|max:50',
             'serie'       => 'required|string|max:100',
-            'modelo'      => 'nullable|string|max:100',
+            'modelo'      => 'required|string|max:100',
             'marca'       => 'required|string|max:100',
             'descripcion' => 'nullable|string|max:255',
             'tecnologia'  => 'nullable|string|max:100',
@@ -100,13 +100,13 @@ class ImpresoraController extends Controller
             'inventario'  => trim($request->inventario),
             'tipo'        => trim($request->tipo),
             'serie'       => trim($request->serie),
-            'modelo'      => trim($request->modelo ?? ''),
+            'modelo'      => trim($request->modelo),
             'marca'       => trim($request->marca),
-            'descripcion' => trim($request->descripcion ?? ''),
-            'tecnologia'  => trim($request->tecnologia ?? ''),
+            'descripcion' => $request->filled('descripcion') ? trim($request->descripcion) : null,
+            'tecnologia'  => $request->filled('tecnologia')  ? trim($request->tecnologia)  : null,
             'consumible'  => trim($request->consumible),
             'red'         => trim($request->red),
-            'ip'          => trim($request->ip ?? ''),
+            'ip'          => $request->filled('ip')          ? trim($request->ip)          : null,
             'comodato'    => trim($request->comodato),
             'fecha'       => now()->toDateString(),
             'hora'        => now()->toTimeString(),
@@ -122,10 +122,9 @@ class ImpresoraController extends Controller
     // ─── EDITAR (formulario) ─────────────────────────────────────────────────
     public function editar(int $id)
     {
-        $impresora  = Impresora::findOrFail($id);
-        $inventario = $this->inventarioDisponible($id);
+        $impresora = Impresora::findOrFail($id);
 
-        return view('admin_mobiliario.impresoras.editar', compact('impresora', 'inventario')
+        return view('admin_mobiliario.impresoras.editar', compact('impresora')
             + ['tipos' => self::TIPOS, 'consumibles' => self::CONSUMIBLES, 'redOpts' => self::RED, 'comodatoOpts' => self::COMODATO]);
     }
 
@@ -137,7 +136,7 @@ class ImpresoraController extends Controller
         $request->validate([
             'tipo'        => 'required|string|max:50',
             'serie'       => 'required|string|max:100',
-            'modelo'      => 'nullable|string|max:100',
+            'modelo'      => 'required|string|max:100',
             'marca'       => 'required|string|max:100',
             'descripcion' => 'nullable|string|max:255',
             'tecnologia'  => 'nullable|string|max:100',
@@ -150,13 +149,13 @@ class ImpresoraController extends Controller
         $impresora->update([
             'tipo'        => trim($request->tipo),
             'serie'       => trim($request->serie),
-            'modelo'      => trim($request->modelo ?? ''),
+            'modelo'      => trim($request->modelo),
             'marca'       => trim($request->marca),
-            'descripcion' => trim($request->descripcion ?? ''),
-            'tecnologia'  => trim($request->tecnologia ?? ''),
+            'descripcion' => $request->filled('descripcion') ? trim($request->descripcion) : null,
+            'tecnologia'  => $request->filled('tecnologia')  ? trim($request->tecnologia)  : null,
             'consumible'  => trim($request->consumible),
             'red'         => trim($request->red),
-            'ip'          => trim($request->ip ?? ''),
+            'ip'          => $request->filled('ip')          ? trim($request->ip)          : null,
             'comodato'    => trim($request->comodato),
             'fecha'       => now()->toDateString(),
             'hora'        => now()->toTimeString(),
@@ -206,14 +205,7 @@ class ImpresoraController extends Controller
     // ─── REPORTES (panel de estadísticas) ────────────────────────────────────
     public function reportes()
     {
-        $stats = [
-            'total'     => Impresora::count(),
-            'activas'   => Impresora::where('activo', 1)->count(),
-            'inactivas' => Impresora::where('activo', 0)->count(),
-            'en_red'    => Impresora::where('red', 'Si')->where('activo', 1)->count(),
-        ];
-
-        return view('admin_mobiliario.impresoras.analitica.reportes.index', compact('stats'));
+        return view('admin_mobiliario.impresoras.analitica.reportes.index');
     }
 
     // ─── IMPRIMIR (reporte imprimible) ───────────────────────────────────────
@@ -227,13 +219,6 @@ class ImpresoraController extends Controller
     // ─── GRÁFICAS ─────────────────────────────────────────────────────────────
     public function graficas()
     {
-        $stats = [
-            'total'     => Impresora::count(),
-            'activas'   => Impresora::where('activo', 1)->count(),
-            'inactivas' => Impresora::where('activo', 0)->count(),
-            'en_red'    => Impresora::where('red', 'Si')->where('activo', 1)->count(),
-        ];
-
         // Agrupado por tecnología
         $porTecnologia = Impresora::selectRaw('tecnologia, COUNT(*) as total')
             ->whereNotNull('tecnologia')
@@ -250,7 +235,6 @@ class ImpresoraController extends Controller
             ->pluck('total', 'tipo');
 
         return view('admin_mobiliario.impresoras.analitica.graficas', compact(
-            'stats',
             'porTecnologia',
             'porTipo',
         ));

@@ -93,6 +93,7 @@ textarea {
 .usuarios-index .btn-primary,
 .usuarios-edit .btn-primary {
     background-color: #0d6efd !important;
+    border: 2px solid #dbd1d3 !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
@@ -193,39 +194,6 @@ textarea {
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.bg-primary-light {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-
-/* ================================================================
-   SCOPE: .usuarios-index  (Catálogo /usuarios)
-   Cards planas, sin sombra — diseño flat.
-   ================================================================ */
-
-.usuarios-index .card,
-.usuarios-index .card-header,
-.usuarios-index .card-body,
-.usuarios-index .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.usuarios-index .card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
 
 /* ================================================================
    SCOPE: .usuarios-reportes  (Reportes /usuarios/reportes)

@@ -35,6 +35,6 @@ class CumpleanosController extends Controller
             '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5', '#c49c94',
         ];
 
-        return view('cumpleanos.index', compact('cumpleaneros', 'nombreMes', 'colores'));
+        return view('sidebar.cumpleanos.index', compact('cumpleaneros', 'nombreMes', 'colores'));
     }
 }

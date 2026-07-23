@@ -1,16 +1,3 @@
-{{-- Datos de transporte ocultos para el Javascript --}}
-<tr id="datosPaginacionTransporte" style="display: none;"
-    data-total="{{ $archivos->total() }}"
-    data-info="Mostrando {{ $archivos->firstItem() ?? 0 }} a {{ $archivos->lastItem() ?? 0 }} de {{ $archivos->total() }} registros">
-    <td>
-        <div id="htmlLinksPaginacion">
-            {{-- Renderiza los enlaces nativos de Bootstrap modificados por Laravel --}}
-            {{ $archivos->links('pagination::bootstrap-4') }}
-        </div>
-    </td>
-</tr>
-
-{{-- Cuerpo real de la Tabla --}}
 @forelse($archivos as $archivo)
     <tr class="{{ $archivo->activo == 0 ? 'text-muted opacity-75' : '' }}">
         <td class="ps-4 fw-bold">

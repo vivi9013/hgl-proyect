@@ -12,13 +12,6 @@
     {{-- Encabezado de Navegación y Título --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a href="{{ route('inicio') }}" class="text-decoration-none">Panel de Control</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('perfiles.index') }}" class="text-decoration-none">Catálogo de Perfiles</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Asociar Módulos</li>
-                </ol>
-            </nav>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-folder-open text-primary me-2"></i>Asociación de Módulos
             </h1>
@@ -94,6 +87,18 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+
+                    {{-- Footer con Paginación Homologada --}}
+                    <div class="card-footer bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center border-top">
+                        <div class="text-muted small" id="infoPaginacion">
+                            Mostrando 0 a 0 de 0 registros
+                        </div>
+                        <nav aria-label="Paginacion de modulos">
+                            <ul class="pagination mb-0" id="contenedorPaginacion">
+                                {{-- Llenado dinámicamente por JS --}}
+                            </ul>
+                        </nav>
                     </div>
 
                     <div class="card-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-between align-items-center border-top">

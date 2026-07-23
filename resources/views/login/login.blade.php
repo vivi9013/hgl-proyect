@@ -11,7 +11,8 @@
     <form id="loginForm" action="{{ route('login.post') }}" method="POST" 
           data-update-url="{{ route('password.update') }}" 
           data-dashboard-url="{{ url('/inicio') }}" 
-          data-logout-url="{{ route('logout') }}">
+          data-logout-url="{{ route('logout') }}"
+          data-url-cambiar-contra="{{ route('cambiar_contra.index') }}">
         @csrf
         <div class="form-group">
             <div class="input-wrapper">

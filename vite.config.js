@@ -94,6 +94,48 @@ export default defineConfig({
                 // Actividades (Misceláneos) Assets
                 'resources/css/miscelaneo/actividades/actividades.css',
                 'resources/js/miscelaneo/actividades/actividades.js',
+                // Insumos de Impresora (Catálogo) Assets
+                'resources/css/control_insumos/insumos_impresoras/insumos_impresoras.css',
+                'resources/js/control_insumos/insumos_impresoras/insumos_impresoras.js',
+                // Movimientos de Insumos (Entradas/Salidas) Assets
+                'resources/css/control_insumos/movimientos_insumos/movimientos_insumos.css',
+                'resources/js/control_insumos/movimientos_insumos/movimientos_insumos.js',
+                // Computadoras Assets
+                'resources/css/computadoras/computadoras.css',
+                'resources/js/computadoras/computadoras.js',
+                // Mobiliario General Assets
+                'resources/css/mobiliario/mobiliario.css',
+                'resources/js/mobiliario/mobiliario.js',
+                // Tipo de Mobiliario Assets
+                'resources/css/tipo_mobiliario/tipo_mobiliario.css',
+                'resources/js/tipo_mobiliario/tipo_mobiliario.js',
+                // Monitores Assets
+                'resources/css/monitores/monitores.css',
+                'resources/js/monitores/monitores.js',
+                // Departamentos Assets
+                'resources/css/departamentos/departamentos.css',
+                'resources/js/departamentos/departamentos.js',
+                // Puestos Assets
+                'resources/css/puestos/puestos.css',
+                'resources/js/puestos/puestos.js',
+                // Sedes Assets
+                'resources/css/sedes/sedes.css',
+                'resources/js/sedes/sedes.js',
+                // Tipo de Trabajador Assets
+                'resources/css/tipo_trabajador/tipo_trabajador.css',
+                'resources/js/tipo_trabajador/tipo_trabajador.js',
+                // Trabajadores Assets
+                'resources/css/trabajadores/trabajadores.css',
+                'resources/js/trabajadores/trabajadores.js',
+                // Almacén de Subáreas Assets
+                'resources/css/peticion_insumos/almacen_subareas/almacen_subareas.css',
+                'resources/js/peticion_insumos/almacen_subareas/almacen_subareas.js',
+                // Áreas de Abastecimiento Assets
+                'resources/css/peticion_insumos/areas_abastecimiento/areas_abastecimiento.css',
+                'resources/js/peticion_insumos/areas_abastecimiento/areas_abastecimiento.js',
+                // Subáreas de Abastecimiento Assets
+                'resources/css/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.css',
+                'resources/js/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.js',
             ],
             refresh: true,
         }),
@@ -103,5 +145,5 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
-    
+
 });

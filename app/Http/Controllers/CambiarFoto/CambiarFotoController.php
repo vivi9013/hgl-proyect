@@ -18,7 +18,7 @@ class CambiarFotoController extends Controller
             return redirect()->route('login');
         }
 
-        return view('layouts.CambiarFoto.cambiar_foto', compact('user'));
+        return view('sidebar.cambiar_foto.index', compact('user'));
     }
 
     // Procesar la subida

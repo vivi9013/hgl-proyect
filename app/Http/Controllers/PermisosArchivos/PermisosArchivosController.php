@@ -37,9 +37,16 @@ class PermisosArchivosController extends Controller
         $trabajadores = $query->orderByRaw("CONCAT(personas.ap_paterno, ' ', personas.ap_materno, ' ', personas.nombre) ASC")
             ->paginate(10);
 
-        // Si es una petición AJAX (paginación asíncrona), devuelve solo el partial
+        // Si es una petición AJAX (filtros + paginación asíncrona), devuelve JSON con el partial renderizado
         if ($request->ajax() || $request->wantsJson()) {
-            return view('admin_formatos.permisos_archivos.partials.tabla', compact('trabajadores'));
+            return response()->json([
+                'html'  => view('admin_formatos.permisos_archivos.partials.tabla', compact('trabajadores'))->render(),
+                'links' => $trabajadores->links('pagination::bootstrap-4')->render(),
+                'total' => $trabajadores->total(),
+                'info'  => 'Mostrando ' . ($trabajadores->firstItem() ?? 0)
+                           . ' a ' . ($trabajadores->lastItem() ?? 0)
+                           . ' de ' . $trabajadores->total() . ' trabajadores',
+            ]);
         }
 
         return view('admin_formatos.permisos_archivos.index', compact('trabajadores'));
@@ -63,9 +70,16 @@ class PermisosArchivosController extends Controller
 
         $categorias = $query->paginate(10);
 
-        // Si es una petición AJAX (paginación de la matriz), devuelve solo el partial de la tabla
+        // Si es una petición AJAX (filtros + paginación de la matriz), devuelve JSON con el partial renderizado
         if ($request->ajax() || $request->wantsJson()) {
-            return view('admin_formatos.permisos_archivos.partials.tabla_asignacion', compact('trabajador', 'categorias'));
+            return response()->json([
+                'html'  => view('admin_formatos.permisos_archivos.partials.tabla_asignacion', compact('trabajador', 'categorias'))->render(),
+                'links' => $categorias->links('pagination::bootstrap-4')->render(),
+                'total' => $categorias->total(),
+                'info'  => 'Mostrando ' . ($categorias->firstItem() ?? 0)
+                           . ' a ' . ($categorias->lastItem() ?? 0)
+                           . ' de ' . $categorias->total() . ' categorías',
+            ]);
         }
 
         return view('admin_formatos.permisos_archivos.agregar', compact('trabajador', 'categorias'));

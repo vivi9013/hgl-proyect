@@ -1,0 +1,63 @@
+/* Estilos desacoplados para el Módulo de Almacén de Subáreas */
+.bg-primary-light {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.fs-7 {
+    font-size: 0.875rem;
+}
+
+.btn-xs {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+    border-radius: 0.2rem;
+}
+
+/* Modales */
+#modalRegistrarAlmacen .modal-content,
+#modalAgregarInsumo .modal-content,
+#modalEditarDetalle .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Selectores */
+.filtro-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    font-size: 0.85rem;
+}
+
+.filtro-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Transiciones de botones */
+.btn-toggle-status {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-toggle-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Resalte de insumos bajo fondo fijo */
+.fila-bajo-fondo {
+    background-color: rgba(220, 53, 69, 0.06) !important;
+}
+
+.fila-bajo-fondo:hover {
+    background-color: rgba(220, 53, 69, 0.12) !important;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}

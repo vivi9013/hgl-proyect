@@ -1,16 +1,3 @@
-{{-- Datos de transporte ocultos para el Javascript --}}
-<tr id="datosPaginacionTransporte" style="display: none;"
-    data-total="{{ $categorias->total() }}"
-    data-info="Mostrando {{ $categorias->firstItem() ?? 0 }} a {{ $categorias->lastItem() ?? 0 }} de {{ $categorias->total() }} registros">
-    <td colspan="6">
-        <div id="htmlLinksPaginacion">
-            {{-- Renderiza los enlaces nativos modificados de Bootstrap por Laravel --}}
-            {{ $categorias->links('pagination::bootstrap-4') }}
-        </div>
-    </td>
-</tr>
-
-{{-- Cuerpo real de la Tabla --}}
 @forelse($categorias as $index => $cat)
     <tr class="{{ $cat->activo == 0 ? 'text-muted fst-italic' : '' }}">
         <td class="fw-bold">

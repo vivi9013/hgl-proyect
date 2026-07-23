@@ -22,104 +22,74 @@
         </div> 
     </div>
 
-    {{-- Panel Informativo y de Acciones Rápidas --}}
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 d-flex justify-content-center">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-primary-light p-3 rounded-circle text-primary">
-                        <i class="fa fa-info-circle fa-lg"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">Administración de Usuarios</h6>
-                        <p class="text-muted small mb-0">Permite dar de alta cuentas de usuario vinculadas a trabajadores, actualizar perfiles de acceso y restablecer contraseñas de seguridad.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-12 col-md-6">
-            <div class="card border-0 shadow-sm p-4 rounded-3 bg-white h-100 justify-content-center">
-                <div class="d-flex flex-wrap gap-2 justify-content-md-end align-items-center">
-                    {{-- Botón Gatillo del Modal --}}
-                    <button type="button" class="btn btn-primary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#modalAltaUsuario">
-                        <i class="fa fa-plus-circle me-2"></i> Registrar Nuevo Usuario
-                    </button>
-
-                    {{-- Submódulo: Reportes del Módulo --}}
-                    <a href="{{ route('usuarios.reportes') }}" class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-file-pdf-o me-2 text-danger"></i> Reportes
-                    </a>
-
-                    {{-- Submódulo: Gráficas del Módulo --}}
-                    <a href="{{ route('usuarios.graficas') }}" class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm w-100 w-sm-auto text-nowrap">
-                        <i class="fa fa-bar-chart me-2 text-success"></i> Gráficas
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Área Principal: Tabla de Registros --}}
     <div class="row g-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        
-                        <div class="d-flex align-items-center gap-3">
-                            <h5 class="card-title mb-0 fw-bold text-dark">
-                                <i class="fa fa-list-ul text-secondary me-2"></i>Lista de Usuarios
-                            </h5>
-                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm fw-bold" id="totalUsuarios">
-                                {{ $usuarios->total() }} Registros
-                            </span>
-                        </div>
-                        
-                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
-                            {{-- Buscador Reactivo --}}
-                            <div class="input-group" style="min-width: 260px; border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
-                                <input type="search" id="global-search" class="form-control bg-light border-0" placeholder="Buscar usuario..." style="font-size: 0.85rem; box-shadow: none;">
-                                <span class="input-group-text bg-light border-0 py-0">
-                                    <i class="fa fa-search text-dark"></i>
-                                </span>
-                            </div>
-                        </div>
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fa fa-list-ul me-2"></i>Lista de Usuarios
+                        </h5>
+                    </div>
 
+                    {{-- ── Panel de filtros ────────────────────────────────────── --}}
+                    <div class="row g-2 align-items-end" id="panelFiltros">
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar usuario" placeholder="Nombre, usuario o perfil..." clase="col-12 col-md-4" />
+                    </div>
+                    {{-- /panelFiltros --}}
+
+                    {{-- Acciones secundarias (Registrar, Reportes, Gráficas) --}}
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm text-nowrap"
+                                    data-bs-toggle="modal" data-bs-target="#modalAltaUsuario">
+                                <i class="fa fa-plus-circle me-1"></i>Registrar Nuevo Usuario
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('usuarios.graficas') }}"
+                               class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-bar-chart me-1"></i>Gráficas
+                            </a>
+                            <a href="{{ route('usuarios.reportes') }}"
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                            </a>
+                        </div>
                     </div>
                 </div>
                 
                 {{-- Contenedor de la Tabla Asíncrona --}}
-                <div class="card-body p-0 mt-2">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1 sticky-top bg-light">
-                                <tr>
-                                    <th class="ps-4" style="width: 60px;">#</th>
-                                    <th class="text-center" style="width: 90px;">Editar</th>
-                                    <th>Nombre</th>
-                                    <th>Usuario</th>
-                                    <th>Perfil</th>
-                                    <th class="text-center" style="width: 100px;">Reiniciar</th>
-                                    <th class="text-center pe-4" style="width: 100px;">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyUsuarios">
-                                @include('admin_sistema.usuarios.partials.tabla')
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4" style="width: 60px;">#</th>
+                                <th class="text-center" style="width: 90px;">Editar</th>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Perfil</th>
+                                <th class="text-center" style="width: 100px;">Reiniciar</th>
+                                <th class="text-center pe-4" style="width: 100px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaUsuarios">
+                            @include('admin_sistema.usuarios.partials.tabla')
+                        </tbody>
+                    </table>
                 </div>
 
-                {{-- Footer con Paginación Homologada --}}
-                <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
-                    <div class="text-muted small" id="infoPaginacion">
+                {{-- Pie: info + paginación --}}
+                <div class="px-4 py-3 d-flex justify-content-between align-items-center border-top">
+                    <div class="text-muted small" id="infoPaginacionUsuarios">
                         Mostrando {{ $usuarios->firstItem() ?? 0 }} a {{ $usuarios->lastItem() ?? 0 }} de {{ $usuarios->total() }} registros
                     </div>
                     <nav aria-label="Paginacion de usuarios">
-                        <ul class="pagination mb-0" id="contenedorPaginacion">
-                            {{-- Sincronizado dinámicamente por JS --}}
-                        </ul>
+                        <div id="paginacionUsuarios">
+                            {{ $usuarios->links('pagination::bootstrap-4') }}
+                        </div>
                     </nav>
                 </div>
 

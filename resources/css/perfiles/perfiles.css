@@ -1,87 +1,60 @@
 /* Estilos personalizados para el módulo de Perfiles */
 
 /* Efectos de Focus Modernos */
-.form-control:focus, .form-select:focus, textarea:focus {
+#modulo-perfiles .form-control:focus,
+#modulo-perfiles .form-select:focus,
+#modulo-perfiles textarea:focus {
     border-color: #000000 !important;
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Clases de retroalimentación personalizadas para AJAX */
-.text-success-custom {
+#modulo-perfiles .text-success-custom {
     color: #2f855a;
     font-weight: 500;
 }
 
-.text-danger-custom {
+#modulo-perfiles .text-danger-custom {
     color: #c53030;
     font-weight: 500;
 }
 
-
-
 /* Hover en tabla y enlaces de acción */
-#tbodyPerfiles tr {
+#modulo-perfiles #cuerpoTablaPerfiles tr {
     transition: background-color 0.2s ease;
 }
 
-#tbodyPerfiles tr:hover {
+#modulo-perfiles #cuerpoTablaPerfiles tr:hover {
     background-color: rgba(49, 130, 206, 0.02) !important;
 }
 
-.btn-toggle-status {
+#modulo-perfiles .btn-toggle-status {
     color: #4a5568;
     font-size: 1.25rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.btn-toggle-status:hover {
+#modulo-perfiles .btn-toggle-status:hover {
     transform: scale(1.1);
 }
 
-.fa-pencil-square-o {
+#modulo-perfiles .fa-pencil-square-o {
     color: #000000 !important;
     font-size: 1.2rem;
     transition: color 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
-.fa-pencil-square-o:hover {
+#modulo-perfiles .fa-pencil-square-o:hover {
     color: #4b5563 !important;
     transform: scale(1.15);
 }
 
-/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
-.card:not(.reporte-card),
-.card:not(.reporte-card) .card-header,
-.card:not(.reporte-card) .card-body,
-.card:not(.reporte-card) .card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card:not(.reporte-card):hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Iconos y textos de acento en Negro */
-.text-primary,
-.fa-folder-open,
-.fa-plus-circle,
-.fa-list,
-.fa-users {
-    color: #000000 !important;
-}
-
 /* Form Controls */
-.form-control,
-.form-select,
-textarea {
+#modulo-perfiles .form-control,
+#modulo-perfiles .form-select,
+#modulo-perfiles textarea {
     border-color: #d1d5db !important;
     border-radius: 8px !important;
     box-shadow: none !important;
@@ -92,22 +65,25 @@ textarea {
 }
 
 /* Botón Guardar (Primario): Azul con borde Negro */
-.btn-primary {
+#modulo-perfiles .btn-primary {
     background-color: #0d6efd !important;
+    border: 2px solid #d1d5db !important;
     color: #ffffff !important;
     border-radius: 50rem !important;
     padding: 0.5rem 1.5rem !important;
     transition: all 0.2s ease-in-out;
 }
 
-.btn-primary:hover {
+#modulo-perfiles .btn-primary:hover {
     background-color: #0b5ed7 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
 /* Botón Cancelar/Volver: Blanco con bordes grises */
-.btn-light {
+#modulo-perfiles .btn-light,
+#modulo-perfiles .btn-outline-secondary,
+#modulo-perfiles .btn-outline-success {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
@@ -116,14 +92,16 @@ textarea {
     transition: all 0.2s ease-in-out;
 }
 
-.btn-light:hover {
+#modulo-perfiles .btn-light:hover,
+#modulo-perfiles .btn-outline-secondary:hover,
+#modulo-perfiles .btn-outline-success:hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
 }
 
 /* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
-.table {
+#modulo-perfiles .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
     border-collapse: separate !important;
@@ -132,7 +110,7 @@ textarea {
     background-color: #ffffff !important;
 }
 
-.table th {
+#modulo-perfiles .table th {
     background-color: #f9fafb !important;
     color: #000000 !important;
     font-weight: 700 !important;
@@ -143,7 +121,7 @@ textarea {
     border-bottom: 1.5px solid #e5e7eb !important;
 }
 
-.table td {
+#modulo-perfiles .table td {
     padding: 1rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
@@ -151,16 +129,16 @@ textarea {
 }
 
 /* Estilo para filas de módulos asignados */
-.table-success-custom {
+#modulo-perfiles .table-success-custom {
     background-color: rgba(46, 204, 113, 0.08) !important;
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
-.pagination {
+#modulo-perfiles .pagination {
     margin: 0 !important;
 }
 
-.pagination .page-link {
+#modulo-perfiles .pagination .page-link {
     color: #000000 !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
@@ -172,58 +150,44 @@ textarea {
     transition: all 0.2s ease-in-out;
 }
 
-.pagination .page-link:hover {
+#modulo-perfiles .pagination .page-link:hover {
     background-color: #000000 !important;
     color: #ffffff !important;
     border-color: #000000 !important;
 }
 
-.pagination .page-item.active .page-link {
+#modulo-perfiles .pagination .page-item.active .page-link {
     background-color: #000000 !important;
     border-color: #000000 !important;
     color: #ffffff !important;
 }
 
-.pagination .page-item.disabled .page-link {
+#modulo-perfiles .pagination .page-item.disabled .page-link {
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
 
-.bg-primary {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.bg-primary-light {
-    background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
 /* Fondo de filas inactivas en tabla (bug fix: clase faltante) */
-.bg-light-gray {
+#modulo-perfiles .bg-light-gray {
     background-color: #f3f4f6 !important;
 }
 
-/* ── BUSCADOR REACTIVO ── */
-.search-group {
-    min-width: 260px;
-    border: 1.5px solid #000;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.search-group .form-control {
-    font-size: 0.85rem;
-    box-shadow: none !important;
-}
-
 /* ── MODAL DE ALTA ── */
-.modal-alta {
+#modulo-perfiles .modal-alta {
     background-color: #ffffff;
     border: 2px solid #000000 !important;
 }
 
 /* Botón de cierre del modal forzado a negro */
-.btn-close-dark {
+#modulo-perfiles .btn-close-dark {
     filter: brightness(0);
+}
+
+/* Panel de filtros desplegable */
+#modulo-perfiles #dropdownFiltros .dropdown-menu {
+    border: 1px solid rgba(0,0,0,.08) !important;
+}
+#modulo-perfiles .cursor-pointer {
+    cursor: pointer;
 }

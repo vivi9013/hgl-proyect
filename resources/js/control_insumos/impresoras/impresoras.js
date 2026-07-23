@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // C. ALTERNAR ESTADO (botones .btn-alternar-estado en la tabla)
     // ─────────────────────────────────────────────────────────────────────────
     function enlazarAlternarEstado() {
-        document.querySelectorAll('.btn-alternar-estado').forEach(boton => {
+        document.querySelectorAll('.btn-toggle-status').forEach(boton => {
             const clon = boton.cloneNode(true);
             boton.parentNode.replaceChild(clon, boton);
 
@@ -190,82 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
         enlazarAlternarEstado();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // D. TOGGLE ESTADO FORM EN VISTA DE EDICIÓN
-    // ─────────────────────────────────────────────────────────────────────────
-    const formToggleEstado = document.getElementById('formToggleEstado');
-    if (formToggleEstado) {
-        formToggleEstado.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const url = this.getAttribute('action');
-            const tokenCsrf = this.querySelector('input[name="_token"]')?.value ?? '';
-            const marcaModelo = this.dataset.marcaModelo || '';
-            const estaActivo = parseInt(this.dataset.activo || '0');
-            const accionTexto = estaActivo === 1 ? 'desactivar' : 'activar';
-
-            const ejecutarAccionEdit = () => {
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': tokenCsrf,
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    },
-                    body: new FormData(formToggleEstado)
-                })
-                .then(respuesta => {
-                    if (!respuesta.ok) throw new Error('Error en el servidor');
-                    return respuesta.json();
-                })
-                .then(datos => {
-                    if (datos.success) {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire({
-                                title: '¡Estado actualizado!',
-                                text: datos.message,
-                                icon: 'success',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            window.location.reload();
-                        }
-                    }
-                })
-                .catch(() => {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Error', 'No se pudo actualizar el estado de la impresora.', 'error');
-                    } else {
-                        alert('No se pudo actualizar el estado de la impresora.');
-                    }
-                });
-            };
-
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: `¿${accionTexto.charAt(0).toUpperCase() + accionTexto.slice(1)} impresora?`,
-                    text: `"${marcaModelo}" será ${accionTexto}da en el sistema.`,
-                    icon: estaActivo === 1 ? 'warning' : 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: `Sí, ${accionTexto}`,
-                    cancelButtonText: 'Cancelar'
-                }).then(resultado => {
-                    if (resultado.isConfirmed) {
-                        ejecutarAccionEdit();
-                    }
-                });
-            } else {
-                if (confirm(`¿${accionTexto} la impresora "${marcaModelo}"?`)) {
-                    ejecutarAccionEdit();
-                }
-            }
-        });
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // E. VALIDACIÓN DE IP DUPLICADA EN TIEMPO REAL

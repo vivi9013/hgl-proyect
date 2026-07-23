@@ -59,15 +59,3 @@
         </td>
     </tr>
 @endforelse
-
-@if ($archivos->count() > 0)
-    <tr id="datosPaginacionTransporte" class="d-none" 
-        data-total="{{ $archivos->total() }}"
-        data-info="Mostrando {{ $archivos->firstItem() }} a {{ $archivos->lastItem() }} de {{ $archivos->total() }} registros">
-        <td colspan="6">
-            <div id="htmlLinksPaginacion">
-                {{ $archivos->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
-            </div>
-        </td>
-    </tr>
-@endif

@@ -29,14 +29,16 @@ class Mobiliario extends Model
         'id_factura'
     ];
 
+
     /**
-     * Relación con la especificación técnica de la computadora.
+     * Relación con la especificación técnica del monitor.
      * Vinculado a través de la columna 'inventario'.
      */
-    public function computadora()
+    public function monitor()
     {
-        return $this->hasOne(Computadora::class, 'inventario', 'inventario');
+        return $this->hasOne(Monitor::class, 'inventario', 'inventario');
     }
+
 
     /**
      * Relación con el tipo de mobiliario.
