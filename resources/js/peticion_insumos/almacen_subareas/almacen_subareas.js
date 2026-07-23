@@ -156,72 +156,165 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: CASCADA ÁREA → SUBÁREA (AJAX)
+    // LÓGICA: FILTROS EN TIEMPO REAL (ÁREA, SUBÁREA, BUSCAR, ESTATUS)
     // ─────────────────────────────────────────────────────────
+    const contenedor   = document.getElementById('contenedor-tabla-almacenes');
     const selectArea    = document.getElementById('filter-area');
     const selectSubarea = document.getElementById('filter-subarea');
+    const inputBuscar   = document.getElementById('buscar-almacen');
+    const checksStatus  = document.querySelectorAll('.filter-status-checkbox');
 
-    const cargarSubareas = (idArea) => {
-        if (!selectSubarea) return;
+    let debounceBuscar;
 
-        // Limpiar y deshabilitar mientras carga
-        selectSubarea.innerHTML = '<option value="">Cargando...</option>';
-        selectSubarea.disabled = true;
+    function recolectarParametros(extra = {}) {
+        const params = new URLSearchParams();
+        if (inputBuscar?.value.trim()) params.set('buscar', inputBuscar.value.trim());
+        if (selectArea?.value)         params.set('id_area_abastecimiento', selectArea.value);
+        if (selectSubarea?.value)      params.set('id_subarea_abastecimiento', selectSubarea.value);
 
-        const url = `/peticion-insumos/almacen-subareas/subareas-por-area?id_area_abastecimiento=${idArea}`;
+        const estatusMarcados = [...checksStatus].filter(c => c.checked).map(c => c.value);
+        estatusMarcados.forEach(v => params.append('status[]', v));
+
+        Object.entries(extra).forEach(([k, v]) => params.set(k, v));
+        return params;
+    }
+
+    function recargarTabla(extra = {}) {
+        if (!contenedor) return;
+        const params = recolectarParametros(extra);
+        const url = `${contenedor.dataset.endpoint}?${params.toString()}`;
+
+        contenedor.style.opacity = '0.5';
+        contenedor.style.transition = 'opacity 0.15s';
 
         fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-        .then(r => r.json())
-        .then(data => {
-            selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
-            data.forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub.id_subarea_abastecimiento;
-                opt.textContent = sub.siglas ? `[${sub.siglas}] ${sub.nombre}` : sub.nombre;
-                selectSubarea.appendChild(opt);
+            .then(r => r.json())
+            .then(data => {
+                contenedor.innerHTML = data.html;
+                contenedor.style.opacity = '1';
+                // Actualiza la URL visible sin recargar la página (bookmarkeable)
+                const nuevaUrl = params.toString() ? `?${params.toString()}` : location.pathname;
+                history.replaceState(null, '', nuevaUrl);
+                vincularPaginacionExterna();
+                inicializarPaginacionInsumos(contenedor);
+            })
+            .catch(err => {
+                console.error('Error al recargar tabla de almacenes:', err);
+                contenedor.style.opacity = '1';
             });
-            selectSubarea.disabled = false;
-        })
-        .catch(() => {
-            selectSubarea.innerHTML = '<option value="">-- Error al cargar --</option>';
-            selectSubarea.disabled = false;
+    }
+
+    // Re-vincula los links de paginación externa (Laravel) tras cada recarga AJAX
+    function vincularPaginacionExterna() {
+        if (!contenedor) return;
+        contenedor.querySelectorAll('.pagination a.page-link').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const page = new URL(a.href).searchParams.get('page');
+                recargarTabla(page ? { page } : {});
+            });
         });
+    }
+
+    const cargarSubareas = (idArea) => {
+        if (!selectSubarea) return;
+        selectSubarea.innerHTML = '<option value="">Cargando...</option>';
+        selectSubarea.disabled = true;
+
+        fetch(`/peticion-insumos/almacen-subareas/subareas-por-area?id_area_abastecimiento=${idArea}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+            .then(r => r.json())
+            .then(data => {
+                selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
+                data.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id_subarea_abastecimiento;
+                    opt.textContent = sub.siglas ? `[${sub.siglas}] ${sub.nombre}` : sub.nombre;
+                    selectSubarea.appendChild(opt);
+                });
+                selectSubarea.disabled = false;
+            })
+            .catch(() => {
+                selectSubarea.innerHTML = '<option value="">-- Error al cargar --</option>';
+                selectSubarea.disabled = false;
+            });
     };
 
-    if (selectArea) {
-        selectArea.addEventListener('change', function () {
-            const idArea = this.value;
-            if (idArea) {
-                cargarSubareas(idArea);
-            } else {
-                // Sin área seleccionada: resetear subárea
-                if (selectSubarea) {
-                    selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
-                    selectSubarea.disabled = false;
+    // Área: recarga subáreas Y dispara filtro en tiempo real
+    selectArea?.addEventListener('change', function () {
+        if (this.value) {
+            cargarSubareas(this.value);
+        } else if (selectSubarea) {
+            selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
+            selectSubarea.disabled = false;
+        }
+        recargarTabla();
+    });
+
+    // Subárea: dispara filtro en tiempo real
+    selectSubarea?.addEventListener('change', () => recargarTabla());
+
+    // Buscar: tiempo real con debounce (no requiere botón)
+    inputBuscar?.addEventListener('input', () => {
+        clearTimeout(debounceBuscar);
+        debounceBuscar = setTimeout(() => recargarTabla(), 350);
+    });
+
+    // Estatus (Activo/Inactivo): tiempo real
+    checksStatus.forEach(chk => chk.addEventListener('change', () => recargarTabla()));
+
+    vincularPaginacionExterna();
+
+    // ─────────────────────────────────────────────────────────
+    // LÓGICA: PAGINACIÓN INTERNA DE INSUMOS (10 POR PÁGINA, POR TARJETA)
+    // ─────────────────────────────────────────────────────────
+    function inicializarPaginacionInsumos(scope = document) {
+        scope.querySelectorAll('.tabla-insumos-paginada').forEach(cont => {
+            const perPage = parseInt(cont.dataset.perPage, 10) || 10;
+            const filas   = [...cont.querySelectorAll('.fila-insumo')];
+            const info    = cont.querySelector('.texto-info-paginacion');
+            const nav     = cont.querySelector('.controles-paginacion');
+            const total   = filas.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / perPage));
+
+            if (total <= perPage) {
+                if (info) info.textContent = `Mostrando ${total} de ${total} insumos`;
+                if (nav) nav.innerHTML = '';
+                return;
+            }
+
+            function render(pagina) {
+                filas.forEach((fila, i) => {
+                    fila.style.display =
+                        (i >= (pagina - 1) * perPage && i < pagina * perPage) ? '' : 'none';
+                });
+                const desde = (pagina - 1) * perPage + 1;
+                const hasta = Math.min(pagina * perPage, total);
+                if (info) info.textContent = `Mostrando ${desde} a ${hasta} de ${total} insumos`;
+
+                if (nav) {
+                    nav.innerHTML = '';
+                    for (let p = 1; p <= totalPaginas; p++) {
+                        const li = document.createElement('li');
+                        li.className = `page-item ${p === pagina ? 'active' : ''}`;
+                        li.innerHTML = `<a class="page-link" href="#">${p}</a>`;
+                        li.querySelector('a').addEventListener('click', e => {
+                            e.preventDefault();
+                            render(p);
+                        });
+                        nav.appendChild(li);
+                    }
                 }
             }
+
+            render(1);
         });
     }
 
-    // Al cambiar subárea, disparar búsqueda automáticamente
-    if (selectSubarea) {
-        selectSubarea.addEventListener('change', function () {
-            if (this.value) {
-                recargarTabla();
-            }
-        });
-    }
-
-    const recargarTabla = () => {
-        const container = document.querySelector('[data-tabla-interactiva]');
-        if (container) {
-            container.dispatchEvent(new CustomEvent('filtros:aplicar', { bubbles: true }));
-        } else {
-            location.reload();
-        }
-    };
+    inicializarPaginacionInsumos();
 
     // ─────────────────────────────────────────────────────────
     // LÓGICA: CONFIRMACIÓN SweetAlert2 AL ALTERNAR STATUS

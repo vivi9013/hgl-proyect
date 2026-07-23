@@ -47,6 +47,15 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Resalte de insumos bajo fondo fijo */
+.fila-bajo-fondo {
+    background-color: rgba(220, 53, 69, 0.06) !important;
+}
+
+.fila-bajo-fondo:hover {
+    background-color: rgba(220, 53, 69, 0.12) !important;
+}
+
 @media print {
     .no-print {
         display: none !important;

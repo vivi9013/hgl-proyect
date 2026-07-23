@@ -85,7 +85,8 @@
     </div>
 
     <!-- Contenedor Principal de la Tabla AJAX -->
-    <div id="contenedor-tabla-almacenes">
+    <div id="contenedor-tabla-almacenes"
+         data-endpoint="{{ route('almacen_subareas.index') }}">
         @if(empty($idArea) && empty($idSubarea) && empty($buscar))
             {{-- Estado inicial: el usuario debe seleccionar filtros primero --}}
             <div class="text-center py-5 text-muted">
