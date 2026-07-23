@@ -388,29 +388,50 @@
     border-spacing: 0 !important;
     overflow: hidden !important;
     background-color: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
 }
 
 .table th {
     background-color: #f9fafb !important;
-    color: #000000 !important;
+    color: #111827 !important;
     font-weight: 700 !important;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     letter-spacing: 0.05em;
-    padding: 1rem !important;
-    border-bottom: 1.5px solid #e5e7eb !important;
+    padding: 0.5rem 0.75rem !important;
+    border-bottom: 2px solid #e5e7eb !important;
+    white-space: nowrap;
 }
 
 .table td {
-    padding: 1rem !important;
+    padding: 0.5rem 0.75rem !important;
     border-bottom: 1px solid #f3f4f6 !important;
     color: #374151 !important;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    overflow: hidden;
+    max-width: 0;
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
 }
 
 .table tbody tr:hover {
     background-color: #f9fafb !important;
-    transform: none !important;
+}
+
+/* Permitir wrap en la columna de Regiones Estudiadas (3ra col de estudios) */
+#tabla-estudios td:nth-child(3) {
+    white-space: normal !important;
+}
+
+.btn-link i {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+}
+
+.btn-link:hover i {
+    transform: scale(1.2);
 }
 
 /* ── PAGINACIÓN SENCILLA EN NEGRO ── */
@@ -447,5 +468,3 @@
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
 }
-
-

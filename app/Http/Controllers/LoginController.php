@@ -47,6 +47,33 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
+            // ── Registrar actividad de inicio de sesión (equivalente al sistema legacy) ──
+            try {
+                $user->load('persona', 'perfil');
+
+                // Construir nombre completo
+                if ($user->persona) {
+                    $nombre    = trim($user->persona->nombre ?? '');
+                    $paterno   = trim($user->persona->ap_paterno ?? '');
+                    $materno   = trim($user->persona->ap_materno ?? '');
+                    $nombreCompleto = collect([$nombre, $paterno, $materno])->filter()->implode(' ');
+                } else {
+                    $nombreCompleto = $user->nombre_usuario;
+                }
+
+                $nombrePerfil = $user->perfil ? trim($user->perfil->nombre) : 'Sin perfil';
+
+                DB::table('actividades')->insert([
+                    'descripcion' => "{$nombreCompleto} ha iniciado sesión con perfil {$nombrePerfil}",
+                    'filtro'      => 'Inicio de Sesion',
+                    'fecha'       => now()->toDateString(),
+                    'hora'        => now()->toTimeString(),
+                    'id_persona'  => $user->id_persona,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('No se pudo registrar actividad de inicio de sesión: ' . $e->getMessage());
+            }
+
             // LOGICA CONSISTENTE: Solo si el usuario lo pide con el Check
             $conta = 3; // Por defecto: entrar directo
             
@@ -54,9 +81,7 @@ class LoginController extends Controller
                 $conta = 4; // Cambio voluntario (Check marcado)
             }
 
-            // Log discreto para que sepamos qué valor tiene la DB sin molestar al usuario
             Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | Valor primera en DB: {$user->primera}");
-
 
             return response()->json([
                 'resultado' => $conta . '|' . $user->id,

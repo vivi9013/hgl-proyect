@@ -15,6 +15,9 @@ use App\Http\Controllers\CargarArchivos\CargaArchivosController;
 use App\Http\Controllers\CategoriaArchivos\CategoriaArchivosController;
 use App\Http\Controllers\PermisosArchivos\PermisosArchivosController;
 use App\Http\Controllers\Pacientes\RxController;
+use App\Http\Controllers\Pacientes\RxEspecialidadController;
+use App\Http\Controllers\Pacientes\RxMedicoController;
+use App\Http\Controllers\Pacientes\RxEstadisticaController;
 use App\Http\Controllers\CategoriaModulos\CategoriaModulosController;
 use App\Http\Controllers\ConfiguracionSistema\ConfiguracionController;
 use App\Http\Controllers\Modulos\ModuloController;
@@ -23,6 +26,7 @@ use App\Http\Controllers\Personas\PersonaController;
 use App\Http\Controllers\Proyectos\ProyectoController;
 use App\Http\Controllers\Usuarios\UsuarioController;
 use App\Http\Controllers\Computadoras\ComputadoraController;
+use App\Http\Controllers\Miscelaneo\ActividadController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -46,6 +50,11 @@ Route::get('/', function () {
 // ── Redirects legacy (URLs del sistema antiguo) ────────────────────────────
 Route::get('/mMotivos', fn() => redirect()->route('motivos.index'));
 Route::get('/mPedidosRecibidos', fn() => redirect()->route('pedidos_recibidos.index'));
+Route::get('/mRXespecialidad', fn() => redirect()->route('rx_especialidades.index'));
+Route::get('/mRXmedicos', fn() => redirect()->route('rx_medicos.index'));
+Route::get('/mRXestudios', fn() => redirect()->route('rx.index'));
+Route::get('/mEstReportesRX', fn() => redirect()->route('rx_estadisticas.index'));
+Route::get('/mRegActividades', fn() => redirect()->route('actividades.index'));
 
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -356,10 +365,37 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/{id}/comprobante', 'comprobante')->name('comprobante');               // Comprobante PDF
     });
 
+    // ── Módulo: Especialidad RX (Estudios Radiológicos) ────────────────────────
+    Route::prefix('rx-especialidades')->name('rx_especialidades.')->controller(RxEspecialidadController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'store')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::patch('/{id}/status', 'toggleStatus')->name('status');
+    });
+
+    // ── Módulo: Médicos RX (Estudios Radiológicos) ─────────────────────────────
+    Route::prefix('rx-medicos')->name('rx_medicos.')->controller(RxMedicoController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/guardar', 'store')->name('store');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::patch('/{id}/status', 'toggleStatus')->name('status');
+    });
+
     // Subgrupo: Radiología RX (Prefijo limpio adaptado)
     Route::prefix('rx-estudios')->name('rx.')->controller(RxController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/estudios', 'estudios')->name('estudios');
+        Route::get('/reportes', 'reportes')->name('reportes');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
+        Route::get('/graficas', 'graficas')->name('graficas');
     
         // Pacientes
         Route::get('/pacientes/ver/{id}', 'verPaciente')->name('pacientes.ver');
@@ -374,6 +410,13 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
     });
 
+    // Subgrupo: Estadísticas y Reportes RX
+    Route::prefix('rx-estadisticas')->name('rx_estadisticas.')->controller(RxEstadisticaController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/datos', 'datos')->name('datos');
+        Route::get('/imprimir', 'imprimir')->name('imprimir');
+    });
+
     // ── Módulo: Computadoras (Mobiliario y Equipo) ──────────────────────────
     Route::prefix('computadoras')->name('computadoras.')->controller(ComputadoraController::class)->group(function () {
         Route::get('/', 'index')->name('index');
@@ -382,5 +425,13 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
+    });
+
+    // ── Módulo: Registro de Actividades (Misceláneos) ──────────────────────
+    Route::prefix('actividades')->name('actividades.')->controller(ActividadController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/datos', 'datos')->name('datos');
+        Route::get('/graficas', 'graficas')->name('graficas');
+        Route::get('/graficas/datos', 'datosGraficas')->name('graficas.datos');
     });
 });

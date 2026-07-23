@@ -53,6 +53,14 @@ export default defineConfig({
                 'resources/css/inventario/pedidos_recibidos/pedidos.css',
                 'resources/js/inventario/pedidos_recibidos/pedidos.js',
 
+                // Especialidades RX Assets
+                'resources/js/pacientes/especialidades/especialidades.js',
+                'resources/js/pacientes/medicos/medicos.js',
+                'resources/css/pacientes/estudios/estudios.css',
+                'resources/js/pacientes/estudios/estudios.js',
+                'resources/css/pacientes/estadisticas/estadisticas.css',
+                'resources/js/pacientes/estadisticas/estadisticas.js',
+
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/js/categoria_modulos/categoria.js',
@@ -82,6 +90,10 @@ export default defineConfig({
                 // Impresoras Assets
                 'resources/css/control_insumos/impresoras/impresoras.css',
                 'resources/js/control_insumos/impresoras/impresoras.js',
+
+                // Actividades (Misceláneos) Assets
+                'resources/css/miscelaneo/actividades/actividades.css',
+                'resources/js/miscelaneo/actividades/actividades.js',
             ],
             refresh: true,
         }),

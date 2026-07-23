@@ -9,6 +9,7 @@ use App\Models\PacienteRx;
 use App\Models\EstudioRx;
 use App\Models\MedicoRx;
 use App\Models\EspecialidadRx;
+use Illuminate\Support\Facades\DB;
 
 class RxController extends Controller
 {
@@ -38,7 +39,7 @@ class RxController extends Controller
         $medicos = MedicoRx::where('activo', 1)->orderBy('nombre', 'asc')->get();
         $especialidades = EspecialidadRx::where('activo', 1)->orderBy('nombre', 'asc')->get();
 
-        return view('pacientes.index', compact('medicos', 'especialidades'));
+        return view('pacientes.estudios.index', compact('medicos', 'especialidades'));
     }
 
     /**
@@ -342,5 +343,60 @@ class RxController extends Controller
             'success' => true,
             'message' => 'Estudio de radiología eliminado con éxito.'
         ]);
+    }
+
+    /**
+     * Vista del hub de reportes
+     */
+    public function reportes()
+    {
+        return view('pacientes.estudios.reportes.index');
+    }
+
+    /**
+     * Imprimir listado de estudios en PDF (vista de impresión)
+     */
+    public function imprimir(Request $request)
+    {
+        $query = EstudioRx::with(['medicoRx', 'especialidadRx', 'creador'])->where('activo', 1);
+
+        $fi = $request->query('fi');
+        $ff = $request->query('ff');
+
+        if ($fi) {
+            $query->whereDate('fecha_estudio', '>=', $fi);
+        }
+        if ($ff) {
+            $query->whereDate('fecha_estudio', '<=', $ff);
+        }
+
+        // Limitamos a 500 registros para evitar agotar memoria si es muy grande
+        $estudios = $query->orderBy('fecha_estudio', 'desc')
+                          ->orderBy('id_estudios', 'desc')
+                          ->limit(500)
+                          ->get();
+
+        return view('pacientes.estudios.reportes.impresion', compact('estudios', 'fi', 'ff'));
+    }
+
+    /**
+     * Vista de gráficas analíticas por regiones anatómicas
+     */
+    public function graficas()
+    {
+        $stats = DB::table('estudios_rx')
+            ->where('activo', 1)
+            ->select(
+                DB::raw('COALESCE(SUM(craneo), 0) as craneo'),
+                DB::raw('COALESCE(SUM(tx), 0) as torax'),
+                DB::raw('COALESCE(SUM(abd), 0) as abdomen'),
+                DB::raw('COALESCE(SUM(col), 0) as columna'),
+                DB::raw('COALESCE(SUM(m_sup), 0) as m_sup'),
+                DB::raw('COALESCE(SUM(m_inf), 0) as m_inf'),
+                DB::raw('COALESCE(SUM(contraste), 0) as contraste')
+            )
+            ->first();
+
+        return view('pacientes.estudios.analitica.graficas', compact('stats'));
     }
 }

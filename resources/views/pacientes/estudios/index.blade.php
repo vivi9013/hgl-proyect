@@ -3,7 +3,7 @@
 @section('title', 'Estudios RX - Hospital General')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/pacientes/pacientes.css') }}">
+    @vite(['resources/css/pacientes/estudios/estudios.css'])
 @endpush
 
 @section('content')
@@ -13,13 +13,23 @@
 
     {{-- ── Encabezado Principal ── --}}
     <div class="row align-items-center mb-4">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h1 class="h2 text-dark fw-bold mb-1">
                 <i class="bi bi-journal-medical text-primary me-2"></i>Estudios RX
             </h1>
             <p class="text-muted mb-0">Gestión interactiva de expedientes de pacientes y estudios de radiología.</p>
         </div>
-        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <div class="col-md-7 text-md-end mt-3 mt-md-0">
+            {{-- Botón Reportes --}}
+            <a href="{{ route('rx.reportes') }}"
+               class="btn btn-outline-secondary px-3 py-2 rounded-pill shadow-sm me-2 text-nowrap">
+                <i class="fa fa-file-pdf-o me-2 text-danger"></i>Reportes
+            </a>
+            {{-- Botón Gráficas --}}
+            <a href="{{ route('rx.graficas') }}"
+               class="btn btn-outline-success px-3 py-2 rounded-pill shadow-sm me-2 text-nowrap">
+                <i class="fa fa-bar-chart me-2 text-success"></i>Gráficas
+            </a>
             <button id="btn-nuevo-paciente" class="btn btn-theme shadow-sm px-4 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalPaciente">
                 <i class="bi bi-person-plus-fill me-2"></i>Registrar Paciente
             </button>
@@ -70,18 +80,24 @@
                     </div>
                     
                     <!-- Tabla de Pacientes -->
-                    <div class="table-responsive rounded-3 border border-light">
-                        <table id="tabla-pacientes" class="table table-hover align-middle mb-0 table-striped-columns">
+                    <div class="rounded-3 border border-light" style="overflow: hidden;">
+                        <table id="tabla-pacientes" class="table table-hover align-middle mb-0 table-striped" style="table-layout: fixed; width: 100%;">
+                            <colgroup>
+                                <col style="width: 25%;">  {{-- Paciente + NHC --}}
+                                <col style="width: 7%;">   {{-- Sexo --}}
+                                <col style="width: 12%;">  {{-- F. Nacimiento --}}
+                                <col style="width: 16%;">  {{-- RFC --}}
+                                <col style="width: 22%;">  {{-- Seg. Popular / Teléfono --}}
+                                <col style="width: 18%;">  {{-- Acciones --}}
+                            </colgroup>
                             <thead class="table-light text-muted">
                                 <tr>
-                                    <th class="ps-4 py-3 fw-bold" style="width: 130px;">NHC</th>
-                                    <th class="py-3 fw-bold">Nombre Completo</th>
-                                    <th class="py-3 fw-bold" style="width: 120px;">Sexo</th>
-                                    <th class="py-3 fw-bold" style="width: 140px;">F. Nacimiento</th>
-                                    <th class="py-3 fw-bold">RFC</th>
-                                    <th class="py-3 fw-bold" style="width: 140px;">Seguro Popular</th>
-                                    <th class="py-3 fw-bold">Teléfono</th>
-                                    <th class="text-center pe-4 py-3 fw-bold" style="width: 250px;">Acciones</th>
+                                    <th class="ps-3 fw-bold">Paciente</th>
+                                    <th class="fw-bold">Sexo</th>
+                                    <th class="fw-bold">F. Nacimiento</th>
+                                    <th class="fw-bold">RFC</th>
+                                    <th class="fw-bold">Seg. Popular / Teléfono</th>
+                                    <th class="text-center pe-3 fw-bold">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -118,18 +134,23 @@
                     
                     <!-- Tabla de Estudios -->
                     <div class="table-responsive rounded-3 border border-light">
-                        <table id="tabla-estudios" class="table table-hover align-middle mb-0 table-striped-columns">
+                        <table id="tabla-estudios" class="table table-hover align-middle mb-0 table-striped" style="table-layout: fixed; width: 100%;">
+                            <colgroup>
+                                <col style="width: 130px;">
+                                <col style="width: auto;">
+                                <col style="width: 260px;">
+                                <col style="width: 170px;">
+                                <col style="width: 55px;">
+                                <col style="width: 130px;">
+                            </colgroup>
                             <thead class="table-light text-muted">
                                 <tr>
-                                    <th class="ps-4 py-3 fw-bold" style="width: 130px;">Fecha</th>
-                                    <th class="py-3 fw-bold" style="width: 120px;">NHC</th>
-                                    <th class="py-3 fw-bold">Paciente</th>
-                                    <th class="py-3 fw-bold" style="width: 130px;">Origen</th>
-                                    <th class="py-3 fw-bold">Regiones Estudiadas</th>
-                                    <th class="py-3 fw-bold">Detalle/Especificado</th>
-                                    <th class="py-3 fw-bold" style="width: 80px;">CDs</th>
-                                    <th class="py-3 fw-bold">Médico RX</th>
-                                    <th class="text-center pe-4 py-3 fw-bold" style="width: 180px;">Acciones</th>
+                                    <th class="ps-3 fw-bold">Fecha / Origen</th>
+                                    <th class="fw-bold">Paciente</th>
+                                    <th class="fw-bold">Regiones Estudiadas</th>
+                                    <th class="fw-bold">Médico RX</th>
+                                    <th class="text-center fw-bold">CDs</th>
+                                    <th class="text-center pe-3 fw-bold">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -553,5 +574,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/js/pacientes/pacientes.js') }}"></script>
+    @vite(['resources/js/pacientes/estudios/estudios.js'])
 @endpush
