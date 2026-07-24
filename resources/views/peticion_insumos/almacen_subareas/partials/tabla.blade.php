@@ -42,8 +42,10 @@
 
                     <button class="btn btn-sm {{ $almacen->activo == 1 ? 'btn-outline-danger' : 'btn-outline-success' }} btn-toggle-status" 
                             data-id="{{ $almacen->id_almacen_subarea }}"
-                            data-status="{{ $almacen->activo }}"
-                            data-url="{{ route('almacen_subareas.status', $almacen->id_almacen_subarea) }}">
+                            data-activo="{{ $almacen->activo }}"
+                            data-nombre="{{ $almacen->subareaAbastecimiento->nombre ?? 'esta subárea' }}"
+                            data-url="{{ route('almacen_subareas.status', $almacen->id_almacen_subarea) }}"
+                            title="{{ $almacen->activo == 1 ? 'Desactivar' : 'Activar' }} almacén">
                         <i class="bi {{ $almacen->activo == 1 ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
                     </button>
                 </div>

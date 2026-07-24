@@ -89,9 +89,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="id_area_abastecimiento" class="form-label fw-bold small">Área de Abastecimiento <span class="text-danger">*</span></label>
+                        <label for="modal_id_area_abastecimiento" class="form-label fw-bold small">Área de Abastecimiento <span class="text-danger">*</span></label>
                         <select class="form-select @error('id_area_abastecimiento') is-invalid @enderror"
-                                id="id_area_abastecimiento" name="id_area_abastecimiento" required>
+                                id="modal_id_area_abastecimiento" name="id_area_abastecimiento" required>
                             <option value="">-- Seleccionar Área --</option>
                             @foreach($todasAreas as $area)
                                 <option value="{{ $area->id_area_abastecimiento }}"
@@ -106,8 +106,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="id_subarea_abastecimiento" class="form-label fw-bold small">Subárea (opcional)</label>
-                        <select class="form-select" id="id_subarea_abastecimiento" name="id_subarea_abastecimiento">
+                        <label for="modal_id_subarea_abastecimiento" class="form-label fw-bold small">Subárea (opcional)</label>
+                        <select class="form-select @error('id_subarea_abastecimiento') is-invalid @enderror" 
+                                id="modal_id_subarea_abastecimiento" name="id_subarea_abastecimiento">
                             <option value="">-- Sin subárea específica --</option>
                             @foreach($subareas as $subarea)
                                 <option value="{{ $subarea->id_subarea_abastecimiento }}"
@@ -116,6 +117,9 @@
                                 </option>
                             @endforeach
                         </select>
+                        @error('id_subarea_abastecimiento')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -135,14 +139,11 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="modalAgregarInsumoLabel">
-                        <i class="bi bi-box-seam me-1 text-primary"></i> Asignar Insumo a Plantilla
+                        <i class="bi bi-box-seam me-1 text-primary"></i> Asignar Insumo a Plantilla: <span id="nombrePlantillaModal" class="text-primary"></span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="small text-muted mb-3">
-                        Asignando a: <strong id="nombrePlantillaModal" class="text-primary"></strong>
-                    </p>
                     <div class="mb-3">
                         <label for="id_insumo" class="form-label fw-bold small">Seleccionar Insumo <span class="text-danger">*</span></label>
                         <select class="form-select" id="id_insumo" name="id_insumo" required>
@@ -171,4 +172,12 @@
 
 @push('scripts')
 @vite(['resources/js/peticion_insumos/plantillas_pedido/plantillas_pedido.js'])
+@if($errors->has('nombre') || $errors->has('id_area_abastecimiento') || $errors->has('id_subarea_abastecimiento'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = new bootstrap.Modal(document.getElementById('modalCrearPlantilla'));
+        modal.show();
+    });
+</script>
+@endif
 @endpush

@@ -159,6 +159,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ─────────────────────────────────────────────────────────
+    // LÓGICA: COMBO EN CASCADA EN MODAL CREAR PLANTILLA
+    // ─────────────────────────────────────────────────────────
+    const modalAreaSelect = document.getElementById('modal_id_area_abastecimiento');
+    const modalSubareaSelect = document.getElementById('modal_id_subarea_abastecimiento');
+
+    if (modalAreaSelect && modalSubareaSelect) {
+        modalAreaSelect.addEventListener('change', function () {
+            const areaId = this.value;
+            modalSubareaSelect.innerHTML = '<option value="">-- Sin subárea específica --</option>';
+
+            if (!areaId) return;
+
+            fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${areaId}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id_subarea_abastecimiento;
+                    opt.textContent = sub.nombre;
+                    modalSubareaSelect.appendChild(opt);
+                });
+            })
+            .catch(err => console.error('Error al cargar subáreas en modal:', err));
+        });
+    }
+
+    // ─────────────────────────────────────────────────────────
     // LÓGICA: FILTROS EN TIEMPO REAL (ÁREA, SUBÁREA, BUSCAR, ESTATUS)
     // ─────────────────────────────────────────────────────────
     const contenedor   = document.getElementById('contenedor-tabla-plantillas');

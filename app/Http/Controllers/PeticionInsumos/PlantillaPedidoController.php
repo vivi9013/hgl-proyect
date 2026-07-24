@@ -11,6 +11,8 @@ use App\Models\Inventario\SubareaAbastecimiento;
 use App\Models\Inventario\Insumo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use App\Models\PeticionInsumos\AlmacenSubarea;
 
 class PlantillaPedidoController extends Controller
 {
@@ -63,9 +65,15 @@ class PlantillaPedidoController extends Controller
      */
     public function subareasPorArea(Request $request)
     {
-        $subareas = SubareaAbastecimiento::where('activo', 1)
-            ->orderBy('nombre')
-            ->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
+        $idArea = $request->get('id_area_abastecimiento') ?: $request->get('id_area');
+
+        $query = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre');
+
+        if (!empty($idArea)) {
+            $query->where('id_area_abastecimiento', $idArea);
+        }
+
+        $subareas = $query->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
 
         return response()->json($subareas);
     }
@@ -76,19 +84,45 @@ class PlantillaPedidoController extends Controller
     public function guardar(Request $request)
     {
         $request->validate([
-            'nombre'                   => 'required|string|max:150',
-            'id_area_abastecimiento'   => 'required|integer',
-            'id_subarea_abastecimiento' => 'nullable|integer',
+            'nombre' => [
+                'required',
+                'string',
+                'max:150',
+                Rule::unique('plantilla_pedidos', 'nombre')->where(function ($query) use ($request) {
+                    return $query->where('id_area_abastecimiento', $request->id_area_abastecimiento);
+                }),
+            ],
+            'id_area_abastecimiento' => [
+                'required',
+                'integer',
+                'exists:areasabastecimiento,id_area_abastecimiento,activo,1',
+            ],
+            'id_subarea_abastecimiento' => [
+                'nullable',
+                'integer',
+                'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            ],
         ], [
             'nombre.required'                 => 'El nombre de la plantilla es obligatorio.',
+            'nombre.unique'                   => 'Ya existe una plantilla de pedido con este nombre en la misma área.',
             'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
+            'id_area_abastecimiento.exists'   => 'El área seleccionada no es válida o está inactiva.',
+            'id_subarea_abastecimiento.exists' => 'La subárea seleccionada no es válida o está inactiva.',
         ]);
+
+        $idAreaAlmacen = null;
+        if ($request->filled('id_subarea_abastecimiento')) {
+            $idAreaAlmacen = AlmacenSubarea::where('id_area_abastecimiento', $request->id_area_abastecimiento)
+                ->where('id_subarea_abastecimiento', $request->id_subarea_abastecimiento)
+                ->value('id_almacen_subarea');
+        }
 
         PlantillaPedido::create([
             'nombre'                    => trim($request->nombre),
             'descripcion'               => $request->filled('descripcion') ? trim($request->descripcion) : null,
             'id_area_abastecimiento'    => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento' => $request->filled('id_subarea_abastecimiento') ? $request->id_subarea_abastecimiento : null,
+            'id_area_almacen'           => $idAreaAlmacen,
             'fecha_registro'            => now()->toDateString(),
             'hora_registro'             => now()->toTimeString(),
             'activo'                    => 1,
@@ -108,10 +142,15 @@ class PlantillaPedidoController extends Controller
         $plantilla = PlantillaPedido::findOrFail($id);
 
         $request->validate([
-            'id_insumo' => 'required|integer',
+            'id_insumo' => [
+                'required',
+                'integer',
+                'exists:insumos,id_insumo,activo,1',
+            ],
             'cantidad'  => 'required|integer|min:1',
         ], [
             'id_insumo.required' => 'Debe seleccionar un insumo.',
+            'id_insumo.exists'   => 'El insumo seleccionado no es válido o no está activo.',
             'cantidad.required'  => 'Debe indicar la cantidad prestablecida.',
             'cantidad.min'       => 'La cantidad debe ser al menos 1.',
         ]);

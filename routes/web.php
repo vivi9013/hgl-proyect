@@ -320,19 +320,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}/status',         'cambiarStatus')     ->name('status');
     });
 
-    // ── Petición de Insumos: Plantillas de Pedido (ID: 39) ──────────────────────
-    Route::prefix('peticion-insumos/plantillas-pedido')->middleware('modulo:39')->name('plantillas_pedido.')->controller(PlantillaPedidoController::class)->group(function () {
-        Route::get('/',                          'index')            ->name('index');
-        Route::post('/guardar',                  'guardar')          ->name('store');
-        Route::get('/subareas-por-area',         'subareasPorArea')  ->name('subareas_por_area');
-        Route::post('/{id}/insumo',              'agregarInsumo')    ->name('insumo.store');
-        Route::put('/detalle/{id}',              'actualizarDetalle')->name('detalle.update');
-        Route::delete('/detalle/{id}',           'eliminarDetalle')  ->name('detalle.destroy');
-        Route::get('/reportes',                  'reportes')             ->name('reportes');
-        Route::get('/reportes/imprimir',         'imprimir')             ->name('imprimir');
-        Route::get('/{id}/imprimir-individual',  'imprimirIndividual')   ->name('imprimir_individual');
-        Route::patch('/{id}/status',             'cambiarStatus')        ->name('status');
-    });
 
     // ── Petición de Insumos: Áreas de Abastecimiento (ID: 36) ──────────────────
     Route::prefix('peticion-insumos/areas-abastecimiento')->middleware('modulo:36')->name('areas_abastecimiento.')->controller(AreaAbastecimientoController::class)->group(function () {
@@ -697,16 +684,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     });
     // ── Petición de Insumos: Plantillas de Pedido (ID: 40) ────────────────────
     Route::prefix('peticion-insumos/plantillas-pedido')->middleware('modulo:40')->name('plantillas_pedido.')->controller(PlantillaPedidoController::class)->group(function () {
-        Route::get('/',                  'index')            ->name('index');
-        Route::post('/guardar',          'guardar')          ->name('store');
-        Route::get('/subareas-por-area', 'subareasPorArea')  ->name('subareas');
-        Route::post('/{id}/insumos',     'agregarInsumo')    ->name('agregar_insumo');
-        Route::put('/insumos/{idDetalle}','actualizarDetalle')->name('actualizar_detalle');
-        Route::delete('/insumos/{idDetalle}','eliminarDetalle')->name('eliminar_detalle');
-        Route::patch('/{id}/status',     'cambiarStatus')    ->name('status');
-        Route::get('/reportes',                 'reportes')             ->name('reportes');
-        Route::get('/reportes/impresion',       'imprimir')             ->name('imprimir');
-        Route::get('/{id}/imprimir-individual', 'imprimirIndividual')   ->name('imprimir_individual');
+        Route::get('/',                          'index')            ->name('index');
+        Route::post('/guardar',                  'guardar')          ->name('store');
+        Route::get('/subareas-por-area',         'subareasPorArea')  ->name('subareas_por_area');
+        Route::get('/subareas',                  'subareasPorArea')  ->name('subareas');
+        Route::post('/{id}/insumo',              'agregarInsumo')    ->name('insumo.store');
+        Route::post('/{id}/insumos',             'agregarInsumo')    ->name('agregar_insumo');
+        Route::put('/detalle/{id}',              'actualizarDetalle')->name('detalle.update');
+        Route::put('/insumos/{idDetalle}',       'actualizarDetalle')->name('actualizar_detalle');
+        Route::delete('/detalle/{id}',           'eliminarDetalle')  ->name('detalle.destroy');
+        Route::delete('/insumos/{idDetalle}',    'eliminarDetalle')  ->name('eliminar_detalle');
+        Route::patch('/{id}/status',             'cambiarStatus')    ->name('status');
+        Route::get('/reportes',                  'reportes')         ->name('reportes');
+        Route::get('/reportes/impresion',        'imprimir')         ->name('imprimir');
+        Route::get('/{id}/imprimir-individual',  'imprimirIndividual')->name('imprimir_individual');
     });
 
     // ── Petición de Insumos: Pedido de Insumos (ID: 41) ──────────────────────
