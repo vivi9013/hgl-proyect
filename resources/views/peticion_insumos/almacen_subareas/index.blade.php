@@ -84,16 +84,7 @@
     <!-- Contenedor Principal de la Tabla AJAX -->
     <div id="contenedor-tabla-almacenes"
          data-endpoint="{{ route('almacen_subareas.index') }}">
-        @if(empty($idArea) && empty($idSubarea) && empty($buscar))
-            {{-- Estado inicial: el usuario debe seleccionar filtros primero --}}
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-funnel" style="font-size: 3rem;"></i>
-                <h5 class="mt-3 fw-semibold">Selecciona un filtro para ver los registros</h5>
-                <p class="mb-0 small">Elige un <strong>Área de Abastecimiento</strong> en los filtros de arriba<br>y luego una <strong>Subárea</strong> para consultar su almacén.</p>
-            </div>
-        @else
-            @include('peticion_insumos.almacen_subareas.partials.tabla')
-        @endif
+        @include('peticion_insumos.almacen_subareas.partials.tabla')
     </div>
 </div>
 
@@ -101,7 +92,7 @@
 <div class="modal fade" id="modalCrearAlmacen" tabindex="-1" aria-labelledby="modalCrearAlmacenLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('almacen_subareas.guardar') }}" method="POST">
+            <form action="{{ route('almacen_subareas.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="modalCrearAlmacenLabel">
@@ -162,16 +153,24 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        Asignando a: <strong id="nombreSubareaModal" class="text-primary"></strong>
+                    </p>
                     <div class="mb-3">
                         <label for="id_insumo" class="form-label fw-bold small">Seleccionar Insumo <span class="text-danger">*</span></label>
-                        <select class="form-select" id="id_insumo" name="id_insumo" required>
+                        <select class="form-select @error('id_insumo') is-invalid @enderror" id="id_insumo" name="id_insumo" required>
                             <option value="">-- Seleccionar Insumo --</option>
                             @foreach($insumos as $insumo)
-                                <option value="{{ $insumo->id_insumo }}">
+                                <option value="{{ $insumo->id_insumo }}" {{ old('id_insumo') == $insumo->id_insumo ? 'selected' : '' }}>
                                     [{{ $insumo->clave }}] {{ $insumo->descripcion }}
                                 </option>
                             @endforeach
                         </select>
+                        @error('id_insumo')
+                            <div class="invalid-feedback d-block fw-bold">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="row">
@@ -201,6 +200,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var modal = new bootstrap.Modal(document.getElementById('modalCrearAlmacen'));
+        modal.show();
+    });
+</script>
+@endif
+@if($errors->has('id_insumo'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = new bootstrap.Modal(document.getElementById('modalAgregarInsumo'));
         modal.show();
     });
 </script>

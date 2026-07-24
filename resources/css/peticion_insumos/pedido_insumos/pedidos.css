@@ -1,0 +1,43 @@
+/* Estilos desacoplados para el Módulo Pedido de Insumos */
+
+.btn-black {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-black:hover {
+    background-color: #222222;
+    color: #ffffff;
+    border-color: #222222;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Modal Search Dropdown */
+#dropdownInsumosResult .dropdown-item {
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+}
+
+#dropdownInsumosResult .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}

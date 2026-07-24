@@ -198,7 +198,7 @@
                                 <label for="serie" class="form-label fw-bold text-secondary">
                                     <i class="fa fa-hashtag text-dark me-1"></i> Serie:
                                 </label>
-                                <input type="text" name="serie" id="serie" class="form-control border-gray-300 shadow-sm" value="{{ old('serie') }}" placeholder="ghvfghchgcfg">
+                                <input type="text" name="serie" id="serie" class="form-control border-gray-300 shadow-sm" value="{{ old('serie') }}" placeholder="Ej. SN-2024001">
                             </div>
 
                             <div class="col-12 col-md-6">
@@ -217,14 +217,14 @@
                                 <label for="modelo" class="form-label fw-bold text-secondary">
                                     <i class="fa fa-cogs text-dark me-1"></i> Modelo: *
                                 </label>
-                                <input type="text" name="modelo" id="modelo" class="form-control border-gray-300 shadow-sm" value="{{ old('modelo') }}" placeholder="ghfghcfghfghf" required>
+                                <input type="text" name="modelo" id="modelo" class="form-control border-gray-300 shadow-sm" value="{{ old('modelo') }}" placeholder="Ej. E2420H" required>
                             </div>
 
                             <div class="col-12 col-md-6">
                                 <label for="descripcion" class="form-label fw-bold text-secondary">
                                     <i class="fa fa-align-left text-dark me-1"></i> Descripcion:
                                 </label>
-                                <input type="text" name="descripcion" id="descripcion" class="form-control border-gray-300 shadow-sm" value="{{ old('descripcion') }}" placeholder="yhdfgxdfgdsfg">
+                                <input type="text" name="descripcion" id="descripcion" class="form-control border-gray-300 shadow-sm" value="{{ old('descripcion') }}" placeholder="Ej. Monitor LED 24 pulgadas">
                             </div>
 
                             <div class="col-12 col-md-6">

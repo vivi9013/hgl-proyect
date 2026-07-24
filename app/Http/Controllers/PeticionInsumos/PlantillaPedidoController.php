@@ -17,56 +17,36 @@ class PlantillaPedidoController extends Controller
     use RespondeTablaAjax;
 
     /**
-     * Muestra el listado de plantillas de pedido con búsqueda, filtros y paginación AJAX.
+     * Vista principal: tabla de Áreas con sus plantillas de pedido (patrón del sistema legacy).
+     * Cada fila = un Área, columna PDF genera el reporte de su(s) plantilla(s).
      */
     public function index(Request $request)
     {
-        $buscar    = $request->get('buscar', '');
-        $idArea    = $request->get('id_area_abastecimiento', '');
-        $idSubarea = $request->get('id_subarea_abastecimiento', '');
-        $status    = $request->get('status', '');
+        $buscar = $request->get('buscar', '');
 
-        $query = PlantillaPedido::with(['areaAbastecimiento', 'subareaAbastecimiento', 'detalles.insumo'])
-            ->orderBy('id_plantilla_pedido', 'desc');
+        $query = AreaAbastecimiento::with([
+                'plantillas.detalles.insumo',
+                'plantillas.subareaAbastecimiento',
+            ])
+            ->orderBy('nombre');
 
         if (!empty($buscar)) {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('nombre', 'LIKE', "%{$buscar}%")
-                  ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
-                  ->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
-                  ->orWhereHas('subareaAbastecimiento', fn($sq) => $sq->where('nombre', 'LIKE', "%{$buscar}%"))
-                  ->orWhereHas('detalles.insumo', fn($iq) =>
-                      $iq->where('clave', 'LIKE', "%{$buscar}%")
-                         ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
-                  );
-            });
+            $query->where('nombre', 'LIKE', "%{$buscar}%");
         }
 
-        if (!empty($idArea)) {
-            $query->where('id_area_abastecimiento', $idArea);
-        }
+        $areas = $query->paginate(15)->withQueryString();
 
-        if (!empty($idSubarea)) {
-            $query->where('id_subarea_abastecimiento', $idSubarea);
-        }
-
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts  = array_map(fn($v) => $v === 'Activo' ? 1 : 0, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
-
-        $plantillas = $query->paginate(10)->withQueryString();
-        $areas      = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $subareas   = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $insumos    = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
+        // Para el modal de nueva plantilla, también se necesitan los combos
+        $todasAreas   = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $subareas     = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $insumos      = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
 
         $ajaxResponse = $this->respuestaTablaAjax(
             $request,
-            $plantillas,
+            $areas,
             'peticion_insumos.plantillas_pedido.partials.tabla',
-            compact('plantillas'),
-            'plantillas de pedido'
+            compact('areas', 'buscar'),
+            'áreas de abastecimiento'
         );
 
         if ($ajaxResponse) {
@@ -74,7 +54,7 @@ class PlantillaPedidoController extends Controller
         }
 
         return view('peticion_insumos.plantillas_pedido.index', compact(
-            'plantillas', 'areas', 'subareas', 'insumos', 'buscar', 'idArea', 'idSubarea'
+            'areas', 'todasAreas', 'subareas', 'insumos', 'buscar'
         ));
     }
 
@@ -257,5 +237,16 @@ class PlantillaPedidoController extends Controller
         $plantillas = $query->get();
 
         return view('peticion_insumos.plantillas_pedido.analitica.reportes.impresion', compact('plantillas'));
+    }
+
+    /**
+     * Genera el reporte PDF/impresión individual para una plantilla de pedido específica por área.
+     */
+    public function imprimirIndividual($id)
+    {
+        $plantilla = PlantillaPedido::with(['areaAbastecimiento', 'subareaAbastecimiento', 'detalles.insumo'])
+            ->findOrFail($id);
+
+        return view('peticion_insumos.plantillas_pedido.analitica.reportes.impresion_individual', compact('plantilla'));
     }
 }

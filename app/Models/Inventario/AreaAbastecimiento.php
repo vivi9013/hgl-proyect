@@ -39,4 +39,12 @@ class AreaAbastecimiento extends Model
     {
         return $this->hasMany(SubareaAbastecimiento::class, 'id_area_abastecimiento', 'id_area_abastecimiento');
     }
+
+    /**
+     * Plantillas de pedido que pertenecen a esta área.
+     */
+    public function plantillas()
+    {
+        return $this->hasMany(\App\Models\PeticionInsumos\PlantillaPedido::class, 'id_area_abastecimiento', 'id_area_abastecimiento');
+    }
 }

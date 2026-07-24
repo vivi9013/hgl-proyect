@@ -142,6 +142,12 @@ export default defineConfig({
                 // Subáreas de Abastecimiento Assets
                 'resources/css/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.css',
                 'resources/js/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.js',
+                // Pedido de Insumos Assets
+                'resources/css/peticion_insumos/pedido_insumos/pedidos.css',
+                'resources/js/peticion_insumos/pedido_insumos/pedidos.js',
+                // Pedido por Diferencia Assets
+                'resources/css/peticion_insumos/pedido_insumos_dif/diferencia.css',
+                'resources/js/peticion_insumos/pedido_insumos_dif/diferencia.js',
             ],
             refresh: true,
         }),

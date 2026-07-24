@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Plantillas de Pedido - Petición de Insumos')
+@section('title', 'Plantillas de Pedido por Área - Petición de Insumos')
 
 @push('styles')
 @vite(['resources/css/peticion_insumos/plantillas_pedido/plantillas_pedido.css'])
@@ -8,6 +8,7 @@
 
 @section('content')
 <div class="container-fluid py-3">
+
     {{-- Encabezado del Módulo --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -15,73 +16,37 @@
                 <i class="bi bi-clipboard2-check me-2 text-primary"></i>Plantillas de Pedido
             </h2>
             <small class="text-muted">
-                Define listas predeterminadas de insumos con cantidades para agilizar la generación de pedidos recurrentes
+                Formatos de pedido de insumos por área de abastecimiento
             </small>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('plantillas_pedido.reportes') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('plantillas_pedido.reportes') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-file-earmark-text me-1"></i> Reportes
             </a>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearPlantilla">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearPlantilla">
                 <i class="bi bi-plus-lg me-1"></i> Nueva Plantilla
             </button>
         </div>
     </div>
 
-    {{-- Barra de Filtros --}}
+    {{-- Barra de Búsqueda --}}
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body p-3">
-            <form id="form-filtros-plantillas" class="row g-3 align-items-center">
-                <div class="col-12 col-md-4">
-                    <label for="buscar-plantilla" class="form-label small fw-bold text-secondary mb-1">Buscar Nombre / Insumo / Área</label>
+            <form id="form-filtros-plantillas" class="row g-2 align-items-center">
+                <div class="col-12 col-md-5">
+                    <label for="buscar-area" class="form-label small fw-bold text-secondary mb-1">
+                        Buscar Área de Abastecimiento
+                    </label>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                        <input type="text" id="buscar-plantilla" name="buscar" class="form-control"
-                               value="{{ $buscar }}" placeholder="Nombre de plantilla, insumo, área...">
+                        <input type="text" id="buscar-area" name="buscar" class="form-control"
+                               value="{{ $buscar }}" placeholder="Nombre del área...">
                     </div>
                 </div>
-
-                <div class="col-12 col-md-3">
-                    <label for="filter-area" class="form-label small fw-bold text-secondary mb-1">Área de Abastecimiento</label>
-                    <select id="filter-area" name="id_area_abastecimiento" class="form-select form-select-sm">
-                        <option value="">-- Todas las Áreas --</option>
-                        @foreach($areas as $area)
-                            <option value="{{ $area->id_area_abastecimiento }}"
-                                {{ $idArea == $area->id_area_abastecimiento ? 'selected' : '' }}>
-                                {{ $area->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-3">
-                    <label for="filter-subarea" class="form-label small fw-bold text-secondary mb-1">Subárea de Abastecimiento</label>
-                    <select id="filter-subarea" name="id_subarea_abastecimiento" class="form-select form-select-sm"
-                            {{ empty($idArea) ? 'disabled' : '' }}>
-                        <option value="">-- Todas las Subáreas --</option>
-                        @foreach($subareas as $subarea)
-                            <option value="{{ $subarea->id_subarea_abastecimiento }}"
-                                {{ $idSubarea == $subarea->id_subarea_abastecimiento ? 'selected' : '' }}>
-                                {{ $subarea->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-2">
-                    <label class="form-label small fw-bold text-secondary mb-1">Estatus</label>
-                    <div class="d-flex gap-2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input filter-status-checkbox" type="checkbox"
-                                   name="status[]" value="Activo" id="st-activo" checked>
-                            <label class="form-check-label small" for="st-activo">Activo</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input filter-status-checkbox" type="checkbox"
-                                   name="status[]" value="Inactivo" id="st-inactivo">
-                            <label class="form-check-label small" for="st-inactivo">Inactivo</label>
-                        </div>
-                    </div>
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-sm btn-dark w-100">
+                        <i class="bi bi-funnel me-1"></i> Filtrar
+                    </button>
                 </div>
             </form>
         </div>
@@ -128,7 +93,7 @@
                         <select class="form-select @error('id_area_abastecimiento') is-invalid @enderror"
                                 id="id_area_abastecimiento" name="id_area_abastecimiento" required>
                             <option value="">-- Seleccionar Área --</option>
-                            @foreach($areas as $area)
+                            @foreach($todasAreas as $area)
                                 <option value="{{ $area->id_area_abastecimiento }}"
                                     {{ old('id_area_abastecimiento') == $area->id_area_abastecimiento ? 'selected' : '' }}>
                                     {{ $area->nombre }}

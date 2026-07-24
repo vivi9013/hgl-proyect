@@ -31,74 +31,71 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: EDITAR DETALLE (STOCK Y FONDO FIJO VIA AJAX)
+    // LÓGICA: GUARDAR CAMBIOS DE STOCK EN LÍNEA (BOTÓN VERDE ✓)
     // ─────────────────────────────────────────────────────────
     document.addEventListener('click', function (e) {
-        const btnEdit = e.target.closest('.btn-editar-detalle');
-        if (!btnEdit) return;
+        const btn = e.target.closest('.btn-guardar-detalle');
+        if (!btn) return;
 
         e.preventDefault();
-        const idDetalle = btnEdit.getAttribute('data-id');
-        const cantidad = btnEdit.getAttribute('data-cantidad');
-        const fondo = btnEdit.getAttribute('data-fondo');
+        const idDetalle = btn.getAttribute('data-id');
+        const fila = btn.closest('tr');
+        if (!fila) return;
 
-        document.getElementById('edit_detalle_id').value = idDetalle;
-        document.getElementById('edit_cantidad').value = cantidad;
-        document.getElementById('edit_fondo_fijo').value = fondo;
+        const inputCantidad  = fila.querySelector('.input-cantidad');
+        const inputFondo     = fila.querySelector('.input-fondo-fijo');
+        if (!inputCantidad || !inputFondo) return;
 
-        const modalEl = document.getElementById('modalEditarDetalle');
-        if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
+        const cantidad  = inputCantidad.value;
+        const fondoFijo = inputFondo.value;
+
+        // Deshabilitar botón mientras guarda
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ cantidad: cantidad, fondo_fijo: fondoFijo })
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '¡Actualizado!',
+                        text: data.mensaje ?? 'Stock actualizado correctamente.',
+                        icon: 'success',
+                        timer: 1800,
+                        showConfirmButton: false
+                    }).then(() => recargarTabla());
+                } else {
+                    alert(data.mensaje ?? 'Stock actualizado.');
+                    recargarTabla();
+                }
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', data.mensaje ?? 'No se pudo actualizar.', 'error');
+                } else {
+                    alert('Error: ' + (data.mensaje ?? 'No se pudo actualizar.'));
+                }
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+            console.error('Error al guardar detalle:', err);
+        });
     });
 
-    const formEditarDetalle = document.getElementById('formEditarDetalle');
-    if (formEditarDetalle) {
-        formEditarDetalle.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const idDetalle = document.getElementById('edit_detalle_id').value;
-            const cantidad = document.getElementById('edit_cantidad').value;
-            const fondo = document.getElementById('edit_fondo_fijo').value;
-
-            fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ cantidad: cantidad, fondo_fijo: fondo })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    const modalEl = document.getElementById('modalEditarDetalle');
-                    if (modalEl && typeof bootstrap !== 'undefined') {
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        if (modal) modal.hide();
-                    }
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: '¡Actualizado!',
-                            text: data.mensaje,
-                            icon: 'success',
-                            confirmButtonColor: '#2b6cb0'
-                        }).then(() => {
-                            recargarTabla();
-                        });
-                    } else {
-                        alert(data.mensaje);
-                        recargarTabla();
-                    }
-                }
-            })
-            .catch(err => {
-                console.error('Error al actualizar detalle:', err);
-            });
-        });
-    }
 
     // ─────────────────────────────────────────────────────────
     // LÓGICA: ELIMINAR DETALLE DE SUBÁREA VIA AJAX
@@ -264,6 +261,12 @@ document.addEventListener('DOMContentLoaded', function () {
             selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
             selectSubarea.disabled = false;
         }
+        recargarTabla();
+    });
+
+    const formFiltros = document.getElementById('form-filtros-almacen');
+    formFiltros?.addEventListener('submit', function (e) {
+        e.preventDefault();
         recargarTabla();
     });
 

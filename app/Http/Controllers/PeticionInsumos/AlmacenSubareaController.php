@@ -25,19 +25,28 @@ class AlmacenSubareaController extends Controller
         $buscar    = $request->get('buscar', '');
         $idArea    = $request->get('id_area_abastecimiento', '');
         $idSubarea = $request->get('id_subarea_abastecimiento', '');
-        $status    = $request->get('status', '');
-
-        // ── Comportamiento legacy: sin filtro de área/subárea, no mostrar registros ──
         $sinFiltro = empty($idArea) && empty($idSubarea) && empty($buscar);
 
-        if ($sinFiltro && !$request->ajax()) {
-            // Vista inicial vacía — el usuario debe seleccionar área/subárea
-            $areas    = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-            $subareas = collect();
-            $insumos  = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
-            $almacenes = AlmacenSubarea::whereNull('id_almacen_subarea')->paginate(10); // vacío
+        if ($sinFiltro) {
+            $almacenes = AlmacenSubarea::whereNull('id_almacen_subarea')->paginate(10);
+            $areas     = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+            $subareas  = empty($idArea) ? collect() : SubareaAbastecimiento::where('id_area_abastecimiento', $idArea)->where('activo', 1)->orderBy('nombre')->get();
+            $insumos   = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
+
+            $ajaxResponse = $this->respuestaTablaAjax(
+                $request,
+                $almacenes,
+                'peticion_insumos.almacen_subareas.partials.tabla',
+                compact('almacenes', 'sinFiltro'),
+                'almacenes de subáreas'
+            );
+
+            if ($ajaxResponse) {
+                return $ajaxResponse;
+            }
+
             return view('peticion_insumos.almacen_subareas.index', compact(
-                'almacenes', 'areas', 'subareas', 'insumos', 'buscar', 'idArea', 'idSubarea'
+                'almacenes', 'areas', 'subareas', 'insumos', 'buscar', 'idArea', 'idSubarea', 'sinFiltro'
             ));
         }
 
@@ -53,9 +62,12 @@ class AlmacenSubareaController extends Controller
                     $sq->where('nombre', 'LIKE', "%{$buscar}%")
                        ->orWhere('siglas', 'LIKE', "%{$buscar}%");
                 })
-                ->orWhereHas('detalles.insumo', function ($iq) use ($buscar) {
-                    $iq->where('clave', 'LIKE', "%{$buscar}%")
-                       ->orWhere('descripcion', 'LIKE', "%{$buscar}%");
+                ->orWhereHas('detalles', function ($dq) use ($buscar) {
+                    $dq->where('cve_insumo', 'LIKE', "%{$buscar}%")
+                       ->orWhereHas('insumo', function ($iq) use ($buscar) {
+                           $iq->where('clave', 'LIKE', "%{$buscar}%")
+                              ->orWhere('descripcion', 'LIKE', "%{$buscar}%");
+                       });
                 });
             });
         }
@@ -82,11 +94,12 @@ class AlmacenSubareaController extends Controller
         $subareas = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
         $insumos  = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
 
+        $sinFiltro = false;
         $ajaxResponse = $this->respuestaTablaAjax(
             $request,
             $almacenes,
             'peticion_insumos.almacen_subareas.partials.tabla',
-            compact('almacenes'),
+            compact('almacenes', 'buscar', 'sinFiltro'),
             'almacenes de subáreas'
         );
 
@@ -154,7 +167,10 @@ class AlmacenSubareaController extends Controller
         ]);
 
         return redirect()
-            ->route('almacen_subareas.index')
+            ->route('almacen_subareas.index', [
+                'id_area_abastecimiento'    => $almacen->id_area_abastecimiento,
+                'id_subarea_abastecimiento' => $almacen->id_subarea_abastecimiento,
+            ])
             ->with('exitog', 'El almacén de la subárea se ha registrado correctamente.');
     }
 
@@ -182,23 +198,30 @@ class AlmacenSubareaController extends Controller
             ->first();
 
         if ($detalleExistente) {
-            $detalleExistente->update([
-                'cantidad'   => $detalleExistente->cantidad + $request->cantidad,
-                'fondo_fijo' => $request->fondo_fijo,
-            ]);
-        } else {
-            DetalleAlmacenSubarea::create([
-                'id_almacen_subarea' => $id,
-                'id_insumo'          => $insumo->id_insumo,
-                'cve_insumo'         => $insumo->clave ?? '',
-                'cantidad'          => $request->cantidad,
-                'fondo_fijo'        => $request->fondo_fijo,
-            ]);
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'id_insumo' => "El insumo [{$insumo->clave}] {$insumo->descripcion} ya está asignado a esta subárea (Stock actual: {$detalleExistente->cantidad}, Fondo fijo: {$detalleExistente->fondo_fijo}). Si deseas modificarlo, usa los botones de edición en la tabla.",
+                ]);
         }
 
+        DetalleAlmacenSubarea::create([
+            'id_almacen_subarea' => $id,
+            'id_insumo'          => $insumo->id_insumo,
+            'cve_insumo'         => $insumo->clave ?? '',
+            'cantidad'           => $request->cantidad,
+            'fondo_fijo'         => $request->fondo_fijo,
+        ]);
+        $mensaje = "El insumo '{$insumo->descripcion}' se asignó correctamente a la subárea.";
+
         return redirect()
-            ->route('almacen_subareas.index')
-            ->with('exitog', 'El insumo se ha asignado al almacén de la subárea correctamente.');
+            ->route('almacen_subareas.index', [
+                'id_area_abastecimiento'    => $almacen->id_area_abastecimiento,
+                'id_subarea_abastecimiento' => $almacen->id_subarea_abastecimiento,
+                'buscar'                    => $insumo->clave ?: $insumo->descripcion,
+            ])
+            ->with('exitog', $mensaje);
     }
 
     /**
