@@ -100,6 +100,9 @@ export default defineConfig({
                 // Monitores Assets
                 'resources/css/monitores/monitores.css',
                 'resources/js/monitores/monitores.js',
+                // Soporte Técnico: Áreas Assets
+                'resources/css/soporte_tecnico/soporte_area/soporte_area.css',
+                'resources/js/soporte_tecnico/soporte_area/soporte_area.js',
             ],
             refresh: true,
         }),

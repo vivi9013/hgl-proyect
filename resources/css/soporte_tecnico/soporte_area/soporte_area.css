@@ -1,0 +1,33 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   soporte_area.css — Estilos del módulo Soporte Técnico / Áreas
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Tabla: resaltar filas con áreas asignadas */
+#tablaAreas tr.table-primary td {
+    background-color: rgba(13, 110, 253, 0.06);
+}
+
+/* Checkbox de selección: mayor tamaño */
+.chk-area {
+    width: 1.2rem;
+    height: 1.2rem;
+    cursor: pointer;
+}
+
+/* Badge de conteo de áreas */
+#cuerpoTablaSoporte .badge {
+    font-size: 0.8rem;
+    min-width: 36px;
+}
+
+/* Botón guardar deshabilitado: cursor no permitido */
+#btnGuardar:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Marcar/Desmarcar: hover */
+#btnMarcarTodos:hover,
+#btnDesmarcarTodos:hover {
+    text-decoration: underline !important;
+}

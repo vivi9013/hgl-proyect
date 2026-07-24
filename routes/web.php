@@ -29,6 +29,7 @@ use App\Http\Controllers\ControlInsumos\ImpresoraController;
 use App\Http\Controllers\Monitores\MonitorController;
 use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
 use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
+use App\Http\Controllers\SoporteTecnico\SoporteAreaController;
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
 use App\Http\Controllers\Inventario\AreaAlmacenController;
@@ -56,6 +57,8 @@ Route::get('/mPedidosRecibidos', fn() => redirect()->route('pedidos_recibidos.in
 Route::get('/mImpresoras', fn() => redirect()->route('impresoras.index'));
 Route::get('/mMonitores', fn() => redirect()->route('monitores.index'));
 Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'));
+Route::get('/mSoporteArea', fn() => redirect()->route('soporte_area.index'));
+Route::get('/MsoporteArea', fn() => redirect()->route('soporte_area.index'));
 
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -483,6 +486,19 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/estudios/actualizar/{id}', 'actualizarEstudio')->name('estudios.actualizar');
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
     });
+
+    // ── Soporte Técnico: Asignación de Áreas (mSoporteArea) (ID: 16) ────────
+    Route::prefix('soporte-tecnico/areas')
+        ->middleware('modulo:16')
+        ->name('soporte_area.')
+        ->controller(SoporteAreaController::class)
+        ->group(function () {
+            Route::get('/',                        'index')          ->name('index');
+            Route::get('/reportes/imprimir',       'imprimir')       ->name('imprimir');
+            Route::get('/{id}/asignar',            'asignarAreas')   ->name('asignar');
+            Route::post('/{id}/sincronizar',       'sincronizarAreas')->name('sincronizar');
+            Route::patch('/{id}/status',           'cambiarStatus')  ->name('status');
+        });
 });
 
 Route::get('/log-js-error', function (\Illuminate\Http\Request $request) {
