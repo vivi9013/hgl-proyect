@@ -695,9 +695,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/graficas/datos', 'datosGraficas')->name('graficas.datos');
     });
-<<<<<<< Updated upstream
-=======
-
     // ── Petición de Insumos: Plantillas de Pedido (ID: 40) ────────────────────
     Route::prefix('peticion-insumos/plantillas-pedido')->middleware('modulo:40')->name('plantillas_pedido.')->controller(PlantillaPedidoController::class)->group(function () {
         Route::get('/',                  'index')            ->name('index');
@@ -735,8 +732,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/imprimir/{id}',        'imprimir')            ->name('imprimir');
         Route::get('/graficas',             'graficas')            ->name('graficas');
     });
-
->>>>>>> Stashed changes
 });
 
 Route::get('/log-js-error', function (\Illuminate\Http\Request $request) {
