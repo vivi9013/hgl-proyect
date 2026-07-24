@@ -53,6 +53,14 @@ export default defineConfig({
                 'resources/css/inventario/pedidos_recibidos/pedidos.css',
                 'resources/js/inventario/pedidos_recibidos/pedidos.js',
 
+                // Especialidades RX Assets
+                'resources/js/pacientes/especialidades/especialidades.js',
+                'resources/js/pacientes/medicos/medicos.js',
+                'resources/css/pacientes/estudios/estudios.css',
+                'resources/js/pacientes/estudios/estudios.js',
+                'resources/css/pacientes/estadisticas/estadisticas.css',
+                'resources/js/pacientes/estadisticas/estadisticas.js',
+
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/js/categoria_modulos/categoria.js',
@@ -82,6 +90,10 @@ export default defineConfig({
                 // Impresoras Assets
                 'resources/css/control_insumos/impresoras/impresoras.css',
                 'resources/js/control_insumos/impresoras/impresoras.js',
+
+                // Actividades (Misceláneos) Assets
+                'resources/css/miscelaneo/actividades/actividades.css',
+                'resources/js/miscelaneo/actividades/actividades.js',
                 // Insumos de Impresora (Catálogo) Assets
                 'resources/css/control_insumos/insumos_impresoras/insumos_impresoras.css',
                 'resources/js/control_insumos/insumos_impresoras/insumos_impresoras.js',
@@ -103,6 +115,33 @@ export default defineConfig({
                 // Soporte Técnico: Áreas Assets
                 'resources/css/soporte_tecnico/soporte_area/soporte_area.css',
                 'resources/js/soporte_tecnico/soporte_area/soporte_area.js',
+                // Departamentos Assets
+                'resources/css/departamentos/departamentos.css',
+                'resources/js/departamentos/departamentos.js',
+                // Puestos Assets
+                'resources/css/puestos/puestos.css',
+                'resources/js/puestos/puestos.js',
+                // Sedes Assets
+                'resources/css/sedes/sedes.css',
+                'resources/js/sedes/sedes.js',
+                // Tipo de Trabajador Assets
+                'resources/css/tipo_trabajador/tipo_trabajador.css',
+                'resources/js/tipo_trabajador/tipo_trabajador.js',
+                // Trabajadores Assets
+                'resources/css/trabajadores/trabajadores.css',
+                'resources/js/trabajadores/trabajadores.js',
+                // Almacén de Subáreas Assets
+                'resources/css/peticion_insumos/almacen_subareas/almacen_subareas.css',
+                'resources/js/peticion_insumos/almacen_subareas/almacen_subareas.js',
+                // Plantillas de Pedido Assets
+                'resources/css/peticion_insumos/plantillas_pedido/plantillas_pedido.css',
+                'resources/js/peticion_insumos/plantillas_pedido/plantillas_pedido.js',
+                // Áreas de Abastecimiento Assets
+                'resources/css/peticion_insumos/areas_abastecimiento/areas_abastecimiento.css',
+                'resources/js/peticion_insumos/areas_abastecimiento/areas_abastecimiento.js',
+                // Subáreas de Abastecimiento Assets
+                'resources/css/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.css',
+                'resources/js/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.js',
             ],
             refresh: true,
         }),
@@ -112,5 +151,5 @@ export default defineConfig({
             ignored: ['**/storage/framework/views/**'],
         },
     },
-    
+
 });

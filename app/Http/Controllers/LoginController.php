@@ -47,6 +47,33 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
+            // ── Registrar actividad de inicio de sesión (equivalente al sistema legacy) ──
+            try {
+                $user->load('persona', 'perfil');
+
+                // Construir nombre completo
+                if ($user->persona) {
+                    $nombre    = trim($user->persona->nombre ?? '');
+                    $paterno   = trim($user->persona->ap_paterno ?? '');
+                    $materno   = trim($user->persona->ap_materno ?? '');
+                    $nombreCompleto = collect([$nombre, $paterno, $materno])->filter()->implode(' ');
+                } else {
+                    $nombreCompleto = $user->nombre_usuario;
+                }
+
+                $nombrePerfil = $user->perfil ? trim($user->perfil->nombre) : 'Sin perfil';
+
+                DB::table('actividades')->insert([
+                    'descripcion' => "{$nombreCompleto} ha iniciado sesión con perfil {$nombrePerfil}",
+                    'filtro'      => 'Inicio de Sesion',
+                    'fecha'       => now()->toDateString(),
+                    'hora'        => now()->toTimeString(),
+                    'id_persona'  => $user->id_persona,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('No se pudo registrar actividad de inicio de sesión: ' . $e->getMessage());
+            }
+
             // PRIORIDAD: si es el primer ingreso del usuario (primera == 1),
             // se fuerza el cambio de contraseña obligatorio sin importar el check.
             if ($user->primera == 1) {
@@ -59,7 +86,6 @@ class LoginController extends Controller
 
             // Log de diagnóstico para auditoría interna
             Log::info("Login exitoso: {$user->nombre_usuario}. Check: " . ($request->cambio ? 'SI' : 'NO') . " | primera en BD: {$user->primera} | Respuesta: {$conta}");
-
 
             return response()->json([
                 'resultado' => $conta . '|' . $user->id,

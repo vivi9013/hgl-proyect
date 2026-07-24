@@ -1,0 +1,470 @@
+/**
+ * Módulo Radiología RX - Estilos Personalizados Premium
+ */
+
+/* ── Variables Locales e Integración de Tema ── */
+:root {
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius-premium: 12px;
+}
+
+/* ── Elementos del Tema Dinámico ── */
+.btn-theme {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff;
+    border: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-theme:hover, .btn-theme:focus {
+    background-color: var(--theme-primary, #2980b9);
+    filter: brightness(0.9);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bg-theme {
+    background-color: var(--theme-primary, #2980b9) !important;
+}
+
+.text-theme {
+    color: var(--theme-primary, #2980b9) !important;
+}
+
+.bg-theme-subtle {
+    background-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.1) !important;
+}
+
+.border-theme {
+    border-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.3) !important;
+}
+
+/* ── Diseño de Pestañas (Tabs) ── */
+#rxTab .nav-link {
+    color: #55595c;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: var(--transition-smooth);
+}
+
+#rxTab .nav-link:hover {
+    background-color: #f8f9fa;
+    color: var(--theme-primary, #2980b9);
+}
+
+#rxTab .nav-link.active {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb, 41, 128, 185), 0.2);
+}
+
+/* ── Caja de Búsqueda ── */
+.search-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.search-box:focus-within {
+    border-color: var(--theme-primary, #2980b9);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 41, 128, 185), 0.15) !important;
+}
+
+.search-box input {
+    font-size: 0.95rem;
+}
+
+/* ── Tablas Modernas ── */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background-color: #f8fafc !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.table tbody tr {
+    transition: var(--transition-smooth);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(var(--bs-primary-rgb, 41, 128, 185), 0.02) !important;
+    transform: translateY(-1px);
+}
+
+.table td {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    border-bottom: 1px solid #edf2f7;
+}
+
+/* ── Botones de Paginación Estilizados ── */
+.pagination .page-link {
+    color: #4a5568;
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: var(--transition-smooth);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--theme-primary, #2980b9);
+    color: #ffffff;
+    border-color: var(--theme-primary, #2980b9);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--theme-primary, #2980b9) !important;
+    border-color: var(--theme-primary, #2980b9) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Modales Premium ── */
+.modal-content {
+    border-radius: var(--border-radius-premium);
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.card-switch {
+    background-color: #f8fafc;
+    border-color: #e2e8f0 !important;
+    transition: var(--transition-smooth);
+}
+
+.card-switch:hover {
+    border-color: var(--theme-primary, #2980b9) !important;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.form-switch .form-check-input {
+    width: 2.5em;
+    height: 1.25em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23cbd5e1'/%3e%3c/svg%3e");
+    transition: var(--transition-smooth);
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--theme-primary, #2980b9);
+    border-color: var(--theme-primary, #2980b9);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+}
+
+/* ── Badges Anatómicos Especiales ── */
+.checkbox-estudio {
+    transition: var(--transition-smooth);
+}
+
+.checkbox-estudio:checked + label {
+    color: var(--theme-primary, #2980b9) !important;
+    font-weight: 700;
+}
+
+.checkbox-estudio:checked {
+    background-color: var(--theme-primary, #2980b9);
+    border-color: var(--theme-primary, #2980b9);
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ── Detalles y Badges del Visualizador ── */
+.detail-card {
+    transition: var(--transition-smooth);
+}
+
+.detail-card:hover {
+    border-color: var(--theme-primary, #2980b9) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.bg-danger-subtle {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+.bg-secondary-subtle {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+/* ── Gap classes compatibility helper ── */
+.gap-1\.5 { gap: 0.375rem !important; }
+.gap-2\.5 { gap: 0.625rem !important; }
+.p-3\.5 { padding: 0.875rem !important; }
+.px-2\.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+.py-1\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
+
+/* ── ESTILOS CLÁSICOS Y SIMPLES (SIN TARJETAS Y CON ICONOS NEGROS) ── */
+.card,
+.card-header,
+.card-body,
+.card-footer {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Evitar hover en la tarjeta principal */
+.card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Forzar que todos los iconos de este módulo sean negros */
+.bi-journal-medical,
+.bi-person-plus-fill,
+.bi-people-fill,
+.bi-file-earmark-medical-fill,
+.bi-search,
+.bi-person-fill,
+.bi-journal-check,
+.bi-disc,
+.bi-body-text,
+.bi-eye-fill {
+    color: #000000 !important;
+}
+
+/* Pestañas de Navegación */
+#rxTab .nav-link {
+    color: #000000 !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 0, 0, 0.35) !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease-in-out;
+}
+
+#rxTab .nav-link.active {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+#rxTab .nav-link:hover:not(.active) {
+    background-color: #f3f4f6 !important;
+    color: #000000 !important;
+}
+
+/* Botón Registrar Paciente y otros botones de tema (Primario): Azul con borde Negro */
+.btn-theme {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.btn-theme:hover,
+.btn-theme:focus {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Badges y acentos */
+.badge.bg-theme-subtle {
+    background-color: #f3f4f6 !important;
+    color: #000000 !important;
+    border-color: rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Checks y campos condicionales */
+.checkbox-estudio:checked {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+.checkbox-estudio:checked + label {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Modales */
+.modal-header.bg-theme {
+    background-color: #000000 !important;
+}
+
+.modal-header.bg-success {
+    background-color: #000000 !important;
+}
+
+.modal-header.bg-dark {
+    background-color: #000000 !important;
+}
+
+/* Botones en modales (Guardar/Registrar): Azul con borde Negro */
+.btn-primary,
+.btn-success,
+.btn-dark {
+    background-color: #0d6efd !important;
+    border: 2px solid #000000 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-dark:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Botón de Cancelar: Blanco con borde Gris */
+.btn-outline-secondary {
+    background-color: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #4b5563 !important;
+    font-weight: bold !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #000000 !important;
+}
+
+/* ── TABLAS ATRACTIVAS, MODERNAS Y CON BORDE SUTIL ── */
+.table {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    overflow: hidden !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+.table th {
+    background-color: #f9fafb !important;
+    color: #111827 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem !important;
+    border-bottom: 2px solid #e5e7eb !important;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 0.5rem 0.75rem !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    font-size: 0.85rem;
+    overflow: hidden;
+    max-width: 0;
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+/* Permitir wrap en la columna de Regiones Estudiadas (3ra col de estudios) */
+#tabla-estudios td:nth-child(3) {
+    white-space: normal !important;
+}
+
+.btn-link i {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+}
+
+.btn-link:hover i {
+    transform: scale(1.2);
+}
+
+/* ── PAGINACIÓN SENCILLA EN NEGRO ── */
+.pagination {
+    margin: 0 !important;
+}
+
+.pagination .page-link {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.4rem 0.85rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    margin: 0 2px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination .page-link:hover {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #9ca3af !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
