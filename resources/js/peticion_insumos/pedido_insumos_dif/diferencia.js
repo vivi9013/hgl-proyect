@@ -291,9 +291,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/peticion-insumos/pedidos-diferencia?page=${page}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(res => res.text())
-        .then(html => {
-            containerHistorial.innerHTML = html;
+        .then(res => res.json())
+        .then(data => {
+            containerHistorial.innerHTML = data.html ?? data;
             actualizarPaginadorHistorial();
         });
     }

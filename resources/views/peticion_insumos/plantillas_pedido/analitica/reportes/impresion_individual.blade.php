@@ -1,8 +1,12 @@
 @extends('layouts.reporte_base')
 
-@section('titulo_reporte', 'FORMATO OFICIAL DE PLANTILLA DE PEDIDO POR ÁREA')
+@section('title', 'Plantilla de Pedido - ' . $plantilla->nombre)
 
-@section('contenido')
+@section('report_title')
+    FORMATO OFICIAL DE PLANTILLA DE PEDIDO POR ÁREA
+@endsection
+
+@section('content')
 <div style="font-family: Arial, sans-serif; font-size: 11px; color: #333;">
 
     <!-- Datos de la Plantilla y Área -->
@@ -39,14 +43,17 @@
         </tr>
     </table>
 
-    <h3 style="font-size: 12px; margin-bottom: 5px; border-bottom: 2px solid #333; padding-bottom: 3px;">CATÁLOGO DE INSUMOS Y CANTIDADES PRESTABLECIDAS</h3>
+    <h3 style="font-size: 12px; margin-bottom: 5px; border-bottom: 2px solid #333; padding-bottom: 3px;">
+        CATÁLOGO DE INSUMOS Y CANTIDADES PRESTABLECIDAS (TOTAL: {{ $plantilla->detalles->count() }})
+    </h3>
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;" border="1" cellpadding="5" cellspacing="0">
         <thead>
             <tr style="background-color: #e9ecef; font-weight: bold; text-align: center;">
                 <th style="width: 5%;">#</th>
                 <th style="width: 15%;">CLAVE</th>
-                <th style="width: 60%; text-align: left;">DESCRIPCIÓN DEL INSUMO</th>
-                <th style="width: 20%;">CANTIDAD BASE</th>
+                <th style="width: 50%; text-align: left;">DESCRIPCIÓN DEL INSUMO</th>
+                <th style="width: 15%;">CANTIDAD</th>
+                <th style="width: 15%;">FONDO FIJO</th>
             </tr>
         </thead>
         <tbody>
@@ -57,10 +64,11 @@
                     <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ $det->cve_insumo ?: ($insumo->clave ?? 'N/A') }}</td>
                     <td>{{ $insumo->descripcion ?? 'N/A' }}</td>
                     <td style="text-align: center; font-weight: bold; color: #0d6efd;">{{ $det->cantidad }}</td>
+                    <td style="text-align: center; font-weight: bold; color: #198754;">{{ $det->fondo_fijo ?? $det->cantidad }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 15px; color: #777;">Esta plantilla no contiene insumos asignados.</td>
+                    <td colspan="5" style="text-align: center; padding: 15px; color: #777;">Esta plantilla no contiene insumos asignados.</td>
                 </tr>
             @endforelse
         </tbody>

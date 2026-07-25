@@ -5,6 +5,7 @@
                 <th class="text-center" style="width: 50px;">#</th>
                 <th style="width: 100px;">Acciones</th>
                 <th>Nombre del Área de Abastecimiento</th>
+                <th style="width: 120px;">Siglas</th>
                 <th class="text-center" style="width: 160px;">Subáreas Vinculadas</th>
                 <th class="text-center" style="width: 120px;">Estatus</th>
             </tr>
@@ -23,9 +24,16 @@
                     <td class="fw-semibold text-dark">
                         {{ $row->nombre }}
                     </td>
+                    <td>
+                        @if($row->siglas)
+                            <span class="badge bg-light text-secondary border font-monospace px-2 py-1">{{ $row->siglas }}</span>
+                        @else
+                            <span class="text-muted small">N/A</span>
+                        @endif
+                    </td>
                     <td class="text-center">
                         <span class="badge bg-light text-dark border px-2 py-1">
-                            <i class="fa fa-sitemap me-1 text-primary"></i> &mdash;
+                            <i class="fa fa-sitemap me-1 text-primary"></i> {{ $row->subareas_count ?? 0 }}
                         </span>
                     </td>
                     <td class="text-center">
@@ -39,7 +47,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">
+                    <td colspan="6" class="text-center py-4 text-muted">
                         <i class="fa fa-folder-open me-2"></i> No se encontraron áreas de abastecimiento registradas.
                     </td>
                 </tr>

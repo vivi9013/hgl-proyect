@@ -16,10 +16,12 @@ class DetallePlantillaPedido extends Model
         'id_insumo',
         'cve_insumo',
         'cantidad',
+        'fondo_fijo',
     ];
 
     protected $casts = [
         'cantidad' => 'integer',
+        'fondo_fijo' => 'integer',
     ];
 
     public function plantilla()

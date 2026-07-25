@@ -96,7 +96,7 @@ class PedidoInsumoController extends Controller
         $idArea = $request->get('id_area_abastecimiento');
         
         $subareas = SubareaAbastecimiento::where('activo', 1)
-            ->when($idArea, fn($q) => $q->where('id_area_abastecimiento', $idArea))
+            ->when($idArea, fn($q) => $q->whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea)))
             ->orderBy('nombre')
             ->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
 
@@ -359,41 +359,5 @@ class PedidoInsumoController extends Controller
         ])->findOrFail($id);
 
         return view('peticion_insumos.pedido_insumos.analitica.reportes.impresion', compact('pedido'));
-    }
-
-    /**
-     * Dashboard de analítica y gráficas con Chart.js.
-     */
-    public function graficas()
-    {
-        $totalPedidos = Pedido::count();
-        $enviados     = Pedido::where('status', 'terminado')->count();
-        $surtidos     = Pedido::where('status', 'Aceptado')->count();
-        $cancelados   = Pedido::where('status', 'cancelado')->count();
-
-        // Pedidos por Estado (donut)
-        $estadosCount = Pedido::select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->get();
-
-        // Top 10 insumos más solicitados
-        $topInsumos = DetallePedido::select('cve_insumo', DB::raw('SUM(cantidad) as total_solicitado'))
-            ->groupBy('cve_insumo')
-            ->orderByDesc('total_solicitado')
-            ->limit(10)
-            ->with('insumo')
-            ->get();
-
-        // Pedidos por Área de Abastecimiento
-        $pedidosPorArea = Pedido::select('id_area_abastecimiento', DB::raw('count(*) as total'))
-            ->with('areaAbastecimiento')
-            ->groupBy('id_area_abastecimiento')
-            ->orderByDesc('total')
-            ->limit(10)
-            ->get();
-
-        return view('peticion_insumos.pedido_insumos.analitica.graficas', compact(
-            'totalPedidos', 'enviados', 'surtidos', 'cancelados', 'estadosCount', 'topInsumos', 'pedidosPorArea'
-        ));
     }
 }

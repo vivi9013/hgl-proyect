@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AreaAbastecimiento extends Model
 {
     /**
-     * Tabla legacy. Ajustar el nombre si difiere en la BD.
-     * Nombres comunes: areas_abastecimiento, areasabastecimiento, areas_surtimiento_ext
+     * Tabla legacy.
      */
     protected $table = 'areasabastecimiento';
 
@@ -27,17 +26,40 @@ class AreaAbastecimiento extends Model
      */
     protected $fillable = [
         'nombre',
+        'siglas',
+        'fecha_registro',
+        'hora_registro',
         'activo',
+        'id_usuario',
     ];
 
     /**
-     * Subáreas que pertenecen a esta área.
-     * NOTA: La tabla legacy `subareas_abastecimiento` no tiene columna `id_area_abastecimiento`.
-     * Esta relación requiere migración que añada dicha FK. Por ahora retorna colección vacía.
+     * Subáreas que pertenecen a esta área (a través de la relación pivot).
      */
     public function subareas()
     {
-        return $this->hasMany(SubareaAbastecimiento::class, 'id_area_abastecimiento', 'id_area_abastecimiento');
+        return $this->belongsToMany(
+            SubareaAbastecimiento::class,
+            'relacion_areas_abastecimiento',
+            'id_area_abastecimiento',
+            'id_subarea_abastecimiento'
+        )
+        ->withPivot(['id_relacion_areas_abastecimiento', 'activo', 'fecha_registro', 'hora_registro', 'id_usuario'])
+        ->wherePivot('activo', 1);
+    }
+
+    /**
+     * Todas las subáreas vinculadas (incluyendo inactivas) - para el toggle sin duplicados.
+     */
+    public function todasSubareas()
+    {
+        return $this->belongsToMany(
+            SubareaAbastecimiento::class,
+            'relacion_areas_abastecimiento',
+            'id_area_abastecimiento',
+            'id_subarea_abastecimiento'
+        )
+        ->withPivot(['id_relacion_areas_abastecimiento', 'activo', 'fecha_registro', 'hora_registro', 'id_usuario']);
     }
 
     /**

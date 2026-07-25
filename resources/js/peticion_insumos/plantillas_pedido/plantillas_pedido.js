@@ -3,6 +3,138 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     // ─────────────────────────────────────────────────────────
+    // LÓGICA: ABRIR MODAL EDITAR PLANTILLA
+    // ─────────────────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-editar-plantilla');
+        if (!btn) return;
+
+        const id          = btn.getAttribute('data-id');
+        const nombre      = btn.getAttribute('data-nombre');
+        const descripcion = btn.getAttribute('data-descripcion') || '';
+        const idArea      = btn.getAttribute('data-area');
+        const idSubarea   = btn.getAttribute('data-subarea');
+
+        const form      = document.getElementById('formEditarPlantilla');
+        const selectArea    = document.getElementById('edit_id_area');
+        const selectSubarea = document.getElementById('edit_id_subarea');
+
+        if (!form) return;
+
+        // Actualizar action del form con el ID correcto
+        form.action = `/peticion-insumos/plantillas-pedido/${id}`;
+
+        // Poblar campos
+        document.getElementById('edit_nombre').value      = nombre;
+        document.getElementById('edit_descripcion').value = descripcion;
+
+        // Seleccionar área
+        if (selectArea) {
+            selectArea.value = idArea;
+        }
+
+        // Cargar subáreas y luego seleccionar la correcta
+        if (selectSubarea && idArea) {
+            selectSubarea.innerHTML = '<option value="">Cargando...</option>';
+            fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${idArea}`, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                selectSubarea.innerHTML = '<option value="">-- Sin subárea --</option>';
+                data.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id_subarea_abastecimiento;
+                    opt.textContent = sub.nombre;
+                    if (String(sub.id_subarea_abastecimiento) === String(idSubarea)) {
+                        opt.selected = true;
+                    }
+                    selectSubarea.appendChild(opt);
+                });
+            })
+            .catch(() => {
+                selectSubarea.innerHTML = '<option value="">-- Sin subárea --</option>';
+            });
+        } else if (selectSubarea) {
+            selectSubarea.innerHTML = '<option value="">-- Sin subárea --</option>';
+        }
+
+        // Cascade al cambiar área dentro del modal editar
+        selectArea?.addEventListener('change', function onEditAreaChange() {
+            if (!selectSubarea) return;
+            selectSubarea.innerHTML = '<option value="">Cargando...</option>';
+            fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${this.value}`, {
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                selectSubarea.innerHTML = '<option value="">-- Sin subárea --</option>';
+                data.forEach(sub => {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id_subarea_abastecimiento;
+                    opt.textContent = sub.nombre;
+                    selectSubarea.appendChild(opt);
+                });
+            });
+        }, { once: true });
+
+        const modalEl = document.getElementById('modalEditarPlantilla');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            new bootstrap.Modal(modalEl).show();
+        }
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // LÓGICA: ELIMINAR PLANTILLA COMPLETA (AJAX)
+    // ─────────────────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-eliminar-plantilla');
+        if (!btn) return;
+
+        const id     = btn.getAttribute('data-id');
+        const nombre = btn.getAttribute('data-nombre');
+
+        const doDelete = () => {
+            fetch(`/peticion-insumos/plantillas-pedido/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('¡Eliminada!', data.mensaje, 'success').then(() => recargarTabla());
+                    } else {
+                        recargarTabla();
+                    }
+                }
+            })
+            .catch(err => console.error('Error al eliminar plantilla:', err));
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '¿Eliminar plantilla?',
+                text: `La plantilla "${nombre}" y todos sus insumos asignados serán eliminados.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => { if (result.isConfirmed) doDelete(); });
+        } else {
+            if (confirm(`¿Eliminar la plantilla "${nombre}"?`)) doDelete();
+        }
+    });
+
+    // ─────────────────────────────────────────────────────────
     // LÓGICA: ASIGNAR INSUMO A PLANTILLA (AJAX)
     // ─────────────────────────────────────────────────────────
     let idPlantillaActual = null;
@@ -172,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!areaId) return;
 
             fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${areaId}`, {
+                credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
             .then(r => r.json())
@@ -226,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function () {
         contenedor.style.transition = 'opacity 0.15s';
 
         fetch(url, {
+            credentials: 'same-origin',
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
             signal: controladorActual.signal
         })
@@ -263,9 +397,18 @@ document.addEventListener('DOMContentLoaded', function () {
         selectSubarea.disabled = true;
 
         fetch(`/peticion-insumos/plantillas-pedido/subareas-por-area?id_area_abastecimiento=${idArea}`, {
+            credentials: 'same-origin',
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-            .then(r => r.json())
+        .then(r => {
+                if (!r.ok) {
+                    return r.text().then(txt => {
+                        console.error(`[cargarSubareas] HTTP ${r.status}:`, txt.substring(0, 300));
+                        throw new Error(`HTTP ${r.status}`);
+                    });
+                }
+                return r.json();
+            })
             .then(data => {
                 selectSubarea.innerHTML = '<option value="">-- Todas las Subáreas --</option>';
                 data.forEach(sub => {
@@ -276,7 +419,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 selectSubarea.disabled = false;
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error('[cargarSubareas] Fetch falló:', err);
                 selectSubarea.innerHTML = '<option value="">-- Error al cargar --</option>';
                 selectSubarea.disabled = false;
             });

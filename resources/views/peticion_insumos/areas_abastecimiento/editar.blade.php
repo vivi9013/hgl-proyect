@@ -33,6 +33,13 @@
                                 <div class="invalid-feedback small">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="siglas" class="form-label small fw-semibold text-dark">Siglas (Opcional)</label>
+                            <input type="text" id="siglas" name="siglas" class="form-control form-control-sm @error('siglas') is-invalid @enderror" value="{{ old('siglas', $area->siglas) }}">
+                            @error('siglas')
+                                <div class="invalid-feedback small">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                     <div class="card-footer bg-light py-2 d-flex justify-content-end gap-2">
                         <a href="{{ route('areas_abastecimiento.index') }}" class="btn btn-sm btn-outline-secondary px-3">Cancelar</a>

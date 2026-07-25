@@ -238,46 +238,4 @@ class PedidoInsumoDiferenciaController extends Controller
 
         return view('peticion_insumos.pedido_insumos_dif.analitica.reportes.impresion', compact('pedido'));
     }
-
-    /**
-     * Dashboard de analítica interactivo con Chart.js.
-     */
-    public function graficas()
-    {
-        $totalPedidos = Pedido::count();
-        $enviados     = Pedido::where('status', 'terminado')->count();
-        $surtidos     = Pedido::where('status', 'Aceptado')->count();
-
-        // Total insumos en déficit
-        $insumosArea = InsumoArea::all();
-        $deficitTotal = 0;
-        $coberturaTotal = 0;
-        $totalItems = $insumosArea->count();
-
-        foreach ($insumosArea as $ia) {
-            if ($ia->fondo_fijo > $ia->stock) {
-                $deficitTotal += ($ia->fondo_fijo - $ia->stock);
-            }
-        }
-
-        // Top 10 insumos con mayor déficit acumulado
-        $topDeficit = InsumoArea::select('id_insumo', DB::raw('(fondo_fijo - stock) as deficit'))
-            ->whereRaw('fondo_fijo > stock')
-            ->orderByDesc('deficit')
-            ->limit(10)
-            ->with('insumo')
-            ->get();
-
-        // Pedidos por área
-        $pedidosPorArea = Pedido::select('id_area_abastecimiento', DB::raw('count(*) as total'))
-            ->with('areaAbastecimiento')
-            ->groupBy('id_area_abastecimiento')
-            ->orderByDesc('total')
-            ->limit(10)
-            ->get();
-
-        return view('peticion_insumos.pedido_insumos_dif.analitica.graficas', compact(
-            'totalPedidos', 'enviados', 'surtidos', 'deficitTotal', 'totalItems', 'topDeficit', 'pedidosPorArea'
-        ));
-    }
 }

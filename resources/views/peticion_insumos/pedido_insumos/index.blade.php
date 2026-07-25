@@ -16,9 +16,6 @@
             <a href="{{ route('pedido_insumos.reportes') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                 <i class="bi bi-file-earmark-bar-graph me-1"></i>Reportes
             </a>
-            <a href="{{ route('pedido_insumos.graficas') }}" class="btn btn-outline-dark btn-sm fw-semibold">
-                <i class="bi bi-pie-chart-fill me-1"></i>Gráficas
-            </a>
             <button type="button" class="btn btn-primary btn-sm fw-semibold px-3" data-bs-toggle="modal" data-bs-target="#modalCrearPedido">
                 <i class="bi bi-plus-lg me-1"></i>Nuevo Pedido
             </button>

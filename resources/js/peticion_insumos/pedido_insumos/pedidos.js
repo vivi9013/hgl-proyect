@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/peticion-insumos/pedidos?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(response => response.text())
-        .then(html => {
-            containerTabla.innerHTML = html;
+        .then(response => response.json())
+        .then(data => {
+            containerTabla.innerHTML = data.html ?? data;
             actualizarPaginador();
         })
         .catch(err => console.error('Error al cargar la tabla:', err));

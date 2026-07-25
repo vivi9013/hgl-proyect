@@ -1,8 +1,8 @@
 @extends('layouts.reporte_base')
 
-@section('titulo_reporte', 'SOLICITUD Y COMPROBANTE DE PEDIDO DE INSUMOS')
+@section('report_title', 'SOLICITUD Y COMPROBANTE DE PEDIDO DE INSUMOS')
 
-@section('contenido')
+@section('content')
 <div style="font-family: Arial, sans-serif; font-size: 11px; color: #333;">
 
     <!-- Encabezado del Pedido -->

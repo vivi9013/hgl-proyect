@@ -7,94 +7,118 @@
     @endif
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark text-uppercase small">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-dark text-uppercase" style="font-size: 0.72rem;">
                 <tr>
-                    <th class="ps-4" style="width: 60px;">#</th>
-                    <th>Área de Abastecimiento</th>
-                    <th class="text-center" style="width: 140px;">Plantillas</th>
-                    <th class="text-center" style="width: 140px;">Total Insumos</th>
-                    <th class="text-center" style="width: 100px;">Estatus</th>
-                    <th class="text-center pe-4" style="width: 120px;">PDF</th>
+                    <th class="ps-3" style="width:40px;">#</th>
+                    <th style="width:80px;">Editar</th>
+                    <th style="width:120px;">Agregar Insumos</th>
+                    <th>Almacén</th>
+                    <th>Área</th>
+                    <th>Subárea</th>
+                    <th>Plantilla</th>
+                    <th class="text-center" style="width:100px;">Total Insumos</th>
+                    <th class="text-center" style="width:90px;">Estatus</th>
+                    <th class="text-center" style="width:60px;">PDF</th>
+                    <th class="text-center pe-3" style="width:70px;">Eliminar</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($areas as $index => $area)
-                    @php
-                        $plantillasActivas   = $area->plantillas->where('activo', 1);
-                        $totalInsumos        = $area->plantillas->sum(fn($p) => $p->detalles->count());
-                        $tienePlantillas     = $area->plantillas->count() > 0;
-                    @endphp
+                @forelse($plantillas as $index => $plantilla)
                     <tr>
-                        <td class="ps-4 text-muted small">{{ $areas->firstItem() + $index }}</td>
+                        {{-- # --}}
+                        <td class="ps-3 text-muted">{{ $plantillas->firstItem() + $index }}</td>
 
+                        {{-- Editar --}}
                         <td>
-                            <div class="fw-bold text-dark">{{ $area->nombre }}</div>
-                            @if($area->plantillas->count() > 0)
-                                <div class="mt-1 d-flex flex-wrap gap-1">
-                                    @foreach($area->plantillas as $plt)
-                                        <span class="badge {{ $plt->activo ? 'bg-primary' : 'bg-secondary' }} text-white"
-                                              style="font-size: 0.7rem; font-weight: 500;">
-                                            {{ $plt->nombre }}
-                                            @if($plt->subareaAbastecimiento)
-                                                <span class="opacity-75">· {{ $plt->subareaAbastecimiento->nombre }}</span>
-                                            @endif
-                                        </span>
-                                    @endforeach
-                                </div>
+                            <button type="button"
+                                class="btn btn-sm btn-outline-primary btn-editar-plantilla"
+                                data-id="{{ $plantilla->id_plantilla_pedido }}"
+                                data-nombre="{{ $plantilla->nombre }}"
+                                data-descripcion="{{ $plantilla->descripcion }}"
+                                data-area="{{ $plantilla->id_area_abastecimiento }}"
+                                data-subarea="{{ $plantilla->id_subarea_abastecimiento }}"
+                                title="Editar plantilla">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                        </td>
+
+                        {{-- Agregar Insumos --}}
+                        <td>
+                            <a href="{{ route('plantillas_pedido.insumos', $plantilla->id_plantilla_pedido) }}"
+                               class="btn btn-sm btn-primary"
+                               title="Gestionar insumos de esta plantilla">
+                                <i class="bi bi-plus-circle me-1"></i>Insumos
+                            </a>
+                        </td>
+
+                        {{-- Almacén --}}
+                        <td>
+                            @if($plantilla->areaAlmacen)
+                                <span class="text-dark">{{ $plantilla->areaAlmacen->nombre }}</span>
+                            @else
+                                <span class="text-muted">—</span>
                             @endif
                         </td>
 
+                        {{-- Área --}}
+                        <td>
+                            <span class="fw-semibold">{{ $plantilla->areaAbastecimiento->nombre ?? '—' }}</span>
+                        </td>
+
+                        {{-- Subárea --}}
+                        <td>{{ $plantilla->subareaAbastecimiento->nombre ?? '—' }}</td>
+
+                        {{-- Nombre Plantilla --}}
+                        <td class="fw-bold text-dark">{{ $plantilla->nombre }}</td>
+
+                        {{-- Total Insumos --}}
                         <td class="text-center">
-                            @if($tienePlantillas)
-                                <span class="badge bg-info text-dark">
-                                    <i class="bi bi-clipboard2-check me-1"></i>{{ $area->plantillas->count() }}
-                                </span>
+                            @if($plantilla->detalles->count() > 0)
+                                <span class="badge bg-success">{{ $plantilla->detalles->count() }}</span>
                             @else
-                                <span class="text-muted small">—</span>
+                                <span class="text-muted">0</span>
                             @endif
                         </td>
 
+                        {{-- Estatus toggle --}}
                         <td class="text-center">
-                            @if($totalInsumos > 0)
-                                <span class="badge bg-success">
-                                    <i class="bi bi-boxes me-1"></i>{{ $totalInsumos }}
-                                </span>
-                            @else
-                                <span class="text-muted small">—</span>
-                            @endif
+                            <button type="button"
+                                class="btn btn-sm btn-toggle-status {{ $plantilla->activo ? 'btn-success' : 'btn-secondary' }}"
+                                data-url="{{ route('plantillas_pedido.status', $plantilla->id_plantilla_pedido) }}"
+                                data-nombre="{{ $plantilla->nombre }}"
+                                data-activo="{{ $plantilla->activo }}"
+                                title="{{ $plantilla->activo ? 'Activa — clic para desactivar' : 'Inactiva — clic para activar' }}">
+                                {{ $plantilla->activo ? 'Activa' : 'Inactiva' }}
+                            </button>
                         </td>
 
+                        {{-- PDF --}}
                         <td class="text-center">
-                            @if($area->activo ?? 1)
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">Activa</span>
-                            @else
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Inactiva</span>
-                            @endif
+                            <a href="{{ route('plantillas_pedido.imprimir_individual', $plantilla->id_plantilla_pedido) }}"
+                               target="_blank"
+                               class="btn btn-sm btn-danger"
+                               title="Ver PDF de {{ $plantilla->nombre }}">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
                         </td>
 
-                        {{-- ► Columna PDF: genera el reporte de la plantilla de esta área --}}
-                        <td class="text-center pe-4">
-                            @if($tienePlantillas)
-                                @php $primera = $area->plantillas->first(); @endphp
-                                <a href="{{ route('plantillas_pedido.imprimir_individual', $primera->id_plantilla_pedido) }}"
-                                   target="_blank"
-                                   class="btn btn-sm btn-danger"
-                                   title="Ver formato PDF de {{ $area->nombre }}">
-                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
-                                </a>
-                            @else
-                                <button class="btn btn-sm btn-outline-secondary" disabled title="Sin plantilla asignada">
-                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
-                                </button>
-                            @endif
+                        {{-- Eliminar --}}
+                        <td class="text-center pe-3">
+                            <button type="button"
+                                class="btn btn-sm btn-outline-danger btn-eliminar-plantilla"
+                                data-id="{{ $plantilla->id_plantilla_pedido }}"
+                                data-nombre="{{ $plantilla->nombre }}"
+                                title="Eliminar plantilla">
+                                <i class="bi bi-trash3"></i>
+                            </button>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="11" class="text-center py-5 text-muted">
                             <i class="bi bi-search fs-2 d-block mb-2"></i>
-                            No se encontraron áreas de abastecimiento.
+                            No se encontraron plantillas de pedido.
                         </td>
                     </tr>
                 @endforelse
@@ -105,13 +129,13 @@
     {{-- Pie: info + paginación --}}
     <div class="px-4 py-3 d-flex justify-content-between align-items-center border-top">
         <div class="text-muted small">
-            Mostrando {{ $areas->firstItem() ?? 0 }} a {{ $areas->lastItem() ?? 0 }}
-            de {{ $areas->total() }} áreas
+            Mostrando {{ $plantillas->firstItem() ?? 0 }} a {{ $plantillas->lastItem() ?? 0 }}
+            de {{ $plantillas->total() }} plantillas
         </div>
         <nav>
             <div id="paginacionPlantillas">
-                @if($areas->count() > 0)
-                    {{ $areas->links('pagination::bootstrap-4') }}
+                @if($plantillas->count() > 0)
+                    {{ $plantillas->links('pagination::bootstrap-4') }}
                 @endif
             </div>
         </nav>

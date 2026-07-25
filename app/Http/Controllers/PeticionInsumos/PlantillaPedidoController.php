@@ -19,36 +19,58 @@ class PlantillaPedidoController extends Controller
     use RespondeTablaAjax;
 
     /**
-     * Vista principal: tabla de Áreas con sus plantillas de pedido (patrón del sistema legacy).
-     * Cada fila = un Área, columna PDF genera el reporte de su(s) plantilla(s).
+     * Vista principal: tabla de Plantillas de Pedido (1 fila = 1 plantilla).
      */
     public function index(Request $request)
     {
-        $buscar = $request->get('buscar', '');
+        $buscar    = $request->get('buscar', '');
+        $idArea    = $request->get('id_area_abastecimiento', '');
+        $idSubarea = $request->get('id_subarea_abastecimiento', '');
+        $status    = $request->get('status', []);
 
-        $query = AreaAbastecimiento::with([
-                'plantillas.detalles.insumo',
-                'plantillas.subareaAbastecimiento',
+        $query = PlantillaPedido::with([
+                'areaAbastecimiento',
+                'subareaAbastecimiento',
+                'areaAlmacen',
+                'detalles',
             ])
             ->orderBy('nombre');
 
         if (!empty($buscar)) {
-            $query->where('nombre', 'LIKE', "%{$buscar}%");
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
+                  ->orWhereHas('subareaAbastecimiento', fn($sq) => $sq->where('nombre', 'LIKE', "%{$buscar}%"));
+            });
         }
 
-        $areas = $query->paginate(15)->withQueryString();
+        if (!empty($idArea)) {
+            $query->where('id_area_abastecimiento', $idArea);
+        }
 
-        // Para el modal de nueva plantilla, también se necesitan los combos
-        $todasAreas   = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $subareas     = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $insumos      = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
+        if (!empty($idSubarea)) {
+            $query->where('id_subarea_abastecimiento', $idSubarea);
+        }
+
+        if (!empty($status)) {
+            $statusArray = is_array($status) ? $status : explode(',', $status);
+            $statusInts  = array_map(fn($v) => $v === 'Activo' ? 1 : 0, $statusArray);
+            $query->whereIn('activo', $statusInts);
+        }
+
+        $plantillas = $query->paginate(15)->withQueryString();
+
+        // Para el modal de nueva plantilla y los filtros
+        $todasAreas = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $subareas   = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $insumos    = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
 
         $ajaxResponse = $this->respuestaTablaAjax(
             $request,
-            $areas,
+            $plantillas,
             'peticion_insumos.plantillas_pedido.partials.tabla',
-            compact('areas', 'buscar'),
-            'áreas de abastecimiento'
+            compact('plantillas', 'buscar'),
+            'plantillas de pedido'
         );
 
         if ($ajaxResponse) {
@@ -56,7 +78,8 @@ class PlantillaPedidoController extends Controller
         }
 
         return view('peticion_insumos.plantillas_pedido.index', compact(
-            'areas', 'todasAreas', 'subareas', 'insumos', 'buscar'
+            'plantillas', 'todasAreas', 'subareas', 'insumos',
+            'buscar', 'idArea', 'idSubarea', 'status'
         ));
     }
 
@@ -70,7 +93,9 @@ class PlantillaPedidoController extends Controller
         $query = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre');
 
         if (!empty($idArea)) {
-            $query->where('id_area_abastecimiento', $idArea);
+            $query->whereHas('relacionArea', function ($rq) use ($idArea) {
+                $rq->where('id_area_abastecimiento', $idArea);
+            });
         }
 
         $subareas = $query->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
@@ -135,7 +160,136 @@ class PlantillaPedidoController extends Controller
     }
 
     /**
-     * Agrega un insumo con cantidad prestablecida a la plantilla.
+     * Actualiza nombre, área y subárea de una plantilla existente.
+     */
+    public function actualizar(Request $request, $id)
+    {
+        $plantilla = PlantillaPedido::findOrFail($id);
+
+        $request->validate([
+            'nombre' => [
+                'required',
+                'string',
+                'max:150',
+                Rule::unique('plantilla_pedidos', 'nombre')
+                    ->ignore($plantilla->id_plantilla_pedido, 'id_plantilla_pedido')
+                    ->where(fn($q) => $q->where('id_area_abastecimiento', $request->id_area_abastecimiento)),
+            ],
+            'id_area_abastecimiento' => [
+                'required',
+                'integer',
+                'exists:areasabastecimiento,id_area_abastecimiento,activo,1',
+            ],
+            'id_subarea_abastecimiento' => [
+                'nullable',
+                'integer',
+                'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            ],
+        ], [
+            'nombre.required'                 => 'El nombre de la plantilla es obligatorio.',
+            'nombre.unique'                   => 'Ya existe una plantilla con ese nombre en la misma área.',
+            'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
+        ]);
+
+        $idAreaAlmacen = null;
+        if ($request->filled('id_subarea_abastecimiento')) {
+            $idAreaAlmacen = AlmacenSubarea::where('id_area_abastecimiento', $request->id_area_abastecimiento)
+                ->where('id_subarea_abastecimiento', $request->id_subarea_abastecimiento)
+                ->value('id_almacen_subarea');
+        }
+
+        $plantilla->update([
+            'nombre'                    => trim($request->nombre),
+            'descripcion'               => $request->filled('descripcion') ? trim($request->descripcion) : null,
+            'id_area_abastecimiento'    => $request->id_area_abastecimiento,
+            'id_subarea_abastecimiento' => $request->filled('id_subarea_abastecimiento') ? $request->id_subarea_abastecimiento : null,
+            'id_area_almacen'           => $idAreaAlmacen,
+        ]);
+
+        return redirect()
+            ->route('plantillas_pedido.index')
+            ->with('exitog', 'Plantilla actualizada correctamente.');
+    }
+
+    /**
+     * Página dedicada: lista todos los insumos con toggle Si/No y cantidad por plantilla.
+     */
+    public function editarInsumos(Request $request, $id)
+    {
+        $plantilla = PlantillaPedido::with([
+            'areaAbastecimiento',
+            'subareaAbastecimiento',
+            'detalles',
+        ])->findOrFail($id);
+
+        $buscarInsumo = $request->get('buscar', '');
+
+        $query = Insumo::where('activo', 1)->orderBy('descripcion');
+
+        if (!empty($buscarInsumo)) {
+            $query->where(function ($q) use ($buscarInsumo) {
+                $q->where('descripcion', 'LIKE', "%{$buscarInsumo}%")
+                  ->orWhere('clave', 'LIKE', "%{$buscarInsumo}%");
+            });
+        }
+
+        $insumos = $query->paginate(15)->withQueryString();
+
+        // Mapa id_insumo → detalle para saber cuáles ya están en la plantilla
+        $detallesMap = $plantilla->detalles->keyBy('id_insumo');
+
+        return view('peticion_insumos.plantillas_pedido.insumos', compact(
+            'plantilla', 'insumos', 'detallesMap', 'buscarInsumo'
+        ));
+    }
+
+    /**
+     * Guarda en lote los cambios de insumos: inserta nuevos, actualiza cantidades,
+     * elimina los marcados como No.
+     */
+    public function guardarInsumos(Request $request, $id)
+    {
+        $plantilla = PlantillaPedido::findOrFail($id);
+
+        $incluidos  = $request->input('incluido', []);   // ['id_insumo' => '1' | '0']
+        $cantidades = $request->input('cantidad', []);   // ['id_insumo' => cantidad]
+
+        foreach ($incluidos as $idInsumo => $valor) {
+            $insumo = Insumo::find($idInsumo);
+            if (!$insumo) continue;
+
+            $detalle = DetallePlantillaPedido::where('id_plantilla_pedido', $id)
+                ->where('id_insumo', $idInsumo)
+                ->first();
+
+            if ($valor == '1') {
+                $cantidad = max(1, (int) ($cantidades[$idInsumo] ?? 1));
+
+                if ($detalle) {
+                    $detalle->update(['cantidad' => $cantidad]);
+                } else {
+                    DetallePlantillaPedido::create([
+                        'id_plantilla_pedido' => $id,
+                        'id_insumo'           => $idInsumo,
+                        'cve_insumo'          => $insumo->clave ?? '',
+                        'cantidad'            => $cantidad,
+                    ]);
+                }
+            } else {
+                // Marcado como "No" → eliminar si existía
+                if ($detalle) {
+                    $detalle->delete();
+                }
+            }
+        }
+
+        return redirect()
+            ->route('plantillas_pedido.insumos', $id)
+            ->with('exitog', 'Insumos de la plantilla actualizados correctamente.');
+    }
+
+    /**
+     * Agrega un insumo con cantidad prestablecida a la plantilla (vía AJAX modal).
      */
     public function agregarInsumo(Request $request, $id)
     {
@@ -228,6 +382,21 @@ class PlantillaPedidoController extends Controller
     }
 
     /**
+     * Elimina una plantilla y todos sus detalles.
+     */
+    public function eliminar($id)
+    {
+        $plantilla = PlantillaPedido::findOrFail($id);
+        $plantilla->detalles()->delete();
+        $plantilla->delete();
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Plantilla eliminada correctamente.',
+        ]);
+    }
+
+    /**
      * Vista de configuración de reportes.
      */
     public function reportes()
@@ -279,7 +448,7 @@ class PlantillaPedidoController extends Controller
     }
 
     /**
-     * Genera el reporte PDF/impresión individual para una plantilla de pedido específica por área.
+     * Genera el reporte PDF/impresión individual para una plantilla de pedido específica.
      */
     public function imprimirIndividual($id)
     {

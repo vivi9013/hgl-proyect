@@ -16,9 +16,6 @@
             <a href="{{ route('pedido_insumos_dif.reportes') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                 <i class="bi bi-file-earmark-bar-graph me-1"></i>Reportes
             </a>
-            <a href="{{ route('pedido_insumos_dif.graficas') }}" class="btn btn-outline-dark btn-sm fw-semibold">
-                <i class="bi bi-pie-chart-fill me-1"></i>Gráficas
-            </a>
         </div>
     </div>
 

@@ -14,11 +14,11 @@
             <button class="btn btn-primary btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAltaArea">
                 <i class="fa fa-plus-circle me-1"></i> Registrar Área
             </button>
+            <a href="{{ route('areas_abastecimiento.relacionar') }}" class="btn btn-outline-dark btn-sm px-3 shadow-sm">
+                <i class="fa fa-link me-1"></i> Relación de Áreas
+            </a>
             <a href="{{ route('areas_abastecimiento.reportes') }}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
                 <i class="fa fa-print me-1"></i> Reportes
-            </a>
-            <a href="{{ route('areas_abastecimiento.graficas') }}" class="btn btn-outline-success btn-sm px-3 shadow-sm">
-                <i class="fa fa-chart-pie me-1"></i> Gráficas
             </a>
         </div>
     </div>
@@ -83,6 +83,13 @@
                         <div id="feedback_modal_nombre" class="invalid-feedback small">
                             @error('nombre') {{ $message }} @enderror
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_siglas" class="form-label small fw-semibold text-dark">Siglas (Opcional)</label>
+                        <input type="text" id="modal_siglas" name="siglas" class="form-control form-control-sm @error('siglas') is-invalid @enderror" value="{{ old('siglas') }}" placeholder="Ej. FARM, URG, ALM...">
+                        @error('siglas')
+                            <div class="invalid-feedback small">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer bg-light py-2">

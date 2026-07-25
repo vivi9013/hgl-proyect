@@ -1,8 +1,8 @@
 @extends('layouts.reporte_base')
 
-@section('titulo_reporte', 'SOLICITUD DE PEDIDO POR DIFERENCIA (FONDO FIJO - STOCK)')
+@section('report_title', 'SOLICITUD DE PEDIDO POR DIFERENCIA (FONDO FIJO - STOCK)')
 
-@section('contenido')
+@section('content')
 <div style="font-family: Arial, sans-serif; font-size: 11px; color: #333;">
 
     <!-- Datos del Pedido por Diferencia -->

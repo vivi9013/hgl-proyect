@@ -30,7 +30,7 @@ class AlmacenSubareaController extends Controller
         if ($sinFiltro) {
             $almacenes = AlmacenSubarea::whereNull('id_almacen_subarea')->paginate(10);
             $areas     = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-            $subareas  = empty($idArea) ? collect() : SubareaAbastecimiento::where('id_area_abastecimiento', $idArea)->where('activo', 1)->orderBy('nombre')->get();
+            $subareas  = empty($idArea) ? collect() : SubareaAbastecimiento::whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea))->where('activo', 1)->orderBy('nombre')->get();
             $insumos   = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
 
             $ajaxResponse = $this->respuestaTablaAjax(
@@ -125,9 +125,15 @@ class AlmacenSubareaController extends Controller
     {
         $idArea = $request->get('id_area_abastecimiento', '');
 
-        $subareas = SubareaAbastecimiento::where('activo', 1)
-            ->orderBy('nombre')
-            ->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
+        $query = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre');
+
+        if (!empty($idArea)) {
+            $query->whereHas('relacionArea', function ($rq) use ($idArea) {
+                $rq->where('id_area_abastecimiento', $idArea);
+            });
+        }
+
+        $subareas = $query->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
 
         return response()->json($subareas);
     }

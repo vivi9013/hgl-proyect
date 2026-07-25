@@ -5,6 +5,7 @@ namespace Tests\Feature\PeticionInsumos;
 use App\Models\User;
 use App\Models\Inventario\AreaAbastecimiento;
 use App\Models\Inventario\SubareaAbastecimiento;
+use App\Models\Inventario\RelacionAreaAbastecimiento;
 use App\Models\Inventario\Insumo;
 use App\Models\PeticionInsumos\PlantillaPedido;
 use App\Models\PeticionInsumos\DetallePlantillaPedido;
@@ -41,7 +42,13 @@ class PlantillaPedidoTest extends TestCase
 
         $this->subarea = SubareaAbastecimiento::create([
             'nombre' => 'Subárea de Prueba ' . uniqid(),
+            'activo' => 1,
+            'fecha_registro' => now()->toDateString(),
+        ]);
+
+        RelacionAreaAbastecimiento::create([
             'id_area_abastecimiento' => $this->area->id_area_abastecimiento,
+            'id_subarea_abastecimiento' => $this->subarea->id_subarea_abastecimiento,
             'activo' => 1,
             'fecha_registro' => now()->toDateString(),
         ]);
