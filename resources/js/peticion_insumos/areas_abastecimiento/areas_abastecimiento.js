@@ -7,11 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Función para Recargar la Tabla AJAX ─────────────────────────────────
     function cargarTabla(url = null) {
         if (!contenedorTabla) return;
-        const targetUrl = url || window.location.href;
+        const baseUrl = url ? url.split('?')[0] : window.location.pathname;
         const params = new URLSearchParams(new FormData(formFiltros)).toString();
-        const fetchUrl = targetUrl.includes('?') 
-            ? `${targetUrl}&${params}` 
-            : `${targetUrl}?${params}`;
+        const fetchUrl = params ? `${baseUrl}?${params}` : baseUrl;
 
         contenedorTabla.style.opacity = '0.5';
 
@@ -24,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.html) {
                 contenedorTabla.innerHTML = data.html;
+                const newUrl = params ? `${window.location.pathname}?${params}` : window.location.pathname;
+                window.history.replaceState(null, '', newUrl);
             }
         })
         .catch(err => console.error('Error al cargar la tabla:', err))

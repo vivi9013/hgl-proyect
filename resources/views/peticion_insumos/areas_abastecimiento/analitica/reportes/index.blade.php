@@ -16,36 +16,69 @@
         </a>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card border shadow-sm">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <h5 class="card-title mb-0 fw-bold text-secondary">
-                        <i class="bi bi-funnel me-1"></i> Filtros de Reporte
-                    </h5>
+    <div class="row g-4">
+        <!-- Tarjeta 1: Áreas de Abastecimiento -->
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm h-100 reporte-card">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-dark mb-0">Lista completa de áreas de abastecimiento</h5>
+                            <i class="bi bi-file-earmark-text fs-3 text-secondary"></i>
+                        </div>
+                        <p class="text-muted small mb-4">
+                            Imprime una lista completa de las áreas de abastecimiento ingresadas en el sistema, ordenadas por área ascendente.
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ route('areas_abastecimiento.imprimir') }}" target="_blank" class="btn btn-outline-dark btn-sm fw-bold px-3">
+                            <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                        </a>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <form action="{{ route('areas_abastecimiento.imprimir') }}" method="GET" target="_blank">
-                        <div class="mb-3">
-                            <label for="buscar" class="form-label fw-bold small">Búsqueda General</label>
-                            <input type="text" class="form-control" id="buscar" name="buscar" placeholder="Buscar por nombre de área...">
-                        </div>
+            </div>
+        </div>
 
-                        <div class="mb-4">
-                            <label for="status" class="form-label fw-bold small">Estatus del Área</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="">-- Todos --</option>
-                                <option value="Activo">Activos</option>
-                                <option value="Inactivo">Inactivos</option>
-                            </select>
+        <!-- Tarjeta 2: Subáreas de Abastecimiento -->
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm h-100 reporte-card">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-dark mb-0">Lista completa de subáreas</h5>
+                            <i class="bi bi-file-earmark-text fs-3 text-secondary"></i>
                         </div>
+                        <p class="text-muted small mb-4">
+                            Imprime una lista completa de las subáreas ingresadas en el sistema, ordenadas por subárea ascendente.
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ route('subareas_abastecimiento.imprimir') }}" target="_blank" class="btn btn-outline-dark btn-sm fw-bold px-3">
+                            <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-printer me-2"></i> Generar Reporte Imprimible
-                            </button>
+        <!-- Tarjeta 3: Lista de Relaciones -->
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm h-100 reporte-card">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-dark mb-0">Lista completa de relaciones</h5>
+                            <i class="bi bi-file-earmark-text fs-3 text-secondary"></i>
                         </div>
-                    </form>
+                        <p class="text-muted small mb-4">
+                            Imprime una lista completa de las relaciones entre áreas y subáreas ingresadas en el sistema.
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <a href="{{ route('almacen_subareas.imprimir') }}" target="_blank" class="btn btn-outline-dark btn-sm fw-bold px-3">
+                            <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

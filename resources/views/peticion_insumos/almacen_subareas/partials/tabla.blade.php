@@ -34,17 +34,18 @@
                         {{ $almacen->activo == 1 ? 'Activo' : 'Inactivo' }}
                     </span>
                     
-                    <button class="btn btn-sm btn-outline-primary" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#modalAgregarInsumo" 
-                            data-id-almacen="{{ $almacen->id_almacen_subarea }}">
+                    <button class="btn btn-sm btn-outline-primary btn-agregar-insumo" 
+                            data-id="{{ $almacen->id_almacen_subarea }}"
+                            data-subarea="{{ $almacen->subareaAbastecimiento->nombre ?? 'Subárea' }}">
                         <i class="bi bi-plus-circle me-1"></i> Asignar Insumo
                     </button>
 
                     <button class="btn btn-sm {{ $almacen->activo == 1 ? 'btn-outline-danger' : 'btn-outline-success' }} btn-toggle-status" 
                             data-id="{{ $almacen->id_almacen_subarea }}"
-                            data-status="{{ $almacen->activo }}"
-                            data-url="{{ route('almacen_subareas.status', $almacen->id_almacen_subarea) }}">
+                            data-activo="{{ $almacen->activo }}"
+                            data-nombre="{{ $almacen->subareaAbastecimiento->nombre ?? 'esta subárea' }}"
+                            data-url="{{ route('almacen_subareas.status', $almacen->id_almacen_subarea) }}"
+                            title="{{ $almacen->activo == 1 ? 'Desactivar' : 'Activar' }} almacén">
                         <i class="bi {{ $almacen->activo == 1 ? 'bi-toggle-on' : 'bi-toggle-off' }}"></i>
                     </button>
                 </div>
@@ -52,6 +53,21 @@
             
             <div class="card-body p-0">
                 @if($almacen->detalles && $almacen->detalles->count() > 0)
+                    @php
+                        $detallesColeccion = $almacen->detalles;
+                        if (!empty($buscar)) {
+                            $b = mb_strtolower($buscar);
+                            $filtrados = $detallesColeccion->filter(function($det) use ($b) {
+                                $cve = mb_strtolower($det->cve_insumo ?? '');
+                                $clave = mb_strtolower($det->insumo->clave ?? '');
+                                $desc = mb_strtolower($det->insumo->descripcion ?? '');
+                                return str_contains($cve, $b) || str_contains($clave, $b) || str_contains($desc, $b);
+                            });
+                            if ($filtrados->count() > 0) {
+                                $detallesColeccion = $filtrados;
+                            }
+                        }
+                    @endphp
                     <div class="tabla-insumos-paginada" data-per-page="10">
                         <table class="table table-hover table-striped table-almacen mb-0">
                             <thead>
@@ -64,7 +80,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($almacen->detalles as $detalle)
+                                @foreach($detallesColeccion as $detalle)
                                     @php
                                         $insumo = $detalle->insumo;
                                         $esBajoFondo = $detalle->cantidad < $detalle->fondo_fijo;
@@ -120,11 +136,19 @@
             </div>
         </div>
     @empty
-        <div class="text-center py-5 text-muted">
-            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-            <h5>No se encontraron almacenes de subáreas</h5>
-            <p class="mb-0">Pruebe ajustando los filtros de búsqueda o registre un nuevo almacén de subárea.</p>
-        </div>
+        @if($sinFiltro ?? false)
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-funnel text-secondary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 fw-bold text-dark">Selecciona un filtro para ver los registros</h5>
+                <p class="mb-0 small">Elige un <strong>Área de Abastecimiento</strong> o escribe en el buscador para consultar un almacén.</p>
+            </div>
+        @else
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                <h5>No se encontraron almacenes de subáreas</h5>
+                <p class="mb-0">Pruebe ajustando los filtros de búsqueda o registre un nuevo almacén de subárea.</p>
+            </div>
+        @endif
     @endforelse
 
     <div class="d-flex justify-content-between align-items-center mt-3">

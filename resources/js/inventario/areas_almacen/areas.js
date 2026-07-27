@@ -1,4 +1,4 @@
-/**
+    /**
  * Lógica JavaScript para el módulo de Áreas de Almacén
  * Inventario de Medicamentos y Material de Curación – HGL
  */
@@ -14,8 +14,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputBuscar = document.getElementById('inputBuscar');
     const formBuscar  = document.getElementById('formBuscar');
     if (inputBuscar && formBuscar) {
+        const resetearSiVacio = () => {
+            if (inputBuscar.value.trim() === '' && window.location.search.includes('buscar=')) {
+                window.location.href = window.location.pathname;
+            }
+        };
+
+        inputBuscar.addEventListener('search', resetearSiVacio);
+
         inputBuscar.addEventListener('input', function () {
             const query = inputBuscar.value.toLowerCase().trim();
+
+            if (query === '' && window.location.search.includes('buscar=')) {
+                window.location.href = window.location.pathname;
+                return;
+            }
 
             // Filtrado local de filas de la tabla en tiempo real (como en el Panel de Control)
             const rows = document.querySelectorAll('#tablaAreas tbody tr');

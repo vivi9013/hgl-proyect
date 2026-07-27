@@ -129,6 +129,11 @@
                                                         'mInsumosImpresoras' => 'insumos_impresoras.index',
                                                         'mMovimientosInsumos' => 'movimientos_insumos.index',
                                                         'mSoporteArea'       => 'soporte_area.index',
+                                                        'mPlantillasPedidos' => 'plantillas_pedido.index',
+                                                        'mPlantillasPedido'  => 'plantillas_pedido.index',
+                                                        'mPlantillaPedido'   => 'plantillas_pedido.index',
+                                                        'mPedidoInsumos'     => 'pedido_insumos.index',
+                                                        'mPedidoInsumosDif'  => 'pedido_insumos_dif.index',
                                                     ];
                                                     $carpeta = trim($modulo->carpeta);
                                                     $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])

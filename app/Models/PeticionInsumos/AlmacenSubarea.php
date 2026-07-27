@@ -33,6 +33,7 @@ class AlmacenSubarea extends Model
 
     public function detalles()
     {
-        return $this->hasMany(DetalleAlmacenSubarea::class, 'id_almacen_subarea', 'id_almacen_subarea');
+        return $this->hasMany(DetalleAlmacenSubarea::class, 'id_almacen_subarea', 'id_almacen_subarea')
+                    ->orderBy('id_detalle_almacen_subarea', 'desc');
     }
 }
