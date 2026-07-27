@@ -92,8 +92,11 @@ Route::get('/mSubareasAbastecimiento', fn() => redirect()->route('subareas_abast
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
-    Route::post('/validar-login', [LoginController::class, 'login'])->name('login.post');
+    Route::post('/validar-login', [LoginController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('login.post');
 });
+
 
 // ── GRUPO PARA USUARIOS AUTENTICADOS ───────────────────────────────────────
 Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function () {

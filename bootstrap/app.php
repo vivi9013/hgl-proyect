@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,5 +23,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo('/inicio');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // ── Respuesta JSON para peticiones AJAX bloqueadas por Rate Limiting ──
+        $exceptions->render(function (ThrottleRequestsException $e, $request) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'resultado' => 'throttled',
+                    'message'   => 'Demasiados intentos. Por favor, espera un momento antes de reintentar.',
+                ], 429);
+            }
+        });
     })->create();
+
