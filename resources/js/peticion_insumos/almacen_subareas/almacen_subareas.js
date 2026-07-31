@@ -31,74 +31,71 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ─────────────────────────────────────────────────────────
-    // LÓGICA: EDITAR DETALLE (STOCK Y FONDO FIJO VIA AJAX)
+    // LÓGICA: GUARDAR CAMBIOS DE STOCK EN LÍNEA (BOTÓN VERDE ✓)
     // ─────────────────────────────────────────────────────────
     document.addEventListener('click', function (e) {
-        const btnEdit = e.target.closest('.btn-editar-detalle');
-        if (!btnEdit) return;
+        const btn = e.target.closest('.btn-guardar-detalle');
+        if (!btn) return;
 
         e.preventDefault();
-        const idDetalle = btnEdit.getAttribute('data-id');
-        const cantidad = btnEdit.getAttribute('data-cantidad');
-        const fondo = btnEdit.getAttribute('data-fondo');
+        const idDetalle = btn.getAttribute('data-id');
+        const fila = btn.closest('tr');
+        if (!fila) return;
 
-        document.getElementById('edit_detalle_id').value = idDetalle;
-        document.getElementById('edit_cantidad').value = cantidad;
-        document.getElementById('edit_fondo_fijo').value = fondo;
+        const inputCantidad  = fila.querySelector('.input-cantidad');
+        const inputFondo     = fila.querySelector('.input-fondo-fijo');
+        if (!inputCantidad || !inputFondo) return;
 
-        const modalEl = document.getElementById('modalEditarDetalle');
-        if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
+        const cantidad  = inputCantidad.value;
+        const fondoFijo = inputFondo.value;
+
+        // Deshabilitar botón mientras guarda
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ cantidad: cantidad, fondo_fijo: fondoFijo })
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '¡Actualizado!',
+                        text: data.mensaje ?? 'Stock actualizado correctamente.',
+                        icon: 'success',
+                        timer: 1800,
+                        showConfirmButton: false
+                    }).then(() => recargarTabla());
+                } else {
+                    alert(data.mensaje ?? 'Stock actualizado.');
+                    recargarTabla();
+                }
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', data.mensaje ?? 'No se pudo actualizar.', 'error');
+                } else {
+                    alert('Error: ' + (data.mensaje ?? 'No se pudo actualizar.'));
+                }
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+            console.error('Error al guardar detalle:', err);
+        });
     });
 
-    const formEditarDetalle = document.getElementById('formEditarDetalle');
-    if (formEditarDetalle) {
-        formEditarDetalle.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const idDetalle = document.getElementById('edit_detalle_id').value;
-            const cantidad = document.getElementById('edit_cantidad').value;
-            const fondo = document.getElementById('edit_fondo_fijo').value;
-
-            fetch(`/peticion-insumos/almacen-subareas/detalle/${idDetalle}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ cantidad: cantidad, fondo_fijo: fondo })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    const modalEl = document.getElementById('modalEditarDetalle');
-                    if (modalEl && typeof bootstrap !== 'undefined') {
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        if (modal) modal.hide();
-                    }
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: '¡Actualizado!',
-                            text: data.mensaje,
-                            icon: 'success',
-                            confirmButtonColor: '#2b6cb0'
-                        }).then(() => {
-                            recargarTabla();
-                        });
-                    } else {
-                        alert(data.mensaje);
-                        recargarTabla();
-                    }
-                }
-            })
-            .catch(err => {
-                console.error('Error al actualizar detalle:', err);
-            });
-        });
-    }
 
     // ─────────────────────────────────────────────────────────
     // LÓGICA: ELIMINAR DETALLE DE SUBÁREA VIA AJAX
@@ -165,6 +162,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const checksStatus  = document.querySelectorAll('.filter-status-checkbox');
 
     let debounceBuscar;
+    let peticionActual = 0;       // secuencia para descartar respuestas obsoletas
+    let controladorActual = null; // AbortController de la petición en curso
 
     function recolectarParametros(extra = {}) {
         const params = new URLSearchParams();
@@ -184,25 +183,36 @@ document.addEventListener('DOMContentLoaded', function () {
         const params = recolectarParametros(extra);
         const url = `${contenedor.dataset.endpoint}?${params.toString()}`;
 
+        // Cancela la petición anterior si sigue en vuelo (ya quedó obsoleta)
+        controladorActual?.abort();
+        controladorActual = new AbortController();
+
+        // Marca esta petición como "la más reciente"; solo ella podrá pintar resultados
+        const idPeticion = ++peticionActual;
+
         contenedor.style.opacity = '0.5';
         contenedor.style.transition = 'opacity 0.15s';
 
         fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+            signal: controladorActual.signal
         })
             .then(r => r.json())
             .then(data => {
+                // Si mientras esperábamos ya se disparó una petición más nueva, ignorar esta respuesta
+                if (idPeticion !== peticionActual) return;
+
                 contenedor.innerHTML = data.html;
                 contenedor.style.opacity = '1';
-                // Actualiza la URL visible sin recargar la página (bookmarkeable)
                 const nuevaUrl = params.toString() ? `?${params.toString()}` : location.pathname;
                 history.replaceState(null, '', nuevaUrl);
                 vincularPaginacionExterna();
                 inicializarPaginacionInsumos(contenedor);
             })
             .catch(err => {
+                if (err.name === 'AbortError') return; // cancelación intencional, no es un error real
                 console.error('Error al recargar tabla de almacenes:', err);
-                contenedor.style.opacity = '1';
+                if (idPeticion === peticionActual) contenedor.style.opacity = '1';
             });
     }
 
@@ -254,6 +264,12 @@ document.addEventListener('DOMContentLoaded', function () {
         recargarTabla();
     });
 
+    const formFiltros = document.getElementById('form-filtros-almacen');
+    formFiltros?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        recargarTabla();
+    });
+
     // Subárea: dispara filtro en tiempo real
     selectSubarea?.addEventListener('change', () => recargarTabla());
 
@@ -286,6 +302,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // Calcula qué números de página mostrar: siempre 1 y la última,
+            // + 1 antes/después de la página actual, y "…" donde se salte un rango.
+            function calcularRangoPaginas(pagina) {
+                const rango = new Set([1, totalPaginas, pagina, pagina - 1, pagina + 1]);
+                return [...rango]
+                    .filter(p => p >= 1 && p <= totalPaginas)
+                    .sort((a, b) => a - b);
+            }
+
+            function crearItem(etiquetaHtml, { activo = false, deshabilitado = false, onClick = null } = {}) {
+                const li = document.createElement('li');
+                li.className = `page-item ${activo ? 'active' : ''} ${deshabilitado ? 'disabled' : ''}`;
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.innerHTML = etiquetaHtml;
+                if (!deshabilitado && onClick) {
+                    a.addEventListener('click', e => { e.preventDefault(); onClick(); });
+                }
+                li.appendChild(a);
+                return li;
+            }
+
             function render(pagina) {
                 filas.forEach((fila, i) => {
                     fila.style.display =
@@ -295,19 +334,31 @@ document.addEventListener('DOMContentLoaded', function () {
                 const hasta = Math.min(pagina * perPage, total);
                 if (info) info.textContent = `Mostrando ${desde} a ${hasta} de ${total} insumos`;
 
-                if (nav) {
-                    nav.innerHTML = '';
-                    for (let p = 1; p <= totalPaginas; p++) {
-                        const li = document.createElement('li');
-                        li.className = `page-item ${p === pagina ? 'active' : ''}`;
-                        li.innerHTML = `<a class="page-link" href="#">${p}</a>`;
-                        li.querySelector('a').addEventListener('click', e => {
-                            e.preventDefault();
-                            render(p);
-                        });
-                        nav.appendChild(li);
+                if (!nav) return;
+                nav.innerHTML = '';
+
+                nav.appendChild(crearItem('&laquo;', {
+                    deshabilitado: pagina === 1,
+                    onClick: () => render(pagina - 1)
+                }));
+
+                const paginasVisibles = calcularRangoPaginas(pagina);
+                let anterior = 0;
+                paginasVisibles.forEach(p => {
+                    if (p - anterior > 1) {
+                        nav.appendChild(crearItem('…', { deshabilitado: true }));
                     }
-                }
+                    nav.appendChild(crearItem(String(p), {
+                        activo: p === pagina,
+                        onClick: () => render(p)
+                    }));
+                    anterior = p;
+                });
+
+                nav.appendChild(crearItem('&raquo;', {
+                    deshabilitado: pagina === totalPaginas,
+                    onClick: () => render(pagina + 1)
+                }));
             }
 
             render(1);
@@ -392,102 +443,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // INICIALIZACIÓN DE CHART.JS (GRÁFICAS ANALÍTICAS)
-    // ─────────────────────────────────────────────────────────────────────────
-    const canvasDonutEstado = document.getElementById('donutEstadoChart');
-    const canvasBarSubarea   = document.getElementById('barSubareaChart');
-    const canvasBarBajos     = document.getElementById('barInsumosBajosChart');
-
-    if (canvasDonutEstado && typeof Chart !== 'undefined') {
-        const rawData = JSON.parse(canvasDonutEstado.dataset.json || '[]');
-        const labels  = rawData.map(i => i.label);
-        const values  = rawData.map(i => i.total);
-
-        new Chart(canvasDonutEstado.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: ['#10b981', '#ef4444'],
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } },
-                cutout: '65%'
-            }
-        });
-    }
-
-    if (canvasBarSubarea && typeof Chart !== 'undefined') {
-        const rawData = JSON.parse(canvasBarSubarea.dataset.json || '[]');
-        const labels  = rawData.map(i => i.label);
-        const values  = rawData.map(i => i.total);
-
-        new Chart(canvasBarSubarea.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Insumos Registrados',
-                    data: values,
-                    backgroundColor: '#10b981',
-                    borderRadius: 6,
-                    barPercentage: 0.6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                    x: { ticks: { font: { size: 10 } } }
-                }
-            }
-        });
-    }
-
-    if (canvasBarBajos && typeof Chart !== 'undefined') {
-        const rawData = JSON.parse(canvasBarBajos.dataset.json || '[]');
-        const labels = rawData.map(i => i.label);
-        const stockValues = rawData.map(i => i.cantidad);
-        const fondoValues = rawData.map(i => i.fondo_fijo);
-
-        new Chart(canvasBarBajos.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Stock Actual',
-                        data: stockValues,
-                        backgroundColor: '#ef4444',
-                        borderRadius: 6
-                    },
-                    {
-                        label: 'Fondo Fijo (Meta)',
-                        data: fondoValues,
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 6
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
-                scales: {
-                    y: { beginAtZero: true },
-                    x: { ticks: { font: { size: 10 } } }
-                }
-            }
-        });
-    }
-
 });
+

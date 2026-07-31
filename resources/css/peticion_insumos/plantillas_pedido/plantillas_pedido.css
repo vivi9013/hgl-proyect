@@ -1,0 +1,75 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Módulo: Plantillas de Pedido — Petición de Insumos
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Tarjeta de plantilla */
+.card-plantilla {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    transition: box-shadow 0.18s ease;
+}
+
+.card-plantilla:hover {
+    box-shadow: 0 4px 18px rgba(43, 108, 176, 0.10);
+}
+
+/* Header de la tarjeta */
+.card-plantilla .card-header {
+    border-radius: 10px 10px 0 0;
+    background: linear-gradient(90deg, #f8fafc 0%, #eef2f7 100%);
+}
+
+/* Tabla interior */
+.table-almacen th,
+.table-almacen td {
+    vertical-align: middle;
+    font-size: 0.82rem;
+}
+
+/* Inputs compactos de cantidad */
+.stock-editable-input {
+    max-width: 80px;
+    text-align: center;
+}
+
+/* Transiciones de botones */
+.btn-toggle-status {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-toggle-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Paginación interna de insumos (por tarjeta de plantilla) */
+.controles-paginacion {
+    flex-wrap: nowrap;
+    gap: 2px;
+}
+
+.controles-paginacion .page-link {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.controles-paginacion .page-item.disabled .page-link {
+    cursor: default;
+    color: #adb5bd;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.controles-paginacion .page-item.active .page-link {
+    background-color: #2b6cb0;
+    border-color: #2b6cb0;
+}

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\PeticionInsumos;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondeTablaAjax;
 use App\Models\Inventario\AreaAbastecimiento;
+use App\Models\Inventario\SubareaAbastecimiento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AreaAbastecimientoController extends Controller
@@ -20,12 +22,14 @@ class AreaAbastecimientoController extends Controller
         $buscar = $request->get('buscar', '');
         $status = $request->get('status', '');
 
-        $query = AreaAbastecimiento::orderBy('id_area_abastecimiento', 'desc');
-        // withCount('subareas') deshabilitado: la tabla legacy `subareas_abastecimiento`
-        // no tiene la columna FK `id_area_abastecimiento`. Añadir con migración para activarlo.
+        $query = AreaAbastecimiento::withCount(['subareas' => fn($q) => $q->where('relacion_areas_abastecimiento.activo', 1)])
+            ->orderBy('id_area_abastecimiento', 'desc');
 
         if (!empty($buscar)) {
-            $query->where('nombre', 'LIKE', "%{$buscar}%");
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('siglas', 'LIKE', "%{$buscar}%");
+            });
         }
 
         $this->aplicarFiltroEstatus($query, $status);
@@ -79,15 +83,21 @@ class AreaAbastecimientoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:150|unique:areasabastecimiento,nombre',
+            'siglas' => 'nullable|string|max:50',
         ], [
             'nombre.required' => 'El nombre del área es obligatorio.',
             'nombre.max'      => 'El nombre no debe superar 150 caracteres.',
             'nombre.unique'   => 'Esta área de abastecimiento ya se encuentra registrada.',
+            'siglas.max'      => 'Las siglas no deben superar 50 caracteres.',
         ]);
 
         AreaAbastecimiento::create([
-            'nombre' => trim($request->nombre),
-            'activo' => 1,
+            'nombre'         => trim($request->nombre),
+            'siglas'         => $request->siglas ? trim($request->siglas) : null,
+            'fecha_registro' => now()->toDateString(),
+            'hora_registro'  => now()->toTimeString(),
+            'activo'         => 1,
+            'id_usuario'     => auth()->id() ?? 1,
         ]);
 
         return redirect()
@@ -113,14 +123,17 @@ class AreaAbastecimientoController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:150|unique:areasabastecimiento,nombre,' . $id . ',id_area_abastecimiento',
+            'siglas' => 'nullable|string|max:50',
         ], [
             'nombre.required' => 'El nombre del área es obligatorio.',
             'nombre.max'      => 'El nombre no debe superar 150 caracteres.',
             'nombre.unique'   => 'Esta área de abastecimiento ya se encuentra registrada.',
+            'siglas.max'      => 'Las siglas no deben superar 50 caracteres.',
         ]);
 
         $area->update([
             'nombre' => trim($request->nombre),
+            'siglas' => $request->siglas ? trim($request->siglas) : null,
         ]);
 
         return redirect()
@@ -187,7 +200,7 @@ class AreaAbastecimientoController extends Controller
         $totalActivos = AreaAbastecimiento::where('activo', 1)->count();
         $totalInactivos = AreaAbastecimiento::where('activo', 0)->count();
 
-        $topAreas = AreaAbastecimiento::withCount('subareas')
+        $topAreas = AreaAbastecimiento::withCount(['subareas' => fn($q) => $q->where('relacion_areas_abastecimiento.activo', 1)])
             ->orderBy('subareas_count', 'desc')
             ->take(10)
             ->get();
@@ -204,5 +217,78 @@ class AreaAbastecimientoController extends Controller
         ];
 
         return view('peticion_insumos.areas_abastecimiento.analitica.graficas', compact('dataGrafica'));
+    }
+
+    /**
+     * Pantalla de Relación de Áreas - Subáreas (tipo mAreaAbastecimiento/relacion_areas.php).
+     */
+    public function relacionar()
+    {
+        $areas = AreaAbastecimiento::withCount(['subareas' => fn($q) => $q->where('relacion_areas_abastecimiento.activo', 1)])
+            ->with(['subareas'])
+            ->orderBy('nombre')
+            ->paginate(15);
+
+        $todasSubareas = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+
+        return view('peticion_insumos.areas_abastecimiento.relacionar', compact('areas', 'todasSubareas'));
+    }
+
+    /**
+     * Vincula una subárea a un área mediante updateOrInsert (reactiva si estaba inactiva).
+     */
+    public function vincularSubarea(Request $request, $id)
+    {
+        AreaAbastecimiento::findOrFail($id);
+
+        $request->validate([
+            'id_subarea_abastecimiento' => 'required|exists:subareas_abastecimiento,id_subarea_abastecimiento',
+        ], [
+            'id_subarea_abastecimiento.required' => 'Debe seleccionar una subárea.',
+            'id_subarea_abastecimiento.exists'   => 'La subárea seleccionada no es válida.',
+        ]);
+
+        DB::table('relacion_areas_abastecimiento')->updateOrInsert(
+            [
+                'id_area_abastecimiento'    => $id,
+                'id_subarea_abastecimiento' => $request->id_subarea_abastecimiento,
+            ],
+            [
+                'activo'         => 1,
+                'fecha_registro' => now()->toDateString(),
+                'hora_registro'  => now()->toTimeString(),
+                'id_usuario'     => Auth::id() ?? 1,
+            ]
+        );
+
+        $subarea = SubareaAbastecimiento::find($request->id_subarea_abastecimiento);
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => "Subárea \u2018{$subarea->nombre}\u2019 vinculada correctamente al área.",
+            'subarea' => [
+                'id'     => $subarea->id_subarea_abastecimiento,
+                'nombre' => $subarea->nombre,
+                'siglas' => $subarea->siglas,
+            ],
+        ]);
+    }
+
+    /**
+     * Desvincula (toggle activo=0) una subárea de un área. NO borra el registro.
+     */
+    public function desvincularSubarea($id, $idSubarea)
+    {
+        AreaAbastecimiento::findOrFail($id);
+
+        DB::table('relacion_areas_abastecimiento')
+            ->where('id_area_abastecimiento', $id)
+            ->where('id_subarea_abastecimiento', $idSubarea)
+            ->update(['activo' => 0]);
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Subárea desvinculada correctamente.',
+        ]);
     }
 }

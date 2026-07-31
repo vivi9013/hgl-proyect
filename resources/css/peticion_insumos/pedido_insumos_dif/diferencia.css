@@ -1,0 +1,39 @@
+/* Estilos desacoplados para el Módulo Pedido por Diferencia */
+
+.btn-black {
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-black:hover {
+    background-color: #222222;
+    color: #ffffff;
+    border-color: #222222;
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.badge-deficit {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    font-weight: 700;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}

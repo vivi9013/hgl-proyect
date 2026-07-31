@@ -96,10 +96,22 @@ $(document).ready(function () {
                         break;
                 }
             },
-            error: function () {
-                Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+            error: function (xhr) {
+                // ── Manejo de Rate Limiting (429 Too Many Requests) ──────────────
+                if (xhr.status === 429) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Se paciente',
+                        text: 'Por favor, espera un momento antes de reintentar.',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#3085d6',
+                    });
+                } else {
+                    Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+                }
                 botonEnviar.prop('disabled', false).html('Ingresar');
             }
         });
     });
 });
+

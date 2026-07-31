@@ -112,6 +112,9 @@ export default defineConfig({
                 // Monitores Assets
                 'resources/css/monitores/monitores.css',
                 'resources/js/monitores/monitores.js',
+                // Soporte Técnico: Áreas Assets
+                'resources/css/soporte_tecnico/soporte_area/soporte_area.css',
+                'resources/js/soporte_tecnico/soporte_area/soporte_area.js',
                 // Departamentos Assets
                 'resources/css/departamentos/departamentos.css',
                 'resources/js/departamentos/departamentos.js',
@@ -130,12 +133,21 @@ export default defineConfig({
                 // Almacén de Subáreas Assets
                 'resources/css/peticion_insumos/almacen_subareas/almacen_subareas.css',
                 'resources/js/peticion_insumos/almacen_subareas/almacen_subareas.js',
+                // Plantillas de Pedido Assets
+                'resources/css/peticion_insumos/plantillas_pedido/plantillas_pedido.css',
+                'resources/js/peticion_insumos/plantillas_pedido/plantillas_pedido.js',
                 // Áreas de Abastecimiento Assets
                 'resources/css/peticion_insumos/areas_abastecimiento/areas_abastecimiento.css',
                 'resources/js/peticion_insumos/areas_abastecimiento/areas_abastecimiento.js',
                 // Subáreas de Abastecimiento Assets
                 'resources/css/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.css',
                 'resources/js/peticion_insumos/subareas_abastecimiento/subareas_abastecimiento.js',
+                // Pedido de Insumos Assets
+                'resources/css/peticion_insumos/pedido_insumos/pedidos.css',
+                'resources/js/peticion_insumos/pedido_insumos/pedidos.js',
+                // Pedido por Diferencia Assets
+                'resources/css/peticion_insumos/pedido_insumos_dif/diferencia.css',
+                'resources/js/peticion_insumos/pedido_insumos_dif/diferencia.js',
             ],
             refresh: true,
         }),

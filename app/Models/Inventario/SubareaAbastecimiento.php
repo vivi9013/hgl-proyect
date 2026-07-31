@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SubareaAbastecimiento extends Model
 {
     /**
-     * Tabla legacy. Ajustar el nombre si difiere en la BD.
-     * Nombres comunes: subareas_abastecimiento, subareasabastecimiento
+     * Tabla legacy.
      */
     protected $table = 'subareas_abastecimiento';
 
@@ -26,17 +25,49 @@ class SubareaAbastecimiento extends Model
      * Atributos asignables de forma masiva.
      */
     protected $fillable = [
-        'id_area_abastecimiento',
         'nombre',
         'siglas',
+        'fecha_registro',
+        'hora_registro',
         'activo',
+        'id_usuario',
     ];
 
     /**
-     * Área de abastecimiento a la que pertenece.
+     * Relación con la tabla pivot relacion_areas_abastecimiento.
+     */
+    public function relacionArea()
+    {
+        return $this->hasOne(RelacionAreaAbastecimiento::class, 'id_subarea_abastecimiento', 'id_subarea_abastecimiento');
+    }
+
+    /**
+     * Áreas de abastecimiento activas a las que pertenece (a través de la tabla pivot).
+     */
+    public function areas()
+    {
+        return $this->belongsToMany(
+            AreaAbastecimiento::class,
+            'relacion_areas_abastecimiento',
+            'id_subarea_abastecimiento',
+            'id_area_abastecimiento'
+        )
+        ->withPivot(['id_relacion_areas_abastecimiento', 'activo', 'fecha_registro', 'hora_registro', 'id_usuario'])
+        ->wherePivot('activo', 1);
+    }
+
+    /**
+     * Área de abastecimiento a la que pertenece (primera activa, para compatibilidad).
      */
     public function areaAbastecimiento()
     {
-        return $this->belongsTo(AreaAbastecimiento::class, 'id_area_abastecimiento', 'id_area_abastecimiento');
+        return $this->hasOneThrough(
+            AreaAbastecimiento::class,
+            RelacionAreaAbastecimiento::class,
+            'id_subarea_abastecimiento', // FK en relacion_areas_abastecimiento
+            'id_area_abastecimiento',    // FK en areasabastecimiento
+            'id_subarea_abastecimiento', // LK en subareas_abastecimiento
+            'id_area_abastecimiento'     // LK en relacion_areas_abastecimiento
+        );
     }
 }

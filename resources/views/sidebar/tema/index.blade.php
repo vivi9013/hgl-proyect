@@ -100,7 +100,7 @@
     {{-- ── Footer ──────────────────────────────────────── --}}
     <div class="tema-footer">
         <i class="bi bi-info-circle text-primary"></i>
-        <span>El tema seleccionado se aplica de inmediato y se guarda de forma permanente en tu perfil de usuario.</span>
+        <span>El tema seleccionado se aplica de inmediato y se guarda de forma permanente.</span>
     </div>
 
 </div>

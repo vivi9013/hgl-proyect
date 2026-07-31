@@ -14,7 +14,7 @@
     <nav class="mt-3">
       <ul class="nav sidebar-menu flex-column px-3">
         <li class="nav-item mb-2">
-          <a href="/" class="nav-link d-flex align-items-center p-3 {{ request()->is('/') ? 'active-menu-item' : 'text-dark' }}">
+          <a href="/" class="nav-link d-flex align-items-center p-3 {{ request()->is('/') || request()->routeIs('inicio') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-bar-chart-steps"></i>
             <span class="fw-medium" style="padding-left: 20px;">Panel de Control</span>
           </a>
@@ -32,14 +32,14 @@
 
 
         <li class="nav-item mb-2">
-          <a href="{{ route('cambiar_foto.index') }}" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('cambiar_foto.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('cambiar_foto.*') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-image-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cambiar Fotografia</span>
           </a>
         </li>
 
         <li class="nav-item mb-2">
-          <a href="{{ route('cambiar_contra.index') }}" class="nav-link d-flex align-items-center p-3 text-dark">
+          <a href="{{ route('cambiar_contra.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('cambiar_contra.*') ? 'active-menu-item' : 'text-dark' }}">
             <i class="bi bi-lock-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Cambiar Contraseña</span>
           </a>

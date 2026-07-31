@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Concerns\RespondeTablaAjax;
 use App\Models\Inventario\AreaAbastecimiento;
 use App\Models\Inventario\SubareaAbastecimiento;
+use App\Models\Inventario\RelacionAreaAbastecimiento;
 use Illuminate\Http\Request;
 
 class SubareaAbastecimientoController extends Controller
@@ -32,7 +33,9 @@ class SubareaAbastecimientoController extends Controller
         }
 
         if (!empty($idArea)) {
-            $query->where('id_area_abastecimiento', $idArea);
+            $query->whereHas('relacionArea', function ($rq) use ($idArea) {
+                $rq->where('id_area_abastecimiento', $idArea);
+            });
         }
 
         $this->aplicarFiltroEstatus($query, $status);
@@ -68,7 +71,9 @@ class SubareaAbastecimientoController extends Controller
             return response()->json(['valido' => true]);
         }
 
-        $query = SubareaAbastecimiento::where('id_area_abastecimiento', $idArea)
+        $query = SubareaAbastecimiento::whereHas('relacionArea', function ($rq) use ($idArea) {
+                $rq->where('id_area_abastecimiento', $idArea);
+            })
             ->where('nombre', $nombre);
 
         if (!empty($idActual)) {
@@ -100,7 +105,9 @@ class SubareaAbastecimientoController extends Controller
         ]);
 
         // Verificar duplicado en la misma área
-        $existe = SubareaAbastecimiento::where('id_area_abastecimiento', $request->id_area_abastecimiento)
+        $existe = SubareaAbastecimiento::whereHas('relacionArea', function ($rq) use ($request) {
+                $rq->where('id_area_abastecimiento', $request->id_area_abastecimiento);
+            })
             ->where('nombre', trim($request->nombre))
             ->exists();
 
@@ -111,11 +118,22 @@ class SubareaAbastecimientoController extends Controller
                 ->withErrors(['nombre' => 'Esta subárea ya se encuentra registrada en el área seleccionada.']);
         }
 
-        SubareaAbastecimiento::create([
-            'id_area_abastecimiento' => $request->id_area_abastecimiento,
-            'nombre'                 => trim($request->nombre),
-            'siglas'                 => $request->siglas ? trim($request->siglas) : null,
-            'activo'                 => 1,
+        $subarea = SubareaAbastecimiento::create([
+            'nombre'         => trim($request->nombre),
+            'siglas'         => $request->siglas ? trim($request->siglas) : null,
+            'fecha_registro' => now()->toDateString(),
+            'hora_registro'  => now()->toTimeString(),
+            'activo'         => 1,
+            'id_usuario'     => auth()->id() ?? 1,
+        ]);
+
+        RelacionAreaAbastecimiento::create([
+            'id_area_abastecimiento'    => $request->id_area_abastecimiento,
+            'id_subarea_abastecimiento' => $subarea->id_subarea_abastecimiento,
+            'fecha_registro'            => now()->toDateString(),
+            'hora_registro'             => now()->toTimeString(),
+            'activo'                    => 1,
+            'id_usuario'                => auth()->id() ?? 1,
         ]);
 
         return redirect()
@@ -128,7 +146,7 @@ class SubareaAbastecimientoController extends Controller
      */
     public function editar($id)
     {
-        $subarea = SubareaAbastecimiento::findOrFail($id);
+        $subarea = SubareaAbastecimiento::with('areaAbastecimiento')->findOrFail($id);
         $areas = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
 
         return view('peticion_insumos.subareas_abastecimiento.editar', compact('subarea', 'areas'));
@@ -152,7 +170,9 @@ class SubareaAbastecimientoController extends Controller
             'siglas.max'                      => 'Las siglas no deben superar 20 caracteres.',
         ]);
 
-        $existe = SubareaAbastecimiento::where('id_area_abastecimiento', $request->id_area_abastecimiento)
+        $existe = SubareaAbastecimiento::whereHas('relacionArea', function ($rq) use ($request) {
+                $rq->where('id_area_abastecimiento', $request->id_area_abastecimiento);
+            })
             ->where('nombre', trim($request->nombre))
             ->where('id_subarea_abastecimiento', '!=', $id)
             ->exists();
@@ -165,10 +185,20 @@ class SubareaAbastecimientoController extends Controller
         }
 
         $subarea->update([
-            'id_area_abastecimiento' => $request->id_area_abastecimiento,
-            'nombre'                 => trim($request->nombre),
-            'siglas'                 => $request->siglas ? trim($request->siglas) : null,
+            'nombre' => trim($request->nombre),
+            'siglas' => $request->siglas ? trim($request->siglas) : null,
         ]);
+
+        RelacionAreaAbastecimiento::updateOrCreate(
+            ['id_subarea_abastecimiento' => $subarea->id_subarea_abastecimiento],
+            [
+                'id_area_abastecimiento' => $request->id_area_abastecimiento,
+                'fecha_registro'         => now()->toDateString(),
+                'hora_registro'          => now()->toTimeString(),
+                'activo'                 => 1,
+                'id_usuario'             => auth()->id() ?? 1,
+            ]
+        );
 
         return redirect()
             ->route('subareas_abastecimiento.index')
@@ -224,7 +254,9 @@ class SubareaAbastecimientoController extends Controller
         }
 
         if (!empty($idArea)) {
-            $query->where('id_area_abastecimiento', $idArea);
+            $query->whereHas('relacionArea', function ($rq) use ($idArea) {
+                $rq->where('id_area_abastecimiento', $idArea);
+            });
         }
 
         $this->aplicarFiltroEstatus($query, $status);

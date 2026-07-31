@@ -59,9 +59,6 @@
                             <p class="user-name">
                                 {{ $user->persona ? $user->persona->nombre . ' ' . $user->persona->ap_paterno : $user->nombre_usuario }}
                             </p>
-                            <small class="user-id">
-                                ID Persona: <span class="fw-bold text-primary">{{ $user->id_persona }}</span>
-                            </small>
                         </div>
 
                         <!-- Panel derecho: formulario -->

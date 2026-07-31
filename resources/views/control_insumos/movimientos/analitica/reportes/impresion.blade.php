@@ -2,7 +2,14 @@
 
 @section('title', 'Reporte - Movimientos de Insumos')
 
-@section('report_title', 'MOVIMIENTOS DE INSUMOS DE IMPRESORAS{{ $tipo ? " — " . strtoupper($tipo) . "S" : "" }}')
+@php
+    $tipoArr = (array) $tipo;
+    $sufijoTitulo = count($tipoArr) === 1
+        ? ' — ' . strtoupper($tipoArr[0]) . 'S'
+        : '';
+@endphp
+
+@section('report_title', 'MOVIMIENTOS DE INSUMOS DE IMPRESORAS' . $sufijoTitulo)
 
 @section('content')
 <table>

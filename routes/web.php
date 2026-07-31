@@ -33,6 +33,7 @@ use App\Http\Controllers\ControlInsumos\ImpresoraController;
 use App\Http\Controllers\Monitores\MonitorController;
 use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
 use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
+use App\Http\Controllers\SoporteTecnico\SoporteAreaController;
 use App\Http\Controllers\Departamentos\DepartamentoController;
 use App\Http\Controllers\Puestos\PuestoController;
 use App\Http\Controllers\Sedes\SedeController;
@@ -41,6 +42,9 @@ use App\Http\Controllers\Trabajadores\TrabajadorController;
 use App\Http\Controllers\PeticionInsumos\AlmacenSubareaController;
 use App\Http\Controllers\PeticionInsumos\AreaAbastecimientoController;
 use App\Http\Controllers\PeticionInsumos\SubareaAbastecimientoController;
+use App\Http\Controllers\PeticionInsumos\PlantillaPedidoController;
+use App\Http\Controllers\PeticionInsumos\PedidoInsumoController;
+use App\Http\Controllers\PeticionInsumos\PedidoInsumoDiferenciaController;
 
 
 // Controladores del Módulo de Inventario (Añadidos e integrados)
@@ -74,9 +78,16 @@ Route::get('/mRegActividades', fn() => redirect()->route('actividades.index'));
 Route::get('/mImpresoras', fn() => redirect()->route('impresoras.index'));
 Route::get('/mMonitores', fn() => redirect()->route('monitores.index'));
 Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'));
+Route::get('/mSoporteArea', fn() => redirect()->route('soporte_area.index'));
+Route::get('/MsoporteArea', fn() => redirect()->route('soporte_area.index'));
 Route::get('/mDepartamentos', fn() => redirect()->route('departamentos.index'));
 Route::get('/mPuestos', fn() => redirect()->route('puestos.index'));
 Route::get('/mSedes', fn() => redirect()->route('sedes.index'));
+Route::get('/mPlantillasPedidos', fn() => redirect()->route('plantillas_pedido.index'));
+Route::get('/mPlantillasPedido', fn() => redirect()->route('plantillas_pedido.index'));
+Route::get('/mPlantillaPedido', fn() => redirect()->route('plantillas_pedido.index'));
+Route::get('/mPedidoInsumos', fn() => redirect()->route('pedido_insumos.index'));
+Route::get('/mPedidoInsumosDif', fn() => redirect()->route('pedido_insumos_dif.index'));
 Route::get('/mTipoTrabajador', fn() => redirect()->route('tipo_trabajador.index'));
 Route::get('/mAlmacenSubAreas', fn() => redirect()->route('almacen_subareas.index'));
 Route::get('/mAlmacenSubarea', fn() => redirect()->route('almacen_subareas.index'));
@@ -88,8 +99,11 @@ Route::get('/mSubareasAbastecimiento', fn() => redirect()->route('subareas_abast
 // ── GRUPO PARA INVITADOS ───────────────────────────────────────────────────
 Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
-    Route::post('/validar-login', [LoginController::class, 'login'])->name('login.post');
+    Route::post('/validar-login', [LoginController::class, 'login'])
+        ->middleware('throttle:login')
+        ->name('login.post');
 });
+
 
 // ── GRUPO PARA USUARIOS AUTENTICADOS ───────────────────────────────────────
 Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function () {
@@ -304,23 +318,26 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/{id}/insumo',          'agregarInsumo')     ->name('insumo.store');
         Route::put('/detalle/{id}',          'actualizarDetalle') ->name('detalle.update');
         Route::delete('/detalle/{id}',       'eliminarDetalle')   ->name('detalle.destroy');
-        Route::get('/graficas',              'graficas')          ->name('graficas');
         Route::get('/reportes',              'reportes')          ->name('reportes');
         Route::get('/reportes/imprimir',     'imprimir')          ->name('imprimir');
         Route::patch('/{id}/status',         'cambiarStatus')     ->name('status');
     });
 
+
     // ── Petición de Insumos: Áreas de Abastecimiento (ID: 36) ──────────────────
     Route::prefix('peticion-insumos/areas-abastecimiento')->middleware('modulo:36')->name('areas_abastecimiento.')->controller(AreaAbastecimientoController::class)->group(function () {
-        Route::get('/',                  'index')        ->name('index');
-        Route::post('/guardar',          'guardar')      ->name('store');
-        Route::get('/graficas',          'graficas')     ->name('graficas');
-        Route::get('/verificar',         'verificar')    ->name('verificar');
-        Route::get('/reportes',          'reportes')     ->name('reportes');
-        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
-        Route::get('/{id}/edit',         'editar')       ->name('edit');
-        Route::put('/{id}',              'actualizar')   ->name('update');
-        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
+        Route::get('/',                             'index')             ->name('index');
+        Route::post('/guardar',                     'guardar')           ->name('store');
+        Route::get('/graficas',                     'graficas')          ->name('graficas');
+        Route::get('/verificar',                    'verificar')         ->name('verificar');
+        Route::get('/reportes',                     'reportes')          ->name('reportes');
+        Route::get('/reportes/imprimir',            'imprimir')          ->name('imprimir');
+        Route::get('/relacionar',                   'relacionar')        ->name('relacionar');
+        Route::get('/{id}/edit',                    'editar')            ->name('edit');
+        Route::put('/{id}',                         'actualizar')        ->name('update');
+        Route::patch('/{id}/status',                'cambiarStatus')     ->name('status');
+        Route::post('/{id}/subareas',               'vincularSubarea')   ->name('vincular_subarea');
+        Route::patch('/{id}/subareas/{idSubarea}/desvincular', 'desvincularSubarea')->name('desvincular_subarea');
     });
 
     // ── Petición de Insumos: Subáreas de Abastecimiento (ID: 37) ───────────────
@@ -643,13 +660,25 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::delete('/estudios/eliminar/{id}', 'eliminarEstudio')->name('estudios.eliminar');
     });
 
+    // ── Soporte Técnico: Asignación de Áreas (mSoporteArea) (ID: 16) ────────
+    Route::prefix('soporte-tecnico/areas')
+        ->middleware('modulo:16')
+        ->name('soporte_area.')
+        ->controller(SoporteAreaController::class)
+        ->group(function () {
+            Route::get('/',                        'index')          ->name('index');
+            Route::get('/reportes/imprimir',       'imprimir')       ->name('imprimir');
+            Route::get('/{id}/asignar',            'asignarAreas')   ->name('asignar');
+            Route::post('/{id}/sincronizar',       'sincronizarAreas')->name('sincronizar');
+            Route::patch('/{id}/status',           'cambiarStatus')  ->name('status');
+        });
+
     // Subgrupo: Estadísticas y Reportes RX
     Route::prefix('rx-estadisticas')->name('rx_estadisticas.')->controller(RxEstadisticaController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/datos', 'datos')->name('datos');
         Route::get('/imprimir', 'imprimir')->name('imprimir');
     });
-
 
     // ── Módulo: Registro de Actividades (Misceláneos) ──────────────────────
     Route::prefix('actividades')->name('actividades.')->controller(ActividadController::class)->group(function () {
@@ -658,7 +687,50 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/graficas/datos', 'datosGraficas')->name('graficas.datos');
     });
+    // ── Petición de Insumos: Plantillas de Pedido (ID: 40) ────────────────────
+    // Endpoint de combo en cascada: accesible con sólo auth (sin restricción modulo:40)
+    Route::get('/peticion-insumos/plantillas-pedido/subareas-por-area',
+        [PlantillaPedidoController::class, 'subareasPorArea'])
+        ->name('plantillas_pedido.subareas_por_area');
 
+    Route::prefix('peticion-insumos/plantillas-pedido')->middleware('modulo:40')->name('plantillas_pedido.')->controller(PlantillaPedidoController::class)->group(function () {
+        Route::get('/',                              'index')            ->name('index');
+        Route::post('/guardar',                      'guardar')          ->name('store');
+        Route::post('/{id}/insumo',                  'agregarInsumo')    ->name('insumo.store');
+        Route::put('/detalle/{id}',                  'actualizarDetalle')->name('detalle.update');
+        Route::delete('/detalle/{id}',               'eliminarDetalle')  ->name('detalle.destroy');
+        Route::patch('/{id}/status',                 'cambiarStatus')    ->name('status');
+        Route::get('/reportes',                      'reportes')         ->name('reportes');
+        Route::get('/reportes/impresion',            'imprimir')         ->name('imprimir');
+        Route::get('/{id}/imprimir-individual',      'imprimirIndividual')->name('imprimir_individual');
+        Route::get('/{id}/insumos',                  'editarInsumos')    ->name('insumos');
+        Route::post('/{id}/insumos/guardar',         'guardarInsumos')   ->name('insumos.guardar');
+        Route::put('/{id}',                          'actualizar')       ->name('update');
+        Route::delete('/{id}',                       'eliminar')         ->name('destroy');
+    });
+
+
+    // ── Petición de Insumos: Pedido de Insumos (ID: 41) ──────────────────────
+    Route::prefix('peticion-insumos/pedidos')->middleware('modulo:41')->name('pedido_insumos.')->controller(PedidoInsumoController::class)->group(function () {
+        Route::get('/',                     'index')               ->name('index');
+        Route::get('/subareas',             'subareasPorArea')     ->name('subareas');
+        Route::get('/autocompletar-insumo', 'autocompletarInsumo')  ->name('autocompletar');
+        Route::get('/plantilla/{id}',       'insumosPlantilla')    ->name('insumos_plantilla');
+        Route::post('/guardar',             'guardar')             ->name('store');
+        Route::get('/detalle/{id}',         'detalle')             ->name('detalle');
+        Route::patch('/cancelar/{id}',      'cancelar')            ->name('cancelar');
+        Route::get('/reportes',             'reportes')            ->name('reportes');
+        Route::get('/imprimir/{id}',        'imprimir')            ->name('imprimir');
+    });
+
+    // ── Petición de Insumos: Pedido de Insumos por Diferencia (ID: 43) ────────
+    Route::prefix('peticion-insumos/pedidos-diferencia')->middleware('modulo:43')->name('pedido_insumos_dif.')->controller(PedidoInsumoDiferenciaController::class)->group(function () {
+        Route::get('/',                     'index')               ->name('index');
+        Route::get('/calcular',             'calcularDiferencias') ->name('calcular');
+        Route::post('/guardar',             'guardar')             ->name('store');
+        Route::get('/reportes',             'reportes')            ->name('reportes');
+        Route::get('/imprimir/{id}',        'imprimir')            ->name('imprimir');
+    });
 });
 
 Route::get('/log-js-error', function (\Illuminate\Http\Request $request) {
