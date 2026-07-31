@@ -4,11 +4,6 @@
    Sigue el patrón clásico/profesional unificado del proyecto HGL
    ================================================================ */
 
-/* ── Transición suave para tarjetas ── */
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
 /* ── Feedback AJAX ── */
 .text-success-custom {
     color: #2f855a;
@@ -71,156 +66,7 @@
     color: #a0aec0;
 }
 
-/* ================================================================
-   ESTILOS CLÁSICOS Y SIMPLES – Sin tarjetas pronunciadas,
-   iconos en negro, diseño plano y profesional
-   ================================================================ */
-
-.card,
-.card-header,
-.card-body,
-.card-footer {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Cabeceras tipo título subrayado en negro */
-.card-header.bg-primary {
-    background-color: transparent !important;
-    color: #000000 !important;
-    border-bottom: 2px solid #000000 !important;
-    padding-bottom: 0.5rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card-header.bg-primary h5 {
-    font-size: 1.1rem !important;
-    font-weight: bold !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light {
-    border-color: #000000 !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Cabecera blanca del listado */
-.card-header.bg-white h5 {
-    font-size: 1.05rem !important;
-    font-weight: bold !important;
-    color: #000000 !important;
-}
-
-/* Iconos de acento en Negro */
-.text-primary,
-.fa-tags,
-.fa-plus-circle,
-.fa-list {
-    color: #000000 !important;
-}
-
-/* Form Controls */
-.form-control {
-    border-color: rgba(0, 0, 0, 0.35) !important;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-    padding: 0.6rem 0.95rem;
-    font-size: 0.9rem;
-    color: #000000 !important;
-    background-color: #ffffff !important;
-}
-
-.form-control:focus {
-    border-color: #000000 !important;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botón Guardar (Primario): Azul con borde Negro */
-.btn-primary {
-    background-color: #0d6efd !important;
-    border: 2px solid #000000 !important;
-    color: #ffffff !important;
-    font-weight: bold !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Botón Cancelar/Volver: Blanco con bordes grises */
-.btn-light,
-.btn-outline-secondary {
-    background-color: #ffffff !important;
-    border: 2px solid #d1d5db !important;
-    color: #4b5563 !important;
-    font-weight: bold !important;
-    border-radius: 50rem !important;
-    padding: 0.5rem 1.5rem !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.btn-light:hover,
-.btn-outline-secondary:hover {
-    background-color: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #000000 !important;
-}
-
-/* ── Tabla moderna con bordes sutiles ── */
-.table {
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    overflow: hidden !important;
-    background-color: #ffffff !important;
-}
-
-.table th {
-    background-color: #f9fafb !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    padding: 1rem !important;
-    border-bottom: 1.5px solid #e5e7eb !important;
-}
-
-.table td {
-    padding: 1rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    color: #374151 !important;
-    font-size: 0.875rem;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #f9fafb !important;
-}
-
-/* ── Paginación sencilla en negro ── */
+/* ── Paginación ── */
 .pagination {
     margin: 0 !important;
 }
@@ -255,8 +101,13 @@
     border-color: #e5e7eb !important;
 }
 
+/* ── Hover en tabla ── */
+.table-hover tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
 /* ================================================================
-   MEJORAS VISUALES MODERNAS Y ATRACTIVAS (REEMPLAZO DE FUENTE SERIF)
+   TIPOGRAFÍA Y ESTILOS VISUALES MODERNOS
    ================================================================ */
 #tablaMotivos,
 .table,

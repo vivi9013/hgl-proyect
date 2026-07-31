@@ -117,31 +117,15 @@
                     <tbody>
                         @forelse($insumosArea as $ia)
                             @php
-                                $stockVal = (int) $ia->stock;
-                                $ffVal = (int) $ia->fondo_fijo;
+                                $stockVal   = $ia->stock;
+                                $ffVal      = $ia->fondo_fijo;
                                 $porcentaje = $ffVal > 0 ? round(($stockVal * 100) / $ffVal, 1) : 0;
+                                $nivel      = \App\Models\Inventario\InsumoArea::calcularNivelStock($stockVal, $ffVal);
+                                $meta       = \App\Models\Inventario\InsumoArea::obtenerMetaNivelStock($nivel);
 
-                                if ($porcentaje < 25) {
-                                    $iconClass = "fa fa-thermometer-empty fa-2x thermometer-icon";
-                                    $iconColor = "#d63031";
-                                    $stockClass = "stock-muy-bajo";
-                                } elseif ($porcentaje >= 25 && $porcentaje < 50) {
-                                    $iconClass = "fa fa-thermometer-quarter fa-2x thermometer-icon";
-                                    $iconColor = "#e67e22";
-                                    $stockClass = "stock-bajo";
-                                } elseif ($porcentaje >= 50 && $porcentaje < 75) {
-                                    $iconClass = "fa fa-thermometer-half fa-2x thermometer-icon";
-                                    $iconColor = "#f1c40f";
-                                    $stockClass = "stock-regular";
-                                } elseif ($porcentaje >= 75 && $porcentaje <= 100) {
-                                    $iconClass = "fa fa-thermometer-three-quarters fa-2x thermometer-icon";
-                                    $iconColor = "#27ae60";
-                                    $stockClass = "stock-suficiente";
-                                } else {
-                                    $iconClass = "fa fa-thermometer-full fa-2x thermometer-icon";
-                                    $iconColor = "#2980b9";
-                                    $stockClass = "stock-excedido";
-                                }
+                                $iconClass  = "fa {$meta['icono']} fa-2x thermometer-icon";
+                                $iconColor  = $meta['color'];
+                                $stockClass = $meta['stockClass'];
                             @endphp
                             <tr>
                                 <td class="text-center fw-bold text-muted">

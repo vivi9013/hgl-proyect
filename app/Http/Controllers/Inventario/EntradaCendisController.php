@@ -12,9 +12,12 @@ use App\Models\Inventario\InsumoArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ParseaRangoFechas;
 
 class EntradaCendisController extends Controller
 {
+    use ParseaRangoFechas;
+
     private const PER_PAGE = 10;
 
     /**
@@ -336,22 +339,5 @@ class EntradaCendisController extends Controller
             'stock' => $stock
         ]);
     }
-
-    /**
-     * Normalizar fecha helper.
-     */
-    private function normalizarFecha(?string $fecha): array
-    {
-        if (empty($fecha)) return [null, ''];
-
-        try {
-            $db = str_contains($fecha, '/')
-                ? \Carbon\Carbon::createFromFormat('d/m/Y', $fecha)->format('Y-m-d')
-                : \Carbon\Carbon::parse($fecha)->format('Y-m-d');
-
-            return [$db, $db];
-        } catch (\Exception $e) {
-            return [null, ''];
-        }
-    }
 }
+

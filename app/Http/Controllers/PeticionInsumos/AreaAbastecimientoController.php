@@ -28,18 +28,20 @@ class AreaAbastecimientoController extends Controller
             $query->where('nombre', 'LIKE', "%{$buscar}%");
         }
 
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts = array_map(function ($val) {
-                return $val === 'Activo' ? 1 : 0;
-            }, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
+        $this->aplicarFiltroEstatus($query, $status);
 
         $areas = $query->paginate(10);
 
-        if ($request->ajax()) {
-            return $this->respondeTablaAjax('peticion_insumos.areas_abastecimiento.partials.tabla', compact('areas'));
+        $ajaxResponse = $this->respuestaTablaAjax(
+            $request,
+            $areas,
+            'peticion_insumos.areas_abastecimiento.partials.tabla',
+            compact('areas'),
+            'áreas de abastecimiento'
+        );
+
+        if ($ajaxResponse) {
+            return $ajaxResponse;
         }
 
         return view('peticion_insumos.areas_abastecimiento.index', compact('areas'));
@@ -169,13 +171,8 @@ class AreaAbastecimientoController extends Controller
             $query->where('nombre', 'LIKE', "%{$buscar}%");
         }
 
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts = array_map(function ($val) {
-                return $val === 'Activo' ? 1 : 0;
-            }, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
+        $this->aplicarFiltroEstatus($query, $status);
+
 
         $areas = $query->get();
 

@@ -561,7 +561,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}/stock', 'updateStock')->name('update_stock');
         Route::patch('/{id}/fondo-fijo', 'updateFondoFijo')->name('update_fondo_fijo');
         Route::get('/buscar-insumos', 'buscarInsumosCatalog')->name('buscar_insumos');
-        Route::get('/verificar-clave', 'consultarInsumoClave')->name('verificar_clave');
         Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/datos', 'obtenerReporteDatos')->name('reporte_datos');
         Route::get('/reportes/imprimir', 'imprimir')->name('imprimir');

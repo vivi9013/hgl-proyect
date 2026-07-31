@@ -8,6 +8,13 @@ use App\Models\User;
 class Pedido extends Model
 {
     /**
+     * Constantes de estado (mapeadas de la base de datos legacy).
+     */
+    const STATUS_PENDIENTE = 'terminado';   // "terminado" en DB legacy = enviado, pendiente de surtir
+    const STATUS_ACEPTADO  = 'Aceptado';    // surtido y liberado
+    const STATUS_CANCELADO = 'cancelado';   // cancelado
+
+    /**
      * Tabla legacy.
      */
     protected $table = 'pedidos';
@@ -44,11 +51,50 @@ class Pedido extends Model
      * Cast de atributos.
      */
     protected $casts = [
-        'fecha_registro' => 'date',
-        'fecha_entrega' => 'date',
-        'activo' => 'integer',
+        'fecha_registro'     => 'date',
+        'fecha_entrega'      => 'date',
+        'activo'             => 'integer',
         'porcentaje_entrega' => 'float',
     ];
+
+    // ── Accessors ──────────────────────────────────────────────────────────────
+
+    /**
+     * Formato estandarizado de folio para pedidos (ej. PED-00042).
+     */
+    public function getFolioAttribute(): string
+    {
+        return 'PED-' . str_pad($this->id_pedido, 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Configuración visual del badge de estado para las vistas Blade.
+     */
+    public function getStatusBadgeAttribute(): array
+    {
+        return match ($this->status) {
+            self::STATUS_PENDIENTE => [
+                'class' => 'bg-warning text-dark',
+                'label' => 'Pendiente por surtir',
+                'icon'  => 'fa-clock-o',
+            ],
+            self::STATUS_ACEPTADO => [
+                'class' => 'bg-success',
+                'label' => 'Aceptado',
+                'icon'  => 'fa-check-circle',
+            ],
+            self::STATUS_CANCELADO => [
+                'class' => 'bg-danger',
+                'label' => 'Cancelado',
+                'icon'  => 'fa-ban',
+            ],
+            default => [
+                'class' => 'bg-secondary',
+                'label' => $this->status ?? 'Desconocido',
+                'icon'  => 'fa-question-circle',
+            ],
+        };
+    }
 
     // ── Relaciones ─────────────────────────────────────────────────────────────
 

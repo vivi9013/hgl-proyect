@@ -12,11 +12,6 @@ use Carbon\Carbon;
 
 class PedidoRecibidoController extends Controller
 {
-    // ── Constantes de estado (mapeadas del legacy) ──
-    const STATUS_PENDIENTE  = 'terminado';   // "terminado" en legacy = pedido enviado, pendiente de surtir
-    const STATUS_ACEPTADO   = 'Aceptado';    // surtido y liberado
-    const STATUS_CANCELADO  = 'cancelado';
-
     // ── Eager loads comunes ──
     private function withRelaciones()
     {
@@ -60,7 +55,7 @@ class PedidoRecibidoController extends Controller
      */
     public function index(Request $request)
     {
-        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, self::STATUS_PENDIENTE);
+        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, Pedido::STATUS_PENDIENTE);
         $pedidos = $query->paginate(15)->withQueryString();
 
         return view('inventario.pedidos_recibidos.index', compact('pedidos', 'buscar', 'fechaInit', 'fechaFin'));
@@ -71,7 +66,7 @@ class PedidoRecibidoController extends Controller
      */
     public function aceptados(Request $request)
     {
-        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, self::STATUS_ACEPTADO);
+        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, Pedido::STATUS_ACEPTADO);
         $pedidos = $query->paginate(15)->withQueryString();
 
         return view('inventario.pedidos_recibidos.aceptados', compact('pedidos', 'buscar', 'fechaInit', 'fechaFin'));
@@ -82,7 +77,7 @@ class PedidoRecibidoController extends Controller
      */
     public function cancelados(Request $request)
     {
-        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, self::STATUS_CANCELADO);
+        [$query, $buscar, $fechaInit, $fechaFin] = $this->queryFiltrada($request, Pedido::STATUS_CANCELADO);
         $pedidos = $query->paginate(15)->withQueryString();
 
         return view('inventario.pedidos_recibidos.cancelados', compact('pedidos', 'buscar', 'fechaInit', 'fechaFin'));
@@ -112,7 +107,7 @@ class PedidoRecibidoController extends Controller
         $detalle = DetallePedido::findOrFail($idDetalle);
         $pedido  = Pedido::findOrFail($detalle->id_pedido);
 
-        if ($pedido->status !== self::STATUS_PENDIENTE) {
+        if ($pedido->status !== Pedido::STATUS_PENDIENTE) {
             return response()->json(['error' => 'El pedido no está en estado pendiente.'], 422);
         }
 
@@ -148,7 +143,7 @@ class PedidoRecibidoController extends Controller
     {
         $pedido = Pedido::with(['detalles.insumoArea'])->findOrFail($id);
 
-        if ($pedido->status !== self::STATUS_PENDIENTE) {
+        if ($pedido->status !== Pedido::STATUS_PENDIENTE) {
             return back()->with('error', 'Este pedido no se puede liberar porque ya fue procesado.');
         }
 
@@ -182,7 +177,7 @@ class PedidoRecibidoController extends Controller
                 : 0;
 
             $pedido->update([
-                'status'             => self::STATUS_ACEPTADO,
+                'status'             => Pedido::STATUS_ACEPTADO,
                 'fecha_entrega'      => Carbon::now()->toDateString(),
                 'hora_entrega'       => Carbon::now()->format('H:i:s'),
                 'porcentaje_entrega' => $porcentaje,
@@ -191,7 +186,7 @@ class PedidoRecibidoController extends Controller
 
         return redirect()
             ->route('pedidos_recibidos.comprobante', $pedido->id_pedido)
-            ->with('exitog', "Pedido PED-" . str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) . " liberado correctamente.");
+            ->with('exitog', "Pedido {$pedido->folio} liberado correctamente.");
     }
 
     /**
@@ -201,13 +196,13 @@ class PedidoRecibidoController extends Controller
     {
         $pedido = Pedido::with(['detalles.insumoArea'])->findOrFail($id);
 
-        if ($pedido->status === self::STATUS_CANCELADO) {
+        if ($pedido->status === Pedido::STATUS_CANCELADO) {
             return back()->with('error', 'El pedido ya está cancelado.');
         }
 
         DB::transaction(function () use ($pedido) {
             // Si fue aceptado, restaurar stock
-            if ($pedido->status === self::STATUS_ACEPTADO) {
+            if ($pedido->status === Pedido::STATUS_ACEPTADO) {
                 foreach ($pedido->detalles as $detalle) {
                     $surtido = $detalle->surtido ?? 0;
                     if ($surtido > 0 && $detalle->insumoArea) {
@@ -217,14 +212,14 @@ class PedidoRecibidoController extends Controller
             }
 
             $pedido->update([
-                'status'             => self::STATUS_CANCELADO,
+                'status'             => Pedido::STATUS_CANCELADO,
                 'porcentaje_entrega' => 0,
             ]);
         });
 
         return redirect()
             ->route('pedidos_recibidos.cancelados')
-            ->with('exito', "Pedido PED-" . str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) . " cancelado correctamente.");
+            ->with('exitog', "Pedido {$pedido->folio} cancelado correctamente.");
     }
 
     /**

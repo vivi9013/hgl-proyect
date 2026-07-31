@@ -35,19 +35,21 @@ class SubareaAbastecimientoController extends Controller
             $query->where('id_area_abastecimiento', $idArea);
         }
 
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts = array_map(function ($val) {
-                return $val === 'Activo' ? 1 : 0;
-            }, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
+        $this->aplicarFiltroEstatus($query, $status);
 
         $subareas = $query->paginate(10);
         $areas = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
 
-        if ($request->ajax()) {
-            return $this->respondeTablaAjax('peticion_insumos.subareas_abastecimiento.partials.tabla', compact('subareas'));
+        $ajaxResponse = $this->respuestaTablaAjax(
+            $request,
+            $subareas,
+            'peticion_insumos.subareas_abastecimiento.partials.tabla',
+            compact('subareas'),
+            'subáreas de abastecimiento'
+        );
+
+        if ($ajaxResponse) {
+            return $ajaxResponse;
         }
 
         return view('peticion_insumos.subareas_abastecimiento.index', compact('subareas', 'areas'));
@@ -225,13 +227,7 @@ class SubareaAbastecimientoController extends Controller
             $query->where('id_area_abastecimiento', $idArea);
         }
 
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts = array_map(function ($val) {
-                return $val === 'Activo' ? 1 : 0;
-            }, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
+        $this->aplicarFiltroEstatus($query, $status);
 
         $subareas = $query->get();
 

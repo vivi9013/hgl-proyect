@@ -68,13 +68,7 @@ class AlmacenSubareaController extends Controller
             $query->where('id_subarea_abastecimiento', $idSubarea);
         }
 
-        if (!empty($status)) {
-            $statusArray = is_array($status) ? $status : explode(',', $status);
-            $statusInts = array_map(function ($val) {
-                return $val === 'Activo' ? 1 : 0;
-            }, $statusArray);
-            $query->whereIn('activo', $statusInts);
-        }
+        $this->aplicarFiltroEstatus($query, $status);
 
         $almacenes = $query->paginate(10)->withQueryString();
 
@@ -144,7 +138,7 @@ class AlmacenSubareaController extends Controller
                 ->with('hasFormErrors', true);
         }
 
-        AlmacenSubarea::create([
+        $almacen = AlmacenSubarea::create([
             'id_area_abastecimiento'    => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento' => $request->id_subarea_abastecimiento,
             'fecha_registro'            => now()->toDateString(),

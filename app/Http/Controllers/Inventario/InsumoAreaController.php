@@ -136,7 +136,7 @@ class InsumoAreaController extends Controller
 
         return redirect()
             ->route('insumos_area.index')
-            ->with('exito', 'La asignación se ha actualizado correctamente.');
+            ->with('exitog', 'La asignación se ha actualizado correctamente.');
     }
 
     /**
@@ -213,33 +213,7 @@ class InsumoAreaController extends Controller
         return response()->json($insumos);
     }
 
-    /**
-     * AJAX: dado una clave, devuelve los datos del insumo (id, descripción, tipo).
-     */
-    public function consultarInsumoClave(Request $request)
-    {
-        $clave = trim($request->get('clave', ''));
 
-        if (!$clave) {
-            return response()->json(['encontrado' => false]);
-        }
-
-        $insumo = Insumo::where('activo', 1)
-            ->whereRaw('LOWER(clave) = ?', [strtolower($clave)])
-            ->first(['id_insumo', 'clave', 'descripcion', 'tipo']);
-
-        if (!$insumo) {
-            return response()->json(['encontrado' => false]);
-        }
-
-        return response()->json([
-            'encontrado'  => true,
-            'id_insumo'   => $insumo->id_insumo,
-            'clave'       => $insumo->clave,
-            'descripcion' => $insumo->descripcion,
-            'tipo'        => $insumo->tipo,
-        ]);
-    }
 
     /**
      * Vista del panel de reportes con filtros por nivel de stock.
@@ -283,8 +257,8 @@ class InsumoAreaController extends Controller
         }
 
         $insumos = $query->get()->map(function ($ia) {
-            $stock      = (int) $ia->stock;
-            $ff         = (int) $ia->fondo_fijo;
+            $stock      = $ia->stock;
+            $ff         = $ia->fondo_fijo;
             $porcentaje = $ff > 0 ? round(($stock * 100) / $ff, 1) : 0;
 
             return [
@@ -296,6 +270,7 @@ class InsumoAreaController extends Controller
                 'stock'          => $stock,
                 'fondo_fijo'     => $ff,
                 'porcentaje'     => $porcentaje,
+                'nivel'          => $ia->nivel_stock,
             ];
         });
 

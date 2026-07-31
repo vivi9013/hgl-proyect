@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputBuscarInsumo = document.getElementById('buscarInsumoDetalle');
     const inputIdInsumo = document.getElementById('id_insumo_detalle');
     const inputDescripcion = document.getElementById('descripcion_insumo');
-    const inputTipo = document.getElementById('tipo_insumo');
     const inputStock = document.getElementById('stock_insumo');
     const inputSolicitado = document.getElementById('solicitado_detalle');
     const inputCantidad = document.getElementById('cantidad_detalle');
@@ -108,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             inputBuscarInsumo.value = insumo.clave;
                             if (inputIdInsumo) inputIdInsumo.value = insumo.id_insumo;
                             if (inputDescripcion) inputDescripcion.value = insumo.descripcion;
-                            if (inputTipo) inputTipo.value = insumo.tipo || 'Insumo';
                             
                             sugerenciasDiv.style.display = 'none';
                             sugerenciasDiv.innerHTML = '';
@@ -158,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
             onSelect: (insumo) => {
                 if (inputBuscarInsumo) inputBuscarInsumo.value = insumo.clave;
                 if (inputDescripcion) inputDescripcion.value = insumo.descripcion;
-                if (inputTipo) inputTipo.value = insumo.tipo || 'Insumo';
                 
                 // Consultar stock en el área de almacén activa
                 if (areaAlmacenId && insumo.id_insumo) {
@@ -266,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest',
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
                             },
@@ -399,10 +397,78 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── 8. Actualizar Cantidad en la tabla en tiempo real (onblur o change) ──────────
+    // ── 8. Actualizar Cantidad en la tabla en tiempo real (instantáneo + AJAX) ──
     const inputsCantidadTabla = document.querySelectorAll('.cantidad-tabla-input');
+
+    const recalcularTotalesTabla = () => {
+        const tabla = document.getElementById('tablaDetalles');
+        if (!tabla) return;
+
+        let totalSol = 0;
+        let totalCant = 0;
+        let totalFal = 0;
+
+        const filas = tabla.querySelectorAll('tbody tr');
+        filas.forEach(tr => {
+            if (tr.id === 'filaVacia') return;
+            const solCol = tr.querySelector('.solicitado-col');
+            const cantInput = tr.querySelector('.cantidad-tabla-input');
+            const falCol = tr.querySelector('.faltante-col');
+
+            const sol = parseInt(solCol?.textContent) || 0;
+            const cant = cantInput ? (parseInt(cantInput.value) || 0) : (parseInt(tr.children[4]?.textContent) || 0);
+            const fal = parseInt(falCol?.textContent) || 0;
+
+            totalSol += sol;
+            totalCant += cant;
+            totalFal += fal;
+        });
+
+        const elTotalSol = document.getElementById('totalSolicitadoTabla');
+        const elTotalCant = document.getElementById('totalCantidadTabla');
+        const elTotalFal = document.getElementById('totalFaltanteTabla');
+
+        if (elTotalSol) elTotalSol.textContent = totalSol;
+        if (elTotalCant) elTotalCant.textContent = totalCant;
+        if (elTotalFal) {
+            elTotalFal.textContent = totalFal;
+            if (totalFal > 0) {
+                elTotalFal.classList.remove('text-success');
+                elTotalFal.classList.add('text-danger');
+            } else {
+                elTotalFal.classList.remove('text-danger');
+                elTotalFal.classList.add('text-success');
+            }
+        }
+    };
+
     inputsCantidadTabla.forEach(input => {
-        const updateVal = () => {
+        const actualizarFilaInstantanea = () => {
+            const val = parseInt(input.value) || 0;
+            const fila = input.closest('tr');
+            if (!fila) return;
+
+            const colSolicitado = fila.querySelector('.solicitado-col');
+            const colFaltante = fila.querySelector('.faltante-col');
+
+            const solicitado = parseInt(colSolicitado?.textContent) || 0;
+            const faltante = Math.max(0, solicitado - val);
+
+            if (colFaltante) {
+                colFaltante.textContent = faltante;
+                if (faltante > 0) {
+                    colFaltante.classList.remove('text-success');
+                    colFaltante.classList.add('text-danger');
+                } else {
+                    colFaltante.classList.remove('text-danger');
+                    colFaltante.classList.add('text-success');
+                }
+            }
+
+            recalcularTotalesTabla();
+        };
+
+        const updateValServer = () => {
             const url = input.getAttribute('data-url');
             const prevVal = parseInt(input.getAttribute('data-prev')) || 0;
             const val = parseInt(input.value) || 0;
@@ -411,6 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (val < 0) {
                 Swal.fire('Cantidad inválida', 'La cantidad debe ser mayor o igual a cero.', 'warning');
                 input.value = prevVal;
+                actualizarFilaInstantanea();
                 return;
             }
 
@@ -420,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
@@ -428,39 +496,55 @@ document.addEventListener('DOMContentLoaded', function () {
                     cantidad: val
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+                return res.json();
+            })
             .then(data => {
                 if (data.ok) {
                     input.setAttribute('data-prev', val);
-                    // Recalcular faltante en la fila si es visible
                     const fila = input.closest('tr');
                     const colSolicitado = fila.querySelector('.solicitado-col');
                     const colFaltante = fila.querySelector('.faltante-col');
-                    if (colSolicitado && colFaltante) {
-                        const sol = parseInt(colSolicitado.textContent) || 0;
-                        const fal = sol - val;
-                        colFaltante.textContent = fal >= 0 ? fal : 0;
+
+                    if (colSolicitado && data.solicitado !== undefined) {
+                        colSolicitado.textContent = data.solicitado;
                     }
-                    if (typeof alertify !== 'undefined') {
-                        alertify.set('notifier','position','bottom-left');
-                        alertify.success(data.mensaje);
+                    if (colFaltante && data.faltante !== undefined) {
+                        colFaltante.textContent = data.faltante;
+                        if (data.faltante > 0) {
+                            colFaltante.classList.remove('text-success');
+                            colFaltante.classList.add('text-danger');
+                        } else {
+                            colFaltante.classList.remove('text-danger');
+                            colFaltante.classList.add('text-success');
+                        }
                     }
+                    recalcularTotalesTabla();
                 } else {
-                    Swal.fire('Error', data.mensaje, 'error');
+                    Swal.fire('Error', data.mensaje || 'No se pudo actualizar.', 'error');
                     input.value = prevVal;
+                    actualizarFilaInstantanea();
                 }
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('Error al actualizar cantidad:', err);
                 Swal.fire('Error', 'Ocurrió un error al actualizar la cantidad.', 'error');
                 input.value = prevVal;
+                actualizarFilaInstantanea();
             });
         };
 
-        input.addEventListener('change', updateVal);
+        // Escuchar el evento 'input' para actualización 100% instantánea (0ms)
+        input.addEventListener('input', actualizarFilaInstantanea);
+
+        // Escuchar el evento 'change' (blur) para guardar en servidor de fondo
+        input.addEventListener('change', updateValServer);
+
         input.addEventListener('keypress', function(e) {
             if (e.which === 13) {
                 e.preventDefault();
-                updateVal();
+                updateValServer();
                 input.blur();
             }
         });
@@ -497,4 +581,121 @@ document.addEventListener('DOMContentLoaded', function () {
         fechaInicio.addEventListener('change', () => autoSubmitFecha(fechaInicio, fechaFin, formBuscar));
         fechaFin.addEventListener('change', () => autoSubmitFecha(fechaInicio, fechaFin, formBuscar));
     }
+
+    // ── 10. Paginación de la tabla de insumos del detalle ───────────────────────
+    const tablaDetalles = document.getElementById('tablaDetalles');
+    const pagContainer = document.getElementById('paginacionTablaDetallesContainer');
+    const ulPaginacion = document.getElementById('ulPaginacionTablaDetalles');
+    const selectLimit = document.getElementById('selectLimitTablaDetalles');
+    const infoInicio = document.getElementById('pagInicioTablaDetalles');
+    const infoFin = document.getElementById('pagFinTablaDetalles');
+    const infoTotal = document.getElementById('pagTotalTablaDetalles');
+
+    if (tablaDetalles && pagContainer && ulPaginacion) {
+        let itemsPorPagina = 10;
+        let paginaActual = 1;
+
+        const obtenerFilas = () => {
+            const tbody = tablaDetalles.querySelector('tbody');
+            if (!tbody) return [];
+            return Array.from(tbody.querySelectorAll('tr')).filter(tr => tr.id !== 'filaVacia');
+        };
+
+        const renderizarPaginacion = () => {
+            const filas = obtenerFilas();
+            const totalFilas = filas.length;
+
+            if (totalFilas === 0) {
+                pagContainer.style.display = 'none';
+                return;
+            }
+
+            pagContainer.style.display = 'flex';
+
+            const limitVal = selectLimit ? selectLimit.value : '10';
+            const limit = limitVal === 'all' ? totalFilas : parseInt(limitVal, 10) || 10;
+            itemsPorPagina = limit;
+
+            const totalPaginas = Math.ceil(totalFilas / itemsPorPagina);
+
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+            if (paginaActual < 1) paginaActual = 1;
+
+            const inicio = (paginaActual - 1) * itemsPorPagina;
+            const fin = Math.min(inicio + itemsPorPagina, totalFilas);
+
+            filas.forEach((tr, index) => {
+                if (index >= inicio && index < fin) {
+                    tr.style.display = '';
+                } else {
+                    tr.style.display = 'none';
+                }
+            });
+
+            if (infoInicio) infoInicio.textContent = totalFilas > 0 ? inicio + 1 : 0;
+            if (infoFin) infoFin.textContent = fin;
+            if (infoTotal) infoTotal.textContent = totalFilas;
+
+            ulPaginacion.innerHTML = '';
+
+            if (totalPaginas <= 1) {
+                return;
+            }
+
+            // Botón Anterior
+            const liPrev = document.createElement('li');
+            liPrev.className = `page-item ${paginaActual === 1 ? 'disabled' : ''}`;
+            liPrev.innerHTML = `<a class="page-link" href="#" aria-label="Anterior">&laquo;</a>`;
+            liPrev.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    renderizarPaginacion();
+                }
+            });
+            ulPaginacion.appendChild(liPrev);
+
+            // Rango de páginas a mostrar
+            let startPage = Math.max(1, paginaActual - 2);
+            let endPage = Math.min(totalPaginas, startPage + 4);
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === paginaActual ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    paginaActual = i;
+                    renderizarPaginacion();
+                });
+                ulPaginacion.appendChild(li);
+            }
+
+            // Botón Siguiente
+            const liNext = document.createElement('li');
+            liNext.className = `page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`;
+            liNext.innerHTML = `<a class="page-link" href="#" aria-label="Siguiente">&raquo;</a>`;
+            liNext.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    renderizarPaginacion();
+                }
+            });
+            ulPaginacion.appendChild(liNext);
+        };
+
+        if (selectLimit) {
+            selectLimit.addEventListener('change', () => {
+                paginaActual = 1;
+                renderizarPaginacion();
+            });
+        }
+
+        renderizarPaginacion();
+    }
 });
+

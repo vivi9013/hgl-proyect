@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fechaInicio) fechaInicio.addEventListener('change', (e) => autoSubmitFecha(e));
     if (fechaFin) fechaFin.addEventListener('change', (e) => autoSubmitFecha(e));
 
-    // ── 7. Panel de claves (doble clic en buscarInsumo) ────────────────────
+    // ── 8. Panel de claves (doble clic en buscarInsumo) ────────────────────
     initPanelClaves({
         panelId: 'panelClaves',
         inputBuscarId: 'buscarInsumo',

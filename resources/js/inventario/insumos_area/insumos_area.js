@@ -1,4 +1,5 @@
 import { initPanelClaves } from '../shared/panel-claves.js';
+import { clasificarStock } from '../../shared/stock-niveles.js';
 
 /**
  * Lógica JavaScript para Insumos por Área
@@ -31,30 +32,36 @@ document.addEventListener('DOMContentLoaded', function () {
     let clavesCache = [];
 
     // --- 2. ALERTAS CON SWEETALERT2 ---
-    const alertaExitog = document.getElementById('alertaExitog');
-    const alertaExito = document.getElementById('alertaExito');
+    const mostrarAlertaSesion = (idElemento) => {
+        const el = document.getElementById(idElemento);
+        if (el && typeof Swal !== 'undefined') {
+            const msg = el.getAttribute('data-message') || 'Operación realizada correctamente.';
+            Swal.fire({
+                title: '¡Operación Satisfactoria!',
+                text: msg,
+                icon: 'success',
+                confirmButtonColor: '#0d6efd',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    };
 
-    if (alertaExitog && typeof Swal !== 'undefined') {
-        const msg = alertaExitog.getAttribute('data-message') || 'Operación realizada correctamente.';
-        Swal.fire({
-            title: '¡Operación Satisfactoria!',
-            text: msg,
-            icon: 'success',
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+    mostrarAlertaSesion('alertaExitog');
+    mostrarAlertaSesion('alertaExito');
 
-    if (alertaExito && typeof Swal !== 'undefined') {
-        const msg = alertaExito.getAttribute('data-message') || 'Operación realizada correctamente.';
-        Swal.fire({
-            title: '¡Operación Satisfactoria!',
-            text: msg,
-            icon: 'success',
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+    const mostrarToast = (icon, title) => {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                icon: icon,
+                title: title
+            });
+        }
+    };
 
     // --- 3. AUTOCOMPLETADO DE INSUMOS ---
     const resetearFormInsumo = () => {
@@ -207,35 +214,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (icono && stockInput) {
-            stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
+            const fondoFijo = stockInput.getAttribute('data-fondo') || 0;
+            const meta = clasificarStock(stock, fondoFijo);
 
-            if (porcentaje < 25) {
-                icono.className = "fa fa-thermometer-empty fa-2x thermometer-icon";
-                icono.style.color = "#d63031";
-                stockInput.classList.add('stock-muy-bajo');
-            } else if (porcentaje >= 25 && porcentaje < 50) {
-                icono.className = "fa fa-thermometer-quarter fa-2x thermometer-icon";
-                icono.style.color = "#e67e22";
-                stockInput.classList.add('stock-bajo');
-            } else if (porcentaje >= 50 && porcentaje < 75) {
-                icono.className = "fa fa-thermometer-half fa-2x thermometer-icon";
-                icono.style.color = "#f1c40f";
-                stockInput.classList.add('stock-regular');
-            } else if (porcentaje >= 75 && porcentaje <= 100) {
-                icono.className = "fa fa-thermometer-three-quarters fa-2x thermometer-icon";
-                icono.style.color = "#27ae60";
-                stockInput.classList.add('stock-suficiente');
-            } else {
-                icono.className = "fa fa-thermometer-full fa-2x thermometer-icon";
-                icono.style.color = "#2980b9";
-                stockInput.classList.add('stock-excedido');
-            }
+            stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
+            icono.className = meta.iconoClass;
+            icono.style.color = meta.color;
+            stockInput.classList.add(meta.stockClass);
         }
     };
 
     const enviarStockAjax = (id, stockVal, inputEl) => {
         if (isNaN(stockVal) || stockVal < 0) {
-            if (typeof alertify !== 'undefined') alertify.error("Cantidad de stock errónea.");
+            mostrarToast('error', 'Cantidad de stock errónea.');
             return;
         }
 
@@ -256,18 +247,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.ok) {
                 actualizarVisualPorcentaje(id, data.porcentaje, data.stock);
                 inputEl.setAttribute('data-fondo', data.fondo_fijo);
-                if (typeof alertify !== 'undefined') alertify.success("Stock actualizado correctamente.");
+                mostrarToast('success', 'Stock actualizado correctamente.');
             }
         })
         .catch(error => {
             console.error('Error al guardar stock:', error);
-            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el stock.");
+            mostrarToast('error', 'Error al actualizar el stock.');
         });
     };
 
     const enviarFondoFijoAjax = (id, ffVal, inputEl) => {
         if (isNaN(ffVal) || ffVal <= 0) {
-            if (typeof alertify !== 'undefined') alertify.error("Fondo fijo erróneo (debe ser mayor a 0).");
+            mostrarToast('error', 'Fondo fijo erróneo (debe ser mayor a 0).');
             return;
         }
 
@@ -291,12 +282,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (stockInput) {
                     stockInput.setAttribute('data-fondo', data.fondo_fijo);
                 }
-                if (typeof alertify !== 'undefined') alertify.success("Fondo Fijo actualizado correctamente.");
+                mostrarToast('success', 'Fondo Fijo actualizado correctamente.');
             }
         })
         .catch(error => {
             console.error('Error al guardar fondo fijo:', error);
-            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el fondo fijo.");
+            mostrarToast('error', 'Error al actualizar el fondo fijo.');
         });
     };
 
@@ -370,24 +361,9 @@ window.llenarListaReporte = function() {
         if (data.ok) {
             let tbody = '';
             data.insumos.forEach((ia, index) => {
-                let colorClass = '';
-                let badgeClass = '';
-                if (ia.porcentaje < 25) {
-                    colorClass = 'stock-muy-bajo';
-                    badgeClass = 'stock-muy-bajo-badge';
-                } else if (ia.porcentaje >= 25 && ia.porcentaje < 50) {
-                    colorClass = 'stock-bajo';
-                    badgeClass = 'stock-bajo-badge';
-                } else if (ia.porcentaje >= 50 && ia.porcentaje < 75) {
-                    colorClass = 'stock-regular';
-                    badgeClass = 'stock-regular-badge';
-                } else if (ia.porcentaje >= 75 && ia.porcentaje <= 100) {
-                    colorClass = 'stock-suficiente';
-                    badgeClass = 'stock-suficiente-badge';
-                } else {
-                    colorClass = 'stock-excedido';
-                    badgeClass = 'stock-excedido-badge';
-                }
+                const meta = clasificarStock(ia.stock, ia.fondo_fijo);
+                const colorClass = meta.stockClass;
+                const badgeClass = `${meta.stockClass}-badge`;
 
                 tbody += `
                     <tr>

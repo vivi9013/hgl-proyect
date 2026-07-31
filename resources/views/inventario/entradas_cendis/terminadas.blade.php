@@ -16,17 +16,7 @@
     </div>
 
     {{-- Subnavegación del Módulo --}}
-    <div class="d-flex gap-2 mb-2 flex-wrap">
-        <a href="{{ route('entradas_cendis.index') }}" class="btn btn-sm btn-outline-dark bg-white py-2 px-3 fw-bold shadow-sm" style="border: 1.5px solid #000; border-radius: 8px;">
-            <i class="fa fa-hourglass-half me-1 text-dark"></i>Pendientes
-        </a>
-        <a href="{{ route('entradas_cendis.terminadas') }}" class="btn btn-sm btn-primary py-2 px-3 fw-bold shadow-sm" style="border: 1.5px solid #000; border-radius: 8px;">
-            <i class="fa fa-check-circle me-1"></i>Terminadas
-        </a>
-        <a href="{{ route('entradas_cendis.reportes') }}" class="btn btn-sm btn-outline-dark bg-white py-2 px-3 fw-bold shadow-sm" style="border: 1.5px solid #000; border-radius: 8px;">
-            <i class="fa fa-bar-chart me-1 text-dark"></i>Reportes
-        </a>
-    </div>
+    @include('inventario.entradas_cendis.partials.subnav', ['activo' => 'terminadas'])
 
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
@@ -128,7 +118,7 @@
                                             {{ ($entradas->currentPage() - 1) * $entradas->perPage() + $loop->iteration }}
                                         </td>
                                         <td>
-                                            <span style="font-family: Arial, sans-serif; font-size: 0.82rem; font-weight: 600; color: #15803d; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 3px 10px; display: inline-block;">
+                                            <span class="folio-badge">
                                                 ENT-{{ str_pad($entrada->id_entrada, 5, '0', STR_PAD_LEFT) }}
                                             </span>
                                         </td>

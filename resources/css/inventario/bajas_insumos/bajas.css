@@ -1,67 +1,15 @@
 /* ================================================================
-   Módulo: Bajas de Insumos
-   Inventario de Medicamentos y Material de Curación
-   Sigue el patrón clásico/profesional unificado del proyecto HGL
+   Módulo: Bajas de Insumos — HGL
+   Solo reglas que producen un efecto visual real y verificable.
    ================================================================ */
 
-/* ── Transición suave para tarjetas ── */
-.card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-/* ── Animación Spinner ── */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.fa-spin {
-    animation: spin 1s linear infinite;
-}
-
-/* ── Hover en la tabla ── */
+/* ── Hover de fila (transición suave; el color final lo define
+   la regla de abajo con !important) ── */
 #tablaAreas tbody tr {
     transition: background-color 0.2s ease;
 }
 
-#tablaAreas tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.01) !important;
-}
-
-/* ── Icono de cancelar baja ── */
-.btn-cancelar-baja {
-    color: #c53030 !important;
-    font-size: 1.2rem;
-    transition: color 0.2s ease, transform 0.2s ease;
-    display: inline-block;
-}
-
-.btn-cancelar-baja:hover {
-    color: #9b1c1c !important;
-    transform: scale(1.15);
-}
-
-/* ── Botón toggle de status ── */
-.btn-toggle-status {
-    color: #4a5568;
-    font-size: 1.25rem;
-    transition: color 0.2s ease, transform 0.2s ease;
-    display: inline-block;
-}
-
-.btn-toggle-status:hover {
-    transform: scale(1.1);
-}
-
-/* ── Info de stock ── */
-#infoStock {
-    background-color: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 6px;
-    padding: 4px 10px;
-    display: inline-block;
-}
-
-/* ── Sugerencias de insumo (autocomplete) ── */
+/* ── Sugerencias de insumo (autocomplete) — Bootstrap no trae esto ── */
 #sugerenciasInsumo .list-group-item {
     cursor: pointer;
     font-size: 0.875rem;
@@ -89,11 +37,16 @@
     float: right;
 }
 
-/* ================================================================
-   ESTILOS CLÁSICOS Y SIMPLES – Sin tarjetas pronunciadas,
-   iconos en negro, diseño plano y profesional
-   ================================================================ */
+/* ── Info de stock ── */
+#infoStock {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: inline-block;
+}
 
+/* ── Cards planas (quita sombra/tarjeta de Bootstrap para el look "clásico") ── */
 .card,
 .card-header,
 .card-body,
@@ -106,47 +59,12 @@
     padding-right: 0 !important;
 }
 
-.card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Cabeceras tipo título subrayado en negro */
-.card-header.bg-primary {
-    background-color: transparent !important;
-    color: #000000 !important;
-    border-bottom: 2px solid #000000 !important;
-    padding-bottom: 0.5rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-.card-header.bg-primary h5 {
-    font-size: 1.1rem !important;
-    font-weight: bold !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light {
-    border-color: #000000 !important;
-    color: #000000 !important;
-}
-
-.card-header.bg-primary .btn-outline-light:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-/* Cabecera blanca del listado */
 .card-header.bg-white h5 {
     font-size: 1.05rem !important;
     font-weight: bold !important;
     color: #000000 !important;
 }
 
-/* Iconos de acento en Negro */
 .text-primary,
 .fa-minus-circle,
 .fa-plus-circle,
@@ -154,7 +72,7 @@
     color: #000000 !important;
 }
 
-/* Form Controls */
+/* ── Form controls: borde negro fino (Bootstrap trae azul/gris) ── */
 .form-control {
     border-color: rgba(0, 0, 0, 0.35) !important;
     border-radius: 8px !important;
@@ -170,7 +88,7 @@
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Botón Guardar (Primario): Azul con borde Negro */
+/* ── Botón primario con borde negro (Bootstrap no trae el borde) ── */
 .btn-primary {
     background-color: #0d6efd !important;
     border: 2px solid #000000 !important;
@@ -187,7 +105,7 @@
     color: #ffffff !important;
 }
 
-/* Botón Cancelar/Volver: Blanco con bordes grises */
+/* ── Botón secundario/cancelar ── */
 .btn-light,
 .btn-outline-secondary {
     background-color: #ffffff !important;
@@ -206,13 +124,13 @@
     color: #000000 !important;
 }
 
-/* Input group – botones de búsqueda sin radio completo */
 .input-group .btn-outline-secondary {
     border-radius: 0 8px 8px 0 !important;
     padding: 0.5rem 1rem !important;
 }
 
-/* ── Tabla moderna con bordes sutiles ── */
+/* ── Tabla: bordes redondeados + tipografía moderna
+   (versión final; sustituye al bloque duplicado que existía) ── */
 .table {
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
@@ -223,28 +141,42 @@
 }
 
 .table th {
-    background-color: #f9fafb !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
     font-size: 0.75rem !important;
-    letter-spacing: 0.05em;
-    padding: 0.6rem 0.8rem !important;
-    border-bottom: 1.5px solid #e5e7eb !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 2px solid #e2e8f0 !important;
 }
 
 .table td {
-    padding: 0.5rem 0.8rem !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    color: #374151 !important;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    color: #334155 !important;
     font-size: 0.85rem !important;
+    vertical-align: middle !important;
 }
 
 .table-hover tbody tr:hover {
     background-color: #f9fafb !important;
 }
 
-/* ── Paginación sencilla en negro ── */
+#tablaAreas,
+.table,
+.table th,
+.table td,
+.badge,
+.btn,
+.form-control,
+.input-group,
+.page-link,
+.card-title {
+    font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* ── Paginación negra (Bootstrap trae azul) ── */
 .pagination {
     margin: 0 !important;
 }
@@ -277,77 +209,4 @@
     color: #9ca3af !important;
     background-color: #f9fafb !important;
     border-color: #e5e7eb !important;
-}
-
-/* ================================================================
-   MEJORAS VISUALES MODERNAS Y ATRACTIVAS (REEMPLAZO DE FUENTE SERIF)
-   ================================================================ */
-#tablaAreas, 
-.table, 
-.table th, 
-.table td, 
-.badge, 
-.btn, 
-.form-control, 
-.input-group,
-.page-link,
-.card-title {
-    font-family: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-}
-
-.table th {
-    background-color: #f8fafc !important;
-    color: #475569 !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.05em !important;
-    padding: 0.75rem 1rem !important;
-    border-bottom: 2px solid #e2e8f0 !important;
-}
-
-.table td {
-    padding: 0.75rem 1rem !important;
-    border-bottom: 1px solid #f1f5f9 !important;
-    color: #334155 !important;
-    font-size: 0.85rem !important;
-    vertical-align: middle !important;
-}
-
-.badge-status-activo {
-    background-color: #e2fbe8 !important;
-    color: #15803d !important;
-    border: 1px solid #bbf7d0 !important;
-    font-weight: 600 !important;
-    padding: 0.35rem 0.75rem !important;
-    border-radius: 50rem !important;
-    font-size: 0.8rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    text-decoration: none !important;
-    transition: all 0.2s !important;
-}
-.badge-status-activo:hover {
-    background-color: #bbf7d0 !important;
-    color: #14532d !important;
-}
-
-.badge-status-inactivo {
-    background-color: #fde8e8 !important;
-    color: #b91c1c !important;
-    border: 1px solid #fecaca !important;
-    font-weight: 600 !important;
-    padding: 0.35rem 0.75rem !important;
-    border-radius: 50rem !important;
-    font-size: 0.8rem !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    text-decoration: none !important;
-    transition: all 0.2s !important;
-}
-.badge-status-inactivo:hover {
-    background-color: #fecaca !important;
-    color: #7f1d1d !important;
 }

@@ -17,8 +17,7 @@
 
 /* ── Tabla general ─────────────────────────────────────────────────────────── */
 #tablaEntradas thead th,
-#tablaDetalles thead th,
-.tabla-entradas thead th {
+#tablaDetalles thead th {
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     font-weight: 700;
@@ -79,17 +78,6 @@
 
 #sugerenciasDetalle .list-group-item:hover {
     background-color: var(--cendis-blue-light);
-}
-
-#sugerenciasDetalle .clave-badge {
-    font-family: monospace;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--cendis-blue);
-    background: #bee3f8;
-    border-radius: 4px;
-    padding: 1px 6px;
-    flex-shrink: 0;
 }
 
 /* ── Botones de acción ─────────────────────────────────────────────────────── */
