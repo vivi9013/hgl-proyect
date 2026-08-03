@@ -300,6 +300,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── 5. Cargar desde Plantilla ──
+
+    /**
+     * Carga las subáreas del área seleccionada y retorna una Promise que resuelve
+     * cuando el select ya está repoblado (permite encadenar la asignación de subárea).
+     */
+    function cargarSubareasPara(idArea) {
+        return new Promise((resolve) => {
+            if (!idArea || !selectSubarea) {
+                resolve();
+                return;
+            }
+            selectSubarea.innerHTML = '<option value="">Cargando subáreas...</option>';
+            fetch(`/peticion-insumos/pedidos/subareas?id_area_abastecimiento=${idArea}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(subs => {
+                let options = '<option value="">-- Todas / General --</option>';
+                subs.forEach(sub => {
+                    options += `<option value="${sub.id_subarea_abastecimiento}">${sub.nombre}</option>`;
+                });
+                selectSubarea.innerHTML = options;
+                resolve(subs);
+            })
+            .catch(() => {
+                selectSubarea.innerHTML = '<option value="">-- Todas / General --</option>';
+                resolve([]);
+            });
+        });
+    }
+
     if (btnCargarPlantilla) {
         btnCargarPlantilla.addEventListener('click', function () {
             const idPlantilla = selectPlantilla ? selectPlantilla.value : '';
@@ -313,14 +344,25 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(res => res.json())
             .then(data => {
-                if (data.id_area_abastecimiento && selectArea) {
-                    selectArea.value = data.id_area_abastecimiento;
-                    selectArea.dispatchEvent(new Event('change'));
-                }
+                // 1. Asignar área de almacén
                 if (data.id_area_almacen && selectAlmacen) {
                     selectAlmacen.value = data.id_area_almacen;
                 }
 
+                // 2. Cargar subáreas del área y esperar a que el select esté listo
+                const idArea = data.id_area_abastecimiento;
+                const promesaSubareas = idArea && selectArea
+                    ? (selectArea.value = idArea, cargarSubareasPara(idArea))
+                    : Promise.resolve();
+
+                promesaSubareas.then(() => {
+                    // 3. Asignar subárea una vez que el select está repoblado
+                    if (data.id_subarea_abastecimiento && selectSubarea) {
+                        selectSubarea.value = data.id_subarea_abastecimiento;
+                    }
+                });
+
+                // 4. Cargar insumos de la plantilla
                 if (data.insumos && data.insumos.length > 0) {
                     listaInsumos = data.insumos.map(item => ({
                         id_insumo: item.id_insumo,
@@ -341,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 mostrarAlertaError('Error al obtener los insumos de la plantilla.');
             });
         });
