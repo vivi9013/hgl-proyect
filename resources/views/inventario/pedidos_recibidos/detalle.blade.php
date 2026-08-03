@@ -116,7 +116,7 @@
                             <tbody>
                                 @forelse ($pedido->detalles as $detalle)
                                     @php
-                                        $stockDisponible = $detalle->insumoArea->stock ?? 0;
+                                        $stockDisponible = $detalle->insumoArea()?->stock ?? 0;
                                         $isSurtido = ($detalle->surtido ?? 0) > 0;
                                         $inputUrl = route('pedidos_recibidos.guardar_surtido', $detalle->id_detalle_pedido);
                                     @endphp
@@ -127,10 +127,10 @@
                                         <td class="ps-4 fw-bold">{{ $loop->iteration }}</td>
                                         <td>
                                             <span style="font-family: Arial, sans-serif; font-size: 0.8rem; font-weight: 600; color: #374151; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 2px 8px; display: inline-block;">
-                                                {{ $detalle->insumoArea->insumo->clave ?? $detalle->cve_insumo }}
+                                                {{ $detalle->insumo->clave ?? $detalle->cve_insumo }}
                                             </span>
                                         </td>
-                                        <td>{{ $detalle->insumoArea->insumo->descripcion ?? '—' }}</td>
+                                        <td>{{ $detalle->insumo->descripcion ?? '—' }}</td>
                                         <td class="text-center fw-bold text-dark">{{ $detalle->cantidad }}</td>
                                         <td class="text-center">
                                             <span class="badge {{ $stockDisponible > 0 ? 'bg-light text-dark border' : 'bg-danger-subtle text-danger' }}" style="font-size: 0.82rem;">

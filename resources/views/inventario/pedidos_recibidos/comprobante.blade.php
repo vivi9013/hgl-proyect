@@ -148,8 +148,8 @@
                 @foreach($pedido->detalles as $i => $detalle)
                     <tr>
                         <td>{{ $i + 1 }}</td>
-                        <td><span class="clave-badge">{{ $detalle->insumoArea->insumo->clave ?? $detalle->cve_insumo }}</span></td>
-                        <td>{{ $detalle->insumoArea->insumo->descripcion ?? '—' }}</td>
+                        <td><span class="clave-badge">{{ $detalle->insumo->clave ?? $detalle->cve_insumo }}</span></td>
+                        <td>{{ $detalle->insumo->descripcion ?? '—' }}</td>
                         <td style="text-align:center;">{{ $detalle->cantidad }}</td>
                         <td style="text-align:center; font-weight:bold; color: #16803d;">{{ $detalle->surtido ?? 0 }}</td>
                         <td style="text-align:center; color: #b91c1c;">{{ $detalle->faltante ?? $detalle->cantidad }}</td>

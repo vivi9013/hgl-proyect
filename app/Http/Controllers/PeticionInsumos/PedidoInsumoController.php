@@ -201,18 +201,22 @@ class PedidoInsumoController extends Controller
     public function guardar(Request $request)
     {
         $request->validate([
-            'id_area_abastecimiento'   => 'required|integer',
-            'id_subarea_abastecimiento'=> 'nullable|integer',
-            'id_area_almacen'          => 'required|integer',
-            'status'                   => 'required|in:borrador,terminado',
-            'insumos'                  => 'required|array|min:1',
-            'insumos.*.id_insumo'      => 'required|integer',
-            'insumos.*.cantidad'       => 'required|integer|min:1',
+            'id_area_abastecimiento'    => 'required|integer|exists:areas_abastecimiento,id_area_abastecimiento,activo,1',
+            'id_subarea_abastecimiento' => 'nullable|integer|exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            'id_area_almacen'           => 'required|integer|exists:areas_almacen,id_area_almacen,activo,1',
+            'status'                    => 'required|in:borrador,terminado',
+            'insumos'                   => 'required|array|min:1',
+            'insumos.*.id_insumo'       => 'required|integer|exists:insumos,id_insumo,activo,1',
+            'insumos.*.cantidad'        => 'required|integer|min:1',
         ], [
             'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
+            'id_area_abastecimiento.exists'   => 'El área de abastecimiento seleccionada no existe o está inactiva.',
+            'id_subarea_abastecimiento.exists' => 'La subárea de abastecimiento seleccionada no existe o está inactiva.',
             'id_area_almacen.required'        => 'Debe seleccionar un área de almacén.',
+            'id_area_almacen.exists'          => 'El área de almacén seleccionada no existe o está inactiva.',
             'insumos.required'                => 'Debe agregar al menos un insumo al pedido.',
             'insumos.min'                     => 'Debe agregar al menos un insumo al pedido.',
+            'insumos.*.id_insumo.exists'      => 'Uno o más insumos del pedido no existen o están inactivos.',
         ]);
 
         try {
@@ -228,11 +232,27 @@ class PedidoInsumoController extends Controller
                 'hora_registro'            => $now->toTimeString(),
                 'status'                   => $request->status, // 'borrador' o 'terminado' (enviado)
                 'activo'                   => 1,
-                'id_usuario'               => Auth::id() ?: 1,
+                'id_usuario'               => Auth::id() ?? abort(500, 'Usuario no autenticado.'),
                 'porcentaje_entrega'       => 0.00,
             ]);
 
+            // Deduplicar insumos: si el frontend envía el mismo id_insumo más de una vez,
+            // se agrupan sumando sus cantidades para evitar duplicados en detalle_pedidos.
+            $insumosAgrupados = [];
             foreach ($request->insumos as $item) {
+                $idInsumo = (int) $item['id_insumo'];
+                if (isset($insumosAgrupados[$idInsumo])) {
+                    $insumosAgrupados[$idInsumo]['cantidad'] += (int) $item['cantidad'];
+                } else {
+                    $insumosAgrupados[$idInsumo] = [
+                        'id_insumo' => $idInsumo,
+                        'cantidad'  => (int) $item['cantidad'],
+                        'cve_insumo' => $item['cve_insumo'] ?? null,
+                    ];
+                }
+            }
+
+            foreach ($insumosAgrupados as $item) {
                 $insumo = Insumo::find($item['id_insumo']);
 
                 $existencia = 0;
@@ -250,7 +270,7 @@ class PedidoInsumoController extends Controller
                 DetallePedido::create([
                     'id_pedido'  => $pedido->id_pedido,
                     'id_insumo'  => $item['id_insumo'],
-                    'cve_insumo' => $insumo ? $insumo->clave : ($item['cve_insumo'] ?? null),
+                    'cve_insumo' => $insumo ? $insumo->clave : $item['cve_insumo'],
                     'cantidad'   => $item['cantidad'],
                     'existencia' => $existencia,
                     'fondo_fijo' => $fondoFijo,
