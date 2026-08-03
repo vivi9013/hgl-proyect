@@ -275,6 +275,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
+            // Aviso no bloqueante si la cantidad supera el fondo fijo
+            const fondoFijoRef = insumoSeleccionadoTemp ? insumoSeleccionadoTemp.fondo_fijo : 0;
+            const cantidadFinal = indexExistente !== -1 ? listaInsumos[indexExistente].cantidad : cantidad;
+            if (fondoFijoRef > 0 && cantidadFinal > fondoFijoRef) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cantidad excede el Fondo Fijo',
+                    text: `La cantidad solicitada (${cantidadFinal}) supera el fondo fijo establecido (${fondoFijoRef}). Puede continuar, pero verifique con el área de almacén.`,
+                    confirmButtonColor: '#000000',
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            }
+
             // Reset campos
             inputBuscarInsumo.value = '';
             inputCantidadInsumo.value = 1;
@@ -378,9 +392,26 @@ document.addEventListener('DOMContentLoaded', function () {
         tbodyPedido.addEventListener('input', function (e) {
             if (e.target.classList.contains('input-item-cant')) {
                 const idx = parseInt(e.target.dataset.index);
-                const val = parseInt(e.target.value) || 1;
+                // Bug 8: forzar mínimo 1, rechazar negativos y cero
+                let val = parseInt(e.target.value);
+                if (isNaN(val) || val < 1) {
+                    val = 1;
+                    e.target.value = 1;
+                }
                 if (listaInsumos[idx]) {
                     listaInsumos[idx].cantidad = val;
+                    // Bug 5: aviso no bloqueante si supera fondo_fijo en edición inline
+                    const ff = listaInsumos[idx].fondo_fijo;
+                    if (ff > 0 && val > ff) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Cantidad excede el Fondo Fijo',
+                            text: `La cantidad (${val}) supera el fondo fijo (${ff}). Puede continuar.`,
+                            confirmButtonColor: '#000000',
+                            timer: 3500,
+                            timerProgressBar: true
+                        });
+                    }
                 }
             }
         });
