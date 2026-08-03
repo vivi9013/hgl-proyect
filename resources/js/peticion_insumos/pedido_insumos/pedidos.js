@@ -39,7 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Estado local de la lista de insumos en el modal de creación
     let listaInsumos = [];
     let insumoSeleccionadoTemp = null;
-    let debounceTimer = null;
+    let debounceTimerTabla  = null;
+    let debounceTimerInsumo = null;
 
     // ── Utilidad: Escapado HTML para prevenir XSS ──
     function escapeHtml(str) {
@@ -102,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Eventos de Filtros Reactivos
     if (inputBuscar) {
         inputBuscar.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => cargarTabla(1), 300);
+            clearTimeout(debounceTimerTabla);
+            debounceTimerTabla = setTimeout(() => cargarTabla(1), 300);
         });
     }
 
@@ -150,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const term = this.value.trim();
             const idAlmacen = selectAlmacen ? selectAlmacen.value : null;
 
-            clearTimeout(debounceTimer);
+            clearTimeout(debounceTimerInsumo);
 
             if (term.length < 2) {
                 dropdownResult.style.display = 'none';
@@ -159,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            debounceTimer = setTimeout(() => {
+            debounceTimerInsumo = setTimeout(() => {
                 fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(term)}&id_area_almacen=${idAlmacen}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
