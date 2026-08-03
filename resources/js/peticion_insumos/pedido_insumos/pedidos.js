@@ -481,6 +481,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ── Bug 7: Resetear el estado del modal al cerrarse sin guardar ──
+    const modalCrearEl = document.getElementById('modalCrearPedido');
+    if (modalCrearEl) {
+        modalCrearEl.addEventListener('hidden.bs.modal', function () {
+            listaInsumos = [];
+            insumoSeleccionadoTemp = null;
+            renderTablaModal();
+            ocultarAlertaError();
+
+            // Resetear selects a su estado inicial
+            if (selectArea)      selectArea.value = '';
+            if (selectSubarea)   selectSubarea.innerHTML = '<option value="">-- Todas / General --</option>';
+            if (selectAlmacen)   selectAlmacen.value = '';
+            if (selectPlantilla) selectPlantilla.value = '';
+            if (inputBuscarInsumo) {
+                inputBuscarInsumo.value = '';
+                if (dropdownResult) {
+                    dropdownResult.style.display = 'none';
+                    dropdownResult.innerHTML = '';
+                }
+            }
+            if (inputCantidadInsumo) inputCantidadInsumo.value = 1;
+        });
+    }
+
     // ── 6. Guardar Pedido (Borrador o Enviado a CENDIS) ──
     function procesarGuardado(statusDestino) {
         const idArea = selectArea ? selectArea.value : '';
