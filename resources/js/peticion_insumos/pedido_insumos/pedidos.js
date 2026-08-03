@@ -571,7 +571,15 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
+        .then(async res => {
+            const data = await res.json();
+            if (res.status === 422 && data.errors) {
+                const primerCampo = Object.keys(data.errors)[0];
+                const primerMensaje = data.errors[primerCampo][0];
+                return { success: false, message: primerMensaje };
+            }
+            return data;
+        })
         .then(data => {
             if (data.success) {
                 // Cerrar modal
