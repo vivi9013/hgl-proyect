@@ -35,8 +35,9 @@ class PedidoInsumoController extends Controller
             ->orderBy('id_pedido', 'desc');
 
         if (!empty($buscar)) {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('id_pedido', 'LIKE', "%{$buscar}%")
+            $buscarLimpio = ltrim($buscar, '#');
+            $query->where(function ($q) use ($buscar, $buscarLimpio) {
+                $q->where('id_pedido', 'LIKE', "%{$buscarLimpio}%")
                   ->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('subareaAbastecimiento', fn($sq) => $sq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('areaAlmacen', fn($alq) => $alq->where('nombre', 'LIKE', "%{$buscar}%"))
