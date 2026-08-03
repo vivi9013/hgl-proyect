@@ -208,7 +208,21 @@ class PedidoInsumoController extends Controller
     {
         $request->validate([
             'id_area_abastecimiento'    => 'required|integer|exists:areas_abastecimiento,id_area_abastecimiento,activo,1',
-            'id_subarea_abastecimiento' => 'nullable|integer|exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            'id_subarea_abastecimiento' => [
+                'nullable',
+                'integer',
+                'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value && $request->id_area_abastecimiento) {
+                        $pertenece = SubareaAbastecimiento::where('id_subarea_abastecimiento', $value)
+                            ->whereHas('relacionArea', fn($q) => $q->where('id_area_abastecimiento', $request->id_area_abastecimiento))
+                            ->exists();
+                        if (!$pertenece) {
+                            $fail('La subárea seleccionada no pertenece al área de abastecimiento elegida.');
+                        }
+                    }
+                }
+            ],
             'id_area_almacen'           => 'required|integer|exists:areas_almacen,id_area_almacen,activo,1',
             'status'                    => 'required|in:borrador,terminado',
             'insumos'                   => 'required|array|min:1',
