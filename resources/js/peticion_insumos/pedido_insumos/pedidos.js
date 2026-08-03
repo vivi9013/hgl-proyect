@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let insumoSeleccionadoTemp = null;
     let debounceTimerTabla  = null;
     let debounceTimerInsumo = null;
+    let abortControllerTabla = null; // Bug 10: AbortController para cargarTabla
 
     // ── Utilidad: Escapado HTML para prevenir XSS ──
     function escapeHtml(str) {
@@ -57,6 +58,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function cargarTabla(page = 1) {
         if (!containerTabla) return;
 
+        // Bug 10: cancelar petición anterior si aún no ha resuelto
+        if (abortControllerTabla) {
+            abortControllerTabla.abort();
+        }
+        abortControllerTabla = new AbortController();
+
         const params = new URLSearchParams({
             page: page,
             buscar: inputBuscar ? inputBuscar.value.trim() : '',
@@ -66,14 +73,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         fetch(`/peticion-insumos/pedidos?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            signal: abortControllerTabla.signal
         })
         .then(response => response.json())
         .then(data => {
             containerTabla.innerHTML = data.html ?? data;
             actualizarPaginador();
         })
-        .catch(err => console.error('Error al cargar la tabla:', err));
+        .catch(err => {
+            if (err.name !== 'AbortError') {
+                console.error('Error al cargar la tabla:', err);
+            }
+        });
     }
 
     function actualizarPaginador() {
