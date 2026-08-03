@@ -163,7 +163,7 @@ class PedidoInsumoController extends Controller
      */
     public function insumosPlantilla(int $idPlantilla)
     {
-        $plantilla = PlantillaPedido::with('detalles.insumo')->find($idPlantilla);
+        $plantilla = PlantillaPedido::with('detalles.insumo')->where('activo', 1)->find($idPlantilla);
 
         if (!$plantilla) {
             return response()->json(['error' => 'Plantilla no encontrada'], 404);
