@@ -13,6 +13,7 @@ class Pedido extends Model
     const STATUS_PENDIENTE = 'terminado';   // "terminado" en DB legacy = enviado, pendiente de surtir
     const STATUS_ACEPTADO  = 'Aceptado';    // surtido y liberado
     const STATUS_CANCELADO = 'cancelado';   // cancelado
+    const STATUS_BORRADOR  = 'borrador';    // guardado como borrador, aún no enviado
 
     /**
      * Tabla legacy.
@@ -87,6 +88,11 @@ class Pedido extends Model
                 'class' => 'bg-danger',
                 'label' => 'Cancelado',
                 'icon'  => 'fa-ban',
+            ],
+            self::STATUS_BORRADOR => [
+                'class' => 'bg-secondary',
+                'label' => 'Borrador',
+                'icon'  => 'bi-pencil-square',
             ],
             default => [
                 'class' => 'bg-secondary',
