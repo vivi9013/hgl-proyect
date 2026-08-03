@@ -540,11 +540,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Deshabilitar el botón de envío para prevenir doble clic
-        const esEnvio = statusDestino === 'terminado';
-        if (esEnvio && btnEnviarPedido) {
-            btnEnviarPedido.disabled = true;
-            btnEnviarPedido.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Enviando...';
+        // Bug 9: Deshabilitar el botón que disparó la acción para prevenir doble clic
+        const esEnvio  = statusDestino === 'terminado';
+        const btnOrigen = esEnvio ? btnEnviarPedido : btnGuardarBorrador;
+        if (btnOrigen) {
+            btnOrigen.disabled = true;
+            btnOrigen.innerHTML = esEnvio
+                ? '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Enviando...'
+                : '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Guardando...';
         }
 
         fetch('/peticion-insumos/pedidos/guardar', {
@@ -581,14 +584,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 mostrarAlertaError(data.message || 'Ocurrió un error al guardar el pedido.');
             }
         })
-        .catch(err => {
+        .catch(() => {
             mostrarAlertaError('Error de red al guardar el pedido.');
         })
         .finally(() => {
-            // Restaurar el botón de envío en cualquier caso
-            if (esEnvio && btnEnviarPedido) {
-                btnEnviarPedido.disabled = false;
-                btnEnviarPedido.innerHTML = '<i class="bi bi-send"></i> Enviar Pedido';
+            // Restaurar el botón que disparó la acción en cualquier caso
+            if (btnOrigen) {
+                btnOrigen.disabled = false;
+                btnOrigen.innerHTML = esEnvio
+                    ? '<i class="bi bi-send"></i> Enviar Pedido'
+                    : '<i class="bi bi-save me-1"></i>Guardar Borrador';
             }
         });
     }
