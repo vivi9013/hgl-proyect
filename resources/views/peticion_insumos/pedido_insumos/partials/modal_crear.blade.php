@@ -34,6 +34,7 @@
                                 <div class="col-md-3">
                                     <label for="select_area_almacen" class="form-label small fw-bold text-secondary">ÁREA DE ALMACÉN <span class="text-danger">*</span></label>
                                     <select class="form-select form-select-sm" id="select_area_almacen" name="id_area_almacen" required>
+                                        <option value="">-- Seleccionar Almacén --</option>
                                         @foreach($almacenes as $alm)
                                             <option value="{{ $alm->id_area_almacen }}">{{ $alm->nombre }}</option>
                                         @endforeach

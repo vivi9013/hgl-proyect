@@ -145,6 +145,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ── 2b. Cambio de Almacén → Refrescar stock/fondo_fijo de insumos ya agregados ──
+    if (selectAlmacen) {
+        selectAlmacen.addEventListener('change', function () {
+            const idAlmacen = this.value;
+            if (!idAlmacen || listaInsumos.length === 0) return;
+
+            const peticiones = listaInsumos.map((item) =>
+                fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(item.clave)}&id_area_almacen=${idAlmacen}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    // Buscar el insumo exacto por id_insumo en los resultados
+                    const encontrado = data.find(d => d.id_insumo === item.id_insumo);
+                    if (encontrado) {
+                        item.existencia = encontrado.existencia;
+                        item.fondo_fijo = encontrado.fondo_fijo;
+                    }
+                })
+                .catch(() => { /* ignorar fallos individuales */ })
+            );
+
+            Promise.all(peticiones).then(() => renderTablaModal());
+        });
+    }
+
     // ── 3. Autocompletado Reactivo de Insumos ──
     if (inputBuscarInsumo) {
         inputBuscarInsumo.addEventListener('input', function () {
