@@ -95,9 +95,14 @@ class PedidoInsumoController extends Controller
     public function subareasPorArea(Request $request)
     {
         $idArea = $request->get('id_area_abastecimiento');
-        
+
+        // Devolver array vacío si no se proporcionó un área
+        if (empty($idArea)) {
+            return response()->json([]);
+        }
+
         $subareas = SubareaAbastecimiento::where('activo', 1)
-            ->when($idArea, fn($q) => $q->whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea)))
+            ->whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea))
             ->orderBy('nombre')
             ->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
 
