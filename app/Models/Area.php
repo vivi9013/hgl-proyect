@@ -21,4 +21,15 @@ class Area extends Model
         'activo',
         'usuario'
     ];
+
+    // ─── Relaciones ──────────────────────────────────────────────────────────────
+
+    /**
+     * Servicios pendientes de liberación (para módulo Solicitar Servicio).
+     */
+    public function serviciosPendientes()
+    {
+        return $this->hasMany(\App\Models\SoporteTecnico\Servicio::class, 'id_area')
+                    ->where('liberado', 0);
+    }
 }

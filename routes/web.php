@@ -34,6 +34,7 @@ use App\Http\Controllers\Monitores\MonitorController;
 use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
 use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
 use App\Http\Controllers\SoporteTecnico\SoporteAreaController;
+use App\Http\Controllers\SoporteTecnico\SolicitarServicioController;
 use App\Http\Controllers\Departamentos\DepartamentoController;
 use App\Http\Controllers\Puestos\PuestoController;
 use App\Http\Controllers\Sedes\SedeController;
@@ -80,6 +81,7 @@ Route::get('/mMonitores', fn() => redirect()->route('monitores.index'));
 Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'));
 Route::get('/mSoporteArea', fn() => redirect()->route('soporte_area.index'));
 Route::get('/MsoporteArea', fn() => redirect()->route('soporte_area.index'));
+Route::get('/mSolicitarServicio', fn() => redirect()->route('solicitar_servicio.index'));
 Route::get('/mDepartamentos', fn() => redirect()->route('departamentos.index'));
 Route::get('/mPuestos', fn() => redirect()->route('puestos.index'));
 Route::get('/mSedes', fn() => redirect()->route('sedes.index'));
@@ -730,6 +732,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/guardar',             'guardar')             ->name('store');
         Route::get('/reportes',             'reportes')            ->name('reportes');
         Route::get('/imprimir/{id}',        'imprimir')            ->name('imprimir');
+    });
+
+
+    // ── Soporte Técnico: Solicitar Servicio (mSolicitarServicio) ──────────────
+    Route::prefix('solicitar-servicio')->name('solicitar_servicio.')->controller(SolicitarServicioController::class)->group(function () {
+        Route::get('/',                      'index')          ->name('index');
+        Route::post('/guardar',              'store')          ->name('store');
+        Route::get('/seguimiento',           'seguimiento')    ->name('seguimiento');
+        Route::get('/historial',             'historial')      ->name('historial');
+        Route::post('/{id}/liberar',         'liberar')        ->name('liberar');
+        Route::get('/{id}/detalles',         'detalles')       ->name('detalles');
+        Route::get('/reportes',              'reportes')       ->name('reportes');
+        Route::get('/reportes/imprimir',     'imprimirReporte')->name('imprimir');
+        Route::get('/graficas',              'graficas')       ->name('graficas');
     });
 });
 
