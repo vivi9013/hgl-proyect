@@ -189,14 +189,22 @@ class SubareaAbastecimientoController extends Controller
             'siglas' => $request->siglas ? trim($request->siglas) : null,
         ]);
 
+        // Nota sobre decisión de negocio pendiente:
+        // El formulario "Editar Subárea" actualmente presenta un select único de "Área".
+        // Dado que la relación en la BD y en "Relación de Áreas y Subáreas" es M:N (una subárea puede pertenecer a varias áreas),
+        // mantenemos intactos los vínculos con otras áreas y creamos/reactivamos únicamente el vínculo con el área seleccionada aquí.
+        // Si el negocio requiere que esta vista reemplace TODAS las relaciones existentes desvinculando las demás, se debería
+        // ejecutar un update(['activo' => 0]) para las demás áreas de esta subárea antes de este updateOrCreate.
         RelacionAreaAbastecimiento::updateOrCreate(
-            ['id_subarea_abastecimiento' => $subarea->id_subarea_abastecimiento],
             [
-                'id_area_abastecimiento' => $request->id_area_abastecimiento,
-                'fecha_registro'         => now()->toDateString(),
-                'hora_registro'          => now()->toTimeString(),
-                'activo'                 => 1,
-                'id_usuario'             => auth()->id() ?? 1,
+                'id_subarea_abastecimiento' => $subarea->id_subarea_abastecimiento,
+                'id_area_abastecimiento'    => $request->id_area_abastecimiento,
+            ],
+            [
+                'fecha_registro' => now()->toDateString(),
+                'hora_registro'  => now()->toTimeString(),
+                'activo'         => 1,
+                'id_usuario'     => auth()->id() ?? 1,
             ]
         );
 

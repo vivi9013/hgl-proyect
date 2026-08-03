@@ -95,6 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return res.json();
             })
             .then(data => {
+                if ((inputBuscarInsumo?.value || '').trim() !== query) {
+                    return;
+                }
                 if (sugerenciasDiv) {
                     sugerenciasDiv.innerHTML = '';
                     if (!data || data.length === 0) {

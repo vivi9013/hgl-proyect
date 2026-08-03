@@ -38,6 +38,7 @@
                                 data-descripcion="{{ $plantilla->descripcion }}"
                                 data-area="{{ $plantilla->id_area_abastecimiento }}"
                                 data-subarea="{{ $plantilla->id_subarea_abastecimiento }}"
+                                data-almacen="{{ $plantilla->id_area_almacen }}"
                                 title="Editar plantilla">
                                 <i class="bi bi-pencil-square"></i>
                             </button>

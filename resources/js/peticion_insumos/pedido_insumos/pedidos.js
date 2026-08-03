@@ -150,6 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const term = this.value.trim();
             const idAlmacen = selectAlmacen ? selectAlmacen.value : null;
 
+            clearTimeout(debounceTimer);
+
             if (term.length < 2) {
                 dropdownResult.style.display = 'none';
                 dropdownResult.innerHTML = '';
@@ -157,13 +159,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(term)}&id_area_almacen=${idAlmacen}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(res => res.json())
                 .then(data => {
+                    // Si el usuario ya cambió el texto mientras la petición estaba en curso, ignorar esta respuesta obsoleta
+                    if (inputBuscarInsumo.value.trim() !== term) {
+                        return;
+                    }
                     if (data.length === 0) {
                         dropdownResult.innerHTML = '<div class="dropdown-item disabled text-muted">No se encontraron insumos</div>';
                     } else {
