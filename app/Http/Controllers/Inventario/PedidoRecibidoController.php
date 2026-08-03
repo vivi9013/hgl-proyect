@@ -86,6 +86,9 @@ class PedidoRecibidoController extends Controller
     /**
      * Vista de detalle/surtimiento de un pedido.
      */
+    /**
+     * Vista de detalle/surtimiento de un pedido.
+     */
     public function detalle(int $id)
     {
         $pedido = Pedido::with([
@@ -93,7 +96,7 @@ class PedidoRecibidoController extends Controller
             'subareaAbastecimiento',
             'areaAlmacen',
             'usuario.persona',
-            'detalles.insumoArea.insumo',
+            'detalles.insumo',
         ])->findOrFail($id);
 
         return view('inventario.pedidos_recibidos.detalle', compact('pedido'));
@@ -118,7 +121,8 @@ class PedidoRecibidoController extends Controller
         $surtido = (int) $request->get('surtido');
 
         // Validar contra stock disponible
-        $stockDisponible = $detalle->insumoArea->stock ?? 0;
+        $insumoArea = $detalle->insumoArea();
+        $stockDisponible = $insumoArea ? $insumoArea->stock : 0;
         if ($surtido > $stockDisponible) {
             return response()->json(['error' => "Stock insuficiente. Disponible: {$stockDisponible}"], 422);
         }
@@ -141,7 +145,7 @@ class PedidoRecibidoController extends Controller
      */
     public function liberar(Request $request, int $id)
     {
-        $pedido = Pedido::with(['detalles.insumoArea'])->findOrFail($id);
+        $pedido = Pedido::with(['detalles'])->findOrFail($id);
 
         if ($pedido->status !== Pedido::STATUS_PENDIENTE) {
             return back()->with('error', 'Este pedido no se puede liberar porque ya fue procesado.');
@@ -167,8 +171,11 @@ class PedidoRecibidoController extends Controller
                 $totalSurtido  += $surtido;
 
                 // Descontar stock
-                if ($surtido > 0 && $detalle->insumoArea) {
-                    $detalle->insumoArea->decrement('stock', $surtido);
+                if ($surtido > 0) {
+                    $insumoArea = $detalle->insumoArea();
+                    if ($insumoArea) {
+                        $insumoArea->decrement('stock', $surtido);
+                    }
                 }
             }
 
@@ -194,7 +201,7 @@ class PedidoRecibidoController extends Controller
      */
     public function cancelar(Request $request, int $id)
     {
-        $pedido = Pedido::with(['detalles.insumoArea'])->findOrFail($id);
+        $pedido = Pedido::with(['detalles'])->findOrFail($id);
 
         if ($pedido->status === Pedido::STATUS_CANCELADO) {
             return back()->with('error', 'El pedido ya está cancelado.');
@@ -205,8 +212,11 @@ class PedidoRecibidoController extends Controller
             if ($pedido->status === Pedido::STATUS_ACEPTADO) {
                 foreach ($pedido->detalles as $detalle) {
                     $surtido = $detalle->surtido ?? 0;
-                    if ($surtido > 0 && $detalle->insumoArea) {
-                        $detalle->insumoArea->increment('stock', $surtido);
+                    if ($surtido > 0) {
+                        $insumoArea = $detalle->insumoArea();
+                        if ($insumoArea) {
+                            $insumoArea->increment('stock', $surtido);
+                        }
                     }
                 }
             }
@@ -232,7 +242,7 @@ class PedidoRecibidoController extends Controller
             'subareaAbastecimiento',
             'areaAlmacen',
             'usuario.persona',
-            'detalles.insumoArea.insumo',
+            'detalles.insumo',
         ])->findOrFail($id);
 
         return view('inventario.pedidos_recibidos.comprobante', compact('pedido'));

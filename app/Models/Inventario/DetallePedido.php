@@ -3,6 +3,7 @@
 namespace App\Models\Inventario;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Inventario\InsumoArea;
 
 class DetallePedido extends Model
 {
@@ -63,4 +64,23 @@ class DetallePedido extends Model
     {
         return $this->belongsTo(Insumo::class, 'id_insumo', 'id_insumo');
     }
+
+    /**
+     * Helper para obtener la instancia de InsumoArea correspondiente a este detalle.
+     * Busca por id_insumo (del propio detalle) e id_area_almacen (del pedido asociado).
+     *
+     * @return \App\Models\Inventario\InsumoArea|null
+     */
+    public function insumoArea()
+    {
+        $idAreaAlmacen = $this->pedido->id_area_almacen ?? null;
+        if (!$this->id_insumo || !$idAreaAlmacen) {
+            return null;
+        }
+
+        return InsumoArea::where('id_insumo', $this->id_insumo)
+            ->where('id_area_almacen', $idAreaAlmacen)
+            ->first();
+    }
 }
+
