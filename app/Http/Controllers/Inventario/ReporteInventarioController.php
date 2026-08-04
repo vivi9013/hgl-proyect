@@ -7,6 +7,7 @@ use App\Models\Inventario\AreaAbastecimiento;
 use App\Models\Inventario\SubareaAbastecimiento;
 use App\Models\Inventario\AreaAlmacen;
 use App\Models\Inventario\Pedido;
+use App\Helpers\FechaHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -77,13 +78,8 @@ class ReporteInventarioController extends Controller
         $area = AreaAbastecimiento::findOrFail($areaId);
         $subarea = SubareaAbastecimiento::findOrFail($subareaId);
 
-        // Meses en español
-        $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-        ];
-        $nombreMes = $meses[$mes];
+        // Mes en español
+        $nombreMes = FechaHelper::obtenerNombreMes($mes);
 
         // Obtener id_almacen_subarea
         $almacenSubarea = DB::table('almacen_subareas')
@@ -167,13 +163,8 @@ class ReporteInventarioController extends Controller
             ->orderBy('siglas', 'asc')
             ->get();
 
-        // Meses en español
-        $meses = [
-            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-        ];
-        $nombreMes = $meses[$mes];
+        // Mes en español
+        $nombreMes = FechaHelper::obtenerNombreMes($mes);
 
         // Obtener insumos entregados en el mes y áreas elegidas
         $insumos = DB::table('detalle_pedidos as dp')
