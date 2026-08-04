@@ -55,4 +55,33 @@ class AreaSurtimiento extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
+
+    // ── Helpers de dominio ───────────────────────────────────────────────────
+
+    public static function existeNombreYTipo(string $nombre, string $tipo, ?int $excluirId = null): bool
+    {
+        $query = static::whereRaw('LOWER(nombre) = ?', [strtolower(trim($nombre))])
+            ->where('tipo', $tipo);
+
+        if ($excluirId !== null) {
+            $query->where('id_area_surtimiento', '!=', $excluirId);
+        }
+
+        return $query->exists();
+    }
+
+    // ── Scopes ───────────────────────────────────────────────────────────────
+
+    public function scopeFiltradoPor($query, ?string $buscar)
+    {
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('tipo', 'LIKE', "%{$buscar}%")
+                  ->orWhere('id_area_surtimiento', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        return $query;
+    }
 }

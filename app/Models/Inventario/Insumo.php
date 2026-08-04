@@ -67,4 +67,32 @@ class Insumo extends Model
     {
         return $this->hasMany(BajaInsumo::class, 'id_insumo', 'id_insumo');
     }
+
+    // ── Helpers de dominio ───────────────────────────────────────────────────
+
+    public static function existeClave(string $clave, ?int $excluirId = null): bool
+    {
+        $query = static::whereRaw('LOWER(clave) = ?', [strtolower(trim($clave))]);
+
+        if ($excluirId !== null) {
+            $query->where('id_insumo', '!=', $excluirId);
+        }
+
+        return $query->exists();
+    }
+
+    // ── Scopes ───────────────────────────────────────────────────────────────
+
+    public function scopeFiltradoPor($query, ?string $buscar)
+    {
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('clave', 'LIKE', "%{$buscar}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
+                  ->orWhere('tipo', 'LIKE', "%{$buscar}%");
+            });
+        }
+
+        return $query;
+    }
 }

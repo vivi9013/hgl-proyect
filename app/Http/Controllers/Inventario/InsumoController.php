@@ -4,28 +4,22 @@ namespace App\Http\Controllers\Inventario;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventario\Insumo;
+use App\Traits\GestionaCatalogoSimple;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class InsumoController extends Controller
 {
+    use GestionaCatalogoSimple;
+
     /**
      * Muestra el listado de insumos con opción de búsqueda y paginación.
      */
     public function index(Request $request)
     {
         $buscar = $request->get('buscar', '');
+        $query  = Insumo::filtradoPor($buscar)->orderBy('id_insumo', 'desc');
 
-        $query = Insumo::orderBy('id_insumo', 'desc');
-
-        if (!empty($buscar)) {
-            $query->where(function($q) use ($buscar) {
-                $q->where('clave', 'LIKE', "%{$buscar}%")
-                  ->orWhere('descripcion', 'LIKE', "%{$buscar}%");
-            });
-        }
-
-        // Responder por AJAX si se requiere para el buscador local o dinámico
         if ($request->ajax()) {
             $all = $request->boolean('all', false);
 
@@ -69,13 +63,7 @@ class InsumoController extends Controller
             'tipo.in'              => 'El tipo seleccionado no es válido.',
         ]);
 
-        // Verificar duplicidad de clave (insensible a mayúsculas/minúsculas)
-        $existe = Insumo::whereRaw(
-            'LOWER(clave) = ?',
-            [strtolower(trim($request->clave))]
-        )->exists();
-
-        if ($existe) {
+        if (Insumo::existeClave($request->clave)) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['clave' => 'Esta clave de insumo ya se encuentra registrada.']);
@@ -91,8 +79,7 @@ class InsumoController extends Controller
             'id_usuario'     => Auth::id() ?? 1,
         ]);
 
-        return redirect()
-            ->route('insumos.index')
+        return redirect()->route('insumos.index')
             ->with('exitog', 'El insumo se ha guardado correctamente.');
     }
 
@@ -102,7 +89,6 @@ class InsumoController extends Controller
     public function editar($id)
     {
         $insumo = Insumo::findOrFail($id);
-
         return view('inventario.insumos.editar', compact('insumo'));
     }
 
@@ -125,15 +111,7 @@ class InsumoController extends Controller
 
         $insumo = Insumo::findOrFail($id);
 
-        // Verificar si existe otra clave igual que no sea el registro actual
-        $existe = Insumo::whereRaw(
-            'LOWER(clave) = ?',
-            [strtolower(trim($request->clave))]
-        )
-        ->where('id_insumo', '!=', $id)
-        ->exists();
-
-        if ($existe) {
+        if (Insumo::existeClave($request->clave, (int) $id)) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['clave' => 'Esta clave ya se encuentra registrada por otro insumo.']);
@@ -148,8 +126,7 @@ class InsumoController extends Controller
             'id_usuario'     => Auth::id() ?? 1,
         ]);
 
-        return redirect()
-            ->route('insumos.index')
+        return redirect()->route('insumos.index')
             ->with('exito', 'El insumo se ha actualizado correctamente.');
     }
 
@@ -159,16 +136,7 @@ class InsumoController extends Controller
     public function cambiarStatus($id)
     {
         $insumo = Insumo::findOrFail($id);
-
-        $insumo->activo = $insumo->activo == 1 ? 0 : 1;
-        $insumo->fecha_registro = now()->toDateString();
-        $insumo->hora_registro  = now()->toTimeString();
-        $insumo->id_usuario     = Auth::id() ?? 1;
-        $insumo->save();
-
-        return redirect()
-            ->route('insumos.index')
-            ->with('exito', 'El estado del insumo se ha actualizado correctamente.');
+        return $this->alternarEstadoCatalogo($insumo, 'insumos.index', 'El estado del insumo se ha actualizado correctamente.');
     }
 
     /**
@@ -180,25 +148,11 @@ class InsumoController extends Controller
         $id    = $request->query('id');
 
         if (!$clave) {
-            return response()->json([
-                'disponible' => false,
-                'error'      => 'Parámetro ausente'
-            ]);
+            return response()->json(['disponible' => false, 'error' => 'Parámetro ausente']);
         }
-
-        $query = Insumo::whereRaw(
-            'LOWER(clave) = ?',
-            [strtolower(trim($clave))]
-        );
-
-        if ($id) {
-            $query->where('id_insumo', '!=', $id);
-        }
-
-        $existe = $query->exists();
 
         return response()->json([
-            'disponible' => !$existe
+            'disponible' => !Insumo::existeClave($clave, $id ? (int)$id : null),
         ]);
     }
 
@@ -207,18 +161,8 @@ class InsumoController extends Controller
      */
     public function imprimir(Request $request)
     {
-        $buscar = $request->get('buscar', '');
-
-        $query = Insumo::where('activo', 1)->orderBy('clave', 'asc');
-
-        if (!empty($buscar)) {
-            $query->where(function($q) use ($buscar) {
-                $q->where('clave', 'LIKE', "%{$buscar}%")
-                  ->orWhere('descripcion', 'LIKE', "%{$buscar}%");
-            });
-        }
-
-        $insumos = $query->get();
+        $buscar  = $request->get('buscar', '');
+        $insumos = Insumo::filtradoPor($buscar)->where('activo', 1)->orderBy('clave', 'asc')->get();
 
         return view('inventario.insumos.reporte_impresion', compact('insumos', 'buscar'));
     }
