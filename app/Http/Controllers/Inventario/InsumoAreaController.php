@@ -8,9 +8,11 @@ use App\Models\Inventario\Insumo;
 use App\Models\Inventario\AreaAlmacen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\BuscaInsumosAjax;
 
 class InsumoAreaController extends Controller
 {
+    use BuscaInsumosAjax;
     /**
      * Muestra el listado de insumos por área con el formulario de asignación.
      */
@@ -196,21 +198,7 @@ class InsumoAreaController extends Controller
      */
     public function buscarInsumosCatalog(Request $request)
     {
-        $buscar = $request->get('q', '');
-        $all = $request->boolean('all', false);
-
-        if (!$all && strlen($buscar) < 2) {
-            return response()->json([]);
-        }
-
-        $insumos = Insumo::where('activo', 1)
-            ->when($buscar, fn($q) => $q->where('clave', 'LIKE', "%{$buscar}%")
-                ->orWhere('descripcion', 'LIKE', "%{$buscar}%"))
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get(['id_insumo', 'clave', 'descripcion', 'tipo']);
-
-        return response()->json($insumos);
+        return $this->buscarInsumos($request);
     }
 
 
@@ -241,20 +229,7 @@ class InsumoAreaController extends Controller
             ->where('id_area_almacen', $idArea);
 
         // Filtrado por niveles de porcentaje (stock*100/fondo_fijo)
-        if (!empty($niveles)) {
-            $query->where(function ($q) use ($niveles) {
-                foreach ($niveles as $nivel) {
-                    match ($nivel) {
-                        'muy_bajo'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 0 AND 24'),
-                        'bajo'       => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 25 AND 49'),
-                        'regular'    => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 50 AND 74'),
-                        'suficiente' => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 75 AND 100'),
-                        'excedido'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) > 100'),
-                        default      => null,
-                    };
-                }
-            });
-        }
+        $query->conNivelStock($niveles);
 
         $insumos = $query->get()->map(function ($ia) {
             $stock      = $ia->stock;
@@ -298,20 +273,7 @@ class InsumoAreaController extends Controller
             $query->where('id_area_almacen', $idArea);
         }
 
-        if (!empty($niveles)) {
-            $query->where(function ($q) use ($niveles) {
-                foreach ($niveles as $nivel) {
-                    match ($nivel) {
-                        'muy_bajo'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 0 AND 24'),
-                        'bajo'       => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 25 AND 49'),
-                        'regular'    => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 50 AND 74'),
-                        'suficiente' => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 75 AND 100'),
-                        'excedido'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) > 100'),
-                        default      => null,
-                    };
-                }
-            });
-        }
+        $query->conNivelStock($niveles);
 
         $insumos = $query->orderBy('id_insumo_area')->get();
 
