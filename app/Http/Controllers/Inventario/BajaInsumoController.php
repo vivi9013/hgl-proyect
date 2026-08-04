@@ -8,13 +8,16 @@ use App\Models\Inventario\Insumo;
 use App\Models\Inventario\InsumoArea;
 use App\Models\Inventario\AreaAlmacen;
 use App\Traits\ParseaRangoFechas;
+use App\Traits\AjustaStockInsumoArea;
+use App\Traits\BuscaInsumosAjax;
+use App\Traits\ConsultaStockInsumoArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class BajaInsumoController extends Controller
 {
-    use ParseaRangoFechas;
+    use ParseaRangoFechas, AjustaStockInsumoArea, BuscaInsumosAjax, ConsultaStockInsumoArea;
 
     /**
      * Muestra el listado principal de bajas con paginación, filtros de búsqueda y rango de fechas.
@@ -119,91 +122,9 @@ class BajaInsumoController extends Controller
         );
     }
 
-    /**
-     * Busca insumos por clave o descripción para el autocompletado (AJAX).
-     */
-    public function buscarInsumos(Request $request)
-    {
-        $termino = $request->get('q', '');
-        $idArea  = $request->get('id_area_almacen');
-        $all     = $request->boolean('all', false);
 
-        if ($all && !$idArea) {
-            return response()->json([]);
-        }
 
-        if (!$all && strlen($termino) < 2) {
-            return response()->json([]);
-        }
 
-        $query = Insumo::where('activo', 1);
-
-        if (strlen($termino) >= 1) {
-            $query->where(function ($q) use ($termino) {
-                $q->where('descripcion', 'LIKE', "%{$termino}%")
-                  ->orWhere('clave', 'LIKE', "%{$termino}%");
-            });
-        }
-
-        if ($idArea) {
-            $query->whereHas('insumosArea', function ($q) use ($idArea) {
-                $q->where('id_area_almacen', $idArea)
-                  ->whereRaw('CAST(stock AS UNSIGNED) >= 1');
-            });
-        }
-
-        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get();
-
-        $resultado = $insumos->map(function ($insumo) use ($idArea) {
-            $data = [
-                'id_insumo'   => $insumo->id_insumo,
-                'clave'       => $insumo->clave,
-                'descripcion' => $insumo->descripcion,
-                'tipo'        => $insumo->tipo,
-            ];
-
-            if ($idArea) {
-                $insumoArea = InsumoArea::where('id_insumo', $insumo->id_insumo)
-                    ->where('id_area_almacen', $idArea)
-                    ->first();
-
-                $data['stock'] = $insumoArea ? (int) $insumoArea->stock : 0;
-            }
-
-            return $data;
-        });
-
-        return response()->json($resultado);
-    }
-
-    /**
-     * Consulta el stock disponible de un insumo específico en un área de almacén.
-     */
-    public function consultarStock(Request $request)
-    {
-        $idInsumo = $request->get('id_insumo');
-        $idArea   = $request->get('id_area_almacen');
-
-        if (!$idInsumo || !$idArea) {
-            return response()->json([
-                'stock' => 0,
-                'error' => 'Parámetros incompletos'
-            ]);
-        }
-
-        $insumoArea = InsumoArea::where('id_insumo', $idInsumo)
-            ->where('id_area_almacen', $idArea)
-            ->first();
-
-        $stock = $insumoArea ? (int) $insumoArea->stock : 0;
-
-        return response()->json([
-            'stock' => $stock
-        ]);
-    }
 
     /**
      * Registra una nueva baja de insumo y descuenta la cantidad correspondiente del inventario.
@@ -392,21 +313,5 @@ class BajaInsumoController extends Controller
         );
     }
 
-    /**
-     * Incremente o decremente la existencia de stock en un InsumoArea.
-     *
-     * @param InsumoArea $insumoArea
-     * @param int $cantidad
-     * @param string $operacion 'restar' | 'sumar'
-     * @return void
-     */
-    private function ajustarStockInsumoArea(InsumoArea $insumoArea, int $cantidad, string $operacion = 'restar')
-    {
-        $stockActual = (int) $insumoArea->stock;
-        $nuevoStock  = ($operacion === 'sumar') ? ($stockActual + $cantidad) : ($stockActual - $cantidad);
 
-        $insumoArea->update([
-            'stock' => (string) max(0, $nuevoStock)
-        ]);
-    }
 }

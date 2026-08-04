@@ -12,13 +12,15 @@ use App\Models\Inventario\Insumo;
 use App\Models\Inventario\InsumoArea;
 use App\Models\Inventario\Motivo;
 use App\Traits\ParseaRangoFechas;
+use App\Traits\AjustaStockInsumoArea;
+use App\Traits\BuscaInsumosAjax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DevolucionController extends Controller
 {
-    use ParseaRangoFechas;
+    use ParseaRangoFechas, AjustaStockInsumoArea, BuscaInsumosAjax;
 
     private const PER_PAGE = 10;
 
@@ -313,50 +315,7 @@ class DevolucionController extends Controller
         ));
     }
 
-    /**
-     * Búsqueda AJAX de insumos para autocompletado.
-     */
-    public function buscarInsumos(Request $request)
-    {
-        $termino = $request->get('q', '');
-        $all     = $request->boolean('all', false);
 
-        if (!$all && strlen($termino) < 2) {
-            return response()->json([]);
-        }
 
-        $query = Insumo::where('activo', 1);
 
-        if (strlen($termino) >= 1) {
-            $query->where(function ($q) use ($termino) {
-                $q->where('descripcion', 'LIKE', "%{$termino}%")
-                  ->orWhere('clave', 'LIKE', "%{$termino}%");
-            });
-        }
-
-        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get();
-
-        return response()->json($insumos);
-    }
-
-    /**
-     * Incrementa o decremente la existencia de stock en un InsumoArea.
-     *
-     * @param InsumoArea $insumoArea
-     * @param int $cantidad
-     * @param string $operacion 'sumar' | 'restar'
-     * @return void
-     */
-    private function ajustarStockInsumoArea(InsumoArea $insumoArea, int $cantidad, string $operacion = 'sumar')
-    {
-        $stockActual = (int) $insumoArea->stock;
-        $nuevoStock  = ($operacion === 'sumar') ? ($stockActual + $cantidad) : ($stockActual - $cantidad);
-
-        $insumoArea->update([
-            'stock' => (string) max(0, $nuevoStock)
-        ]);
-    }
 }
