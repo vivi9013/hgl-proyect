@@ -36,6 +36,8 @@ class BajaInsumo extends Model
         'id_insumo',
         'id_area_almacen',
         'motivo',
+        'doctor_nombre',
+        'doctor_especialidad',
         'cantidad',
         'fecha_baja',
         'hora_baja',

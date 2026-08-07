@@ -535,6 +535,8 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'guardar')->name('store');
         Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos');
         Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock');
+        Route::get('/historial-area-asignada', 'historialPorAreaAsignada')->name('historial_area_asignada');
+        Route::get('/exportar-excel', 'exportarExcel')->name('exportar_excel');
         Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });

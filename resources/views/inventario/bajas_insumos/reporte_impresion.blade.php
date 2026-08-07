@@ -74,10 +74,11 @@
 
 {{-- @if evalúa si el usuario especificó algún filtro de búsqueda o rango de fechas en la pantalla previa. --}}
 {{-- Si se cumple, renderiza un div con el detalle de los parámetros activos para dejar constancia en el papel. --}}
-@if($buscar || $fechaInit || $fechaFin)
+@if($buscar || $fechaInit || $fechaFin || !empty($areaFiltrada))
     <div class="filtros-activos">
         <strong>Filtros aplicados:</strong>
-        @if($buscar) &nbsp;Búsqueda: "{{ $buscar }}" @endif
+        @if(!empty($areaFiltrada)) &nbsp;Área Asignada: <strong>{{ $areaFiltrada->nombre }}</strong> @endif
+        @if($buscar) &nbsp;| Búsqueda: "{{ $buscar }}" @endif
         {{-- Carbon::parse() convierte los strings de fecha fechaInit y fechaFin a instancias Carbon para formatearlas a d/m/Y. --}}
         @if($fechaInit) &nbsp;| Desde: {{ \Carbon\Carbon::parse($fechaInit)->format('d/m/Y') }} @endif
         @if($fechaFin) &nbsp;| Hasta: {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }} @endif

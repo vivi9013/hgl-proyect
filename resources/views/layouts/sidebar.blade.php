@@ -24,6 +24,19 @@
 
 
         <li class="nav-item mb-2">
+          <a href="{{ route('insumos_area.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('insumos_area.*') ? 'active-menu-item' : 'text-dark' }}">
+            <i class="bi bi-box-seam-fill"></i>
+            <span class="fw-medium" style="padding-left: 20px;">Insumos por Área</span>
+          </a>
+        </li>
+
+        <li class="nav-item mb-2">
+          <a href="{{ route('bajas_insumos.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('bajas_insumos.*') ? 'active-menu-item' : 'text-dark' }}">
+            <i class="bi bi-arrow-down-circle-fill"></i>
+            <span class="fw-medium" style="padding-left: 20px;">Bajas de Insumos</span>
+          </a>
+        </li>
+        <li class="nav-item mb-2">
           <a href="{{ route('mis_datos.index') }}" class="nav-link d-flex align-items-center p-3 {{ request()->routeIs('mis_datos.*') ? 'active-menu-item' : 'text-dark' }}">
             @svg('bi-person-lines-fill')
             <span style="padding-left: 20px;">Mis Datos</span>

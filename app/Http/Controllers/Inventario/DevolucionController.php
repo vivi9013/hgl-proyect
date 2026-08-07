@@ -95,7 +95,7 @@ class DevolucionController extends Controller
         $devolucion = Devolucion::create([
             'id_usuario_registro'      => Auth::id() ?? 1,
             'id_area_almacen'          => $request->id_area_almacen,
-            'id_area_abastecimiento'   => $request->id_area_abastecimiento ?? null,
+            'id_area_abastecimiento'   => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento'=> $request->id_subarea_abastecimiento ?? null,
             'fecha_devolucion'         => now()->toDateString(),
             'hora_devolucion'          => now()->toTimeString(),
@@ -162,7 +162,7 @@ class DevolucionController extends Controller
         });
 
         return redirect()
-            ->route('devoluciones.comprobante', $devolucion->id_devolucion)
+            ->route('devoluciones.detalle', $devolucion->id_devolucion)
             ->with('exitog', "La devolución DEV-{$devolucion->id_devolucion} ha sido finalizada correctamente.");
     }
 

@@ -10,15 +10,25 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── 1.5. Validación Frontend del Modal "Nueva Devolución" ─────────────────
     const formNuevaDevolucion = document.getElementById('formNuevaDevolucion');
     if (formNuevaDevolucion) {
+        const areaAlmacen = document.getElementById('modal_id_area_almacen') || document.getElementById('id_area_almacen');
+        const areaAbastecimiento = document.getElementById('modal_id_area_abastecimiento') || document.getElementById('id_area_abastecimiento');
+        const motivo = document.getElementById('modal_id_motivo') || document.getElementById('id_motivo');
+
         formNuevaDevolucion.addEventListener('submit', function (e) {
             let isValid = true;
-            const areaAlmacen = document.getElementById('id_area_almacen');
-            const motivo = document.getElementById('id_motivo');
 
             if (areaAlmacen) {
                 areaAlmacen.classList.remove('is-invalid');
                 if (!areaAlmacen.value) {
                     areaAlmacen.classList.add('is-invalid');
+                    isValid = false;
+                }
+            }
+
+            if (areaAbastecimiento) {
+                areaAbastecimiento.classList.remove('is-invalid');
+                if (!areaAbastecimiento.value) {
+                    areaAbastecimiento.classList.add('is-invalid');
                     isValid = false;
                 }
             }
@@ -37,11 +47,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        const areaAlmacen = document.getElementById('id_area_almacen');
-        const motivo = document.getElementById('id_motivo');
         if (areaAlmacen) {
             areaAlmacen.addEventListener('change', function () {
                 if (areaAlmacen.value) areaAlmacen.classList.remove('is-invalid');
+            });
+        }
+        if (areaAbastecimiento) {
+            areaAbastecimiento.addEventListener('change', function () {
+                if (areaAbastecimiento.value) areaAbastecimiento.classList.remove('is-invalid');
             });
         }
         if (motivo) {
@@ -109,7 +122,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             timeoutBusqueda = setTimeout(() => {
-                const url = `/devoluciones/buscar-insumos?q=${encodeURIComponent(termino)}`;
+                const areaInputVal = document.getElementById('modal_id_area_almacen_detalle')?.value || '';
+                let url = `/devoluciones/buscar-insumos?q=${encodeURIComponent(termino)}`;
+                if (areaInputVal) {
+                    url += `&id_area_almacen=${encodeURIComponent(areaInputVal)}`;
+                }
 
                 fetch(url, {
                     headers: {
@@ -134,12 +151,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         const item = document.createElement('button');
                         item.type = 'button';
                         item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                        const stockVal = insumo.stock !== undefined ? insumo.stock : '—';
+                        const badgeClass = (typeof insumo.stock === 'number' && insumo.stock > 0) ? 'bg-success' : 'bg-secondary';
                         item.innerHTML = `
                             <div>
                                 <span class="badge bg-primary text-white me-2" style="font-family: monospace;">${insumo.clave}</span>
                                 <span>${insumo.descripcion}</span>
                             </div>
-                            <span class="badge bg-secondary text-white small">${insumo.tipo || 'Insumo'}</span>
+                            <div class="d-flex gap-1 align-items-center">
+                                <span class="badge ${badgeClass} text-white small">Stock: ${stockVal}</span>
+                                <span class="badge bg-secondary text-white small">${insumo.tipo || 'Insumo'}</span>
+                            </div>
                         `;
                         item.addEventListener('click', () => {
                             inputBuscarInsumo.value = `[${insumo.clave}] ${insumo.descripcion}`;
@@ -172,8 +194,9 @@ document.addEventListener('DOMContentLoaded', function () {
             inputBuscarId: 'buscarInsumoDetalle',
             inputHiddenId: 'id_insumo_detalle',
             sugerenciasId: 'sugerenciasDetalle',
+            areaInputId: 'modal_id_area_almacen_detalle',
             endpoint: '/devoluciones/buscar-insumos',
-            columnaExtra: 'none'
+            columnaExtra: 'stock'
         });
     }
 

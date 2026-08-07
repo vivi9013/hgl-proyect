@@ -66,13 +66,13 @@
                             {{-- Filtrar por Área --}}
                             <div class="col-12 col-md-5">
                                 <label for="filtro_area" class="form-label small fw-bold mb-1 text-dark">
-                                    <i class="fa fa-filter me-1"></i>Filtrar por Área:
+                                    <i class="fa fa-filter me-1"></i>Filtrar por Área Asignada:
                                 </label>
-                                <select name="id_area_almacen" id="filtro_area" class="form-select bg-light border-dark rounded-3" style="font-size: 0.9rem;">
+                                <select name="id_area_abastecimiento" id="filtro_area" class="form-select bg-light border-dark rounded-3" style="font-size: 0.9rem;">
                                     <option value="">Todas las Áreas</option>
-                                    @foreach($areasAlmacen as $area)
-                                        <option value="{{ $area->id_area_almacen }}" {{ $filtroArea == $area->id_area_almacen ? 'selected' : '' }}>
-                                            {{ $area->nombre }}
+                                    @foreach($areasAbastecimiento as $areaAbast)
+                                        <option value="{{ $areaAbast->id_area_abastecimiento }}" {{ $filtroArea == $areaAbast->id_area_abastecimiento ? 'selected' : '' }}>
+                                            {{ $areaAbast->nombre }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -103,7 +103,7 @@
                             <th class="text-center">Clave</th>
                             <th>Descripción</th>
                             <th class="text-center">Tipo</th>
-                            <th class="text-center">Área de Almacén</th>
+                            <th class="text-center">Área Asignada</th>
                             <th class="text-center" style="width: 140px;">
                                 Stock <kbd class="kbd-hint">Enter</kbd>
                             </th>
@@ -142,11 +142,15 @@
                                 <td class="text-center fw-bold text-dark">{{ $ia->insumo->clave ?? '—' }}</td>
                                 <td>{{ $ia->insumo->descripcion ?? '—' }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-secondary" style="font-size: 0.8rem;">
+                                    <span class="badge {{ $ia->insumo->meta_tipo['badgeClass'] ?? 'bg-secondary' }}" style="font-size: 0.8rem;">
                                         {{ $ia->insumo->tipo ?? '—' }}
                                     </span>
                                 </td>
-                                <td class="text-center">{{ $ia->areaAlmacen->nombre ?? '—' }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">
+                                        {{ $ia->insumo->areaAbastecimiento->nombre ?? $ia->areaAlmacen->nombre ?? 'Sin Asignar' }}
+                                    </span>
+                                </td>
                                 <td class="text-center">
                                     <input 
                                         type="number" 
@@ -232,6 +236,19 @@
                             @error('id_area_almacen')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        {{-- Combo: Área Asignada (Abastecimiento) --}}
+                        <div class="col-12 col-md-6">
+                            <label for="area_abastecimiento_select" class="form-label fw-bold">Área Asignada al Insumo:</label>
+                            <select name="id_area_abastecimiento" id="area_abastecimiento_select" class="form-select @error('id_area_abastecimiento') is-invalid @enderror">
+                                <option value="">-- Seleccionar Área Asignada --</option>
+                                @foreach($areasAbastecimiento as $areaAbast)
+                                    <option value="{{ $areaAbast->id_area_abastecimiento }}" {{ old('id_area_abastecimiento') == $areaAbast->id_area_abastecimiento ? 'selected' : '' }}>
+                                        {{ $areaAbast->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         {{-- Insumo autocomplete --}}

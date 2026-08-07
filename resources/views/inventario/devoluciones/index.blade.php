@@ -239,22 +239,22 @@
 
                         {{-- Área de Abastecimiento --}}
                         <div class="col-12 col-md-6">
-                            <label for="modal_id_area_surtimiento" class="form-label fw-bold">
+                            <label for="modal_id_area_abastecimiento" class="form-label fw-bold">
                                 Área de Abastecimiento: <span class="text-danger">*</span>
                             </label>
-                            <select name="id_area_surtimiento"
-                                    id="modal_id_area_surtimiento"
-                                    class="form-control @error('id_area_surtimiento') is-invalid @enderror"
+                            <select name="id_area_abastecimiento"
+                                    id="modal_id_area_abastecimiento"
+                                    class="form-control @error('id_area_abastecimiento') is-invalid @enderror"
                                     required>
                                 <option value="">-- Seleccionar área --</option>
                                 @foreach($areasAbastecimiento as $area)
-                                    <option value="{{ $area->id_area_surtimiento }}"
-                                        {{ old('id_area_surtimiento') == $area->id_area_surtimiento ? 'selected' : '' }}>
+                                    <option value="{{ $area->id_area_abastecimiento }}"
+                                        {{ old('id_area_abastecimiento') == $area->id_area_abastecimiento ? 'selected' : '' }}>
                                         {{ $area->nombre }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('id_area_surtimiento')
+                            @error('id_area_abastecimiento')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -270,8 +270,8 @@
                                     required>
                                 <option value="">-- Seleccionar motivo --</option>
                                 @foreach($motivos as $motivo)
-                                    <option value="{{ $motivo->id_motivo_devolucion }}"
-                                        {{ old('id_motivo') == $motivo->id_motivo_devolucion ? 'selected' : '' }}>
+                                    <option value="{{ $motivo->id_motivo }}"
+                                        {{ old('id_motivo') == $motivo->id_motivo ? 'selected' : '' }}>
                                         {{ $motivo->descripcion }}
                                     </option>
                                 @endforeach

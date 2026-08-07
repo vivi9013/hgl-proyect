@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputCantidad = document.getElementById('cantidad');
     const btnGuardar = document.getElementById('btnGuardar');
 
+    const infoAreaAsignada = document.getElementById('infoAreaAsignada');
+    const nombreAreaAsignada = document.getElementById('nombreAreaAsignada');
+
     // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
     const alertaExito = document.getElementById('alertaExito');
@@ -63,6 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const resetearInsumo = () => {
         inputIdInsumo.value = '';
         infoStock.style.display = 'none';
+        if (infoAreaAsignada) infoAreaAsignada.style.display = 'none';
+        if (nombreAreaAsignada) nombreAreaAsignada.textContent = '—';
         stockMaximo = 0;
         if (inputCantidad) {
             inputCantidad.removeAttribute('max');
@@ -110,7 +115,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         const item = document.createElement('button');
                         item.type = 'button';
                         item.className = 'list-group-item list-group-item-action';
+
+                        let badgeColorClass = 'bg-secondary';
+                        if (insumo.tipo === 'Medicamento') {
+                            badgeColorClass = 'bg-primary';
+                        } else if (insumo.tipo === 'Material de curación') {
+                            badgeColorClass = 'bg-success';
+                        }
+
                         item.innerHTML = `
+                        ${insumo.tipo ? `<span class="badge ${badgeColorClass} me-1" style="font-size: 0.7rem;">${insumo.tipo}</span>` : ''}
                         <span class="clave-badge">${insumo.clave}</span>
                         ${insumo.descripcion}
                         ${idArea ? `<span class="stock-info">Stock: ${insumo.stock}</span>` : ''}
@@ -120,6 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             inputIdInsumo.value = insumo.id_insumo;
                             sugerenciasDiv.style.display = 'none';
                             sugerenciasDiv.innerHTML = '';
+
+                            // Mostrar área asignada
+                            if (infoAreaAsignada && nombreAreaAsignada) {
+                                nombreAreaAsignada.textContent = insumo.area_asignada || 'Sin Área Asignada';
+                                infoAreaAsignada.style.display = 'inline-block';
+                            }
 
                             // Mostrar stock
                             if (idArea) {
@@ -263,11 +283,18 @@ document.addEventListener('DOMContentLoaded', function () {
         inputBuscar.addEventListener('input', function () {
             const query = inputBuscar.value.toLowerCase().trim();
 
-            // Filtrado local de filas de la tabla en tiempo real (como en el Panel de Control)
+            // Columnas a evaluar (índices y etiquetas): 1: Insumo, 2: Clave, 3: Área, 4: Motivo
+            const columnasMap = [
+                { index: 1, label: 'Insumo' },
+                { index: 2, label: 'Clave' },
+                { index: 3, label: 'Área' },
+                { index: 4, label: 'Motivo' }
+            ];
+
             const rows = document.querySelectorAll('#tablaAreas tbody tr');
             let matchCount = 0;
             rows.forEach(row => {
-                // Ignorar filas de mensaje
+                // Ignorar filas de mensaje o no resultados
                 if (row.cells.length === 1 && row.cells[0].classList.contains('text-center')) {
                     return;
                 }
@@ -275,10 +302,43 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                const text = row.textContent.toLowerCase();
-                if (text.includes(query)) {
+                // Remover badge de match previo de la columna Insumo (cell 1)
+                const celdaInsumo = row.cells[1];
+                if (celdaInsumo) {
+                    const badgeViejo = celdaInsumo.querySelector('[data-match-badge]');
+                    if (badgeViejo) {
+                        badgeViejo.remove();
+                    }
+                }
+
+                if (query === '') {
+                    row.classList.remove('d-none');
+                    return;
+                }
+
+                let primeraCoincidenciaCol = null;
+
+                for (const col of columnasMap) {
+                    const cell = row.cells[col.index];
+                    if (cell && cell.textContent.toLowerCase().includes(query)) {
+                        primeraCoincidenciaCol = col;
+                        break;
+                    }
+                }
+
+                if (primeraCoincidenciaCol) {
                     row.classList.remove('d-none');
                     matchCount++;
+
+                    // Insertar badge indicador si la coincidencia ocurrió
+                    if (celdaInsumo && primeraCoincidenciaCol.index !== 1) {
+                        const badgeMatch = document.createElement('span');
+                        badgeMatch.className = 'badge bg-info text-dark ms-1 shadow-sm';
+                        badgeMatch.setAttribute('data-match-badge', 'true');
+                        badgeMatch.style.fontSize = '0.65rem';
+                        badgeMatch.textContent = `en ${primeraCoincidenciaCol.label}`;
+                        celdaInsumo.appendChild(badgeMatch);
+                    }
                 } else {
                     row.classList.add('d-none');
                 }
@@ -344,6 +404,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fechaInicio) fechaInicio.addEventListener('change', (e) => autoSubmitFecha(e));
     if (fechaFin) fechaFin.addEventListener('change', (e) => autoSubmitFecha(e));
 
+    const filtroArea = document.getElementById('filtro_area');
+    if (filtroArea && formBuscar) {
+        filtroArea.addEventListener('change', () => formBuscar.submit());
+    }
+
     // ── 8. Panel de claves (doble clic en buscarInsumo) ────────────────────
     initPanelClaves({
         panelId: 'panelClaves',
@@ -355,6 +420,10 @@ document.addEventListener('DOMContentLoaded', function () {
         columnaExtra: 'stock',
         onSelect: (insumo) => {
             const idArea = selectArea?.value || '';
+            if (infoAreaAsignada && nombreAreaAsignada) {
+                nombreAreaAsignada.textContent = insumo.area_asignada || 'Sin Área Asignada';
+                infoAreaAsignada.style.display = 'inline-block';
+            }
             if (insumo.stock !== undefined && idArea) {
                 stockMaximo = parseInt(insumo.stock) || 0;
                 if (stockDisponible) stockDisponible.textContent = stockMaximo;
@@ -365,12 +434,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Cerrar panel al cerrar el modal + limpiar formulario
+    let esReabiertoPorErrorBaja = document.querySelector('#modalAltaBaja .is-invalid') !== null;
+
     const modalAltaBaja = document.getElementById('modalAltaBaja');
     if (modalAltaBaja) {
         modalAltaBaja.addEventListener('hidden.bs.modal', () => {
             // Cerrar panel de claves
             const panelClaves = document.getElementById('panelClaves');
             if (panelClaves) panelClaves.style.display = 'none';
+
+            if (esReabiertoPorErrorBaja) {
+                esReabiertoPorErrorBaja = false;
+                return;
+            }
 
             // Limpiar todos los campos del formulario
             if (selectArea) selectArea.value = '';
@@ -379,6 +455,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (inputCantidad) { inputCantidad.value = ''; inputCantidad.removeAttribute('max'); }
             const motivoEl = document.getElementById('motivo');
             if (motivoEl) motivoEl.value = '';
+            const doctorNombreEl = document.getElementById('doctor_nombre');
+            if (doctorNombreEl) doctorNombreEl.value = '';
+            const doctorEspecialidadEl = document.getElementById('doctor_especialidad');
+            if (doctorEspecialidadEl) doctorEspecialidadEl.value = '';
 
             // Ocultar info de stock y sugerencias
             if (infoStock) infoStock.style.display = 'none';

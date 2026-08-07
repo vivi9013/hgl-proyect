@@ -28,7 +28,7 @@ trait BuscaInsumosAjax
             return response()->json([]);
         }
 
-        $query = Insumo::where('activo', 1);
+        $query = Insumo::with(['areaAbastecimiento'])->where('activo', 1);
 
         if (strlen($termino) >= 1) {
             $query->where(function ($q) use ($termino) {
@@ -44,7 +44,7 @@ trait BuscaInsumosAjax
             });
         }
 
-        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
+        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo', 'id_area_abastecimiento')
             ->orderBy('clave')
             ->when(!$all, fn($q) => $q->limit(20))
             ->get();
@@ -56,17 +56,33 @@ trait BuscaInsumosAjax
                     ->first();
 
                 return [
-                    'id_insumo'   => $insumo->id_insumo,
-                    'clave'       => $insumo->clave,
-                    'descripcion' => $insumo->descripcion,
-                    'tipo'        => $insumo->tipo,
-                    'stock'       => $insumoArea ? (int)$insumoArea->stock : 0,
+                    'id_insumo'     => $insumo->id_insumo,
+                    'clave'         => $insumo->clave,
+                    'descripcion'   => $insumo->descripcion,
+                    'tipo'          => $insumo->tipo,
+                    'area_asignada' => $insumo->areaAbastecimiento->nombre ?? 'Sin Área Asignada',
+                    'stock'         => $insumoArea ? (int)$insumoArea->stock : 0,
                 ];
             });
 
             return response()->json($resultado);
         }
 
-        return response()->json($insumos);
+        $resultado = $insumos->map(function ($insumo) {
+            $stockTotal = InsumoArea::where('id_insumo', $insumo->id_insumo)
+                ->get()
+                ->sum(fn($ia) => (int)$ia->stock);
+
+            return [
+                'id_insumo'     => $insumo->id_insumo,
+                'clave'         => $insumo->clave,
+                'descripcion'   => $insumo->descripcion,
+                'tipo'          => $insumo->tipo,
+                'area_asignada' => $insumo->areaAbastecimiento->nombre ?? 'Sin Área Asignada',
+                'stock'         => $stockTotal,
+            ];
+        });
+
+        return response()->json($resultado);
     }
 }
