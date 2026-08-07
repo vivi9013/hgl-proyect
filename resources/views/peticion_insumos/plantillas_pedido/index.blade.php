@@ -164,6 +164,23 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="mb-3">
+                        <label for="modal_id_area_almacen" class="form-label fw-bold small">Área de Almacén (opcional)</label>
+                        <select class="form-select @error('id_area_almacen') is-invalid @enderror"
+                                id="modal_id_area_almacen" name="id_area_almacen">
+                            <option value="">-- Sin almacén específico --</option>
+                            @foreach($areasAlmacen as $almacen)
+                                <option value="{{ $almacen->id_area_almacen }}"
+                                    {{ old('id_area_almacen') == $almacen->id_area_almacen ? 'selected' : '' }}>
+                                    {{ $almacen->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('id_area_almacen')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -209,6 +226,15 @@
                         <label for="edit_id_subarea" class="form-label fw-bold small">Subárea (opcional)</label>
                         <select class="form-select" id="edit_id_subarea" name="id_subarea_abastecimiento">
                             <option value="">-- Sin subárea --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_id_area_almacen" class="form-label fw-bold small">Área de Almacén (opcional)</label>
+                        <select class="form-select" id="edit_id_area_almacen" name="id_area_almacen">
+                            <option value="">-- Sin almacén específico --</option>
+                            @foreach($areasAlmacen as $almacen)
+                                <option value="{{ $almacen->id_area_almacen }}">{{ $almacen->nombre }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>

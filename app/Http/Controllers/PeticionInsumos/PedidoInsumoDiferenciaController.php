@@ -72,7 +72,7 @@ class PedidoInsumoDiferenciaController extends Controller
                     ->get();
 
                 foreach ($detalles as $det) {
-                    $stock     = (int) $det->stock;
+                    $stock     = (int) $det->cantidad;
                     $fondoFijo = (int) $det->fondo_fijo;
                     $diferencia= max(0, $fondoFijo - $stock);
 
@@ -141,17 +141,22 @@ class PedidoInsumoDiferenciaController extends Controller
     public function guardar(Request $request)
     {
         $request->validate([
-            'id_area_abastecimiento'   => 'required|integer',
-            'id_subarea_abastecimiento'=> 'nullable|integer',
-            'id_area_almacen'          => 'required|integer',
-            'status'                   => 'required|in:borrador,terminado',
-            'insumos'                  => 'required|array|min:1',
-            'insumos.*.id_insumo'      => 'required|integer',
-            'insumos.*.cantidad'       => 'required|integer|min:1',
+            'id_area_abastecimiento'    => 'required|integer|exists:areasabastecimiento,id_area_abastecimiento,activo,1',
+            'id_subarea_abastecimiento' => 'nullable|integer|exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            'id_area_almacen'           => 'required|integer|exists:areas_almacen,id_area_almacen,activo,1',
+            'status'                    => 'required|in:borrador,terminado',
+            'insumos'                   => 'required|array|min:1',
+            'insumos.*.id_insumo'       => 'required|integer|exists:insumos,id_insumo,activo,1',
+            'insumos.*.cantidad'        => 'required|integer|min:1',
         ], [
             'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
+            'id_area_abastecimiento.exists'   => 'El área de abastecimiento seleccionada no existe o está inactiva.',
+            'id_subarea_abastecimiento.exists' => 'La subárea de abastecimiento seleccionada no existe o está inactiva.',
             'id_area_almacen.required'        => 'Debe seleccionar un área de almacén.',
+            'id_area_almacen.exists'          => 'El área de almacén seleccionada no existe o está inactiva.',
             'insumos.required'                => 'Debe seleccionar al menos un insumo con faltante para generar el pedido.',
+            'insumos.min'                     => 'Debe seleccionar al menos un insumo con faltante para generar el pedido.',
+            'insumos.*.id_insumo.exists'      => 'Uno o más insumos del pedido no existen o están inactivos.',
         ]);
 
         try {
@@ -171,11 +176,38 @@ class PedidoInsumoDiferenciaController extends Controller
                 'porcentaje_entrega'       => 0.00,
             ]);
 
+            $almacenSubarea = null;
+            if ($request->id_subarea_abastecimiento) {
+                $almacenSubarea = AlmacenSubarea::where('id_subarea_abastecimiento', $request->id_subarea_abastecimiento)->first();
+            }
+
             foreach ($request->insumos as $item) {
                 $insumo = Insumo::find($item['id_insumo']);
 
-                $stock     = $item['stock'] ?? 0;
-                $fondoFijo = $item['fondo_fijo'] ?? 0;
+                $stock      = 0;
+                $fondoFijo  = 0;
+                $encontrado = false;
+
+                if ($almacenSubarea) {
+                    $det = DetalleAlmacenSubarea::where('id_almacen_subarea', $almacenSubarea->id_almacen_subarea)
+                        ->where('id_insumo', $item['id_insumo'])
+                        ->first();
+                    if ($det) {
+                        $stock      = (int) $det->cantidad;
+                        $fondoFijo  = (int) $det->fondo_fijo;
+                        $encontrado = true;
+                    }
+                }
+
+                if (!$encontrado) {
+                    $insumoArea = InsumoArea::where('id_insumo', $item['id_insumo'])
+                        ->where('id_area_almacen', $request->id_area_almacen)
+                        ->first();
+                    if ($insumoArea) {
+                        $stock     = (int) $insumoArea->stock;
+                        $fondoFijo = (int) $insumoArea->fondo_fijo;
+                    }
+                }
 
                 DetallePedido::create([
                     'id_pedido'  => $pedido->id_pedido,

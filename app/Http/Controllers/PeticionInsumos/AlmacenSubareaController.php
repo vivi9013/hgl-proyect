@@ -25,30 +25,7 @@ class AlmacenSubareaController extends Controller
         $buscar    = $request->get('buscar', '');
         $idArea    = $request->get('id_area_abastecimiento', '');
         $idSubarea = $request->get('id_subarea_abastecimiento', '');
-        $sinFiltro = empty($idArea) && empty($idSubarea) && empty($buscar);
-
-        if ($sinFiltro) {
-            $almacenes = AlmacenSubarea::whereNull('id_almacen_subarea')->paginate(10);
-            $areas     = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-            $subareas  = empty($idArea) ? collect() : SubareaAbastecimiento::whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea))->where('activo', 1)->orderBy('nombre')->get();
-            $insumos   = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
-
-            $ajaxResponse = $this->respuestaTablaAjax(
-                $request,
-                $almacenes,
-                'peticion_insumos.almacen_subareas.partials.tabla',
-                compact('almacenes', 'sinFiltro'),
-                'almacenes de subáreas'
-            );
-
-            if ($ajaxResponse) {
-                return $ajaxResponse;
-            }
-
-            return view('peticion_insumos.almacen_subareas.index', compact(
-                'almacenes', 'areas', 'subareas', 'insumos', 'buscar', 'idArea', 'idSubarea', 'sinFiltro'
-            ));
-        }
+        $status    = $request->get('status', '');
 
         $query = AlmacenSubarea::with(['areaAbastecimiento', 'subareaAbastecimiento', 'detalles.insumo'])
             ->orderBy('id_almacen_subarea', 'desc');
@@ -85,15 +62,16 @@ class AlmacenSubareaController extends Controller
         $almacenes = $query->paginate(10)->withQueryString();
 
         $areas    = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $subareas = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $subareas = empty($idArea)
+            ? collect()
+            : SubareaAbastecimiento::whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea))->where('activo', 1)->orderBy('nombre')->get();
         $insumos  = Insumo::where('activo', 1)->orderBy('descripcion')->limit(100)->get();
 
-        $sinFiltro = false;
         $ajaxResponse = $this->respuestaTablaAjax(
             $request,
             $almacenes,
             'peticion_insumos.almacen_subareas.partials.tabla',
-            compact('almacenes', 'buscar', 'sinFiltro'),
+            compact('almacenes', 'buscar'),
             'almacenes de subáreas'
         );
 
@@ -157,13 +135,18 @@ class AlmacenSubareaController extends Controller
                 ->with('hasFormErrors', true);
         }
 
+        $idUsuario = Auth::id();
+        if (!$idUsuario) {
+            abort(401, 'Usuario no autenticado.');
+        }
+
         $almacen = AlmacenSubarea::create([
             'id_area_abastecimiento'    => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento' => $request->id_subarea_abastecimiento,
             'fecha_registro'            => now()->toDateString(),
             'hora_registro'             => now()->toTimeString(),
             'activo'                    => 1,
-            'id_usuario'                => Auth::id() ?? 1,
+            'id_usuario'                => $idUsuario,
         ]);
 
         return redirect()

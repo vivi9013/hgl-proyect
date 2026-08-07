@@ -104,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     return res.json();
                 })
                 .then(data => {
+                    if ((inputBuscarInsumo?.value || '').trim() !== termino) {
+                        return;
+                    }
                     sugerenciasDiv.innerHTML = '';
 
                     if (!data || data.length === 0) {

@@ -305,7 +305,7 @@
                                     title="Doble clic para ver listado de claves disponibles"
                                 >
                                 <input type="hidden" name="id_insumo" id="id_insumo" value="{{ old('id_insumo') }}">
-                                <div id="sugerenciasInsumo" class="list-group position-absolute w-100 sugerencias-dropdown"></div>
+                                <div id="sugerenciasInsumo" class="list-group position-absolute w-100 sugerencias-dropdown" style="z-index: 1060;"></div>
                                 <div id="infoStock" class="mt-1 small text-muted info-stock-container">
                                     <i class="fa fa-cubes me-1"></i>Stock disponible: <strong id="stockDisponible">0</strong> piezas
                                 </div>

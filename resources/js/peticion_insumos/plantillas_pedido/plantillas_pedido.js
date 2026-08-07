@@ -14,10 +14,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const descripcion = btn.getAttribute('data-descripcion') || '';
         const idArea      = btn.getAttribute('data-area');
         const idSubarea   = btn.getAttribute('data-subarea');
+        const idAlmacen   = btn.getAttribute('data-almacen');
 
-        const form      = document.getElementById('formEditarPlantilla');
+        const form          = document.getElementById('formEditarPlantilla');
         const selectArea    = document.getElementById('edit_id_area');
         const selectSubarea = document.getElementById('edit_id_subarea');
+        const selectAlmacen = document.getElementById('edit_id_area_almacen');
 
         if (!form) return;
 
@@ -27,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Poblar campos
         document.getElementById('edit_nombre').value      = nombre;
         document.getElementById('edit_descripcion').value = descripcion;
+
+        if (selectAlmacen) {
+            selectAlmacen.value = idAlmacen || '';
+        }
 
         // Seleccionar área
         if (selectArea) {

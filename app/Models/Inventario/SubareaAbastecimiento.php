@@ -34,11 +34,12 @@ class SubareaAbastecimiento extends Model
     ];
 
     /**
-     * Relación con la tabla pivot relacion_areas_abastecimiento.
+     * Relación con la tabla pivot relacion_areas_abastecimiento (solo vínculos activos).
      */
     public function relacionArea()
     {
-        return $this->hasOne(RelacionAreaAbastecimiento::class, 'id_subarea_abastecimiento', 'id_subarea_abastecimiento');
+        return $this->hasOne(RelacionAreaAbastecimiento::class, 'id_subarea_abastecimiento', 'id_subarea_abastecimiento')
+            ->where('activo', 1);
     }
 
     /**
