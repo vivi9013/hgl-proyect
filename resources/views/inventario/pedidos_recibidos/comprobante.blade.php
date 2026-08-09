@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprobante – PED-{{ str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) }}</title>
+    <title>Comprobante – {{ $pedido->folio }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -62,7 +62,7 @@
     {{-- Barra de acción (no se imprime) --}}
     <div class="no-print">
         <span class="print-title">
-            ⎙ Comprobante PED-{{ str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) }}
+            ⎙ Comprobante {{ $pedido->folio }}
         </span>
         <div style="display:flex; gap:10px;">
             <button class="btn-accion btn-imprimir" onclick="window.print()">
@@ -87,7 +87,7 @@
     {{-- Título y folio --}}
     <div class="titulo">
         <h1>Comprobante de Surtimiento de Pedido</h1>
-        <div class="folio">PED-{{ str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) }}</div>
+        <div class="folio">{{ $pedido->folio }}</div>
     </div>
 
     {{-- Info general --}}
@@ -148,8 +148,8 @@
                 @foreach($pedido->detalles as $i => $detalle)
                     <tr>
                         <td>{{ $i + 1 }}</td>
-                        <td><span class="clave-badge">{{ $detalle->insumoArea->insumo->clave ?? $detalle->cve_insumo }}</span></td>
-                        <td>{{ $detalle->insumoArea->insumo->descripcion ?? '—' }}</td>
+                        <td><span class="clave-badge">{{ $detalle->insumo->clave ?? $detalle->cve_insumo }}</span></td>
+                        <td>{{ $detalle->insumo->descripcion ?? '—' }}</td>
                         <td style="text-align:center;">{{ $detalle->cantidad }}</td>
                         <td style="text-align:center; font-weight:bold; color: #16803d;">{{ $detalle->surtido ?? 0 }}</td>
                         <td style="text-align:center; color: #b91c1c;">{{ $detalle->faltante ?? $detalle->cantidad }}</td>

@@ -12,6 +12,7 @@ use App\Models\Inventario\Insumo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Models\Inventario\AreaAlmacen;
 use App\Models\PeticionInsumos\AlmacenSubarea;
 
 class PlantillaPedidoController extends Controller
@@ -61,9 +62,10 @@ class PlantillaPedidoController extends Controller
         $plantillas = $query->paginate(15)->withQueryString();
 
         // Para el modal de nueva plantilla y los filtros
-        $todasAreas = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $subareas   = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
-        $insumos    = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
+        $todasAreas   = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $subareas     = SubareaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $areasAlmacen = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
+        $insumos      = Insumo::where('activo', 1)->orderBy('descripcion')->limit(200)->get();
 
         $ajaxResponse = $this->respuestaTablaAjax(
             $request,
@@ -78,7 +80,7 @@ class PlantillaPedidoController extends Controller
         }
 
         return view('peticion_insumos.plantillas_pedido.index', compact(
-            'plantillas', 'todasAreas', 'subareas', 'insumos',
+            'plantillas', 'todasAreas', 'subareas', 'areasAlmacen', 'insumos',
             'buscar', 'idArea', 'idSubarea', 'status'
         ));
     }
@@ -127,27 +129,31 @@ class PlantillaPedidoController extends Controller
                 'integer',
                 'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
             ],
+            'id_area_almacen' => [
+                'nullable',
+                'integer',
+                'exists:areas_almacen,id_area_almacen,activo,1',
+            ],
         ], [
             'nombre.required'                 => 'El nombre de la plantilla es obligatorio.',
             'nombre.unique'                   => 'Ya existe una plantilla de pedido con este nombre en la misma área.',
             'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
             'id_area_abastecimiento.exists'   => 'El área seleccionada no es válida o está inactiva.',
             'id_subarea_abastecimiento.exists' => 'La subárea seleccionada no es válida o está inactiva.',
+            'id_area_almacen.exists'          => 'El área de almacén seleccionada no es válida o está inactiva.',
         ]);
 
-        $idAreaAlmacen = null;
-        if ($request->filled('id_subarea_abastecimiento')) {
-            $idAreaAlmacen = AlmacenSubarea::where('id_area_abastecimiento', $request->id_area_abastecimiento)
-                ->where('id_subarea_abastecimiento', $request->id_subarea_abastecimiento)
-                ->value('id_almacen_subarea');
-        }
-
+        // Nota sobre decisión de negocio (Opción A implementada):
+        // Se corrigió el bug donde id_area_almacen guardaba equivocadamente el id_almacen_subarea de AlmacenSubarea.
+        // Ahora id_area_almacen almacena la FK hacia AreaAlmacen (areas_almacen), permitiendo consultar
+        // el stock y fondo fijo reales en InsumoArea. Si el negocio requiere la Opción B (desacoplar el almacén
+        // de la plantilla y seleccionarlo sólo al crear el pedido), se deberá remover id_area_almacen de las plantillas.
         PlantillaPedido::create([
             'nombre'                    => trim($request->nombre),
             'descripcion'               => $request->filled('descripcion') ? trim($request->descripcion) : null,
             'id_area_abastecimiento'    => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento' => $request->filled('id_subarea_abastecimiento') ? $request->id_subarea_abastecimiento : null,
-            'id_area_almacen'           => $idAreaAlmacen,
+            'id_area_almacen'           => $request->filled('id_area_almacen') ? $request->id_area_almacen : null,
             'fecha_registro'            => now()->toDateString(),
             'hora_registro'             => now()->toTimeString(),
             'activo'                    => 1,
@@ -185,25 +191,24 @@ class PlantillaPedidoController extends Controller
                 'integer',
                 'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
             ],
+            'id_area_almacen' => [
+                'nullable',
+                'integer',
+                'exists:areas_almacen,id_area_almacen,activo,1',
+            ],
         ], [
             'nombre.required'                 => 'El nombre de la plantilla es obligatorio.',
             'nombre.unique'                   => 'Ya existe una plantilla con ese nombre en la misma área.',
             'id_area_abastecimiento.required' => 'Debe seleccionar un área de abastecimiento.',
+            'id_area_almacen.exists'          => 'El área de almacén seleccionada no es válida o está inactiva.',
         ]);
-
-        $idAreaAlmacen = null;
-        if ($request->filled('id_subarea_abastecimiento')) {
-            $idAreaAlmacen = AlmacenSubarea::where('id_area_abastecimiento', $request->id_area_abastecimiento)
-                ->where('id_subarea_abastecimiento', $request->id_subarea_abastecimiento)
-                ->value('id_almacen_subarea');
-        }
 
         $plantilla->update([
             'nombre'                    => trim($request->nombre),
             'descripcion'               => $request->filled('descripcion') ? trim($request->descripcion) : null,
             'id_area_abastecimiento'    => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento' => $request->filled('id_subarea_abastecimiento') ? $request->id_subarea_abastecimiento : null,
-            'id_area_almacen'           => $idAreaAlmacen,
+            'id_area_almacen'           => $request->filled('id_area_almacen') ? $request->id_area_almacen : null,
         ]);
 
         return redirect()

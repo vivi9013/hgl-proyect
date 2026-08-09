@@ -66,7 +66,7 @@
                             <div class="row g-2 align-items-center">
                                 <div class="col-md-7 position-relative">
                                     <input type="text" class="form-control form-control-sm" id="inputBuscarInsumo" placeholder="Escriba clave o nombre del medicamento / material..." autocomplete="off">
-                                    <div id="dropdownInsumosResult" class="dropdown-menu w-100 shadow" style="max-height: 250px; overflow-y: auto; display: none;"></div>
+                                    <div id="dropdownInsumosResult" class="dropdown-menu w-100 shadow" style="max-height: 250px; overflow-y: auto; display: none; z-index: 1035;"></div>
                                 </div>
                                 <div class="col-md-2">
                                     <input type="number" class="form-control form-control-sm" id="inputCantidadInsumo" placeholder="Cantidad" min="1" value="1">

@@ -115,6 +115,9 @@ export default defineConfig({
                 // Soporte Técnico: Áreas Assets
                 'resources/css/soporte_tecnico/soporte_area/soporte_area.css',
                 'resources/js/soporte_tecnico/soporte_area/soporte_area.js',
+                // Soporte Técnico: Solicitar Servicio Assets
+                'resources/css/soporte_tecnico/solicitar_servicio/solicitar_servicio.css',
+                'resources/js/soporte_tecnico/solicitar_servicio/solicitar_servicio.js',
                 // Departamentos Assets
                 'resources/css/departamentos/departamentos.css',
                 'resources/js/departamentos/departamentos.js',

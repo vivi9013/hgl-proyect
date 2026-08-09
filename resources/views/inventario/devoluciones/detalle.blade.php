@@ -51,6 +51,13 @@
                     </button>
                 </form>
             </div>
+        @elseif($devolucion->status === 'Terminado')
+            <div class="d-flex gap-2 align-items-center">
+                <a href="{{ route('devoluciones.comprobante', $devolucion->id_devolucion) }}" target="_blank" class="btn btn-outline-primary rounded-pill shadow-sm"
+                   style="font-size: 0.85rem; font-weight: 700; padding: 0.5rem 1.4rem;">
+                    <i class="fa fa-print me-1"></i>Imprimir Comprobante
+                </a>
+            </div>
         @endif
     </div>
 
@@ -100,11 +107,12 @@
                                    autocomplete="off">
                             {{-- Input oculto necesario para enviar el identificador único del insumo seleccionado al backend. --}}
                             <input type="hidden" name="id_insumo" id="id_insumo_detalle">
+                            <input type="hidden" id="modal_id_area_almacen_detalle" value="{{ $devolucion->id_area_almacen }}">
                             {{-- Contenedor flotante que el script de JavaScript poblará con sugerencias AJAX al escribir en el input. --}}
                             <div id="sugerenciasDetalle" class="list-group position-absolute w-100"
                                  style="z-index:1060; display:none; max-height:200px; overflow-y:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             </div>
-                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/devoluciones/buscar-insumos'" :columna-extra="'none'" />
+                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/devoluciones/buscar-insumos'" :columna-extra="'stock'" :area-input-id="'modal_id_area_almacen_detalle'" />
                             @error('id_insumo')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror

@@ -41,6 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let insumoSeleccionadoTemp = null;
     let debounceTimer = null;
 
+    // ── Utilidad: Escapado HTML para prevenir XSS ──
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     // ── 1. Cargar Tabla Vía AJAX ──
     function cargarTabla(page = 1) {
         if (!containerTabla) return;
@@ -139,6 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const term = this.value.trim();
             const idAlmacen = selectAlmacen ? selectAlmacen.value : null;
 
+            clearTimeout(debounceTimer);
+
             if (term.length < 2) {
                 dropdownResult.style.display = 'none';
                 dropdownResult.innerHTML = '';
@@ -146,13 +159,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(term)}&id_area_almacen=${idAlmacen}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(res => res.json())
                 .then(data => {
+                    // Si el usuario ya cambió el texto mientras la petición estaba en curso, ignorar esta respuesta obsoleta
+                    if (inputBuscarInsumo.value.trim() !== term) {
+                        return;
+                    }
                     if (data.length === 0) {
                         dropdownResult.innerHTML = '<div class="dropdown-item disabled text-muted">No se encontraron insumos</div>';
                     } else {
@@ -160,13 +176,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         data.forEach(item => {
                             itemsHtml += `
                                 <div class="dropdown-item item-insumo-option" 
-                                     data-id="${item.id_insumo}" 
-                                     data-clave="${item.clave}" 
-                                     data-desc="${item.descripcion}"
-                                     data-existencia="${item.existencia}"
-                                     data-fondo="${item.fondo_fijo}">
-                                    <div class="fw-bold text-dark">[${item.clave}] ${item.descripcion}</div>
-                                    <div class="small text-muted">Stock: ${item.existencia} | Fondo Fijo: ${item.fondo_fijo}</div>
+                                     data-id="${escapeHtml(item.id_insumo)}" 
+                                     data-clave="${escapeHtml(item.clave)}" 
+                                     data-desc="${escapeHtml(item.descripcion)}"
+                                     data-existencia="${escapeHtml(item.existencia)}"
+                                     data-fondo="${escapeHtml(item.fondo_fijo)}">
+                                    <div class="fw-bold text-dark">[${escapeHtml(item.clave)}] ${escapeHtml(item.descripcion)}</div>
+                                    <div class="small text-muted">Stock: ${escapeHtml(item.existencia)} | Fondo Fijo: ${escapeHtml(item.fondo_fijo)}</div>
                                 </div>
                             `;
                         });
@@ -310,13 +326,13 @@ document.addEventListener('DOMContentLoaded', function () {
         listaInsumos.forEach((item, index) => {
             html += `
                 <tr>
-                    <td class="font-monospace fw-bold">[${item.clave}]</td>
-                    <td>${item.descripcion}</td>
-                    <td class="text-center"><span class="badge bg-light text-dark border">${item.existencia}</span></td>
-                    <td class="text-center"><span class="badge bg-light text-dark border">${item.fondo_fijo}</span></td>
+                    <td class="font-monospace fw-bold">[${escapeHtml(item.clave)}]</td>
+                    <td>${escapeHtml(item.descripcion)}</td>
+                    <td class="text-center"><span class="badge bg-light text-dark border">${escapeHtml(item.existencia)}</span></td>
+                    <td class="text-center"><span class="badge bg-light text-dark border">${escapeHtml(item.fondo_fijo)}</span></td>
                     <td class="text-center">
                         <input type="number" class="form-control form-control-sm text-center input-item-cant mx-auto" 
-                               style="width: 80px;" data-index="${index}" min="1" value="${item.cantidad}">
+                               style="width: 80px;" data-index="${index}" min="1" value="${escapeHtml(item.cantidad)}">
                     </td>
                     <td class="text-end">
                         <button type="button" class="btn btn-outline-danger btn-sm btn-remover-item" data-index="${index}" title="Quitar insumo">
@@ -399,6 +415,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
+        // Deshabilitar el botón de envío para prevenir doble clic
+        const esEnvio = statusDestino === 'terminado';
+        if (esEnvio && btnEnviarPedido) {
+            btnEnviarPedido.disabled = true;
+            btnEnviarPedido.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Enviando...';
+        }
+
         fetch('/peticion-insumos/pedidos/guardar', {
             method: 'POST',
             headers: {
@@ -435,6 +458,13 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(err => {
             mostrarAlertaError('Error de red al guardar el pedido.');
+        })
+        .finally(() => {
+            // Restaurar el botón de envío en cualquier caso
+            if (esEnvio && btnEnviarPedido) {
+                btnEnviarPedido.disabled = false;
+                btnEnviarPedido.innerHTML = '<i class="bi bi-send"></i> Enviar Pedido';
+            }
         });
     }
 

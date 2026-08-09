@@ -37,38 +37,3 @@
     background-color: #16a34a;
     border-color: #16a34a;
 }
-
-/* ── Paginación sencilla en negro ─────────────────────────────────────────── */
-.pagination {
-    margin: 0 !important;
-}
-
-.pagination .page-link {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    padding: 0.4rem 0.85rem !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    margin: 0 2px !important;
-    transition: all 0.2s ease-in-out;
-}
-
-.pagination .page-link:hover {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-.pagination .page-item.active .page-link {
-    background-color: #000000 !important;
-    border-color: #000000 !important;
-    color: #ffffff !important;
-}
-
-.pagination .page-item.disabled .page-link {
-    color: #9ca3af !important;
-    background-color: #f9fafb !important;
-    border-color: #e5e7eb !important;
-}

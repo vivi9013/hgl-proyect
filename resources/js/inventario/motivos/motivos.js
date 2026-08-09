@@ -80,27 +80,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── 1. Alertas SweetAlert2 con sesión de Laravel ──────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
-    const alertaExito  = document.getElementById('alertaExito');
 
     if (alertaExitog && typeof Swal !== 'undefined') {
+        const msg = alertaExitog.getAttribute('data-message') || 'Operación realizada correctamente.';
         Swal.fire({
             title: '¡Operación Satisfactoria!',
-            text: 'El motivo se ha guardado correctamente.',
+            text: msg,
             icon: 'success',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Aceptar'
         });
     }
 
-    if (alertaExito && typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: '¡Operación Satisfactoria!',
-            text: 'El motivo se ha actualizado correctamente.',
-            icon: 'success',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Aceptar'
-        });
-    }
 
     // ── 2. Verificación AJAX de disponibilidad de descripción (debounce 300 ms) ─
     if (inputDescripcion && feedbackDisponibilidad && loadingSpinner && btnGuardar) {

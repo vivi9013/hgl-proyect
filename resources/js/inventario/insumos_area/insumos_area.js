@@ -1,4 +1,5 @@
 import { initPanelClaves } from '../shared/panel-claves.js';
+import { clasificarStock } from '../../shared/stock-niveles.js';
 
 /**
  * Lógica JavaScript para Insumos por Área
@@ -31,30 +32,36 @@ document.addEventListener('DOMContentLoaded', function () {
     let clavesCache = [];
 
     // --- 2. ALERTAS CON SWEETALERT2 ---
-    const alertaExitog = document.getElementById('alertaExitog');
-    const alertaExito = document.getElementById('alertaExito');
+    const mostrarAlertaSesion = (idElemento) => {
+        const el = document.getElementById(idElemento);
+        if (el && typeof Swal !== 'undefined') {
+            const msg = el.getAttribute('data-message') || 'Operación realizada correctamente.';
+            Swal.fire({
+                title: '¡Operación Satisfactoria!',
+                text: msg,
+                icon: 'success',
+                confirmButtonColor: '#0d6efd',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    };
 
-    if (alertaExitog && typeof Swal !== 'undefined') {
-        const msg = alertaExitog.getAttribute('data-message') || 'Operación realizada correctamente.';
-        Swal.fire({
-            title: '¡Operación Satisfactoria!',
-            text: msg,
-            icon: 'success',
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+    mostrarAlertaSesion('alertaExitog');
+    mostrarAlertaSesion('alertaExito');
 
-    if (alertaExito && typeof Swal !== 'undefined') {
-        const msg = alertaExito.getAttribute('data-message') || 'Operación realizada correctamente.';
-        Swal.fire({
-            title: '¡Operación Satisfactoria!',
-            text: msg,
-            icon: 'success',
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'Aceptar'
-        });
-    }
+    const mostrarToast = (icon, title) => {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                icon: icon,
+                title: title
+            });
+        }
+    };
 
     // --- 3. AUTOCOMPLETADO DE INSUMOS ---
     const resetearFormInsumo = () => {
@@ -88,6 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return res.json();
             })
             .then(data => {
+                if ((inputBuscarInsumo?.value || '').trim() !== query) {
+                    return;
+                }
                 if (sugerenciasDiv) {
                     sugerenciasDiv.innerHTML = '';
                     if (!data || data.length === 0) {
@@ -181,11 +191,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    let esReabiertoPorError = document.querySelector('#modalAsignarInsumo .is-invalid') !== null;
+
     const modalAsignar = document.getElementById('modalAsignarInsumo');
     if (modalAsignar) {
         modalAsignar.addEventListener('hidden.bs.modal', () => {
             if (panelClaves) panelClaves.style.display = 'none';
             clavesCache = [];
+            if (esReabiertoPorError) {
+                esReabiertoPorError = false;
+                return;
+            }
             if (formAsignar) {
                 formAsignar.reset();
                 if (inputIdInsumo) inputIdInsumo.value = '';
@@ -207,35 +223,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (icono && stockInput) {
-            stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
+            const fondoFijo = stockInput.getAttribute('data-fondo') || 0;
+            const meta = clasificarStock(stock, fondoFijo);
 
-            if (porcentaje < 25) {
-                icono.className = "fa fa-thermometer-empty fa-2x thermometer-icon";
-                icono.style.color = "#d63031";
-                stockInput.classList.add('stock-muy-bajo');
-            } else if (porcentaje >= 25 && porcentaje < 50) {
-                icono.className = "fa fa-thermometer-quarter fa-2x thermometer-icon";
-                icono.style.color = "#e67e22";
-                stockInput.classList.add('stock-bajo');
-            } else if (porcentaje >= 50 && porcentaje < 75) {
-                icono.className = "fa fa-thermometer-half fa-2x thermometer-icon";
-                icono.style.color = "#f1c40f";
-                stockInput.classList.add('stock-regular');
-            } else if (porcentaje >= 75 && porcentaje <= 100) {
-                icono.className = "fa fa-thermometer-three-quarters fa-2x thermometer-icon";
-                icono.style.color = "#27ae60";
-                stockInput.classList.add('stock-suficiente');
-            } else {
-                icono.className = "fa fa-thermometer-full fa-2x thermometer-icon";
-                icono.style.color = "#2980b9";
-                stockInput.classList.add('stock-excedido');
-            }
+            stockInput.classList.remove('stock-muy-bajo', 'stock-bajo', 'stock-regular', 'stock-suficiente', 'stock-excedido');
+            icono.className = meta.iconoClass;
+            icono.style.color = meta.color;
+            stockInput.classList.add(meta.stockClass);
         }
     };
 
     const enviarStockAjax = (id, stockVal, inputEl) => {
         if (isNaN(stockVal) || stockVal < 0) {
-            if (typeof alertify !== 'undefined') alertify.error("Cantidad de stock errónea.");
+            mostrarToast('error', 'Cantidad de stock errónea.');
             return;
         }
 
@@ -256,18 +256,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.ok) {
                 actualizarVisualPorcentaje(id, data.porcentaje, data.stock);
                 inputEl.setAttribute('data-fondo', data.fondo_fijo);
-                if (typeof alertify !== 'undefined') alertify.success("Stock actualizado correctamente.");
+                mostrarToast('success', 'Stock actualizado correctamente.');
             }
         })
         .catch(error => {
             console.error('Error al guardar stock:', error);
-            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el stock.");
+            mostrarToast('error', 'Error al actualizar el stock.');
         });
     };
 
     const enviarFondoFijoAjax = (id, ffVal, inputEl) => {
         if (isNaN(ffVal) || ffVal <= 0) {
-            if (typeof alertify !== 'undefined') alertify.error("Fondo fijo erróneo (debe ser mayor a 0).");
+            mostrarToast('error', 'Fondo fijo erróneo (debe ser mayor a 0).');
             return;
         }
 
@@ -291,12 +291,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (stockInput) {
                     stockInput.setAttribute('data-fondo', data.fondo_fijo);
                 }
-                if (typeof alertify !== 'undefined') alertify.success("Fondo Fijo actualizado correctamente.");
+                mostrarToast('success', 'Fondo Fijo actualizado correctamente.');
             }
         })
         .catch(error => {
             console.error('Error al guardar fondo fijo:', error);
-            if (typeof alertify !== 'undefined') alertify.error("Error al actualizar el fondo fijo.");
+            mostrarToast('error', 'Error al actualizar el fondo fijo.');
         });
     };
 
@@ -349,7 +349,7 @@ window.llenarListaReporte = function() {
     if (document.getElementById('chkExcedido') && document.getElementById('chkExcedido').checked) niveles.push('excedido');
 
     // Construir los parámetros
-    let queryParams = `id_area_almacen=${areaId}`;
+    let queryParams = `area_id=${areaId}`;
     niveles.forEach(nivel => {
         queryParams += `&niveles[]=${nivel}`;
     });
@@ -368,63 +368,134 @@ window.llenarListaReporte = function() {
         if (spinner) spinner.style.display = 'none';
 
         if (data.ok) {
-            let tbody = '';
-            data.insumos.forEach((ia, index) => {
-                let colorClass = '';
-                let badgeClass = '';
-                if (ia.porcentaje < 25) {
-                    colorClass = 'stock-muy-bajo';
-                    badgeClass = 'stock-muy-bajo-badge';
-                } else if (ia.porcentaje >= 25 && ia.porcentaje < 50) {
-                    colorClass = 'stock-bajo';
-                    badgeClass = 'stock-bajo-badge';
-                } else if (ia.porcentaje >= 50 && ia.porcentaje < 75) {
-                    colorClass = 'stock-regular';
-                    badgeClass = 'stock-regular-badge';
-                } else if (ia.porcentaje >= 75 && ia.porcentaje <= 100) {
-                    colorClass = 'stock-suficiente';
-                    badgeClass = 'stock-suficiente-badge';
-                } else {
-                    colorClass = 'stock-excedido';
-                    badgeClass = 'stock-excedido-badge';
-                }
+            window.reporteInsumosCache = data.insumos || [];
+            window.reportePaginaActual = 1;
+            window.reportePorPagina = 10;
 
-                tbody += `
-                    <tr>
-                        <td class="text-center">${index + 1}</td>
-                        <td class="text-center font-weight-bold">${ia.clave}</td>
-                        <td>${ia.descripcion}</td>
-                        <td class="text-center"><span class="badge bg-secondary">${ia.tipo}</span></td>
-                        <td class="text-center">${ia.area}</td>
-                        <td class="text-center fw-bold ${colorClass}">${ia.stock}</td>
-                        <td class="text-center">${ia.fondo_fijo}</td>
-                        <td class="text-center"><span class="badge ${badgeClass} badge-porcentaje">${ia.porcentaje} %</span></td>
-                    </tr>
-                `;
-            });
+            const btnImp = document.getElementById('btnImprimirReporte');
+            if (btnImp) btnImp.disabled = window.reporteInsumosCache.length === 0;
 
-            if (data.insumos.length === 0) {
-                tbody = `
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
-                            <i class="fa fa-info-circle fa-2x mb-2 d-block"></i>
-                            No se encontraron insumos que coincidan con los niveles de stock seleccionados.
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('btnImprimirReporte').disabled = true;
-            } else {
-                document.getElementById('btnImprimirReporte').disabled = false;
-            }
-
-            document.getElementById('tablaReporteCuerpo').innerHTML = tbody;
             document.getElementById('total_insumos').innerText = `Total en stock: ${data.total_stock}`;
+            renderizarPaginaReporte();
         }
     })
     .catch(error => {
         if (spinner) spinner.style.display = 'none';
         console.error('Error al cargar reporte:', error);
     });
+};
+
+window.renderizarPaginaReporte = function() {
+    const lista = window.reporteInsumosCache || [];
+    const total = lista.length;
+    const porPagina = window.reportePorPagina || 10;
+    const paginaActual = window.reportePaginaActual || 1;
+    const totalPaginas = Math.ceil(total / porPagina) || 1;
+
+    const inicio = (paginaActual - 1) * porPagina;
+    const fin = Math.min(inicio + porPagina, total);
+    const paginados = lista.slice(inicio, fin);
+
+    let tbody = '';
+    if (total === 0) {
+        tbody = `
+            <tr>
+                <td colspan="8" class="text-center text-muted py-4">
+                    <i class="fa fa-info-circle fa-2x mb-2 d-block"></i>
+                    No se encontraron insumos que coincidan con los niveles de stock seleccionados.
+                </td>
+            </tr>
+        `;
+    } else {
+        paginados.forEach((ia, idx) => {
+            const meta = clasificarStock(ia.stock, ia.fondo_fijo);
+            const colorClass = meta.stockClass;
+            const badgeClass = `${meta.stockClass}-badge`;
+
+            tbody += `
+                <tr>
+                    <td class="text-center fw-bold text-muted">${inicio + idx + 1}</td>
+                    <td class="text-center fw-bold" style="white-space: nowrap;">${ia.clave}</td>
+                    <td style="word-break: break-word; min-width: 140px;">${ia.descripcion}</td>
+                    <td class="text-center" style="white-space: nowrap;"><span class="badge bg-secondary" style="font-size: 0.75rem;">${ia.tipo}</span></td>
+                    <td class="text-center" style="white-space: nowrap;"><span class="badge bg-light text-dark border">${ia.area}</span></td>
+                    <td class="text-center fw-bold ${colorClass}">${ia.stock}</td>
+                    <td class="text-center">${ia.fondo_fijo}</td>
+                    <td class="text-center" style="white-space: nowrap;"><span class="badge ${badgeClass} badge-porcentaje">${ia.porcentaje} %</span></td>
+                </tr>
+            `;
+        });
+    }
+
+    document.getElementById('tablaReporteCuerpo').innerHTML = tbody;
+
+    // Renderizar Controles de Paginación Compactos
+    const paginadorEl = document.getElementById('paginadorReporte');
+    if (!paginadorEl) return;
+
+    if (total === 0) {
+        paginadorEl.style.setAttribute('style', 'display: none !important;');
+        return;
+    }
+
+    paginadorEl.removeAttribute('style');
+    paginadorEl.className = 'd-flex justify-content-between align-items-center border-top pt-3 mt-3 flex-wrap gap-2';
+
+    // Generar únicamente las páginas cercanas a la actual
+    let botonesPaginas = '';
+    const maxVisibles = 5;
+    let pagInicio = Math.max(1, paginaActual - 2);
+    let pagFin = Math.min(totalPaginas, pagInicio + maxVisibles - 1);
+
+    if (pagFin - pagInicio + 1 < maxVisibles) {
+        pagInicio = Math.max(1, pagFin - maxVisibles + 1);
+    }
+
+    if (pagInicio > 1) {
+        botonesPaginas += `<button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="cambiarPaginaReporte(1)">1</button>`;
+        if (pagInicio > 2) {
+            botonesPaginas += `<span class="px-1 text-muted">…</span>`;
+        }
+    }
+
+    for (let p = pagInicio; p <= pagFin; p++) {
+        if (p === paginaActual) {
+            botonesPaginas += `<button type="button" class="btn btn-sm btn-primary active me-1">${p}</button>`;
+        } else {
+            botonesPaginas += `<button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="cambiarPaginaReporte(${p})">${p}</button>`;
+        }
+    }
+
+    if (pagFin < totalPaginas) {
+        if (pagFin < totalPaginas - 1) {
+            botonesPaginas += `<span class="px-1 text-muted">…</span>`;
+        }
+        botonesPaginas += `<button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="cambiarPaginaReporte(${totalPaginas})">${totalPaginas}</button>`;
+    }
+
+    paginadorEl.innerHTML = `
+        <div class="text-muted small">
+            Mostrando ${inicio + 1} a ${fin} de ${total} insumos (Página ${paginaActual} de ${totalPaginas})
+        </div>
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-secondary" ${paginaActual === 1 ? 'disabled' : ''} onclick="cambiarPaginaReporte(${paginaActual - 1})">
+                <i class="fa fa-chevron-left me-1"></i> Anterior
+            </button>
+            <div class="d-inline-flex align-items-center px-1">
+                ${botonesPaginas}
+            </div>
+            <button type="button" class="btn btn-outline-secondary" ${paginaActual === totalPaginas ? 'disabled' : ''} onclick="cambiarPaginaReporte(${paginaActual + 1})">
+                Siguiente <i class="fa fa-chevron-right ms-1"></i>
+            </button>
+        </div>
+    `;
+};
+
+window.cambiarPaginaReporte = function(nuevaPagina) {
+    const totalPaginas = Math.ceil((window.reporteInsumosCache || []).length / (window.reportePorPagina || 10));
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) return;
+    window.reportePaginaActual = nuevaPagina;
+    renderizarPaginaReporte();
 };
 
 window.imprimirReporte = function() {
@@ -438,7 +509,7 @@ window.imprimirReporte = function() {
     if (document.getElementById('chkSuficiente') && document.getElementById('chkSuficiente').checked) niveles.push('suficiente');
     if (document.getElementById('chkExcedido') && document.getElementById('chkExcedido').checked) niveles.push('excedido');
 
-    let queryParams = `id_area_almacen=${areaId}`;
+    let queryParams = `area_id=${areaId}`;
     niveles.forEach(nivel => {
         queryParams += `&niveles[]=${nivel}`;
     });
@@ -464,3 +535,13 @@ window.imprimirReporte = function() {
         }
     }
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    const filtroAreaEl = document.getElementById('filtro_area');
+    const formBuscarFiltrosEl = document.getElementById('formBuscarFiltros');
+    if (filtroAreaEl && formBuscarFiltrosEl) {
+        filtroAreaEl.addEventListener('change', function () {
+            formBuscarFiltrosEl.submit();
+        });
+    }
+});

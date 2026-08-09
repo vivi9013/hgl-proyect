@@ -53,10 +53,7 @@ class DetalleEntradaCendisController extends Controller
         if ($detalleExistente) {
             $nuevoSolicitado = (int)$detalleExistente->solicitado + (int)$request->solicitado;
             $nuevoCantidad   = (int)$detalleExistente->cantidad + (int)$request->cantidad;
-            $nuevoFaltante   = $nuevoSolicitado - $nuevoCantidad;
-            if ($nuevoFaltante < 0) {
-                $nuevoFaltante = 0;
-            }
+            $nuevoFaltante   = $this->calcularFaltante($nuevoSolicitado, $nuevoCantidad);
 
             $detalleExistente->update([
                 'solicitado' => $nuevoSolicitado,
@@ -96,22 +93,23 @@ class DetalleEntradaCendisController extends Controller
             'cantidad' => 'required|integer|min:0',
         ]);
 
-        $solicitado = (int)$detalle->solicitado;
         $cantidad   = (int)$request->cantidad;
-        $faltante   = $solicitado - $cantidad;
-        if ($faltante < 0) {
-            $faltante = 0;
-        }
+        $solicitado = (int)($detalle->solicitado ?? $detalle->cantidad);
+        $faltante   = $this->calcularFaltante($solicitado, $cantidad);
 
         $detalle->update([
-            'cantidad' => $cantidad,
-            'faltante' => $faltante,
+            'cantidad'   => $cantidad,
+            'solicitado' => $solicitado,
+            'faltante'   => $faltante,
         ]);
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'ok'      => true,
-                'mensaje' => 'Cantidad actualizada correctamente.'
+                'ok'         => true,
+                'mensaje'    => 'Cantidad actualizada correctamente.',
+                'solicitado' => $solicitado,
+                'cantidad'   => $cantidad,
+                'faltante'   => $faltante,
             ]);
         }
 
@@ -151,5 +149,13 @@ class DetalleEntradaCendisController extends Controller
         return redirect()
             ->route('entradas_cendis.detalle', $idEntrada)
             ->with('exito', 'Insumo eliminado de la entrada.');
+    }
+
+    /**
+     * Calcula la cantidad faltante asegurando un piso de cero.
+     */
+    private function calcularFaltante(int $solicitado, int $cantidad): int
+    {
+        return max(0, $solicitado - $cantidad);
     }
 }

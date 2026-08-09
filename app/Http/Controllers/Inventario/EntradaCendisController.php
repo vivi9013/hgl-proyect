@@ -12,9 +12,15 @@ use App\Models\Inventario\InsumoArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ParseaRangoFechas;
+use App\Traits\AjustaStockInsumoArea;
+use App\Traits\BuscaInsumosAjax;
+use App\Traits\ConsultaStockInsumoArea;
 
 class EntradaCendisController extends Controller
 {
+    use ParseaRangoFechas, AjustaStockInsumoArea, BuscaInsumosAjax, ConsultaStockInsumoArea;
+
     private const PER_PAGE = 10;
 
     /**
@@ -26,12 +32,10 @@ class EntradaCendisController extends Controller
         $fechaInit = $request->get('fecha_inicio', '');
         $fechaFin  = $request->get('fecha_fin', '');
 
-        [$fechaInitDb, $fechaInit] = $this->normalizarFecha($fechaInit);
-        [$fechaFinDb,  $fechaFin]  = $this->normalizarFecha($fechaFin);
+        [$fechaInitDb, $fechaFinDb, $errorMsg] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
-        if ($fechaInitDb && $fechaFinDb && $fechaInitDb > $fechaFinDb) {
-            return redirect()->back()->withInput()
-                ->with('error', 'La fecha de inicio no puede ser posterior a la fecha de fin.');
+        if ($errorMsg) {
+            return redirect()->back()->withInput()->with('error', $errorMsg);
         }
 
         $query = EntradaCendis::with(['areaAlmacen', 'areaSurtimiento', 'usuario.persona'])
@@ -124,8 +128,7 @@ class EntradaCendisController extends Controller
                     ->first();
 
                 if ($insumoArea) {
-                    $nuevoStock = (int)$insumoArea->stock + (int)$detalle->cantidad;
-                    $insumoArea->update(['stock' => (string)$nuevoStock]);
+                    $this->ajustarStockInsumoArea($insumoArea, (int) $detalle->cantidad, 'sumar');
                 } else {
                     InsumoArea::create([
                         'id_insumo'       => $detalle->id_insumo,
@@ -200,8 +203,11 @@ class EntradaCendisController extends Controller
         $fechaInit = $request->get('fecha_inicio', '');
         $fechaFin  = $request->get('fecha_fin', '');
 
-        [$fechaInitDb, $fechaInit] = $this->normalizarFecha($fechaInit);
-        [$fechaFinDb,  $fechaFin]  = $this->normalizarFecha($fechaFin);
+        [$fechaInitDb, $fechaFinDb, $errorMsg] = $this->parsearRangoFechas($fechaInit, $fechaFin);
+
+        if ($errorMsg) {
+            return redirect()->back()->withInput()->with('error', $errorMsg);
+        }
 
         $query = EntradaCendis::with(['areaAlmacen', 'areaSurtimiento', 'usuario.persona'])
             ->where('status', 'Terminado')
@@ -247,12 +253,10 @@ class EntradaCendisController extends Controller
         $idAreaAlmacen       = $request->get('id_area_almacen', '');
         $idAreaSurtimiento   = $request->get('id_area_surtimiento', '');
 
-        [$fechaInitDb, $fechaInit] = $this->normalizarFecha($fechaInit);
-        [$fechaFinDb,  $fechaFin]  = $this->normalizarFecha($fechaFin);
+        [$fechaInitDb, $fechaFinDb, $errorMsg] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
-        if ($fechaInitDb && $fechaFinDb && $fechaInitDb > $fechaFinDb) {
-            [$fechaInitDb, $fechaFinDb] = [$fechaFinDb, $fechaInitDb];
-            [$fechaInit,   $fechaFin]   = [$fechaFin,   $fechaInit];
+        if ($errorMsg) {
+            return redirect()->back()->withInput()->with('error', $errorMsg);
         }
 
         $query = EntradaCendis::with(['detalles.insumo', 'areaAlmacen', 'areaSurtimiento', 'usuario.persona'])
@@ -282,76 +286,8 @@ class EntradaCendisController extends Controller
         ));
     }
 
-    /**
-     * Autocompletado AJAX de insumos (por clave o descripción).
-     */
-    public function buscarInsumos(Request $request)
-    {
-        $termino = $request->get('q', '');
-        $all     = $request->boolean('all', false);
 
-        if (!$all && strlen($termino) < 2) {
-            return response()->json([]);
-        }
 
-        $query = Insumo::where('activo', 1);
 
-        if (strlen($termino) >= 1) {
-            $query->where(function ($q) use ($termino) {
-                $q->where('descripcion', 'LIKE', "%{$termino}%")
-                  ->orWhere('clave', 'LIKE', "%{$termino}%");
-            });
-        }
-
-        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get();
-
-        return response()->json($insumos);
-    }
-
-    /**
-     * Consultar stock actual de un insumo en un almacén.
-     */
-    public function consultarStock(Request $request)
-    {
-        $idInsumo = $request->get('id_insumo');
-        $idArea   = $request->get('id_area_almacen');
-
-        if (!$idInsumo || !$idArea) {
-            return response()->json([
-                'stock' => 0,
-                'error' => 'Parámetros incompletos'
-            ]);
-        }
-
-        $insumoArea = InsumoArea::where('id_insumo', $idInsumo)
-            ->where('id_area_almacen', $idArea)
-            ->first();
-
-        $stock = $insumoArea ? (int)$insumoArea->stock : 0;
-
-        return response()->json([
-            'stock' => $stock
-        ]);
-    }
-
-    /**
-     * Normalizar fecha helper.
-     */
-    private function normalizarFecha(?string $fecha): array
-    {
-        if (empty($fecha)) return [null, ''];
-
-        try {
-            $db = str_contains($fecha, '/')
-                ? \Carbon\Carbon::createFromFormat('d/m/Y', $fecha)->format('Y-m-d')
-                : \Carbon\Carbon::parse($fecha)->format('Y-m-d');
-
-            return [$db, $db];
-        } catch (\Exception $e) {
-            return [null, ''];
-        }
-    }
 }
+

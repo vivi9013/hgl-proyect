@@ -27,17 +27,10 @@
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     {{-- ── Alertas SweetAlert2 ── --}}
-    {{-- @if evalúa la existencia de una clave en la sesión flash. --}}
-    {{-- session('exitog') comprueba si se ha guardado una confirmación de registro global en la sesión. --}}
-    {{-- Renderiza un div vacío con ID específico que sirve de disparador para mostrar notificaciones SweetAlert en JavaScript. --}}
     @if(session('exitog'))
-        <div id="alertaExitog"></div>
+        <div id="alertaExitog" data-message="{{ session('exitog') }}"></div>
     @endif
-    {{-- session('exito') recupera el mensaje de confirmación de edición o cambio de estado. --}}
-    {{-- Sirve para notificar visualmente al usuario cuando una acción finaliza con éxito. --}}
-    @if(session('exito'))
-        <div id="alertaExito"></div>
-    @endif
+
 
     {{-- ── Buscador y Acciones ── --}}
     <div class="row mb-4 align-items-end g-3">

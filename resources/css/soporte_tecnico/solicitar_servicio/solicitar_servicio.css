@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SOLICITAR SERVICIO — Estilos del módulo
+   Soporte Técnico / Servicios Internos
+   Sigue el estándar de diseño clásico-profesional del sistema HGL
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Variables ─────────────────────────────────────────────────────────── */
+:root {
+    --ss-border   : #000;
+    --ss-bg-card  : #fff;
+    --ss-text-muted: #6c757d;
+    --ss-badge-pend: #ffc107;
+    --ss-badge-ok  : #198754;
+}
+
+/* ─── Tarjetas de Áreas ──────────────────────────────────────────────────── */
+.area-card {
+    border         : 1.5px solid var(--ss-border);
+    border-radius  : 8px;
+    background     : var(--ss-bg-card);
+    transition     : transform 0.15s ease, box-shadow 0.15s ease;
+    cursor         : pointer;
+    overflow       : hidden;
+    min-height     : 140px;
+    position       : relative;
+}
+
+.area-card:hover {
+    transform  : translateY(-3px);
+    box-shadow : 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Encabezado coloreado de la tarjeta */
+.area-card-header {
+    display        : flex;
+    align-items    : center;
+    gap            : 0.75rem;
+    padding        : 0.85rem 1rem;
+    border-bottom  : 1.5px solid var(--ss-border);
+    font-weight    : 700;
+    font-size      : 0.95rem;
+    color          : #fff;
+}
+
+.area-card-header i {
+    font-size: 1.5rem;
+}
+
+/* Cuerpo de la tarjeta */
+.area-card-body {
+    padding: 0.85rem 1rem;
+}
+
+/* Badge de pendientes */
+.badge-pendientes {
+    font-size     : 0.78rem;
+    font-weight   : 600;
+    padding       : 0.35em 0.7em;
+    border-radius : 20px;
+    background    : var(--ss-badge-pend);
+    color         : #000;
+}
+
+.badge-pendientes.sin-pendientes {
+    background: #e9ecef;
+    color     : var(--ss-text-muted);
+}
+
+/* Botón de solicitud dentro de la tarjeta */
+.btn-generar-solicitud {
+    width           : 100%;
+    background      : #000;
+    color           : #fff;
+    border          : none;
+    border-radius   : 5px;
+    padding         : 0.45rem 1rem;
+    font-size       : 0.82rem;
+    font-weight     : 600;
+    transition      : background 0.15s ease, transform 0.1s ease;
+    margin-top      : 0.75rem;
+}
+
+.btn-generar-solicitud:hover {
+    background: #333;
+    transform : scale(1.02);
+    color     : #fff;
+}
+
+/* ─── Header del módulo ──────────────────────────────────────────────────── */
+.modulo-header {
+    display        : flex;
+    align-items    : center;
+    justify-content: space-between;
+    flex-wrap      : wrap;
+    gap            : 0.75rem;
+    margin-bottom  : 1.2rem;
+    padding-bottom : 0.8rem;
+    border-bottom  : 2px solid #000;
+}
+
+.modulo-header h5 {
+    font-weight: 700;
+    font-size  : 1rem;
+    margin     : 0;
+}
+
+/* ─── Tabla de seguimiento e historial ───────────────────────────────────── */
+.tabla-servicios {
+    width     : 100%;
+    font-size : 0.87rem;
+    border-collapse: collapse;
+}
+
+.tabla-servicios thead th {
+    background   : #000;
+    color        : #fff;
+    padding      : 0.6rem 0.75rem;
+    font-weight  : 600;
+    text-align   : center;
+    white-space  : nowrap;
+    border       : 1px solid #000;
+}
+
+.tabla-servicios tbody td {
+    padding    : 0.55rem 0.75rem;
+    border     : 1px solid #dee2e6;
+    vertical-align: middle;
+    text-align : center;
+}
+
+.tabla-servicios tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* ─── Badges de estado ───────────────────────────────────────────────────── */
+.badge-estado {
+    font-size     : 0.77rem;
+    font-weight   : 600;
+    padding       : 0.3em 0.65em;
+    border-radius : 20px;
+    white-space   : nowrap;
+}
+
+.badge-pendiente  { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.badge-proceso    { background: #cff4fc; color: #055160; border: 1px solid #0dcaf0; }
+.badge-terminado  { background: #d1e7dd; color: #0f5132; border: 1px solid #198754; }
+.badge-liberado   { background: #cfe2ff; color: #084298; border: 1px solid #0d6efd; }
+.badge-cancelado  { background: #f8d7da; color: #842029; border: 1px solid #dc3545; }
+
+/* ─── Botones de acción en tabla ─────────────────────────────────────────── */
+.btn-tabla-accion {
+    display     : inline-flex;
+    align-items : center;
+    gap         : 4px;
+    font-size   : 0.78rem;
+    padding     : 0.3rem 0.6rem;
+    border-radius: 5px;
+    font-weight : 600;
+    transition  : opacity 0.15s ease;
+    border      : 1.5px solid;
+}
+
+.btn-tabla-accion:hover { opacity: 0.85; }
+
+/* ─── Panel de filtros / buscador ────────────────────────────────────────── */
+.filtros-panel {
+    background  : #f8f9fa;
+    border      : 1px solid #dee2e6;
+    border-radius: 6px;
+    padding     : 0.75rem 1rem;
+    margin-bottom: 1rem;
+    display     : flex;
+    flex-wrap   : wrap;
+    gap         : 0.75rem;
+    align-items : flex-end;
+}
+
+/* ─── Modales de detalle de servicio ─────────────────────────────────────── */
+.detalle-item {
+    display       : flex;
+    align-items   : flex-start;
+    gap           : 0.5rem;
+    padding       : 0.4rem 0;
+    border-bottom : 1px solid #f0f0f0;
+    font-size     : 0.88rem;
+}
+
+.detalle-item:last-child { border-bottom: none; }
+
+.detalle-item i {
+    margin-top  : 2px;
+    color       : #000;
+    min-width   : 16px;
+    text-align  : center;
+}
+
+.detalle-label {
+    font-weight: 600;
+    min-width  : 145px;
+    flex-shrink: 0;
+    color      : #333;
+}
+
+.detalle-value { color: #555; }
+
+/* ─── Separador de sección en modal ──────────────────────────────────────── */
+.modal-section-title {
+    font-size    : 0.78rem;
+    font-weight  : 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color        : #6c757d;
+    margin       : 0.75rem 0 0.35rem;
+}
+
+/* ─── Gráficas ───────────────────────────────────────────────────────────── */
+.stat-card {
+    background   : #fff;
+    border       : 1.5px solid #000;
+    border-radius: 6px;
+    padding      : 1rem;
+    text-align   : center;
+}
+
+.stat-card .stat-value {
+    font-size  : 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.stat-card .stat-label {
+    font-size : 0.8rem;
+    color     : var(--ss-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .modulo-header {
+        flex-direction: column;
+        align-items   : flex-start;
+    }
+
+    .area-card-header { font-size: 0.88rem; }
+
+    .tabla-servicios thead th,
+    .tabla-servicios tbody td {
+        font-size: 0.8rem;
+        padding  : 0.4rem;
+    }
+}

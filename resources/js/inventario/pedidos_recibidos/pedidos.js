@@ -7,23 +7,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Alertas de sesión con SweetAlert2 ─────────────────────────────────
     const exitogEl = document.getElementById('alertaExitog');
-    const exitoEl  = document.getElementById('alertaExito');
     const errorEl  = document.getElementById('alertaError');
 
     if (exitogEl && typeof Swal !== 'undefined') {
-        Swal.fire({ icon: 'success', title: '¡Éxito!', text: exitogEl.dataset.message, confirmButtonColor: '#16a34a', timer: 4000, timerProgressBar: true });
-    }
-    if (exitoEl && typeof Swal !== 'undefined') {
-        Swal.fire({ icon: 'success', title: '¡Listo!', text: exitoEl.dataset.message, confirmButtonColor: '#000', timer: 3500, timerProgressBar: true });
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: exitogEl.dataset.message || 'Operación realizada con éxito.',
+            confirmButtonColor: '#16a34a',
+            timer: 4000,
+            timerProgressBar: true
+        });
     }
     if (errorEl && typeof Swal !== 'undefined') {
-        Swal.fire({ icon: 'error', title: 'Error', text: errorEl.dataset.message, confirmButtonColor: '#000' });
-    }
-
-    // ── Auto-abrir comprobante si la sesión lo indica ──────────────────────
-    const comprobanteEl = document.getElementById('abrirComprobanteAuto');
-    if (comprobanteEl) {
-        setTimeout(() => window.open(comprobanteEl.dataset.url, '_blank'), 600);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorEl.dataset.message || 'Ocurrió un error.',
+            confirmButtonColor: '#dc2626'
+        });
     }
 
     // ── Lógica de la tabla de detalles del pedido ─────────────────────────
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tablaDetalles.addEventListener('change', function (e) {
         if (!e.target.classList.contains('check-habilitar')) return;
 
-        const fila        = e.target.closest('tr');
+        const fila         = e.target.closest('tr');
         const inputSurtido = fila.querySelector('.input-surtido');
         const cantidad     = parseInt(fila.dataset.cantidad) || 0;
         const stock        = parseInt(fila.dataset.stock) || 0;

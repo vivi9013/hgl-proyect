@@ -99,32 +99,7 @@
     vertical-align: middle !important;
 }
 
-/* Auto fill description indicators */
-.fill-success {
-    border-color: #2ecc71 !important;
-    background-color: #eefcf4 !important;
-}
 
-/* Modal styling */
-.modal-content-premium {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header-premium {
-    border-bottom: 1px solid #f1f2f6;
-    padding: 20px 24px;
-}
-
-.modal-body-premium {
-    padding: 24px;
-}
-
-.modal-footer-premium {
-    border-top: 1px solid #f1f2f6;
-    padding: 16px 24px;
-}
 
 /* Keyboard hint badge */
 .kbd-hint {

@@ -202,6 +202,10 @@
                             </thead>
                             <tbody>
                                 @forelse($entrada->detalles as $detalle)
+                                    @php
+                                        $solicitado = $detalle->solicitado ?? $detalle->cantidad;
+                                        $faltante = $detalle->faltante ?? max(0, $solicitado - $detalle->cantidad);
+                                    @endphp
                                     <tr data-id="{{ $detalle->id_detalle_entrada }}">
                                         <td class="ps-4 fw-bold">{{ $loop->iteration }}</td>
                                         <td>
@@ -210,7 +214,7 @@
                                             </span>
                                         </td>
                                         <td>{{ $detalle->insumo->descripcion ?? '—' }}</td>
-                                        <td class="text-center solicitado-col">{{ $detalle->solicitado }}</td>
+                                        <td class="text-center solicitado-col" data-explicit="{{ $detalle->solicitado !== null ? '1' : '0' }}">{{ $solicitado }}</td>
                                         @if($entrada->status === 'En proceso')
                                             <td class="text-center">
                                                 <input type="number"
@@ -221,8 +225,8 @@
                                                        data-prev="{{ $detalle->cantidad }}"
                                                        data-url="{{ route('detalle_entradas_cendis.update', $detalle->id_detalle_entrada) }}">
                                             </td>
-                                            <td class="text-center faltante-col fw-bold {{ $detalle->faltante > 0 ? 'text-danger' : 'text-success' }}">
-                                                {{ $detalle->faltante }}
+                                            <td class="text-center faltante-col fw-bold {{ $faltante > 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ $faltante }}
                                             </td>
                                             <td class="text-center pe-4">
                                                 <button type="button"
@@ -236,8 +240,8 @@
                                             </td>
                                         @else
                                             <td class="text-center fw-bold">{{ $detalle->cantidad }}</td>
-                                            <td class="text-center fw-bold {{ $detalle->faltante > 0 ? 'text-danger' : 'text-success' }}">
-                                                {{ $detalle->faltante }}
+                                            <td class="text-center fw-bold {{ $faltante > 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ $faltante }}
                                             </td>
                                         @endif
                                     </tr>
@@ -254,13 +258,18 @@
                                 @endforelse
                             </tbody>
                             @if($entrada->detalles->count() > 0)
+                            @php
+                                $totalSolicitado = $entrada->detalles->sum(fn($d) => $d->solicitado ?? $d->cantidad);
+                                $totalCantidad = $entrada->detalles->sum('cantidad');
+                                $totalFaltante = $entrada->detalles->sum(fn($d) => $d->faltante ?? max(0, ($d->solicitado ?? $d->cantidad) - $d->cantidad));
+                            @endphp
                             <tfoot class="table-light">
                                 <tr>
                                     <td colspan="3" class="ps-4 fw-bold text-end text-dark">Totales:</td>
-                                    <td class="text-center fw-bold">{{ $entrada->detalles->sum('solicitado') }}</td>
-                                    <td class="text-center fw-bold">{{ $entrada->detalles->sum('cantidad') }}</td>
-                                    <td class="text-center fw-bold {{ $entrada->detalles->sum('faltante') > 0 ? 'text-danger' : 'text-success' }}">
-                                        {{ $entrada->detalles->sum('faltante') }}
+                                    <td class="text-center fw-bold" id="totalSolicitadoTabla">{{ $totalSolicitado }}</td>
+                                    <td class="text-center fw-bold" id="totalCantidadTabla">{{ $totalCantidad }}</td>
+                                    <td class="text-center fw-bold {{ $totalFaltante > 0 ? 'text-danger' : 'text-success' }}" id="totalFaltanteTabla">
+                                        {{ $totalFaltante }}
                                     </td>
                                     @if($entrada->status === 'En proceso')
                                         <td></td>
@@ -270,6 +279,23 @@
                             @endif
                         </table>
                     </div>
+                </div>
+                <div class="card-footer bg-white border-top py-3 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2" id="paginacionTablaDetallesContainer">
+                    <div class="d-flex align-items-center gap-2 small text-muted">
+                        <span>Mostrando <strong id="pagInicioTablaDetalles">0</strong> a <strong id="pagFinTablaDetalles">0</strong> de <strong id="pagTotalTablaDetalles">{{ $entrada->detalles->count() }}</strong> insumos</span>
+                        <span class="ms-2">|</span>
+                        <label for="selectLimitTablaDetalles" class="ms-1 me-1 mb-0">Mostrar:</label>
+                        <select id="selectLimitTablaDetalles" class="form-select form-select-sm d-inline-block w-auto py-0 px-2 style-select-limit">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="all">Todos</option>
+                        </select>
+                    </div>
+                    <nav aria-label="Navegación de insumos en la entrada">
+                        <ul class="pagination pagination-sm mb-0" id="ulPaginacionTablaDetalles">
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
