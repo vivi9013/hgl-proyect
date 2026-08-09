@@ -42,8 +42,9 @@
         </td>
         <td class="text-center pe-4">
             <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('carga_archivos.edit', $archivo->id_archivo) }}" 
-                   class="btn btn-sm btn-outline-secondary rounded-circle" 
+                <a href="#" 
+                   class="btn btn-sm btn-outline-secondary rounded-circle btn-editar-archivo" 
+                   data-id="{{ $archivo->id_archivo }}"
                    title="Editar registro">
                     <i class="fa fa-pencil"></i>
                 </a>

@@ -30,16 +30,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────────────────────
     const inputNombre  = document.getElementById('nombre');
     const inputVersion = document.getElementById('version');
-    const selectTipo    = document.getElementById('tipo');
+    const selectTipo   = document.getElementById('tipo');
     const feedbackDisponibilidad = document.getElementById('feedbackDisponibilidad');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const btnGuardar     = document.getElementById('btnGuardar');
 
-    const cuerpoTabla     = document.getElementById('cuerpoTablaArchivos');
-    const infoPaginacion  = document.getElementById('infoPaginacionArchivos');
-    const paginacionDiv   = document.getElementById('paginacionArchivos');
-    const filtroBuscar    = document.getElementById('filtro-buscar');
-    const dropdownFiltros = document.getElementById('dropdownFiltros');
+    const editInputNombre  = document.getElementById('edit_nombre');
+    const editInputVersion = document.getElementById('edit_version');
+    const editSelectTipo   = document.getElementById('edit_tipo');
+    const editInputDesc    = document.getElementById('edit_desc');
 
     // ─────────────────────────────────────────────────────────────────────────
     // C. HELPER — debounce
@@ -50,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // D. VERIFICAR DISPONIBILIDAD DE NOMBRE + VERSIÓN (POR CATEGORÍA) — AJAX
+    // D. VERIFICAR DISPONIBILIDAD DE NOMBRE + VERSIÓN (ALTA) — AJAX
     // ─────────────────────────────────────────────────────────────────────────
     if (inputNombre && inputVersion) {
         function verificarDisponibilidad() {
@@ -99,69 +98,80 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // E. TABLA — filtros (buscar + categorías) + paginación AJAX
+    // E. EDICIÓN DE ARCHIVO VÍA MODAL Y AJAX (DELEGADO)
     // ─────────────────────────────────────────────────────────────────────────
-    function obtenerFiltros() {
-        return {
-            buscar:    filtroBuscar?.value.trim() ?? '',
-            categoria: Array.from(document.querySelectorAll('.chk-categoria:checked')).map(el => el.value),
-        };
-    }
+    document.addEventListener('click', function (e) {
+        const btnEdit = e.target.closest('.btn-editar-archivo');
+        if (!btnEdit) return;
 
-    function cargarArchivos(pagina = 1) {
-        if (!cuerpoTabla) return;
-        const f = obtenerFiltros();
-        const params = new URLSearchParams({ page: pagina });
-        if (f.buscar) params.set('buscar', f.buscar);
-        f.categoria.forEach(v => params.append('categoria[]', v));
+        e.preventDefault();
+        const archivoId = btnEdit.getAttribute('data-id');
 
-        cuerpoTabla.style.opacity    = '0.4';
-        cuerpoTabla.style.transition = 'opacity 0.2s';
-
-        fetch(`/carga-archivos?${params}`, {
+        fetch(`/carga-archivos/editar/${archivoId}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-        .then(datos => {
-            cuerpoTabla.style.opacity = '1';
-            cuerpoTabla.innerHTML     = datos.html;
-            if (infoPaginacion) infoPaginacion.textContent = datos.info;
-            if (paginacionDiv) {
-                paginacionDiv.innerHTML = datos.links;
-                paginacionDiv.querySelectorAll('a.page-link').forEach(a => {
-                    a.addEventListener('click', e => {
-                        e.preventDefault();
-                        const p = new URL(a.href).searchParams.get('page');
-                        if (p) cargarArchivos(p);
-                    });
-                });
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.archivo) {
+                const a = data.archivo;
+                const formEdit = document.getElementById('formEditarArchivo');
+
+                if (formEdit) {
+                    formEdit.action = `/carga-archivos/actualizar/${a.id_archivo}`;
+                    document.getElementById('edit_archivo_id').value = a.id_archivo;
+
+                    // Limpiar posibles estados de validación anteriores
+                    formEdit.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    const feedback = document.getElementById('editFeedbackDisponibilidad');
+                    if (feedback) feedback.innerHTML = '';
+
+                    if (editInputNombre)  editInputNombre.value  = a.nombre || '';
+                    if (editInputVersion) editInputVersion.value = a.version_archivo || 1;
+                    if (editSelectTipo)   editSelectTipo.value   = a.id_catego || '';
+                    if (editInputDesc)    editInputDesc.value    = a.descripcion_archivo || '';
+
+                    const modalEl = document.getElementById('modalEditarArchivo');
+                    if (modalEl && typeof bootstrap !== 'undefined') {
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    }
+                }
             }
         })
-        .catch(() => { cuerpoTabla.style.opacity = '1'; });
-    }
-
-    if (filtroBuscar) {
-        filtroBuscar.addEventListener('input', demorarEjecucion(() => cargarArchivos(1), 320));
-    }
-
-    if (dropdownFiltros) {
-        dropdownFiltros.addEventListener('filtros:aplicar', () => {
-            cargarArchivos(1);
+        .catch(err => {
+            console.error('Error al cargar datos del archivo:', err);
         });
-        dropdownFiltros.addEventListener('filtros:limpiar', () => {
-            if (filtroBuscar) filtroBuscar.value = '';
-            cargarArchivos(1);
-        });
-    }
+    });
 
-    // Paginación carga inicial (SSR)
-    if (paginacionDiv) {
-        paginacionDiv.querySelectorAll('a.page-link').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                const p = new URL(a.href).searchParams.get('page');
-                if (p) cargarArchivos(p);
+    // Reabrir modal de edición si regresaron errores en sesión
+    const editPageErrors = document.getElementById('hasEditFormErrors');
+    if (editPageErrors && editPageErrors.dataset.id) {
+        const archivoId = editPageErrors.dataset.id;
+        const formEdit = document.getElementById('formEditarArchivo');
+        if (formEdit) formEdit.action = `/carga-archivos/actualizar/${archivoId}`;
+
+        // Si por alguna razón la vista no tenía old(), consultamos por AJAX los datos de respaldo
+        if (editInputNombre && !editInputNombre.value) {
+            fetch(`/carga-archivos/editar/${archivoId}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.archivo) {
+                    const a = data.archivo;
+                    if (editInputNombre  && !editInputNombre.value)  editInputNombre.value  = a.nombre || '';
+                    if (editInputVersion && !editInputVersion.value) editInputVersion.value = a.version_archivo || 1;
+                    if (editSelectTipo   && !editSelectTipo.value)   editSelectTipo.value   = a.id_catego || '';
+                    if (editInputDesc    && !editInputDesc.value)    editInputDesc.value    = a.descripcion_archivo || '';
+                }
             });
-        });
+        }
+
+        const modalEl = document.getElementById('modalEditarArchivo');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
     }
+
 });

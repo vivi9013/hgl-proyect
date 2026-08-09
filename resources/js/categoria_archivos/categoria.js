@@ -47,10 +47,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingSpinner         = document.getElementById('loadingSpinner');
     const btnGuardar             = document.getElementById('btnGuardar');
 
-    const cuerpoTabla    = document.getElementById('cuerpoTablaCategorias');
-    const infoPaginacion = document.getElementById('infoPaginacionCategorias');
-    const paginacionDiv  = document.getElementById('paginacionCategorias');
-    const filtroBuscar   = document.getElementById('filtro-buscar');
+    const editInputCategoria     = document.getElementById('edit_categoria');
+    const editFeedback           = document.getElementById('editFeedbackDisponibilidad');
+    const editLoading            = document.getElementById('editLoadingSpinner');
+    const btnActualizar          = document.getElementById('btnActualizar');
 
     // ─────────────────────────────────────────────────────────────────────────
     // C. HELPER — debounce
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // D. VERIFICACIÓN DE DISPONIBILIDAD DE NOMBRE EN TIEMPO REAL (AJAX)
+    // D. VERIFICACIÓN DE DISPONIBILIDAD DE NOMBRE EN TIEMPO REAL (ALTA Y EDICIÓN)
     // ─────────────────────────────────────────────────────────────────────────
     if (inputCategoria && feedbackDisponibilidad && loadingSpinner && btnGuardar) {
         inputCategoria.addEventListener('input', demorarEjecucion(function () {
@@ -100,120 +100,112 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // E. TABLA — filtro de búsqueda + paginación AJAX
+    // E. EDICIÓN DE CATEGORÍA VÍA MODAL Y AJAX (DELEGADO)
     // ─────────────────────────────────────────────────────────────────────────
-    function obtenerFiltros() {
-        return {
-            buscar: filtroBuscar?.value.trim() ?? '',
-        };
-    }
+    document.addEventListener('click', function (e) {
+        const btnEdit = e.target.closest('.btn-editar-categoria');
+        if (!btnEdit) return;
 
-    function cargarCategorias(pagina = 1) {
-        if (!cuerpoTabla) return;
-        const f = obtenerFiltros();
-        const params = new URLSearchParams({ page: pagina });
-        if (f.buscar) params.set('buscar', f.buscar);
+        e.preventDefault();
+        const categoriaId = btnEdit.getAttribute('data-id');
 
-        cuerpoTabla.style.opacity    = '0.4';
-        cuerpoTabla.style.transition = 'opacity 0.2s';
-
-        fetch(`/categoria-archivos?${params}`, {
+        fetch(`/categoria-archivos/${categoriaId}/edit`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
-        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-        .then(datos => {
-            cuerpoTabla.style.opacity = '1';
-            cuerpoTabla.innerHTML     = datos.html;
-            if (infoPaginacion) infoPaginacion.textContent = datos.info;
-            if (paginacionDiv) {
-                paginacionDiv.innerHTML = datos.links;
-                paginacionDiv.querySelectorAll('a.page-link').forEach(a => {
-                    a.addEventListener('click', e => {
-                        e.preventDefault();
-                        const p = new URL(a.href).searchParams.get('page');
-                        if (p) cargarCategorias(p);
-                    });
-                });
-            }
-            enlazarEventosStatus();
-        })
-        .catch(() => { cuerpoTabla.style.opacity = '1'; });
-    }
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.categoria) {
+                const cat = data.categoria;
+                const formEdit = document.getElementById('formEditarCategoria');
 
-    if (filtroBuscar) {
-        filtroBuscar.addEventListener('input', demorarEjecucion(() => cargarCategorias(1), 320));
-    }
+                if (formEdit) {
+                    formEdit.action = `/categoria-archivos/${cat.id_catego_archivos}`;
+                    document.getElementById('edit_categoria_id').value = cat.id_catego_archivos;
+                    if (editInputCategoria) editInputCategoria.value = cat.categoria || '';
 
-    // Paginación carga inicial (SSR)
-    if (paginacionDiv) {
-        paginacionDiv.querySelectorAll('a.page-link').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                const p = new URL(a.href).searchParams.get('page');
-                if (p) cargarCategorias(p);
-            });
-        });
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // F. CAMBIO DE ESTATUS (activar / desactivar) con confirmación
-    // ─────────────────────────────────────────────────────────────────────────
-    function enlazarEventosStatus() {
-        document.querySelectorAll('.btn-toggle-status').forEach(link => {
-            const nuevoLink = link.cloneNode(true);
-            link.parentNode.replaceChild(nuevoLink, link);
-
-            nuevoLink.addEventListener('click', function (e) {
-                e.preventDefault();
-                const url    = this.getAttribute('data-url');
-                const nombre = this.getAttribute('data-nombre');
-                const activo = parseInt(this.getAttribute('data-activo'));
-
-                const accion         = (activo === 1) ? 'desactivar' : 'activar';
-                const iconType       = (activo === 1) ? 'warning' : 'question';
-                const confirmBtnText = (activo === 1) ? 'Sí, desactivar' : 'Sí, activar';
-
-                const submitStatusForm = () => {
-                    const form = document.createElement('form');
-                    form.action = url;
-                    form.method = 'POST';
-
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value || '';
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type  = 'hidden';
-                    csrfInput.name  = '_token';
-                    csrfInput.value = csrfToken;
-                    form.appendChild(csrfInput);
-
-                    const methodInput = document.createElement('input');
-                    methodInput.type  = 'hidden';
-                    methodInput.name  = '_method';
-                    methodInput.value = 'PATCH';
-                    form.appendChild(methodInput);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                };
-
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: `¿Desea ${accion} la categoría?`,
-                        text: `La categoría "${nombre}" será ${activo === 1 ? 'desactivada' : 'activada'} en el sistema.`,
-                        icon: iconType,
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: confirmBtnText,
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) submitStatusForm();
-                    });
-                } else if (confirm(`¿Está seguro de que desea ${accion} la categoría "${nombre}"?`)) {
-                    submitStatusForm();
+                    const modalEl = document.getElementById('modalEditarCategoria');
+                    if (modalEl && typeof bootstrap !== 'undefined') {
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    }
                 }
-            });
+            }
+        })
+        .catch(err => {
+            console.error('Error al cargar datos de la categoría:', err);
         });
+    });
+
+    // Reabrir modal de edición si regresaron errores en sesión
+    const editPageErrors = document.getElementById('hasEditFormErrors');
+    if (editPageErrors && editPageErrors.dataset.id) {
+        const catId = editPageErrors.dataset.id;
+        const formEdit = document.getElementById('formEditarCategoria');
+        if (formEdit) formEdit.action = `/categoria-archivos/${catId}`;
+        const modalEl = document.getElementById('modalEditarCategoria');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
     }
 
-    enlazarEventosStatus();
+    // ─────────────────────────────────────────────────────────────────────────
+    // F. CAMBIO DE ESTATUS (activar / desactivar) con confirmación — DELEGADO
+    // ─────────────────────────────────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        const toggleBtn = e.target.closest('.btn-toggle-status');
+        if (!toggleBtn) return;
+
+        e.preventDefault();
+
+        const url    = toggleBtn.getAttribute('data-url');
+        const nombre = toggleBtn.getAttribute('data-nombre');
+        const activo = parseInt(toggleBtn.getAttribute('data-activo'));
+
+        const accion         = activo === 1 ? 'desactivar' : 'activar';
+        const iconType       = activo === 1 ? 'warning' : 'question';
+        const confirmBtnText = activo === 1 ? 'Sí, desactivar' : 'Sí, activar';
+
+        const submitStatusForm = () => {
+            const form = document.createElement('form');
+            form.action = url;
+            form.method = 'POST';
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                           || document.querySelector('input[name="_token"]')?.value
+                           || '';
+            const csrfInput = document.createElement('input');
+            csrfInput.type  = 'hidden';
+            csrfInput.name  = '_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            const methodInput = document.createElement('input');
+            methodInput.type  = 'hidden';
+            methodInput.name  = '_method';
+            methodInput.value = 'PATCH';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title:             `¿Desea ${accion} la categoría?`,
+                text:              `La categoría "${nombre}" será ${activo === 1 ? 'desactivada' : 'activada'} en el sistema.`,
+                icon:              iconType,
+                showCancelButton:  true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText: confirmBtnText,
+                cancelButtonText:  'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) submitStatusForm();
+            });
+        } else if (confirm(`¿Está seguro de que desea ${accion} la categoría "${nombre}"?`)) {
+            submitStatusForm();
+        }
+    });
+
 });

@@ -23,7 +23,12 @@
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('trabajador_categorias.index') }}"
+         data-tbody-target="tbodyTrabajadores"
+         data-info-target="infoPaginacion"
+         data-paginacion-target="contenedorPaginacion">
         <div class="col-12">
             <div class="card shadow-sm border-0">
 

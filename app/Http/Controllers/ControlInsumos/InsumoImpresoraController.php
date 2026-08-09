@@ -15,9 +15,33 @@ class InsumoImpresoraController extends Controller
     // ─── INDEX ───────────────────────────────────────────────────────────────
     public function index(Request $request)
     {
+        $query = $this->aplicarFiltros($request);
+        $insumos = $query->paginate(10);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html'  => view('control_insumos.insumos_impresoras.partials.tabla', compact('insumos'))->render(),
+                'links' => $insumos->links('pagination::bootstrap-4')->render(),
+                'total' => $insumos->total(),
+                'info'  => 'Mostrando ' . ($insumos->firstItem() ?? 0)
+                           . ' a ' . ($insumos->lastItem() ?? 0)
+                           . ' de ' . $insumos->total() . ' registros',
+            ]);
+        }
+
+        return view('control_insumos.insumos_impresoras.index', [
+            'insumos'  => $insumos,
+            'familias' => self::FAMILIAS,
+            'colores'  => self::COLORES,
+        ]);
+    }
+
+    // ─── FILTROS COMPARTIDOS (index + imprimir) ───────────────────────────────
+    private function aplicarFiltros(Request $request)
+    {
         $buscar      = trim($request->get('buscar', ''));
-        $familia     = $request->input('familia', []);   // [] | ['Tóner'] | ['Cartucho', 'Cinta'] …
-        $status      = $request->input('status', []);    // [] | ['1'] | ['0'] | ['1','0']
+        $familia     = $request->input('familia', []);
+        $status      = $request->input('status', []);
         $fechaInicio = $request->get('fecha_inicio', '');
         $fechaFin    = $request->get('fecha_fin', '');
 
@@ -48,24 +72,7 @@ class InsumoImpresoraController extends Controller
             $query->where('fecha', '<=', $fechaFin);
         }
 
-        $insumos = $query->paginate(10);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'html'  => view('control_insumos.insumos_impresoras.partials.tabla', compact('insumos'))->render(),
-                'links' => $insumos->links('pagination::bootstrap-4')->render(),
-                'total' => $insumos->total(),
-                'info'  => 'Mostrando ' . ($insumos->firstItem() ?? 0)
-                           . ' a ' . ($insumos->lastItem() ?? 0)
-                           . ' de ' . $insumos->total() . ' registros',
-            ]);
-        }
-
-        return view('control_insumos.insumos_impresoras.index', [
-            'insumos'  => $insumos,
-            'familias' => self::FAMILIAS,
-            'colores'  => self::COLORES,
-        ]);
+        return $query;
     }
 
 
@@ -180,10 +187,10 @@ class InsumoImpresoraController extends Controller
         return response()->json($insumos);
     }
 
-    // ─── REPORTE (impresión) ─────────────────────────────────────────────────
-    public function imprimir()
+    // ─── REPORTE (impresión) ──────────────────────────────────────────
+    public function imprimir(Request $request)
     {
-        $insumos = InsumoImpresora::orderBy('modelo')->get();
+        $insumos = $this->aplicarFiltros($request)->orderBy('modelo')->get();
         return view('control_insumos.insumos_impresoras.analitica.reportes.impresion', compact('insumos'));
     }
 }

@@ -118,7 +118,13 @@
     </div>
 
     {{-- Tabla principal --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('insumos_impresoras.index') }}"
+         data-tbody-target="cuerpoTablaInsumos"
+         data-info-target="infoPaginacion"
+         data-paginacion-target="contenedorPaginacion"
+         data-btn-imprimir="#btnImprimirCatalogo">
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
@@ -145,15 +151,15 @@
                             <div class="mb-2">
                                 <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Familia</span>
                                 <div class="form-check py-1">
-                                    <input class="form-check-input chk-familia" type="checkbox" value="Tóner" id="chkFamiliaToner">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Tóner" id="chkFamiliaToner" data-filtro="familia">
                                     <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaToner">Tóner</label>
                                 </div>
                                 <div class="form-check py-1">
-                                    <input class="form-check-input chk-familia" type="checkbox" value="Cartucho" id="chkFamiliaCartucho">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Cartucho" id="chkFamiliaCartucho" data-filtro="familia">
                                     <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaCartucho">Cartucho</label>
                                 </div>
                                 <div class="form-check py-1">
-                                    <input class="form-check-input chk-familia" type="checkbox" value="Cinta" id="chkFamiliaCinta">
+                                    <input class="form-check-input chk-familia" type="checkbox" value="Cinta" id="chkFamiliaCinta" data-filtro="familia">
                                     <label class="form-check-label text-dark cursor-pointer" for="chkFamiliaCinta">Cinta</label>
                                 </div>
                             </div>
@@ -162,11 +168,11 @@
                             <div class="mb-3">
                                 <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Estado</span>
                                 <div class="form-check py-1">
-                                    <input class="form-check-input chk-status" type="checkbox" value="1" id="chkStatusActivo">
+                                    <input class="form-check-input chk-status" type="checkbox" value="1" id="chkStatusActivo" data-filtro="status">
                                     <label class="form-check-label text-dark cursor-pointer" for="chkStatusActivo">Activos</label>
                                 </div>
                                 <div class="form-check py-1">
-                                    <input class="form-check-input chk-status" type="checkbox" value="0" id="chkStatusInactivo">
+                                    <input class="form-check-input chk-status" type="checkbox" value="0" id="chkStatusInactivo" data-filtro="status">
                                     <label class="form-check-label text-dark cursor-pointer" for="chkStatusInactivo">Inactivos</label>
                                 </div>
                             </div>
@@ -189,6 +195,7 @@
                         </div>
                         <div>
                             <a href="{{ route('insumos_impresoras.imprimir') }}" target="_blank"
+                               id="btnImprimirCatalogo"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir Catálogo
                             </a>

@@ -77,7 +77,13 @@
     </div>
 
     {{-- ─── Tabla unificada de Categorías ──────────────────────────────────── --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('categoria_archivos.index') }}"
+         data-tbody-target="cuerpoTablaCategorias"
+         data-info-target="infoPaginacionCategorias"
+         data-paginacion-target="paginacionCategorias"
+         data-btn-imprimir="#btnImprimirCategorias">
         <div class="col-12">
             <div class="card shadow-sm border-0">
 
@@ -105,9 +111,11 @@
                             </button>
                         </div>
                         <div>
-                            <a href="{{ route('categoria_archivos.reportes') }}"
+                            <a id="btnImprimirCategorias"
+                               href="{{ route('categoria_archivos.imprimir') }}"
+                               target="_blank"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
-                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir
                             </a>
                         </div>
                     </div>
@@ -149,9 +157,64 @@
         </div>
     </div>
 
+    {{-- Flag para reabrir modal de edición si existen errores en el formulario --}}
+    <span id="hasEditFormErrors" data-id="{{ session('hasEditFormErrors') ?? '' }}" style="display:none;"></span>
+
+    {{-- ─── Modal: EDITAR CATEGORÍA ────────────────────────────────────────── --}}
+    <div class="modal fade" id="modalEditarCategoria" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius:15px; overflow:hidden;">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="modalEditarCategoriaLabel">
+                        <i class="fa fa-pencil-square-o me-2"></i>Editar Categoría
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formEditarCategoria" method="POST" autocomplete="off" novalidate>
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_categoria_id" name="id" value="{{ old('id', session('hasEditFormErrors')) }}">
+                    <div class="modal-body p-4">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="edit_categoria" class="form-label fw-bold text-secondary">Nombre de la categoría *:</label>
+                                <input
+                                    type="text"
+                                    name="categoria"
+                                    id="edit_categoria"
+                                    class="form-control @error('categoria') is-invalid @enderror"
+                                    value="{{ old('categoria') }}"
+                                    placeholder="Coloque el nombre de la categoría"
+                                    autocomplete="off"
+                                    maxlength="255"
+                                    required
+                                >
+                                <div id="editFeedbackDisponibilidad" class="mt-1 small"></div>
+                                <div id="editLoadingSpinner" class="mt-1 small text-muted" style="display:none;">
+                                    <i class="fa fa-spinner fa-spin me-1"></i>Verificando...
+                                </div>
+                                @error('categoria')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light px-4 py-2 border rounded-pill" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" id="btnActualizar" class="btn btn-primary px-4 py-2 rounded-pill">
+                            <i class="fa fa-save me-2"></i>Actualizar Información
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-@if($errors->any())
+@if($errors->any() && !session('hasEditFormErrors'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var myModal = new bootstrap.Modal(document.getElementById('modalAltaCategoria'));

@@ -17,7 +17,13 @@
     </div>
 
     {{-- ─── Tabla unificada de Archivos ────────────────────────────────────── --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('busca_archivos.filtrar') }}"
+         data-tbody-target="cuerpoTablaArchivos"
+         data-info-target="infoPaginacionArchivos"
+         data-paginacion-target="paginacionArchivos"
+         data-btn-imprimir="#btnImprimirArchivos">
         <div class="col-12">
             <div class="card shadow-sm border-0">
 
@@ -40,7 +46,7 @@
                             <div class="mb-2">
                                 @foreach($categorias as $cat)
                                     <div class="form-check py-1">
-                                        <input class="form-check-input chk-categoria" type="checkbox" value="{{ $cat->id_catego_archivos }}" id="chkCategoria{{ $cat->id_catego_archivos }}">
+                                        <input class="form-check-input chk-categoria" type="checkbox" value="{{ $cat->id_catego_archivos }}" id="chkCategoria{{ $cat->id_catego_archivos }}" data-filtro="categoria">
                                         <label class="form-check-label text-dark cursor-pointer" for="chkCategoria{{ $cat->id_catego_archivos }}">{{ $cat->categoria }}</label>
                                     </div>
                                 @endforeach
@@ -50,11 +56,13 @@
                     </div>
                     {{-- /panelFiltros --}}
 
-                    {{-- Acciones secundarias (Reportes) --}}
+                    {{-- Acciones secundarias (Imprimir con filtros activos) --}}
                     <div class="d-flex flex-wrap gap-2 justify-content-end align-items-center mt-3 pt-3 border-top">
-                        <a href="{{ route('busca_archivos.reportes') }}"
+                        <a id="btnImprimirArchivos"
+                           href="{{ route('busca_archivos.imprimir') }}"
+                           target="_blank"
                            class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
-                            <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                            <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir
                         </a>
                     </div>
                 </div>
@@ -99,5 +107,5 @@
 
 </div>
 
-@vite(['resources/css/buscador_archivos/buscador.css', 'resources/js/buscador_archivos/buscador.js'])
+@vite(['resources/css/buscador_archivos/buscador.css'])
 @endsection

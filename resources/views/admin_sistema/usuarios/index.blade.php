@@ -23,7 +23,13 @@
     </div>
 
     {{-- Área Principal: Tabla de Registros --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('usuarios.index') }}"
+         data-tbody-target="cuerpoTablaUsuarios"
+         data-info-target="infoPaginacionUsuarios"
+         data-paginacion-target="paginacionUsuarios"
+         data-btn-imprimir="#btnImprimirUsuarios">
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
@@ -35,7 +41,19 @@
 
                     {{-- ── Panel de filtros ────────────────────────────────────── --}}
                     <div class="row g-2 align-items-end" id="panelFiltros">
-                        <x-filtro-buscar id="filtro-buscar" label="Buscar usuario" placeholder="Nombre, usuario o perfil..." clase="col-12 col-md-4" />
+                        <x-filtro-buscar id="filtro-buscar" label="Buscar usuario" placeholder="Nombre, usuario o perfil..." clase="col-12 col-md-6" />
+
+                        <x-filtro-dropdown id="dropdownFiltroPerfil" label="Filtrar por perfil" labelDefault="Todos los perfiles" titulo="Perfiles" clase="col-12 col-md-6">
+                            <div class="mb-2">
+                                <span class="text-muted fw-bold d-block mb-1 small text-uppercase" style="font-size:0.7rem; letter-spacing: 0.5px;">Perfil de usuario</span>
+                                @foreach($perfiles as $perf)
+                                    <div class="form-check py-1">
+                                        <input class="form-check-input" type="checkbox" value="{{ $perf->id }}" id="chkPerfil{{ $perf->id }}" data-filtro="perfil">
+                                        <label class="form-check-label text-dark cursor-pointer" for="chkPerfil{{ $perf->id }}">{{ $perf->nombre }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </x-filtro-dropdown>
                     </div>
                     {{-- /panelFiltros --}}
 
@@ -53,7 +71,9 @@
                                class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-bar-chart me-1"></i>Gráficas
                             </a>
-                            <a href="{{ route('usuarios.reportes') }}"
+                            <a id="btnImprimirUsuarios"
+                               href="{{ route('usuarios.imprimir') }}"
+                               target="_blank"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
                             </a>

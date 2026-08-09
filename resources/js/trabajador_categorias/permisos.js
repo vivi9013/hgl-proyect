@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Nodos de la tabla asíncrona (solo una de las dos existe en cada página)
     const tbody = document.getElementById('tbodyAsignacion');
-    const tbodyTrabajadores = document.getElementById('tbodyTrabajadores');
-    const totalTrabajadoresBadge = document.getElementById('totalTrabajadores');
     const filtroBuscar = document.getElementById('filtro-buscar');
     const contador = document.getElementById('contadorSeleccionados');
     const infoPaginacion = document.getElementById('infoPaginacion');
@@ -166,45 +164,16 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(() => { tbody.style.opacity = '1'; });
     }
 
-    // Vista Index (lista de trabajadores)
-    function cargarPaginaTrabajadores(pagina = 1) {
-        if (!tbodyTrabajadores) return;
-        const f = obtenerFiltros();
-        const params = new URLSearchParams({ page: pagina });
-        if (f.buscar) params.set('buscar', f.buscar);
-
-        tbodyTrabajadores.style.opacity = '0.4';
-        tbodyTrabajadores.style.transition = 'opacity 0.2s';
-
-        fetch(`/permisos-archivo?${params}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        })
-        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-        .then(datos => {
-            tbodyTrabajadores.style.opacity = '1';
-            tbodyTrabajadores.innerHTML = datos.html;
-            if (totalTrabajadoresBadge) totalTrabajadoresBadge.textContent = `${datos.total} ${datos.total === 1 ? 'Registro' : 'Registros'}`;
-            if (infoPaginacion) infoPaginacion.textContent = datos.info;
-            if (contenedorPaginacion) {
-                contenedorPaginacion.innerHTML = datos.links;
-                asignarEventosEnlaces(cargarPaginaTrabajadores);
-            }
-        })
-        .catch(() => { tbodyTrabajadores.style.opacity = '1'; });
-    }
-
-    // Listener de filtro (debounce) — dispara la carga que corresponda a la página actual
+    // Listener de filtro (debounce) — solo activo en la vista de asignación; en el índice tabla-interactiva.js se encarga
     if (filtroBuscar) {
         filtroBuscar.addEventListener('input', demorarEjecucion(() => {
-            if (tbodyTrabajadores) cargarPaginaTrabajadores(1);
-            else if (tbody) cargarPaginaAsignacion(1);
+            if (tbody) cargarPaginaAsignacion(1);
         }, 320));
     }
 
-    // Paginación inicial (SSR): los enlaces ya vienen del render de Laravel al cargar la página
-    if (contenedorPaginacion) {
-        if (tbodyTrabajadores) asignarEventosEnlaces(cargarPaginaTrabajadores);
-        else if (tbody) asignarEventosEnlaces(cargarPaginaAsignacion);
+    // Paginación inicial SSR: solo para la vista de asignación
+    if (contenedorPaginacion && tbody) {
+        asignarEventosEnlaces(cargarPaginaAsignacion);
     }
 
     // ─────────────────────────────────────────────────────────

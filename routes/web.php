@@ -162,7 +162,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('perfiles')->middleware('modulo:2')->name('perfiles.')->controller(PerfilController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -177,7 +176,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('usuarios')->middleware('modulo:3')->name('usuarios.')->controller(UsuarioController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -235,7 +233,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('proyectos')->middleware('modulo:14')->name('proyectos.')->controller(ProyectoController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -446,7 +443,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/', 'index')->name('index');
         Route::get('/filtrar', 'filtrar')->name('filtrar');
         Route::get('/descargar/{id}', 'descargar')->name('descargar');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/imprimir', 'imprimirReporte')->name('imprimir');
     });
 
@@ -460,7 +456,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/actualizar/{id}', 'actualizar')->name('update');
         Route::get('/cargar/{id}', 'cargar')->name('cargar');
         Route::post('/subir-archivo/{id}', 'subirArchivo')->name('subir_archivo');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/imprimir', 'imprimirReporte')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
     });
@@ -472,7 +467,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
     });

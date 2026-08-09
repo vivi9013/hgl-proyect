@@ -103,7 +103,13 @@
     </div>
 
     {{-- ─── Tabla unificada de Archivos ────────────────────────────────────── --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('carga_archivos.index') }}"
+         data-tbody-target="cuerpoTablaArchivos"
+         data-info-target="infoPaginacionArchivos"
+         data-paginacion-target="paginacionArchivos"
+         data-btn-imprimir="#btnImprimirArchivos">
         <div class="col-12">
             <div class="card shadow-sm border-0">
 
@@ -126,7 +132,7 @@
                             <div class="mb-2">
                                 @foreach($categorias as $categoria)
                                     <div class="form-check py-1">
-                                        <input class="form-check-input chk-categoria" type="checkbox" value="{{ $categoria->id_catego_archivos }}" id="chkCategoria{{ $categoria->id_catego_archivos }}">
+                                        <input class="form-check-input chk-categoria" type="checkbox" value="{{ $categoria->id_catego_archivos }}" id="chkCategoria{{ $categoria->id_catego_archivos }}" data-filtro="categoria">
                                         <label class="form-check-label text-dark cursor-pointer" for="chkCategoria{{ $categoria->id_catego_archivos }}">{{ $categoria->categoria }}</label>
                                     </div>
                                 @endforeach
@@ -150,9 +156,11 @@
                                class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-bar-chart me-1"></i>Gráficas
                             </a>
-                            <a href="{{ route('carga_archivos.reportes') }}"
+                            <a id="btnImprimirArchivos"
+                               href="{{ route('carga_archivos.imprimir') }}"
+                               target="_blank"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
-                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
+                                <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir
                             </a>
                         </div>
                     </div>
@@ -192,6 +200,99 @@
                     </nav>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    {{-- Flag para reabrir modal de edición si existen errores en el formulario --}}
+    <span id="hasEditFormErrors" data-id="{{ session('hasEditFormErrors') ?? '' }}" style="display:none;"></span>
+
+    {{-- ─── Modal: EDITAR ARCHIVO ────────────────────────────────────────── --}}
+    <div class="modal fade" id="modalEditarArchivo" tabindex="-1" aria-labelledby="modalEditarArchivoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius:15px; overflow:hidden;">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold" id="modalEditarArchivoLabel">
+                        <i class="fa fa-edit me-2"></i>Modificar Información del Archivo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formEditarArchivo" method="POST" autocomplete="off">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_archivo_id" name="id" value="{{ old('id', session('hasEditFormErrors')) }}">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="edit_tipo" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-folder-open-o me-1"></i> Categoría:
+                            </label>
+                            <select name="tipo" id="edit_tipo" class="form-select" required>
+                                <option value="" disabled {{ old('tipo') ? '' : 'selected' }}>Seleccione una categoría</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->id_catego_archivos }}" {{ old('tipo') == $categoria->id_catego_archivos ? 'selected' : '' }}>
+                                        {{ $categoria->categoria }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_nombre" class="form-label fw-bold text-secondary d-flex justify-content-between align-items-center">
+                                <span><i class="fa fa-file-text-o me-1"></i> Nombre del archivo:</span>
+                                <span id="editFeedbackDisponibilidad" class="small fw-normal"></span>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" name="nombre" id="edit_nombre"
+                                       class="form-control @error('nombre') is-invalid @enderror"
+                                       value="{{ old('nombre') }}"
+                                       placeholder="Coloca el nombre del archivo"
+                                       required>
+                                <span class="input-group-text bg-white" id="editLoadingSpinner" style="display: none;">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                                @error('nombre')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_version" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-code-fork me-1"></i> Versión:
+                            </label>
+                            <input type="number" name="version" id="edit_version"
+                                   class="form-control @error('version') is-invalid @enderror"
+                                   value="{{ old('version') }}"
+                                   placeholder="Ej. 1"
+                                   min="1"
+                                   required>
+                            @error('version')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_desc" class="form-label fw-bold text-secondary">
+                                <i class="fa fa-info-circle me-1"></i> Descripción:
+                            </label>
+                            <textarea name="desc" id="edit_desc" rows="3"
+                                      class="form-control @error('desc') is-invalid @enderror"
+                                      placeholder="Ingrese una descripción del archivo"
+                                      required>{{ old('desc') }}</textarea>
+                            @error('desc')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-0 py-3 px-4 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light px-4 py-2 border rounded-pill" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" id="btnActualizarArchivo" class="btn btn-primary px-4 py-2 rounded-pill">
+                            <i class="fa fa-save me-2"></i>Actualizar Registro
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

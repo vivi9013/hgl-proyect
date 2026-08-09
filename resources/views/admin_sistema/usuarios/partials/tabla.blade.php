@@ -44,7 +44,10 @@
 
         {{-- Columna interactiva: Status --}}
         <td class="text-center pe-4">
-            <button type="button" class="btn btn-link btn-sm btn-toggle-status p-0" data-id="{{ $row->id }}">
+            <button type="button"
+                    class="btn btn-link btn-sm btn-toggle-status p-0"
+                    data-id="{{ $row->id }}"
+                    data-nombre="{{ $row->nombre_usuario }}">
                 @if($row->activo == 1)
                     <i class="fa fa-check-square-o text-success fs-5" title="Activo"></i>
                 @else
