@@ -100,9 +100,10 @@
 <table>
     <thead>
         <tr>
-            <th class="center" style="width:50px;">#</th>
+            <th class="center" style="width:40px;">#</th>
             <th>Insumo</th>
             <th>Clave</th>
+            <th>Área Asignada</th>
             <th>Área de Almacén</th>
             <th>Motivo</th>
             <th>Cantidad</th>
@@ -121,6 +122,7 @@
                 <td class="num">{{ $index + 1 }}</td>
                 <td>{{ $baja->insumo->descripcion ?? '—' }}</td>
                 <td>{{ $baja->insumo->clave ?? '—' }}</td>
+                <td>{{ $baja->areaAbastecimiento->nombre ?? $baja->insumo->areaAbastecimiento->nombre ?? 'Sin Asignar' }}</td>
                 <td>{{ $baja->areaAlmacen->nombre ?? '—' }}</td>
                 <td>{{ $baja->motivo }}</td>
                 <td class="center">{{ $baja->cantidad }}</td>

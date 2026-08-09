@@ -7,6 +7,7 @@ use App\Models\Inventario\InsumoArea;
 use App\Models\Inventario\Insumo;
 use App\Models\Inventario\AreaAlmacen;
 use App\Models\Inventario\AreaAbastecimiento;
+use App\Models\Inventario\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\BuscaInsumosAjax;
@@ -19,10 +20,11 @@ class InsumoAreaController extends Controller
      */
     public function index(Request $request)
     {
-        $buscar     = $request->get('buscar', '');
-        $filtroArea = $request->get('id_area_abastecimiento', $request->get('id_area_almacen', ''));
+        $buscar          = $request->get('buscar', '');
+        $filtroArea       = $request->get('id_area_abastecimiento', $request->get('id_area_almacen', ''));
+        $filtroCategoria  = $request->get('id_categoria', '');
 
-        $query = InsumoArea::with(['insumo.areaAbastecimiento', 'areaAlmacen'])
+        $query = InsumoArea::with(['insumo.areaAbastecimiento', 'insumo.categoria', 'areaAlmacen'])
             ->whereHas('insumo', fn($q) => $q->where('activo', 1))
             ->orderBy('id_insumo_area', 'desc');
 
@@ -30,6 +32,12 @@ class InsumoAreaController extends Controller
             $query->where(function ($q) use ($filtroArea) {
                 $q->whereHas('insumo', fn($q2) => $q2->where('id_area_abastecimiento', $filtroArea))
                   ->orWhere('id_area_almacen', $filtroArea);
+            });
+        }
+
+        if (!empty($filtroCategoria)) {
+            $query->whereHas('insumo', function ($q) use ($filtroCategoria) {
+                $q->where('id_categoria', $filtroCategoria);
             });
         }
 
@@ -43,9 +51,10 @@ class InsumoAreaController extends Controller
         $insumosArea         = $query->paginate(15)->withQueryString();
         $areasAlmacen        = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
         $areasAbastecimiento = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $categorias          = Categoria::orderBy('nombre_categoria')->get();
 
         return view('inventario.insumos_area.index', compact(
-            'insumosArea', 'areasAlmacen', 'areasAbastecimiento', 'buscar', 'filtroArea'
+            'insumosArea', 'areasAlmacen', 'areasAbastecimiento', 'categorias', 'buscar', 'filtroArea', 'filtroCategoria'
         ));
     }
 

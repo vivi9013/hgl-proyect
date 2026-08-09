@@ -36,6 +36,7 @@ class Insumo extends Model
         'clave',
         'descripcion',
         'tipo',
+        'id_categoria',
         'id_area_surtimiento',
         'id_area_abastecimiento',
         'fecha_registro',
@@ -51,6 +52,7 @@ class Insumo extends Model
      */
     protected $casts = [
         'activo'                 => 'integer',
+        'id_categoria'          => 'integer',
         'id_area_surtimiento'    => 'integer',
         'id_area_abastecimiento' => 'integer',
         'fecha_registro'         => 'date',
@@ -62,6 +64,14 @@ class Insumo extends Model
     public function insumosArea()
     {
         return $this->hasMany(InsumoArea::class, 'id_insumo', 'id_insumo');
+    }
+
+    /**
+     * Relación con la categoría del insumo.
+     */
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
     }
 
     /**

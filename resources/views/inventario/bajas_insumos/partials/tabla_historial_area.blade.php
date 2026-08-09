@@ -27,7 +27,7 @@
                     </td>
                     <td>
                         <span class="badge bg-light text-dark border">
-                            {{ $baja->insumo->areaAbastecimiento->nombre ?? $baja->insumo->areaSurtimiento->nombre ?? 'Sin Asignar' }}
+                            {{ $baja->areaAbastecimiento->nombre ?? $baja->insumo->areaAbastecimiento->nombre ?? $baja->insumo->areaSurtimiento->nombre ?? 'Sin Asignar' }}
                         </span>
                     </td>
                     <td>{{ $baja->areaAlmacen->nombre ?? '—' }}</td>

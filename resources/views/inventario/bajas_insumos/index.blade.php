@@ -49,7 +49,7 @@
                             autocomplete="off"
                         >
                         @if($buscar)
-                            <a href="{{ route('bajas_insumos.index', array_filter(['id_area_abastecimiento' => $filtroArea, 'fecha_inicio' => $fechaInit, 'fecha_fin' => $fechaFin])) }}"
+                            <a href="{{ route('bajas_insumos.index', array_filter(['id_area_abastecimiento' => $filtroArea, 'id_categoria' => $filtroCategoria, 'fecha_inicio' => $fechaInit, 'fecha_fin' => $fechaFin])) }}"
                                class="input-group-text bg-light border-0 text-decoration-none" title="Limpiar búsqueda">
                                 <i class="fa fa-times text-danger"></i>
                             </a>
@@ -61,7 +61,7 @@
                 </div>
 
                 {{-- Área Asignada --}}
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                     <label for="filtro_area" class="form-label small fw-bold mb-1 text-dark">
                         <i class="fa fa-building me-1"></i>Área Asignada:
                     </label>
@@ -70,6 +70,21 @@
                         @foreach($areasAbastecimiento as $areaAbast)
                             <option value="{{ $areaAbast->id_area_abastecimiento }}" {{ $filtroArea == $areaAbast->id_area_abastecimiento ? 'selected' : '' }}>
                                 {{ $areaAbast->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Categoría del Insumo --}}
+                <div class="col-12 col-md-2">
+                    <label for="filtro_categoria" class="form-label small fw-bold mb-1 text-dark">
+                        <i class="fa fa-tag me-1"></i>Categoría:
+                    </label>
+                    <select name="id_categoria" id="filtro_categoria" class="form-select bg-light border-0" style="font-size: 0.9rem;" onchange="this.form.submit()">
+                        <option value="">Todas las Categorías</option>
+                        @foreach($categorias as $cat)
+                            <option value="{{ $cat->id_categoria }}" {{ $filtroCategoria == $cat->id_categoria ? 'selected' : '' }}>
+                                {{ $cat->nombre_categoria }}
                             </option>
                         @endforeach
                     </select>
@@ -108,7 +123,7 @@
                     <button type="submit" class="btn btn-dark btn-sm w-100" title="Aplicar filtros">
                         <i class="fa fa-filter"></i>
                     </button>
-                    @if($buscar || $fechaInit || $fechaFin || $filtroArea)
+                    @if($buscar || $fechaInit || $fechaFin || $filtroArea || $filtroCategoria)
                         <a href="{{ route('bajas_insumos.index') }}" class="btn btn-outline-secondary btn-sm w-100" title="Limpiar todos los filtros">
                             <i class="fa fa-times"></i>
                         </a>
@@ -156,47 +171,47 @@
                 </div>
                 <div class="card-body p-0 mt-2">
                     <div class="table-responsive" style="overflow-x: auto;">
-                        <table id="tablaAreas" class="table table-hover align-middle mb-0" style="width: 100%; table-layout: fixed; font-size: 0.85rem;">
+                        <table id="tablaAreas" class="table table-hover align-middle mb-0" style="width: 100%; min-width: 1020px; font-size: 0.85rem;">
                             <thead class="table-light text-uppercase font-size-xs text-secondary letter-spacing-1">
                                 <tr>
-                                    <th class="ps-3" style="width: 4%;">#</th>
-                                    <th style="width: 32%;">Insumo</th>
-                                    <th style="width: 14%;">Clave</th>
-                                    <th style="width: 12%;">Área Asignada</th>
-                                    <th style="width: 12%;">Motivo</th>
-                                    <th class="text-center" style="width: 7%;">Cantidad</th>
-                                    <th style="width: 9%;">Fecha Baja</th>
-                                    <th style="width: 5%;">Hora</th>
-                                    <th class="text-center pe-3" style="width: 5%;">Estado</th>
+                                    <th class="ps-3 text-center text-nowrap" style="width: 3.5%; min-width: 45px;">#</th>
+                                    <th class="text-nowrap" style="width: 28%; min-width: 250px;">Insumo</th>
+                                    <th class="text-nowrap" style="width: 13%; min-width: 125px;">Clave</th>
+                                    <th class="text-nowrap" style="width: 11%; min-width: 115px;">Área Asignada</th>
+                                    <th class="text-nowrap" style="width: 12%; min-width: 120px;">Motivo</th>
+                                    <th class="text-center text-nowrap" style="width: 8%; min-width: 85px;">Cantidad</th>
+                                    <th class="text-center text-nowrap" style="width: 9.5%; min-width: 105px;">Fecha Baja</th>
+                                    <th class="text-center text-nowrap" style="width: 6.5%; min-width: 75px;">Hora</th>
+                                    <th class="text-center text-nowrap pe-3" style="width: 8.5%; min-width: 100px;">Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($bajas as $index => $baja)
                                     <tr class="{{ $baja->cancelado === 'Si' ? 'text-muted fst-italic' : '' }}">
-                                        <td class="ps-4 fw-bold">{{ ($bajas->currentPage() - 1) * $bajas->perPage() + $loop->iteration }}</td>
+                                        <td class="ps-3 text-center fw-bold text-nowrap">{{ ($bajas->currentPage() - 1) * $bajas->perPage() + $loop->iteration }}</td>
                                         <td>
-                                            <span class="badge {{ $baja->insumo->meta_tipo['badgeClass'] ?? 'bg-secondary' }} me-1">
+                                            <span class="badge {{ $baja->insumo->meta_tipo['badgeClass'] ?? 'bg-secondary' }} text-nowrap me-1">
                                                 {{ $baja->insumo->tipo ?? '' }}
                                             </span>
                                             <span class="fw-semibold text-dark">{{ $baja->insumo->descripcion ?? '—' }}</span>
                                         </td>
-                                        <td>
+                                        <td class="text-nowrap">
                                             <span class="clave-pill">{{ $baja->insumo->clave ?? '—' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-light text-dark border">
-                                                {{ $baja->insumo->areaAbastecimiento->nombre ?? $baja->areaAlmacen->nombre ?? 'Sin Asignar' }}
+                                                {{ $baja->areaAbastecimiento->nombre ?? $baja->insumo->areaAbastecimiento->nombre ?? $baja->areaAlmacen->nombre ?? 'Sin Asignar' }}
                                             </span>
                                         </td>
                                         <td>
-                                            <small class="text-truncate d-inline-block motivo-truncate" title="{{ $baja->motivo }}">
+                                            <small class="text-truncate d-inline-block motivo-truncate" style="max-width: 160px;" title="{{ $baja->motivo }}">
                                                 {{ $baja->motivo }}
                                             </small>
                                         </td>
-                                        <td class="text-center fw-bold">{{ $baja->cantidad }}</td>
-                                        <td>{{ $baja->fecha_baja ? \Carbon\Carbon::parse($baja->fecha_baja)->format('d/m/Y') : '' }}</td>
-                                        <td>{{ $baja->hora_baja }}</td>
-                                        <td class="text-center pe-4">
+                                        <td class="text-center fw-bold text-nowrap">{{ $baja->cantidad }}</td>
+                                        <td class="text-center text-nowrap">{{ $baja->fecha_baja ? \Carbon\Carbon::parse($baja->fecha_baja)->format('d/m/Y') : '' }}</td>
+                                        <td class="text-center text-nowrap">{{ $baja->hora_baja }}</td>
+                                        <td class="text-center text-nowrap pe-3">
                                             @if($baja->cancelado === 'Si')
                                                 <a href="#"
                                                    class="btn-toggle-baja-status badge bg-danger text-decoration-none py-2 px-3 rounded-pill shadow-sm"
@@ -348,7 +363,7 @@
                             <div class="form-group">
                                 <label for="id_area_abastecimiento_baja" class="form-label fw-bold">
                                     Área de Asignación:
-                                    <small class="text-muted fw-normal">(opcional — sobrescribe el área asignada al insumo)</small>
+                                    <small class="text-muted fw-normal">(opcional — área a la que corresponde esta baja; no modifica el catálogo de insumos)</small>
                                 </label>
                                 <select
                                     name="id_area_abastecimiento"
@@ -386,18 +401,77 @@
                                             {{ $m->descripcion }}
                                         </option>
                                     @endforeach
+                                    <option value="Otro" {{ old('motivo') == 'Otro' || (old('motivo_otro') && !empty(old('motivo_otro'))) ? 'selected' : '' }}>
+                                        Otro (Especificar)
+                                    </option>
                                 </select>
+                                <div class="mt-2" id="container_motivo_otro" style="display: {{ (old('motivo') == 'Otro' || old('motivo_otro')) ? 'block' : 'none' }};">
+                                    <input
+                                        type="text"
+                                        name="motivo_otro"
+                                        id="motivo_otro"
+                                        class="form-control @error('motivo_otro') is-invalid @enderror"
+                                        value="{{ old('motivo_otro') }}"
+                                        placeholder="Escriba el motivo específico de la baja..."
+                                        maxlength="500"
+                                    >
+                                    @error('motivo_otro')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 @error('motivo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-                        {{-- Doctor que indica la baja --}}
+                        {{-- Iniciales del Paciente --}}
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="iniciales_paciente" class="form-label fw-bold">
+                                    Iniciales del Paciente (opcional):
+                                </label>
+                                <input
+                                    type="text"
+                                    name="iniciales_paciente"
+                                    id="iniciales_paciente"
+                                    class="form-control @error('iniciales_paciente') is-invalid @enderror"
+                                    value="{{ old('iniciales_paciente') }}"
+                                    placeholder="Ej. J.P.M."
+                                    maxlength="100"
+                                >
+                                @error('iniciales_paciente')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- No. de Expediente --}}
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="no_expediente" class="form-label fw-bold">
+                                    No. de Expediente (opcional):
+                                </label>
+                                <input
+                                    type="text"
+                                    name="no_expediente"
+                                    id="no_expediente"
+                                    class="form-control @error('no_expediente') is-invalid @enderror"
+                                    value="{{ old('no_expediente') }}"
+                                    placeholder="Ej. 354494"
+                                    maxlength="100"
+                                >
+                                @error('no_expediente')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Doctor que lo receta --}}
                         <div class="col-xs-12 col-sm-12 col-md-6">
                             <div class="form-group">
                                 <label for="doctor_nombre" class="form-label fw-bold">
-                                    Doctor que indica la baja (opcional):
+                                    Doctor que lo receta (opcional):
                                 </label>
                                 <input
                                     type="text"
@@ -414,22 +488,22 @@
                             </div>
                         </div>
 
-                        {{-- Especialidad del Doctor --}}
+                        {{-- Persona quien entrega --}}
                         <div class="col-xs-12 col-sm-12 col-md-6">
                             <div class="form-group">
-                                <label for="doctor_especialidad" class="form-label fw-bold">
-                                    Especialidad (opcional):
+                                <label for="persona_entrega" class="form-label fw-bold">
+                                    Persona quien entrega (opcional):
                                 </label>
                                 <input
                                     type="text"
-                                    name="doctor_especialidad"
-                                    id="doctor_especialidad"
-                                    class="form-control @error('doctor_especialidad') is-invalid @enderror"
-                                    value="{{ old('doctor_especialidad') }}"
-                                    placeholder="Ej. Pediatría / Medicina General"
+                                    name="persona_entrega"
+                                    id="persona_entrega"
+                                    class="form-control @error('persona_entrega') is-invalid @enderror"
+                                    value="{{ old('persona_entrega') }}"
+                                    placeholder="Ej. Enf. María López / Iniciales"
                                     maxlength="200"
                                 >
-                                @error('doctor_especialidad')
+                                @error('persona_entrega')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -473,6 +547,21 @@
                                 @foreach($areasAbastecimiento as $areaAbast)
                                     <option value="{{ $areaAbast->id_area_abastecimiento }}">
                                         {{ $areaAbast->nombre }} {{ $areaAbast->siglas ? '('.$areaAbast->siglas.')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Categoría del Insumo --}}
+                        <div class="col-12">
+                            <label for="modal_id_categoria" class="form-label fw-bold">
+                                Categoría del Insumo:
+                            </label>
+                            <select name="id_categoria" id="modal_id_categoria" class="form-select bg-light">
+                                <option value="">Todas las Categorías</option>
+                                @foreach($categorias as $cat)
+                                    <option value="{{ $cat->id_categoria }}">
+                                        {{ $cat->nombre_categoria }}
                                     </option>
                                 @endforeach
                             </select>

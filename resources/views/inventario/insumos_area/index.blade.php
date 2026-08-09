@@ -13,14 +13,6 @@
             </h1>
             <p class="text-muted mb-0">Gestione y distribuya los insumos en las diferentes áreas de almacén.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('insumos_area.reportes') }}" class="btn btn-outline-primary rounded-pill shadow-sm" style="font-weight: 700;">
-                <i class="fa fa-line-chart me-1"></i> Ver Panel de Reportes
-            </a>
-            <button type="button" class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignarInsumo" style="font-weight: 700;">
-                <i class="fa fa-plus-circle me-1"></i> Asignar Insumo
-            </button>
-        </div>
     </div>
 
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
@@ -33,62 +25,104 @@
         <div id="alertaExito" data-message="{{ session('exito') }}"></div>
     @endif
 
-    {{-- ── Tarjeta: Filtro de Visualización e Historial ── --}}
+    {{-- ── Buscador, Filtros y Acciones ── --}}
+    <div class="mb-4">
+        <form method="GET" action="{{ route('insumos_area.index') }}" id="formBuscar">
+            {{-- Fila 1: Buscar | Área Asignada | Categoría | Botón aplicar/limpiar --}}
+            <div class="row g-2 align-items-end mb-2">
+                {{-- Buscar --}}
+                <div class="col-12 col-md-4 position-relative">
+                    <label for="inputBuscar" class="form-label small fw-bold mb-1 text-dark">
+                        <i class="fa fa-search me-1"></i>Buscar Insumo:
+                    </label>
+                    <div class="input-group input-group-oscuro border border-1 border-dark rounded-3 overflow-hidden">
+                        <input
+                            type="text"
+                            name="buscar"
+                            id="inputBuscar"
+                            class="form-control bg-light border-0 input-buscar-custom"
+                            placeholder="Clave o descripción..."
+                            value="{{ $buscar }}"
+                            autocomplete="off"
+                            style="font-size: 0.9rem;"
+                        >
+                        @if($buscar)
+                            <a href="{{ route('insumos_area.index', array_filter(['id_area_abastecimiento' => $filtroArea, 'id_categoria' => $filtroCategoria])) }}"
+                               class="input-group-text bg-light border-0 text-decoration-none" title="Limpiar búsqueda">
+                                <i class="fa fa-times text-danger"></i>
+                            </a>
+                        @endif
+                        <button class="input-group-text bg-light border-0" type="submit" title="Buscar">
+                            <i class="fa fa-search text-dark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Área Asignada --}}
+                <div class="col-12 col-md-3">
+                    <label for="filtro_area" class="form-label small fw-bold mb-1 text-dark">
+                        <i class="fa fa-building me-1"></i>Área Asignada:
+                    </label>
+                    <select name="id_area_abastecimiento" id="filtro_area" class="form-select bg-light border-dark rounded-3" style="font-size: 0.9rem;" onchange="this.form.submit()">
+                        <option value="">Todas las Áreas</option>
+                        @foreach($areasAbastecimiento as $areaAbast)
+                            <option value="{{ $areaAbast->id_area_abastecimiento }}" {{ $filtroArea == $areaAbast->id_area_abastecimiento ? 'selected' : '' }}>
+                                {{ $areaAbast->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Categoría del Insumo --}}
+                <div class="col-12 col-md-3">
+                    <label for="filtro_categoria" class="form-label small fw-bold mb-1 text-dark">
+                        <i class="fa fa-tag me-1"></i>Categoría:
+                    </label>
+                    <select name="id_categoria" id="filtro_categoria" class="form-select bg-light border-dark rounded-3" style="font-size: 0.9rem;" onchange="this.form.submit()">
+                        <option value="">Todas las Categorías</option>
+                        @foreach($categorias as $cat)
+                            <option value="{{ $cat->id_categoria }}" {{ $filtroCategoria == $cat->id_categoria ? 'selected' : '' }}>
+                                {{ $cat->nombre_categoria }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Botón Aplicar / Limpiar --}}
+                <div class="col-12 col-md-2 d-flex gap-1 align-items-end">
+                    <button type="submit" class="btn btn-dark btn-sm w-100 rounded-3" title="Aplicar filtros" style="padding: 0.45rem;">
+                        <i class="fa fa-filter"></i> Filtrar
+                    </button>
+                    @if($buscar || $filtroArea || $filtroCategoria)
+                        <a href="{{ route('insumos_area.index') }}" class="btn btn-outline-secondary btn-sm w-100 rounded-3" title="Limpiar todos los filtros" style="padding: 0.45rem;">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </form>
+
+        {{-- Fila 2: Botones de Acción a la derecha --}}
+        <div class="d-flex justify-content-end gap-2 flex-wrap mt-2">
+            <a href="{{ route('insumos_area.reportes') }}" class="btn btn-outline-primary rounded-pill shadow-sm" style="font-weight: 700;">
+                <i class="fa fa-line-chart me-1"></i> Ver Panel de Reportes
+            </a>
+            <button type="button" class="btn btn-primary rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignarInsumo" style="font-weight: 700;">
+                <i class="fa fa-plus-circle me-1"></i> Asignar Insumo
+            </button>
+        </div>
+    </div>
+
+    {{-- ── Tarjeta: Visualización e Historial ── --}}
     <div class="card-premium">
         <div class="card-premium-header pb-0">
-            <div class="row w-100 align-items-center g-3">
-                <div class="col-12 col-md-8">
-                    <form method="GET" action="{{ route('insumos_area.index') }}" id="formBuscarFiltros">
-                        <div class="row g-2 align-items-end">
-                            {{-- Buscar --}}
-                            <div class="col-12 col-md-5">
-                                <label for="inputBuscar" class="form-label small fw-bold mb-1 text-dark">
-                                    <i class="fa fa-search me-1"></i>Buscar Insumo:
-                                </label>
-                                <div class="input-group border border-1 border-dark rounded-3 overflow-hidden">
-                                    <input
-                                        type="text"
-                                        name="buscar"
-                                        id="inputBuscar"
-                                        class="form-control bg-light border-0"
-                                        placeholder="Clave o descripción..."
-                                        value="{{ $buscar }}"
-                                        autocomplete="off"
-                                        style="font-size: 0.9rem;"
-                                    >
-                                    @if($buscar)
-                                        <a href="{{ route('insumos_area.index', ['id_area_almacen' => $filtroArea]) }}" class="input-group-text bg-light border-0 text-decoration-none" title="Limpiar búsqueda">
-                                            <i class="fa fa-times text-danger"></i>
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                            {{-- Filtrar por Área --}}
-                            <div class="col-12 col-md-5">
-                                <label for="filtro_area" class="form-label small fw-bold mb-1 text-dark">
-                                    <i class="fa fa-filter me-1"></i>Filtrar por Área Asignada:
-                                </label>
-                                <select name="id_area_abastecimiento" id="filtro_area" class="form-select bg-light border-dark rounded-3" style="font-size: 0.9rem;">
-                                    <option value="">Todas las Áreas</option>
-                                    @foreach($areasAbastecimiento as $areaAbast)
-                                        <option value="{{ $areaAbast->id_area_abastecimiento }}" {{ $filtroArea == $areaAbast->id_area_abastecimiento ? 'selected' : '' }}>
-                                            {{ $areaAbast->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- Botones --}}
-                            <div class="col-12 col-md-2">
-                                <button type="submit" class="btn btn-dark w-100 rounded-3" style="font-size: 0.9rem; padding: 0.45rem;">
-                                    <i class="fa fa-search"></i> Filtrar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-12 col-md-4 text-md-end">
-                    <span class="rounded-pill px-3 py-1 fw-bold bg-light border text-dark align-middle d-inline-block" style="font-size: 0.82rem;">
-                        {{ $insumosArea->total() }} {{ $insumosArea->total() === 1 ? 'Insumo asignado' : 'Insumos asignados' }}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="fa fa-list text-secondary me-2"></i>Insumos asignados por área
+                    </h5>
+                    <span class="rounded-pill px-3 py-1 fw-bold align-middle d-inline-block badge-total-registros">
+                        <span class="badge-total-num">{{ $insumosArea->total() }}</span> <span class="badge-total-label">{{ $insumosArea->total() === 1 ? 'Insumo asignado' : 'Insumos asignados' }}</span>
                     </span>
                 </div>
             </div>

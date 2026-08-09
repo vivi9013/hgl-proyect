@@ -70,24 +70,27 @@
                         {{ mb_strtoupper($nombreGrupo) }}
                     </th>
                 </tr>
-                {{-- Fila 5 de la foto: Encabezados de columnas exactos --}}
+                {{-- Encabezados de columnas exactos --}}
                 <tr>
                     <th class="table-header-col" style="width: 320px;">MEDICAMENTO</th>
                     <th class="table-header-col" style="width: 70px;">PIEZAS</th>
                     <th class="table-header-col" style="width: 120px;">FECHA DE ENTREGA</th>
                     <th class="table-header-col" style="width: 100px;">HORA</th>
                     <th class="table-header-col" style="width: 130px;">INICIALES DEL PACIENTE</th>
-                    <th class="table-header-col" style="width: 110px;">NO. DE EXPEDIENTE</th>
+                    <th class="table-header-col" style="width: 110px;">NO. EXPEDIENTE</th>
                     <th class="table-header-col" style="width: 220px;">DOCTOR QUE LO RECETA</th>
-                    <th class="table-header-col" style="width: 180px;">PERSONA QUE ENTREGA</th>
+                    <th class="table-header-col" style="width: 180px;">PERSONA QUIEN ENTREGA</th>
                     <th class="table-header-col" style="width: 100px;">AREA</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($bajasGrupo as $baja)
                     @php
-                        $areaDisplay = $baja->insumo->areaAbastecimiento->siglas 
+                        $areaDisplay = $baja->areaAbastecimiento->nombre 
+                            ?? $baja->areaAbastecimiento->siglas 
                             ?? $baja->insumo->areaAbastecimiento->nombre 
+                            ?? $baja->insumo->areaAbastecimiento->siglas 
+                            ?? $baja->motivo
                             ?? $baja->areaAlmacen->nombre 
                             ?? '—';
                     @endphp
@@ -102,14 +105,14 @@
                         <td class="text-center">{{ $baja->hora_baja ?? '—' }}</td>
                         {{-- INICIALES DEL PACIENTE --}}
                         <td class="text-center">
-                            {{ $baja->motivo ? mb_strtoupper($baja->motivo) : 'PLAN PILOTO' }}
+                            {{ $baja->iniciales_paciente ? mb_strtoupper($baja->iniciales_paciente) : '—' }}
                         </td>
-                        {{-- NO. DE EXPEDIENTE --}}
-                        <td class="num-format text-center">{{ $baja->id_baja_insumo }}</td>
+                        {{-- NO. EXPEDIENTE --}}
+                        <td class="num-format text-center">{{ $baja->no_expediente ? mb_strtoupper($baja->no_expediente) : $baja->id_baja_insumo }}</td>
                         {{-- DOCTOR QUE LO RECETA --}}
                         <td class="text-left">{{ $baja->doctor_nombre ? mb_strtoupper($baja->doctor_nombre) : '—' }}</td>
-                        {{-- PERSONA QUE ENTREGA --}}
-                        <td class="text-left">{{ $baja->doctor_especialidad ? mb_strtoupper($baja->doctor_especialidad) : '—' }}</td>
+                        {{-- PERSONA QUIEN ENTREGA --}}
+                        <td class="text-left">{{ $baja->persona_entrega ? mb_strtoupper($baja->persona_entrega) : ($baja->doctor_especialidad ? mb_strtoupper($baja->doctor_especialidad) : '—') }}</td>
                         {{-- AREA --}}
                         <td class="text-center fw-bold">{{ mb_strtoupper($areaDisplay) }}</td>
                     </tr>
