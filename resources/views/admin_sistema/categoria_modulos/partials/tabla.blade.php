@@ -11,9 +11,12 @@
         {{-- Columna de Acciones Estándar --}}
         <td class="text-center">
             <div class="d-flex justify-content-center gap-2">
-                <a href="{{ route('categoria_modulos.edit', $row->id_CategoriaModulo) }}" class="btn btn-sm btn-outline-dark border-0" title="Editar Categoría">
+                <button type="button"
+                        class="btn btn-sm btn-outline-dark border-0 btn-editar-categoria"
+                        data-id="{{ $row->id_CategoriaModulo }}"
+                        title="Editar Categoría">
                     <i class="fa fa-pencil-square-o"></i>
-                </a>
+                </button>
             </div>
         </td>
 
@@ -23,7 +26,9 @@
         
         {{-- Columna interactiva: Panel Abierto --}}
         <td class="text-center">
-            <button type="button" class="btn btn-link btn-sm btn-toggle-colapsar p-0" data-id="{{ $row->id_CategoriaModulo }}">
+            <button type="button" class="btn btn-link btn-sm btn-toggle-colapsar p-0"
+                    data-id="{{ $row->id_CategoriaModulo }}"
+                    data-nombre="{{ $row->categoria }}">
                 @if($row->colapsado == 'no')
                     <i class="fa fa-thumbs-o-up text-primary fs-5" title="Abierto"></i>
                 @else
@@ -34,7 +39,9 @@
         
         {{-- Columna interactiva: Status --}}
         <td class="text-center">
-            <button type="button" class="btn btn-link btn-sm btn-toggle-status p-0" data-id="{{ $row->id_CategoriaModulo }}">
+            <button type="button" class="btn btn-link btn-sm btn-toggle-status p-0"
+                    data-id="{{ $row->id_CategoriaModulo }}"
+                    data-nombre="{{ $row->categoria }}">
                 @if($row->activo == 1)
                     <i class="fa fa-check-square-o text-success fs-5" title="Activo"></i>
                 @else

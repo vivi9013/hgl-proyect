@@ -21,6 +21,6 @@ class InsumoImpresora extends Model
         'activo',
         'fecha',
         'hora',
-        'usuario',
+        'id_usuario',
     ];
 }

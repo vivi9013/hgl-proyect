@@ -15,10 +15,12 @@
 
         {{-- Acciones --}}
         <td class="text-center">
-            <a href="{{ route('personas.edit', $row->id) }}"
-               class="btn btn-sm btn-outline-dark border-0" title="Editar Persona">
+            <button type="button"
+                    class="btn btn-sm btn-outline-dark border-0 btn-editar-persona"
+                    data-id="{{ $row->id }}"
+                    title="Editar Persona">
                 <i class="fa fa-pencil-square-o"></i>
-            </a>
+            </button>
         </td>
 
          <td class="text-center">
@@ -43,7 +45,9 @@
 
         {{-- Toggle Estudiante --}}
         <td class="text-center">
-            <button type="button" class="btn btn-link btn-sm btn-toggle-estudiante p-0" data-id="{{ $row->id }}">
+            <button type="button" class="btn btn-link btn-sm btn-toggle-estudiante p-0"
+                    data-id="{{ $row->id }}"
+                    data-nombre="{{ $row->nombre }} {{ $row->ap_paterno }} {{ $row->ap_materno }}">
                 @if($row->estudiante == 1)
                     <i class="fa fa-graduation-cap text-primary fs-5" title="Es estudiante"></i>
                 @else
@@ -54,7 +58,9 @@
 
         {{-- Toggle Status --}}
         <td class="text-center">
-            <button type="button" class="btn btn-link btn-sm btn-toggle-status p-0" data-id="{{ $row->id }}">
+            <button type="button" class="btn btn-link btn-sm btn-toggle-status p-0"
+                    data-id="{{ $row->id }}"
+                    data-nombre="{{ $row->nombre }} {{ $row->ap_paterno }} {{ $row->ap_materno }}">
                 @if($row->activo == 1)
                     <i class="fa fa-check-square-o text-success fs-5" title="Activo"></i>
                 @else

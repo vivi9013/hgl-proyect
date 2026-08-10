@@ -12,7 +12,6 @@
             <th>Persona / Trabajador</th>
             <th>Nombre de Usuario</th>
             <th>Perfil asignado</th>
-            <th class="center" style="width:100px;">Estado</th>
         </tr>
     </thead>
     <tbody>
@@ -34,13 +33,10 @@
                         <span>Sin perfil asignado</span>
                     @endif
                 </td>
-                <td class="center">
-                    {{ $user->activo == 1 ? 'Activo' : 'Inactivo' }}
-                </td>
             </tr>
         @empty
             <tr>
-                <td colspan="5" style="text-align:center; padding:12px; color:#666;">
+                <td colspan="4" style="text-align:center; padding:12px; color:#666;">
                     No hay usuarios registrados actualmente en el sistema.
                 </td>
             </tr>

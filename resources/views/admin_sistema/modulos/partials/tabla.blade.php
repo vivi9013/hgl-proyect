@@ -63,7 +63,12 @@
 
         {{-- 11. Status --}}
         <td class="{{ $bgClass }} text-white text-center">
-            <input type="checkbox" class="btn-alternar-estado" data-id="{{ $mod->id }}" {{ $mod->activo == 1 ? 'checked' : '' }} style="cursor: pointer; width: 18px; height: 18px;">
+            <input type="checkbox" class="btn-alternar-estado"
+                   data-id="{{ $mod->id }}"
+                   data-nombre="{{ $mod->nombre }}"
+                   data-activo="{{ $mod->activo }}"
+                   {{ $mod->activo == 1 ? 'checked' : '' }}
+                   style="cursor: pointer; width: 18px; height: 18px;">
         </td>
     </tr>
 @empty

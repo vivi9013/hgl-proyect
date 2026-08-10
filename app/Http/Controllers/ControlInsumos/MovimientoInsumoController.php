@@ -118,7 +118,7 @@ class MovimientoInsumoController extends Controller
                     'activo'              => 1,
                     'fecha'               => now()->toDateString(),
                     'hora'                => now()->toTimeString(),
-                    'usuario'             => Auth::id(),
+                    'id_usuario'          => Auth::id(),
                 ]);
 
                 // Actualizar stock del insumo
@@ -173,12 +173,12 @@ class MovimientoInsumoController extends Controller
                 $mov->activo  = 0;
                 $mov->fecha   = now()->toDateString();
                 $mov->hora    = now()->toTimeString();
-                $mov->usuario = Auth::id();
+                $mov->id_usuario = Auth::id();
                 $mov->save();
 
                 $insumo->fecha   = now()->toDateString();
                 $insumo->hora    = now()->toTimeString();
-                $insumo->usuario = Auth::id();
+                $insumo->id_usuario = Auth::id();
                 $insumo->save();
             });
 
@@ -281,14 +281,14 @@ class MovimientoInsumoController extends Controller
 
                 $mov->fecha            = now()->toDateString();
                 $mov->hora             = now()->toTimeString();
-                $mov->usuario          = Auth::id();
+                $mov->id_usuario          = Auth::id();
 
                 $mov->save();
 
                 // 5. Guardar los datos del insumo
                 $insumo->fecha         = now()->toDateString();
                 $insumo->hora          = now()->toTimeString();
-                $insumo->usuario       = Auth::id();
+                $insumo->id_usuario       = Auth::id();
                 $insumo->save();
             });
 

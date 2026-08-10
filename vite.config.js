@@ -64,8 +64,6 @@ export default defineConfig({
                 // Categoria de Modulos Assets
                 'resources/css/categoria_modulos/categoria.css',
                 'resources/js/categoria_modulos/categoria.js',
-                'resources/js/categoria_modulos/categoria_edit.js',
-                'resources/js/categoria_modulos/categoria_reportes.js',
                 // Configuración General Assets
                 'resources/css/configuracion_sistema/configuracion.css',
                 'resources/js/configuracion_sistema/configuracion.js',
@@ -79,7 +77,6 @@ export default defineConfig({
                 // Personas Assets
                 'resources/css/personas/personas.css',
                 'resources/js/personas/personas.js',
-                'resources/js/personas/personas_edit.js',
                 // Proyectos Assets
                 'resources/css/proyectos/proyectos.css',
                 'resources/js/proyectos/proyectos.js',

@@ -34,6 +34,11 @@ body {
   overflow-x: hidden;
 }
 
+/* ─── Flatpickr: evita que el calendario infle el scroll del body ────── */
+.flatpickr-calendar {
+  position: fixed !important;
+}
+
 .main-wrapper {
   display: flex;
   min-height: 100vh;
@@ -188,6 +193,7 @@ body {
   color: #000000 !important;
   border-top: none !important;
   transition: background-color 0.3s ease;
+  padding: 1rem 2rem !important;
 }
 
 /*HEADER*/

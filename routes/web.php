@@ -191,8 +191,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('modulos')->middleware('modulo:4')->name('modulos.')->controller(ModuloController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
-        Route::get('/reportes/imprimir/{tipo?}', 'imprimir')->name('reportes.imprimir');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/categoria-preview', 'categoriaPreview')->name('categoria_preview');
         Route::get('/{id}/edit', 'editar')->name('edit');
@@ -207,7 +206,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('personas')->middleware('modulo:5')->name('personas.')->controller(PersonaController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/municipios', 'municipios')->name('municipios');
@@ -225,7 +223,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::patch('/{id}/colapsar', 'cambiarColapsar')->name('colapsar');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/graficas', 'graficas')->name('graficas');
@@ -430,8 +427,8 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
     });
 
-    // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 51) ──
-    Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:51')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
+    // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 50) ──
+    Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:50')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
         Route::get('/',                  'index')        ->name('index');
         Route::post('/guardar',          'guardar')      ->name('store');
         Route::get('/{id}/edit',         'editar')       ->name('edit');

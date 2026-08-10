@@ -14,6 +14,30 @@ class CategoriaModulosController extends Controller
      */
     public function index(Request $request)
     {
+        $categorias = $this->queryCategorias($request)->paginate(10);
+
+        // Si la petición es AJAX, retornamos JSON para actualizar la UI dinámicamente
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html' => view('admin_sistema.categoria_modulos.partials.tabla', compact('categorias'))->render(),
+                'links' => $categorias->links('pagination::bootstrap-4')->render(),
+                'total' => $categorias->total(),
+                'info' => "Mostrando " . ($categorias->firstItem() ?? 0) . " a " . ($categorias->lastItem() ?? 0) . " de " . $categorias->total() . " registros"
+            ]);
+        }
+
+        // Calcular el siguiente orden sugerido para el formulario de alta
+        $siguienteOrden = (CategoriaModulo::max('orden') ?? 0) + 1;
+
+        return view('admin_sistema.categoria_modulos.index', compact('categorias', 'siguienteOrden'));
+    }
+
+    /**
+     * Construye la query base de categorías aplicando el filtro buscar.
+     * Compartida entre index() e imprimir().
+     */
+    private function queryCategorias(Request $request)
+    {
         $buscar = $request->get('buscar');
 
         $query = CategoriaModulo::orderBy('orden', 'asc')
@@ -27,21 +51,7 @@ class CategoriaModulosController extends Controller
             });
         }
 
-        $categorias = $query->paginate(10);
-
-        // Si la petición es AJAX, retornamos JSON para actualizar la UI dinámicamente
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'html' => view('admin_sistema.categoria_modulos.partials.tabla', compact('categorias'))->render(),
-                'links' => $categorias->links('pagination::bootstrap-4')->render(),
-                'total' => $categorias->total(),
-                'info' => "Mostrando " . ($categorias->firstItem() ?? 0) . " a " . ($categorias->lastItem() ?? 0) . " de " . $categorias->total() . " registros"
-            ]);
-        }
-        // Calcular el siguiente orden sugerido para el formulario de alta
-        $siguienteOrden = (CategoriaModulo::max('orden') ?? 0) + 1;
-
-        return view('admin_sistema.categoria_modulos.index', compact('categorias', 'siguienteOrden'));
+        return $query;
     }
 
     /**
@@ -104,6 +114,14 @@ class CategoriaModulosController extends Controller
     public function editar($id)
     {
         $categoria = CategoriaModulo::findOrFail($id);
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success'   => true,
+                'categoria' => $categoria,
+            ]);
+        }
+
         return view('admin_sistema.categoria_modulos.editar', compact('categoria'));
     }
 
@@ -233,19 +251,11 @@ class CategoriaModulosController extends Controller
     }
 
     /**
-     * Muestra la interfaz de reportes.
+     * Genera la lista de impresión respetando el filtro buscar y el orden del índice.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        return view('admin_sistema.categoria_modulos.analitica.reportes.index');
-    }
-
-    /**
-     * Genera la lista completa de impresión (vista imprimible premium).
-     */
-    public function imprimir()
-    {
-        $categorias = CategoriaModulo::orderBy('categoria', 'asc')->get();
+        $categorias = $this->queryCategorias($request)->get();
         return view('admin_sistema.categoria_modulos.analitica.reportes.impresion', compact('categorias'));
     }
 

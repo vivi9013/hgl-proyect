@@ -225,12 +225,12 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center">
+                {{-- Pie: info + paginación --}}
+                <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center border-top">
                     <div class="text-muted small" id="infoPaginacion">
-                        Mostrando {{ $insumos->firstItem() ?? 0 }} a {{ $insumos->lastItem() ?? 0 }}
-                        de {{ $insumos->total() }} registros
+                        Mostrando {{ $insumos->firstItem() ?? 0 }} a {{ $insumos->lastItem() ?? 0 }} de {{ $insumos->total() }} registros
                     </div>
-                    <nav>
+                    <nav aria-label="Paginación de insumos">
                         <div id="contenedorPaginacion">
                             {{ $insumos->links('pagination::bootstrap-4') }}
                         </div>

@@ -53,24 +53,7 @@ class ModuloController extends Controller
      */
     public function index(Request $request)
     {
-        $buscar = $request->get('buscar');
-
-        $query = Modulo::with('categoria')
-            ->withCount(['proyectos', 'perfiles'])
-            ->orderBy('id', 'desc');
-
-        if (!empty($buscar)) {
-            $buscarLimpiado = trim($buscar);
-            $query->where(function ($q) use ($buscarLimpiado) {
-                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
-                  ->orWhere('carpeta', 'like', '%' . $buscarLimpiado . '%')
-                  ->orWhere('creador', 'like', '%' . $buscarLimpiado . '%')
-                  ->orWhereHas('categoria', function ($subQ) use ($buscarLimpiado) {
-                      $subQ->where('categoria', 'like', '%' . $buscarLimpiado . '%');
-                  });
-            });
-        }
-
+        $query = $this->queryModulos($request);
         $modulos = $query->paginate(10);
 
         // Si es petición AJAX, retornamos la tabla renderizada
@@ -91,6 +74,33 @@ class ModuloController extends Controller
         $colores = $this->colorTranslations;
 
         return view('admin_sistema.modulos.index', compact('modulos', 'categorias', 'colores'));
+    }
+
+    /**
+     * Construye la query base de módulos aplicando el filtro buscar.
+     * Compartida entre index() e imprimir().
+     */
+    private function queryModulos(Request $request)
+    {
+        $buscar = $request->get('buscar');
+
+        $query = Modulo::with('categoria')
+            ->withCount(['proyectos', 'perfiles'])
+            ->orderBy('id', 'desc');
+
+        if (!empty($buscar)) {
+            $buscarLimpiado = trim($buscar);
+            $query->where(function ($q) use ($buscarLimpiado) {
+                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhere('carpeta', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhere('creador', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhereHas('categoria', function ($subQ) use ($buscarLimpiado) {
+                      $subQ->where('categoria', 'like', '%' . $buscarLimpiado . '%');
+                  });
+            });
+        }
+
+        return $query;
     }
 
     /**
@@ -307,34 +317,13 @@ class ModuloController extends Controller
     }
 
     /**
-     * Muestra la interfaz de reportes con estadísticas rápidas.
+     * Genera el reporte imprimible con el filtro de búsqueda activo.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        $stats = [
-            'total'      => Modulo::count(),
-            'activos'    => Modulo::where('activo', 1)->count(),
-            'inactivos'  => Modulo::where('activo', 0)->count(),
-            'categorias' => CategoriaModulo::whereHas('modulos')->count(),
-        ];
+        $modulos = $this->queryModulos($request)->get();
 
-        return view('admin_sistema.modulos.analitica.reportes.index', compact('stats'));
-    }
-
-    /**
-     * Genera el reporte imprimible según tipo: 'completa', 'categoria', 'estado'.
-     */
-    public function imprimir($tipo = 'completa')
-    {
-        $query = Modulo::with('categoriaModulo')->orderBy('nombre', 'asc');
-
-        if ($tipo === 'estado') {
-            $query->orderBy('activo', 'desc');
-        }
-
-        $modulos = $query->get();
-
-        return view('admin_sistema.modulos.analitica.reportes.impresion', compact('modulos', 'tipo'));
+        return view('admin_sistema.modulos.analitica.reportes.impresion', compact('modulos'));
     }
 
     /**

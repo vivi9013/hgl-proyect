@@ -20,7 +20,7 @@ class MovimientoInsumo extends Model
         'activo',      // 1: Activo, 0: Cancelado
         'fecha',
         'hora',
-        'usuario',
+        'id_usuario',      // FK -> usuarios.id
     ];
 
     // ─── Relaciones ──────────────────────────────────────────────────────────
