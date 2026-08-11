@@ -59,12 +59,12 @@
           </a>
         </li>
 
-        <li class="nav-item mb-2">
+        {{--<li class="nav-item mb-2">
           <a href="#" class="nav-link d-flex align-items-center p-3 text-dark">
             <i class="bi bi-info-circle-fill"></i>
             <span class="fw-medium" style="padding-left: 20px;">Informacion</span>
           </a>
-        </li>
+        </li> --}}
 
 
       </ul>
@@ -73,7 +73,7 @@
   <!--end::Sidebar Wrapper-->
 
   <div class="sidebar-logout p-3" style="position: absolute; bottom: 0; width: 100%;">
-    <a href="{{ route('logout') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
+    <a href="{{ route('logout') }}" id="btnCerrarSesionSidebar" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center py-2">
 
       <i class="bi bi-box-arrow-right me-2"></i>
       <span>Cerrar Sesión</span>

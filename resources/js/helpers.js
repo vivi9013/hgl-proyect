@@ -42,3 +42,41 @@ window.renderPaginacion = function (links, elementId, callback) {
         });
     });
 };
+
+/**
+ * Listener global para confirmación de cierre de sesión con SweetAlert2
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    document.body.addEventListener('click', function (e) {
+        const logoutLink = e.target.closest('a[href*="logout"]');
+        if (logoutLink) {
+            e.preventDefault();
+            const logoutUrl = logoutLink.getAttribute('href');
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '¿Cerrar sesión?',
+                    text: '¿Estás seguro de que deseas salir del sistema?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="bi bi-box-arrow-right me-1"></i> Sí, cerrar sesión',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = logoutUrl;
+                    }
+                });
+            } else {
+                if (confirm('¿Estás seguro de que deseas salir del sistema?')) {
+                    window.location.href = logoutUrl;
+                }
+            }
+        }
+    });
+});

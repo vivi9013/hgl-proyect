@@ -13,12 +13,18 @@
 
 <div class="container-fluid py-4" id="modulo-personas">
     {{-- Encabezado del Módulo --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-id-card text-primary me-2"></i>Catálogo de Personas
             </h1>
             <p class="text-muted mb-0">Gestione el padrón de personas registradas en el sistema hospitalario</p>
+        </div>
+        <div class="alert alert-info border-0 shadow-sm mb-0 py-2 px-3 d-flex align-items-center gap-2 rounded-3" style="max-width: 550px; font-size: 0.875rem;">
+            <i class="fa fa-info-circle text-info fs-5 flex-shrink-0"></i>
+            <div>
+                <strong>Nota importante:</strong> Para dar de alta completamente en el sistema a una persona es necesario registrarla en los siguientes módulos: <strong>Personas</strong>, <strong>Usuarios</strong> y <strong>Trabajadores</strong>.
+            </div>
         </div>
     </div>
 

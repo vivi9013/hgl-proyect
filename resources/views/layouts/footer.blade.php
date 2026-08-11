@@ -3,9 +3,6 @@
         <div>
             <strong>Copyright &copy; 2026 <a href="#" class="text-decoration-none text-dark fw-bold">HGLinares</a>.</strong>
             <span>Todos los derechos reservados.</span>
-            <div class="text-muted small mt-1">
-                MISSI. Pablo Adrian Pérez | MISSI. Diana Abigail | Téc. Greysi Ramírez | Téc. Irvin Alvarez | Téc. Jesús Alameda.
-            </div>
         </div>
         <div class="text-end small text-muted">
             Hospital General <br>
