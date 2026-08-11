@@ -395,10 +395,14 @@
                                 <i class="fa fa-arrow-circle-up me-1"></i>Registrar Salida
                             </button>
                         </div>
-                        <div>
+                        <div class="d-flex gap-2">
                             <a href="{{ route('movimientos_insumos.imprimir') }}" target="_blank"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir
+                            </a>
+                            <a href="{{ route('movimientos_insumos.exportar_excel') }}" target="_blank"
+                               class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-excel-o me-1 text-success"></i>Exportar Excel
                             </a>
                         </div>
                     </div>

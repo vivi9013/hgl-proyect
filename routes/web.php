@@ -429,12 +429,13 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
 
     // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 50) ──
     Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:50')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
-        Route::get('/',                  'index')        ->name('index');
-        Route::post('/guardar',          'guardar')      ->name('store');
-        Route::get('/{id}/edit',         'editar')       ->name('edit');
-        Route::put('/{id}',              'actualizar')   ->name('update');
-        Route::patch('/{id}/cancelar',   'cancelar')     ->name('cancelar');
-        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        Route::get('/',                  'index')          ->name('index');
+        Route::post('/guardar',          'guardar')        ->name('store');
+        Route::get('/{id}/edit',         'editar')         ->name('edit');
+        Route::put('/{id}',              'actualizar')     ->name('update');
+        Route::patch('/{id}/cancelar',   'cancelar')       ->name('cancelar');
+        Route::get('/exportar-excel',    'exportarExcel')  ->name('exportar_excel');
+        Route::get('/reportes/imprimir', 'imprimir')       ->name('imprimir');
     });
 
     // ── Admin Formatos: Buscador de Archivos (ID: 26) ────────────────────────

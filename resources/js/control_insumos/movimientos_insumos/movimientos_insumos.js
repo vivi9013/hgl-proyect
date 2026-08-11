@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const filtroBuscar     = document.getElementById('filtro-buscar');
     const filtroFechaRango = document.getElementById('filtro-fecha-rango');
     const btnImprimir      = document.querySelector('a[href*="imprimir"]');
+    const btnExcel         = document.querySelector('a[href*="exportar-excel"]');
 
     const dropdownFiltros = document.getElementById('dropdownFiltros');
 
@@ -71,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function actualizarBtnImprimir() {
-        if (!btnImprimir) return;
         const f = obtenerFiltros();
         const params = new URLSearchParams();
         if (f.buscar)      params.set('buscar', f.buscar);
@@ -80,8 +80,18 @@ document.addEventListener('DOMContentLoaded', function () {
         f.status.forEach(v =>  params.append('status[]',  v));
         if (f.fecha_inicio) params.set('fecha_inicio', f.fecha_inicio);
         if (f.fecha_fin)    params.set('fecha_fin',    f.fecha_fin);
-        const baseUrl = btnImprimir.href.split('?')[0];
-        btnImprimir.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+
+        // Actualiza enlace de impresión
+        if (btnImprimir) {
+            const baseUrl = btnImprimir.href.split('?')[0];
+            btnImprimir.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+        }
+
+        // Actualiza enlace de Excel con los mismos filtros
+        if (btnExcel) {
+            const baseUrl = btnExcel.href.split('?')[0];
+            btnExcel.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+        }
     }
 
     function cargarMovimientos(pagina = 1) {

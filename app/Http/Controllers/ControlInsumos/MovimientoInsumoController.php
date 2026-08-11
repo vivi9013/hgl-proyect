@@ -125,13 +125,13 @@ class MovimientoInsumoController extends Controller
                 $insumo->stock = $tipo === 'Entrada'
                     ? $insumo->stock + $cantidad
                     : $insumo->stock - $cantidad;
-                $insumo->fecha   = now()->toDateString();
-                $insumo->hora    = now()->toTimeString();
-                $insumo->usuario = Auth::id();
+                $insumo->fecha      = now()->toDateString();
+                $insumo->hora       = now()->toTimeString();
+                $insumo->id_usuario = Auth::id();
                 $insumo->save();
             });
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
+            return redirect()->back()->withErrors(['error' => 'No se pudo procesar la solicitud.'])->withInput();
         }
 
         $mensaje = $tipo === 'Entrada'
@@ -176,8 +176,8 @@ class MovimientoInsumoController extends Controller
                 $mov->id_usuario = Auth::id();
                 $mov->save();
 
-                $insumo->fecha   = now()->toDateString();
-                $insumo->hora    = now()->toTimeString();
+                $insumo->fecha      = now()->toDateString();
+                $insumo->hora       = now()->toTimeString();
                 $insumo->id_usuario = Auth::id();
                 $insumo->save();
             });
@@ -190,7 +190,7 @@ class MovimientoInsumoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'No se pudo procesar la solicitud.',
             ], 422);
         }
     }
@@ -286,9 +286,9 @@ class MovimientoInsumoController extends Controller
                 $mov->save();
 
                 // 5. Guardar los datos del insumo
-                $insumo->fecha         = now()->toDateString();
-                $insumo->hora          = now()->toTimeString();
-                $insumo->id_usuario       = Auth::id();
+                $insumo->fecha      = now()->toDateString();
+                $insumo->hora       = now()->toTimeString();
+                $insumo->id_usuario = Auth::id();
                 $insumo->save();
             });
 
@@ -300,9 +300,67 @@ class MovimientoInsumoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'No se pudo procesar la solicitud.',
             ], 422);
         }
+    }
+
+    // ─── EXPORTAR EXCEL ──────────────────────────────────────────────────────
+    public function exportarExcel(Request $request)
+    {
+        // Reutiliza los mismos filtros del método imprimir para garantizar coherencia.
+        $buscar      = trim($request->get('buscar', ''));
+        $tipo        = $request->input('tipo', []);
+        $concepto    = $request->input('concepto', []);
+        $fechaInicio = $request->get('fecha_inicio', '');
+        $fechaFin    = $request->get('fecha_fin', '');
+        $status      = $request->input('status', []);
+
+        // Construye la consulta cargando la relación con el insumo.
+        $query = MovimientoInsumo::with('insumo')
+            ->orderBy('fecha_movimiento', 'desc')
+            ->orderBy('id_movimiento', 'desc');
+
+        // Aplica el mismo conjunto de filtros que usa el listado principal.
+        if (!empty($buscar)) {
+            $query->whereHas('insumo', fn ($q) => $q->where('modelo', 'like', "%{$buscar}%"));
+        }
+        if (!empty($tipo)) {
+            $query->whereIn('tipo', (array) $tipo);
+        }
+        if (!empty($concepto)) {
+            $query->whereIn('concepto', (array) $concepto);
+        }
+        if (!empty($fechaInicio)) {
+            $query->where('fecha_movimiento', '>=', $fechaInicio);
+        }
+        if (!empty($fechaFin)) {
+            $query->where('fecha_movimiento', '<=', $fechaFin);
+        }
+        if (!empty($status)) {
+            $query->whereIn('activo', array_map('intval', $status));
+        }
+
+        // Obtiene todos los registros sin límite para el reporte completo.
+        $movimientos = $query->get();
+
+        // Construye el nombre del archivo con fecha y hora para evitar colisiones.
+        $filename = 'Reporte_Movimientos_Insumos_' . date('Y-m-d_H-i-s') . '.xls';
+
+        // Transmite el HTML directamente como descarga sin escribir archivo en disco.
+        return response()->streamDownload(function () use ($movimientos, $fechaInicio, $fechaFin) {
+            echo view(
+                'control_insumos.movimientos.exportar_excel',
+                compact('movimientos', 'fechaInicio', 'fechaFin')
+            )->render();
+        }, $filename, [
+            // Indica al navegador que interprete el contenido como Excel.
+            'Content-Type'        => 'application/vnd.ms-excel; charset=utf-8',
+            // Fuerza la descarga con el nombre generado.
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            // Evita que el navegador use una versión en caché del archivo.
+            'Cache-Control'       => 'max-age=0',
+        ]);
     }
 
     // ─── REPORTE (impresión) ─────────────────────────────────────────────────
