@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cargar PDF - Hospital General')
+@section('title', 'Cargar Archivo - Hospital General')
 
 @section('content')
 <div class="container-fluid py-4">
@@ -10,7 +10,7 @@
             <h1 class="h3 mb-0 text-gray-800 fw-bold">
                 <i class="fa fa-upload text-primary me-2"></i>Subir Documento Físico
             </h1>
-            <p class="text-muted mb-0">Carga del archivo PDF correspondiente al registro: <strong>{{ $archivo->nombre }}</strong></p>
+            <p class="text-muted mb-0">Carga del archivo (PDF o Word) correspondiente al registro: <strong>{{ $archivo->nombre }}</strong></p>
         </div>
     </div>
 
@@ -20,7 +20,7 @@
             <div class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden">
                 <div class="card-header bg-white border-0 py-4 px-4 border-bottom">
                     <h5 class="card-title mb-0 fw-bold text-dark">
-                        <i class="fa fa-file-pdf-o text-danger me-2"></i>Selecciona el archivo PDF a subir
+                        <i class="fa fa-file-text-o text-primary me-2"></i>Selecciona el archivo (PDF o Word) a subir
                     </h5>
                 </div>
                 <div class="card-body p-4">
@@ -44,16 +44,16 @@
                         <!-- Input de archivo -->
                         <div class="mb-4">
                             <label for="archivo-a-subir" class="form-label fw-bold text-secondary">
-                                <i class="fa fa-folder-open text-primary me-1"></i> Selecciona archivo (.pdf):
+                                <i class="fa fa-folder-open text-primary me-1"></i> Selecciona archivo (.pdf, .doc, .docx):
                             </label>
                             <input class="form-control border-gray-300 shadow-sm" 
                                    type="file" 
                                    id="archivo-a-subir" 
                                    name="archivo-a-subir" 
-                                   accept=".pdf" 
+                                   accept=".pdf,.doc,.docx" 
                                    required>
                             <div class="form-text text-muted mt-2">
-                                <i class="fa fa-info-circle text-info me-1"></i> Solo se permiten archivos PDF. Tamaño máximo de 50MB.
+                                <i class="fa fa-info-circle text-info me-1"></i> Se permiten archivos PDF (.pdf) y Word (.doc, .docx). Tamaño máximo de 50MB.
                             </div>
                         </div>
 

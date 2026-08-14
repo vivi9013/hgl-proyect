@@ -21,9 +21,13 @@
             @if($archivo->existe_fisico)
                 <a href="{{ route('busca_archivos.descargar', $archivo->id_archivo) }}" 
                    class="btn btn-sm btn-light border shadow-sm rounded-circle" 
-                   title="Descargar PDF" 
+                   title="Descargar archivo ({{ strtoupper($archivo->extension) }})" 
                    target="_blank">
-                    <i class="fa fa-download text-primary"></i>
+                    @if(in_array($archivo->extension, ['doc', 'docx']))
+                        <i class="fa fa-file-word-o text-primary"></i>
+                    @else
+                        <i class="fa fa-file-pdf-o text-danger"></i>
+                    @endif
                 </a>
             @else
                 <span class="fa-stack text-muted" title="Archivo físico no subido" style="font-size: 0.8rem; width: 1.5em; height: 1.5em; line-height: 1.5em;">
@@ -50,7 +54,7 @@
                 </a>
                 <a href="{{ route('carga_archivos.cargar', $archivo->id_archivo) }}" 
                    class="btn btn-sm btn-outline-primary rounded-circle" 
-                   title="Subir archivo PDF">
+                   title="Subir archivo (PDF/Word)">
                     <i class="fa fa-upload"></i>
                 </a>
             </div>

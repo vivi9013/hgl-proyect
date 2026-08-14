@@ -171,7 +171,11 @@ class CargaArchivosController extends Controller
     public function subirArchivo(Request $request, $id)
     {
         $request->validate([
-            'archivo-a-subir' => 'required|file|mimes:pdf|max:51200', // Máx 50MB
+            'archivo-a-subir' => 'required|file|mimes:pdf,doc,docx|max:51200', // Máx 50MB
+        ], [
+            'archivo-a-subir.required' => 'Debes seleccionar un archivo para subir.',
+            'archivo-a-subir.mimes'    => 'El archivo debe ser un formato válido: PDF (.pdf) o Word (.doc, .docx).',
+            'archivo-a-subir.max'      => 'El archivo no debe exceder los 50MB.',
         ]);
 
         $archivo = CargaArchivo::with('categoria')->findOrFail($id);
@@ -180,19 +184,25 @@ class CargaArchivosController extends Controller
             return redirect()->back()->withErrors(['error' => 'La categoría del archivo no es válida.']);
         }
 
-        $rutaRelativa = $archivo->ruta_fisica;  // Obtiene "formats/carpeta/archivo.pdf"
-        $nombreFisico = $archivo->nombre_fisico; // Obtiene "archivo.pdf"
+        $carpeta   = $archivo->sanearString($archivo->categoria->categoria);
+        $baseName  = $archivo->sanearString($archivo->nombre);
+        $extension = strtolower($request->file('archivo-a-subir')->getClientOriginalExtension());
 
-        if (!$rutaRelativa) {
-            return redirect()->back()->withErrors(['error' => 'No se pudo determinar la ruta de destino.']);
+        // Limpiar archivos físicos previos para evitar guardar duplicados con distintas extensiones
+        $posiblesExts = ['pdf', 'docx', 'doc'];
+        foreach ($posiblesExts as $ext) {
+            $rutaVieja = "formats/{$carpeta}/{$baseName}.{$ext}";
+            if (Storage::disk('local')->exists($rutaVieja)) {
+                Storage::disk('local')->delete($rutaVieja);
+            }
         }
 
-        // Laravel crea los directorios automáticamente si no existen al usar storeAs
-        $request->file('archivo-a-subir')->storeAs(dirname($rutaRelativa), $nombreFisico, 'local');
+        $nuevoNombreFisico = "{$baseName}.{$extension}";
+        $request->file('archivo-a-subir')->storeAs("formats/{$carpeta}", $nuevoNombreFisico, 'local');
 
         return redirect()
             ->route('carga_archivos.index')
-            ->with('success', 'El archivo PDF se ha subido correctamente.');
+            ->with('success', 'El archivo (' . strtoupper($extension) . ') se ha subido correctamente.');
     }
 
     /**
