@@ -215,4 +215,104 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirm(`¿Está seguro de reiniciar la contraseña del usuario "${nombreUsuario}"?`)) ejecutar();
         }
     });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 5. SOLICITUDES DE RECUPERACIÓN DE CONTRASEÑA
+    // ─────────────────────────────────────────────────────────────────────────
+    const modalSolicitudes = document.getElementById('modalSolicitudesPendientes');
+
+    function cargarSolicitudesPendientes() {
+        const cuerpo = document.getElementById('cuerpoSolicitudesPendientes');
+        if (!cuerpo) return;
+
+        fetch('/usuarios/solicitudes-pendientes', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            cuerpo.innerHTML = data.html;
+            actualizarBadgeSolicitudes(data.total);
+            window.actualizarNotificaciones?.();
+        })
+        .catch(() => { cuerpo.innerHTML = '<p class="text-danger text-center py-4">No se pudieron cargar las solicitudes.</p>'; });
+    }
+
+    function actualizarBadgeSolicitudes(total) {
+        let badge = document.getElementById('badgeSolicitudesPendientes');
+        const boton = document.getElementById('btnSolicitudesPendientes');
+        if (total > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.id = 'badgeSolicitudesPendientes';
+                badge.className = 'badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle';
+                boton?.appendChild(badge);
+            }
+            badge.textContent = total;
+        } else if (badge) {
+            badge.remove();
+        }
+    }
+
+    if (modalSolicitudes) {
+        modalSolicitudes.addEventListener('shown.bs.modal', cargarSolicitudesPendientes);
+    }
+
+    document.addEventListener('click', function (e) {
+        const btnAprobar = e.target.closest('.btn-aprobar-solicitud');
+        const btnRechazar = e.target.closest('.btn-rechazar-solicitud');
+        if (!btnAprobar && !btnRechazar) return;
+
+        const id = (btnAprobar || btnRechazar).dataset.id;
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+        const enviarAccion = (endpoint, body = {}) => {
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: data.success ? 'Listo' : 'Aviso', text: data.message, icon: data.success ? 'success' : 'warning', timer: 1800, showConfirmButton: false });
+                }
+                cargarSolicitudesPendientes();
+                window.actualizarNotificaciones?.();
+            })
+            .catch(() => { if (typeof Swal !== 'undefined') Swal.fire('Error', 'No se pudo procesar la solicitud.', 'error'); });
+        };
+
+        if (btnAprobar) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '¿Aprobar solicitud?',
+                    text: 'Se restablecerá la contraseña de este usuario al valor por defecto.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, aprobar',
+                    cancelButtonText: 'Cancelar'
+                }).then(r => { if (r.isConfirmed) enviarAccion(`/usuarios/solicitudes/${id}/aprobar`); });
+            }
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '¿Rechazar solicitud?',
+                    input: 'textarea',
+                    inputPlaceholder: 'Nota opcional...',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, rechazar',
+                    cancelButtonText: 'Cancelar'
+                }).then(r => { if (r.isConfirmed) enviarAccion(`/usuarios/solicitudes/${id}/rechazar`, { nota: r.value || null }); });
+            }
+        }
+    });
 });

@@ -100,11 +100,14 @@
                                 @error('tiempo_uso') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
-                            {{-- Stock (solo lectura) --}}
+                            {{-- Stock (editable) --}}
                             <div class="col-12 col-md-4">
-                                <label class="form-label fw-bold text-secondary">Stock actual</label>
-                                <input type="text" class="form-control bg-light" value="{{ $insumo->stock }} piezas" readonly>
-                                <span class="text-muted small">El stock se ajusta desde el módulo de Movimientos.</span>
+                                <label for="stock" class="form-label fw-bold text-secondary">Stock actual</label>
+                                <input type="number" name="stock" id="stock" min="0"
+                                       class="form-control @error('stock') is-invalid @enderror"
+                                       value="{{ old('stock', $insumo->stock) }}">
+                                <span class="text-muted small">Ajusta la existencia física directamente.</span>
+                                @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
                             {{-- Modelos compatibles --}}

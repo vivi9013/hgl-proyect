@@ -1,13 +1,25 @@
 $(document).ready(function () {
     // Forzar que el check empiece desmarcado siempre
-    $('#cambio').prop('checked', false);
+    $('#olvido').prop('checked', false);
+
+    // Listener del checkbox "Olvidé mi contraseña"
+    $('#olvido').on('change', function () {
+        const activo = $(this).is(':checked');
+        $('#password').prop('required', !activo).prop('disabled', activo).val(activo ? '' : $('#password').val());
+        $('#btnLoginSubmit').text(activo ? 'Solicitar Recuperación' : 'Ingresar');
+    });
 
     $('form').submit(function (evento) {
         evento.preventDefault();
 
-
         const formulario  = $(this);
         const botonEnviar = formulario.find('button[type="submit"]');
+
+        // Si el checkbox de recuperación está marcado, interceptar el flujo
+        if ($('#olvido').is(':checked')) {
+            solicitarRecuperacion(formulario, botonEnviar);
+            return;
+        }
 
         // Deshabilitar botón para evitar doble envío y errores de CSRF por peticiones concurrentes
         botonEnviar.prop('disabled', true).html('Ingresando');
@@ -22,7 +34,6 @@ $(document).ready(function () {
             _token: $('input[name="_token"]').val(),
             user: $('#user').val(),
             password: $('#password').val(),
-            cambio: $('#cambio').prop('checked') ? 1 : 0
         };
 
         $.ajax({
@@ -38,54 +49,6 @@ $(document).ready(function () {
                         window.location.href = urlCambiarContra;
                         break;
 
-                    case 4: // CAMBIO VOLUNTARIO (Check marcado)
-                        Swal.fire({
-                            title: 'Cambio de Contraseña',
-                            text: 'Has solicitado cambiar tu contraseña',
-                            input: 'password',
-                            inputAttributes: { autocomplete: 'new-password' },
-                            inputPlaceholder: 'Ingresa tu nueva contraseña',
-                            showCancelButton: true,
-                            confirmButtonText: 'Actualizar y Entrar',
-                            cancelButtonText: 'Cancelar',
-                            allowOutsideClick: false,
-                            inputValidator: (valor) => {
-                                if (!valor || valor.length < 4) {
-                                    return 'Mínimo 4 caracteres';
-                                }
-                            }
-                        }).then((resultado) => {
-                            if (resultado.isConfirmed) {
-                                $.ajax({
-                                    type: 'POST',
-                                    url: urlActualizarPass,
-                                    data: {
-                                        _token: respuesta.new_token,
-                                        pass: resultado.value
-                                    },
-                                    success: function (respuestaPass) {
-                                        if (respuestaPass.success) {
-                                            Swal.fire('¡Éxito!', 'Contraseña actualizada', 'success').then(() => {
-                                                window.location.href = dashboardUrl;
-                                            });
-                                        } else {
-                                            Swal.fire('Error', respuestaPass.message, 'error');
-                                            botonEnviar.prop('disabled', false).html('Ingresar');
-                                        }
-                                    },
-                                    error: function () {
-                                        Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
-                                        botonEnviar.prop('disabled', false).html('Ingresar');
-                                    }
-                                });
-                            } else {
-                                // Si cancela el cambio voluntario, entra directo al panel
-                                window.location.href = dashboardUrl;
-                            }
-                        });
-
-                        break;
-
                     case 3: // INGRESO DIRECTO AL PANEL
                         window.location.href = dashboardUrl;
                         break;
@@ -97,8 +60,17 @@ $(document).ready(function () {
                 }
             },
             error: function (xhr) {
+                // ── Manejo de expiración de sesión (419 Page Expired) ────────────────
+                if (xhr.status === 419) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Sesión expirada',
+                        text: 'Tu sesión expiró por inactividad. La página se recargará.',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#3085d6',
+                    }).then(() => { window.location.reload(); });
                 // ── Manejo de Rate Limiting (429 Too Many Requests) ──────────────
-                if (xhr.status === 429) {
+                } else if (xhr.status === 429) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Se paciente',
@@ -113,5 +85,64 @@ $(document).ready(function () {
             }
         });
     });
-});
 
+    function solicitarRecuperacion(formulario, botonEnviar) {
+        const usuario = $('#user').val();
+        if (!usuario) {
+            Swal.fire('Falta información', 'Escribe tu usuario antes de solicitar la recuperación.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Recuperar contraseña',
+            html: '<input id="swalNombreCompleto" class="swal2-input" placeholder="Nombre completo (como aparece registrado)">' +
+                  '<input id="swalDatoAdicional" class="swal2-input" placeholder="CURP, RFC o teléfono (opcional)">',
+            confirmButtonText: 'Enviar solicitud',
+            cancelButtonText: 'Cancelar',
+            showCancelButton: true,
+            allowOutsideClick: false,
+            preConfirm: () => {
+                const nombre = document.getElementById('swalNombreCompleto').value.trim();
+                const dato = document.getElementById('swalDatoAdicional').value.trim();
+                if (!nombre) {
+                    Swal.showValidationMessage('El nombre completo es obligatorio');
+                    return false;
+                }
+                return { nombre, dato };
+            }
+        }).then((resultado) => {
+            if (!resultado.isConfirmed) return;
+
+            botonEnviar.prop('disabled', true).html('Enviando...');
+
+            $.ajax({
+                type: 'POST',
+                url: formulario.data('url-recuperar-password'),
+                data: {
+                    _token: $('input[name="_token"]').val(),
+                    user: usuario,
+                    nombre: resultado.value.nombre,
+                    dato: resultado.value.dato
+                },
+                success: function (respuesta) {
+                    Swal.fire('Solicitud recibida', respuesta.mensaje, 'info');
+                    botonEnviar.prop('disabled', false).html('Ingresar');
+                    $('#olvido').prop('checked', false).trigger('change');
+                },
+                error: function (xhr) {
+                    if (xhr.status === 419) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Sesión expirada',
+                            text: 'Tu sesión expiró por inactividad. La página se recargará.',
+                            confirmButtonText: 'Entendido',
+                        }).then(() => { window.location.reload(); });
+                    } else {
+                        Swal.fire('Error', 'No se pudo enviar la solicitud. Intenta más tarde.', 'error');
+                        botonEnviar.prop('disabled', false).html('Solicitar Recuperación');
+                    }
+                }
+            });
+        });
+    }
+});

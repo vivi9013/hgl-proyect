@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\SolicitudReseteoPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
@@ -46,6 +48,16 @@ class LoginController extends Controller
         if ($authenticated) {
             Auth::login($user);
             $request->session()->regenerate();
+
+            // Auto-cancelar solicitudes pendientes si el usuario logra iniciar sesión por su cuenta
+            SolicitudReseteoPassword::where('id_usuario', $user->id)
+                ->where('estado', 'pendiente')
+                ->update([
+                    'estado'         => 'rechazada',
+                    'nota_revision'  => 'Cancelada automáticamente: el usuario inició sesión con su contraseña actual.',
+                    'fecha_revision' => now()->toDateString(),
+                    'hora_revision'  => now()->toTimeString(),
+                ]);
 
             // ── Registrar actividad de inicio de sesión (equivalente al sistema legacy) ──
             try {
@@ -137,5 +149,86 @@ class LoginController extends Controller
         request()->session()->invalidate();
         request()->session()->regenerateToken();
         return redirect()->route('login');
+    }
+
+    public function solicitarRecuperacion(Request $request)
+    {
+        $inicio = microtime(true);
+        $mensaje = 'Tu solicitud está en revisión. Si gustas de mayor rapidez, comúnicateen el departamento de sistemas para su validación.';
+
+        try {
+            // 1. Validación sin lanzar excepción que rompa el timing
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'user'   => 'required|string',
+                'nombre' => 'required|string|max:255',
+                'dato'   => 'nullable|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['mensaje' => $mensaje]);
+            }
+
+            // 2. Rate Limiting Híbrido: 2/hora por usuario y 10/hora por IP
+            $userKey = 'recuperacion-password-user:' . md5(trim($request->user));
+            $ipKey   = 'recuperacion-password-ip:' . $request->ip();
+
+            $userExcedido = RateLimiter::tooManyAttempts($userKey, 2);
+            $ipExcedida   = RateLimiter::tooManyAttempts($ipKey, 10);
+
+            if (!$userExcedido && !$ipExcedida) {
+                RateLimiter::hit($userKey, 3600);
+                RateLimiter::hit($ipKey, 3600);
+
+                $usuario = User::where('nombre_usuario', trim($request->user))->first();
+
+                if ($usuario) {
+                    $yaPendiente = SolicitudReseteoPassword::where('id_usuario', $usuario->id)
+                        ->where('estado', 'pendiente')
+                        ->exists();
+
+                    if (!$yaPendiente) {
+                        SolicitudReseteoPassword::create([
+                            'nombre_usuario'   => trim($request->user),
+                            'id_usuario'       => $usuario->id,
+                            'nombre_declarado' => trim($request->nombre),
+                            'dato_adicional'   => $request->dato ? trim($request->dato) : null,
+                            'estado'           => 'pendiente',
+                            'ip'               => $request->ip(),
+                            'fecha'            => now()->toDateString(),
+                            'hora'             => now()->toTimeString(),
+                        ]);
+                    }
+
+                    DB::table('actividades')->insert([
+                        'descripcion' => 'Solicitud de recuperación de contraseña'
+                            . ($yaPendiente ? ' (ya existía una pendiente)' : '')
+                            . " para el usuario '{$usuario->nombre_usuario}'.",
+                        'filtro'     => 'Recuperación de Contraseña',
+                        'fecha'      => now()->toDateString(),
+                        'hora'       => now()->toTimeString(),
+                        'id_persona' => $usuario->id_persona,
+                    ]);
+                } else {
+                    DB::table('actividades')->insert([
+                        'descripcion' => "Intento de recuperación de contraseña con usuario no registrado: '" . trim($request->user) . "'.",
+                        'filtro'     => 'Recuperación de Contraseña',
+                        'fecha'      => now()->toDateString(),
+                        'hora'       => now()->toTimeString(),
+                        'id_persona' => null,
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::error('Error en solicitud de recuperación de contraseña: ' . $e->getMessage());
+        } finally {
+            // Se ejecuta SIEMPRE: garantiza respuesta uniforme de 2.5s exactos
+            $transcurrido = microtime(true) - $inicio;
+            $objetivo = 2.5;
+            if ($transcurrido < $objetivo) {
+                usleep((int) (($objetivo - $transcurrido) * 1_000_000));
+            }
+        }
+
+        return response()->json(['mensaje' => $mensaje]);
     }
 }

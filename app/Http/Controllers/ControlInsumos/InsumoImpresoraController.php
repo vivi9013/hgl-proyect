@@ -95,6 +95,7 @@ class InsumoImpresoraController extends Controller
             'modelos_compatibles'=> 'nullable|string|max:500',
             'tiempo_uso'         => 'nullable|string|max:100',
             'hojas_uso_total'    => 'nullable|integer|min:1',
+            'stock_inicial'      => 'nullable|integer|min:0',
         ], [
             'modelo.unique' => 'Este insumo (modelo, color y tipo) ya se encuentra registrado en el sistema.',
         ]);
@@ -106,7 +107,7 @@ class InsumoImpresoraController extends Controller
             'modelos_compatibles'=> $request->filled('modelos_compatibles') ? trim($request->modelos_compatibles) : null,
             'tiempo_uso'         => $request->filled('tiempo_uso')          ? trim($request->tiempo_uso)          : null,
             'hojas_uso_total'    => $request->hojas_uso_total,
-            'stock'              => 0,
+            'stock'              => (int) ($request->stock_inicial ?? 0),
             'activo'             => 1,
             'fecha'              => now()->toDateString(),
             'hora'               => now()->toTimeString(),
@@ -152,6 +153,7 @@ class InsumoImpresoraController extends Controller
             'modelos_compatibles'=> 'nullable|string|max:500',
             'tiempo_uso'         => 'nullable|string|max:100',
             'hojas_uso_total'    => 'nullable|integer|min:1',
+            'stock'              => 'nullable|integer|min:0',
         ], [
             'modelo.unique' => 'Ya existe otro insumo registrado con este mismo modelo, color y tipo.',
         ]);
@@ -163,6 +165,7 @@ class InsumoImpresoraController extends Controller
             'modelos_compatibles'=> $request->filled('modelos_compatibles') ? trim($request->modelos_compatibles) : null,
             'tiempo_uso'         => $request->filled('tiempo_uso')          ? trim($request->tiempo_uso)          : null,
             'hojas_uso_total'    => $request->hojas_uso_total,
+            'stock'              => (int) ($request->stock ?? $insumo->stock),
             'fecha'              => now()->toDateString(),
             'hora'               => now()->toTimeString(),
             'id_usuario'         => Auth::id(),
@@ -208,6 +211,25 @@ class InsumoImpresoraController extends Controller
             ->get();
 
         return response()->json($insumos);
+    }
+
+    // ─── EXPORTAR EXCEL ───────────────────────────────────────────────────────
+    public function exportarExcel(Request $request)
+    {
+        // Reutiliza el mismo helper de filtros que comparten index() e imprimir().
+        $insumos  = $this->aplicarFiltros($request)->orderBy('modelo')->get();
+        $filename = 'Reporte_Catalogo_Insumos_' . date('Y-m-d_H-i-s') . '.xls';
+
+        return response()->streamDownload(function () use ($insumos) {
+            echo view(
+                'control_insumos.insumos_impresoras.exportar_excel',
+                compact('insumos')
+            )->render();
+        }, $filename, [
+            'Content-Type'        => 'application/vnd.ms-excel; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'max-age=0',
+        ]);
     }
 
     // ─── REPORTE (impresión) ──────────────────────────────────────────

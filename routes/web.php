@@ -27,6 +27,7 @@ use App\Http\Controllers\Proyectos\ProyectoController;
 use App\Http\Controllers\Usuarios\UsuarioController;
 use App\Http\Controllers\Computadoras\ComputadoraController;
 use App\Http\Controllers\Miscelaneo\ActividadController;
+use App\Http\Controllers\NotificacionesController;
 use App\Http\Controllers\Mobiliario\MobiliarioController;
 use App\Http\Controllers\Mobiliario\TipoMobiliarioController;
 use App\Http\Controllers\ControlInsumos\ImpresoraController;
@@ -104,6 +105,9 @@ Route::middleware(['guest', EvitarRetrocesoMiddleware::class])->group(function (
     Route::post('/validar-login', [LoginController::class, 'login'])
         ->middleware('throttle:login')
         ->name('login.post');
+    // Sin throttle middleware — el delay de 2.5s y el rate limit se controlan manualmente
+    Route::post('/recuperar-password', [LoginController::class, 'solicitarRecuperacion'])
+        ->name('recuperar_password.solicitar');
 });
 
 
@@ -117,6 +121,9 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
 
     Route::get('/inicio', [IndexController::class, 'index'])->name('inicio');
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // ── Notificaciones globales (campanita del header) ────────────────────────
+    Route::get('/notificaciones', [NotificacionesController::class, 'index'])->name('notificaciones.index');
 
     // Gestión de Credenciales de Usuario
     Route::controller(LoginController::class)->group(function () {
@@ -185,6 +192,9 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::post('/{id}/restablecer', 'restablecerPassword')->name('restablecer');
+        Route::get('/solicitudes-pendientes', 'solicitudesPendientes')->name('solicitudes.index');
+        Route::post('/solicitudes/{id}/aprobar', 'aprobarSolicitud')->name('solicitudes.aprobar');
+        Route::post('/solicitudes/{id}/rechazar', 'rechazarSolicitud')->name('solicitudes.rechazar');
     });
 
     // ── Admin Sistema: Módulos (ID: 4) ───────────────────────────────────────
@@ -418,13 +428,14 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
 
     // ── Control Insumos: Catálogo de Insumos de Impresora (ID: 49) ───────────
     Route::prefix('control-insumos/insumos-impresoras')->middleware('modulo:49')->name('insumos_impresoras.')->controller(InsumoImpresoraController::class)->group(function () {
-        Route::get('/',                  'index')        ->name('index');
-        Route::post('/guardar',          'guardar')      ->name('store');
-        Route::get('/{id}/edit',         'editar')       ->name('edit');
-        Route::put('/{id}',              'actualizar')   ->name('update');
-        Route::patch('/{id}/status',     'cambiarStatus')->name('status');
-        Route::get('/buscar',            'buscar')       ->name('buscar');
-        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+        Route::get('/',                  'index')          ->name('index');
+        Route::post('/guardar',          'guardar')        ->name('store');
+        Route::get('/{id}/edit',         'editar')         ->name('edit');
+        Route::put('/{id}',              'actualizar')     ->name('update');
+        Route::patch('/{id}/status',     'cambiarStatus')  ->name('status');
+        Route::get('/buscar',            'buscar')         ->name('buscar');
+        Route::get('/exportar-excel',    'exportarExcel')  ->name('exportar_excel');
+        Route::get('/reportes/imprimir', 'imprimir')       ->name('imprimir');
     });
 
     // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 50) ──

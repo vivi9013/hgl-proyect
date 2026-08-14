@@ -183,12 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const infoId     = cont.dataset.infoTarget;
         const paginId    = cont.dataset.paginacionTarget;
         const printSel   = cont.dataset.btnImprimir;
+        const excelSel   = cont.dataset.btnExcel;
 
         const tbody      = tbodyId  ? document.getElementById(tbodyId)  : null;
         const info       = infoId   ? document.getElementById(infoId)   : null;
         const paginacion = paginId  ? document.getElementById(paginId)  : null;
         const buscar     = cont.querySelector('[data-rol="buscar"]');
         const btnImprimir = printSel ? document.querySelector(printSel) : null;
+        const btnExcel    = excelSel ? document.querySelector(excelSel) : null;
 
         let debounce;
 
@@ -215,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function actualizarEnlaceImpresion() {
-            if (!btnImprimir) return;
+            if (!btnImprimir && !btnExcel) return;
             const params = new URLSearchParams();
             const q = buscar?.value?.trim() ?? '';
             if (q) params.set('buscar', q);
@@ -231,8 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            const baseUrl = btnImprimir.href.split('?')[0];
-            btnImprimir.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+            if (btnImprimir) {
+                const baseUrl = btnImprimir.href.split('?')[0];
+                btnImprimir.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+            }
+
+            if (btnExcel) {
+                const baseUrl = btnExcel.href.split('?')[0];
+                btnExcel.href = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+            }
         }
 
         function cargar(extra = {}) {

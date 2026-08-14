@@ -100,7 +100,16 @@
                                 @error('modelos_compatibles') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
-
+                            {{-- Stock inicial --}}
+                            <div class="col-12 col-md-4">
+                                <label for="stock_inicial" class="form-label fw-bold text-secondary">Stock en físico (existencia actual):</label>
+                                <input type="number" name="stock_inicial" id="stock_inicial" min="0"
+                                       class="form-control @error('stock_inicial') is-invalid @enderror"
+                                       value="{{ old('stock_inicial', 0) }}"
+                                       placeholder="0">
+                                <span class="text-muted small">Deja en 0 si aún no hay existencias.</span>
+                                @error('stock_inicial') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
 
                         </div>
                     </div>
@@ -124,7 +133,8 @@
          data-tbody-target="cuerpoTablaInsumos"
          data-info-target="infoPaginacion"
          data-paginacion-target="contenedorPaginacion"
-         data-btn-imprimir="#btnImprimirCatalogo">
+         data-btn-imprimir="#btnImprimirCatalogo"
+         data-btn-excel="#btnExportarExcel">
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
@@ -193,11 +203,16 @@
                                 <i class="fa fa-plus-circle me-1"></i>Registrar Insumo
                             </button>
                         </div>
-                        <div>
+                        <div class="d-flex gap-2">
                             <a href="{{ route('insumos_impresoras.imprimir') }}" target="_blank"
                                id="btnImprimirCatalogo"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Imprimir Catálogo
+                            </a>
+                            <a href="{{ route('insumos_impresoras.exportar_excel') }}" target="_blank"
+                               id="btnExportarExcel"
+                               class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
+                                <i class="fa fa-file-excel-o me-1 text-success"></i>Exportar Excel
                             </a>
                         </div>
                     </div>

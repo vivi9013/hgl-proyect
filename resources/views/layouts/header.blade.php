@@ -65,12 +65,69 @@
 
     <ul class="navbar-nav ms-auto align-items-center">
 
-      <li class="nav-item me-3">
-        <a class="nav-link text-secondary position-relative" href="#">
-          <i class="bi bi-bell fs-5"></i>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">3</span>
+      {{-- ── Campanita de Notificaciones ──────────────────────────────────── --}}
+      <li class="nav-item dropdown me-3" id="notif-dropdown-item">
+        <a class="nav-link text-secondary position-relative"
+           href="#"
+           id="notifDropdownToggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           data-bs-auto-close="outside"
+           aria-expanded="false"
+           title="Notificaciones">
+          <i class="bi bi-bell fs-5" id="notif-bell-icon"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+                id="notif-badge"
+                style="font-size: 0.6rem;">0</span>
         </a>
+
+        <div class="dropdown-menu dropdown-menu-end p-0 shadow"
+             aria-labelledby="notifDropdownToggle"
+             id="notif-panel"
+             style="width: 430px; max-width: 95vw; border: 2px solid #000; border-radius: 0.5rem; overflow: hidden;">
+
+          {{-- Cabecera del panel --}}
+          <div class="d-flex align-items-center justify-content-between px-3 py-2"
+               style="background: var(--theme-primary); border-bottom: 1px solid rgba(0,0,0,0.15);">
+            <span class="fw-bold" style="color: var(--theme-text); font-size: 0.9rem;">
+              <i class="bi bi-bell-fill me-1"></i> Notificaciones
+            </span>
+            <span class="badge bg-danger rounded-pill d-none" id="notif-header-count" style="font-size: 0.7rem;">0</span>
+          </div>
+
+          {{-- Estado de carga --}}
+          <div id="notif-loading" class="text-center py-4 text-muted" style="display: flex !important; align-items: center; justify-content: center; gap: 8px;">
+            <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+            <small>Cargando notificaciones…</small>
+          </div>
+
+          {{-- Sin notificaciones --}}
+          <div id="notif-empty" class="text-center py-4 text-muted d-none">
+            <i class="bi bi-check-circle fs-4 text-success"></i>
+            <p class="mb-0 mt-1" style="font-size: 0.83rem;">No hay notificaciones pendientes</p>
+          </div>
+
+          {{-- Lista de notificaciones --}}
+          <ul class="list-unstyled mb-0 d-none" id="notif-list"
+              style="max-height: 480px; overflow-y: auto; scrollbar-width: thin;">
+            {{-- Ítems generados por JS --}}
+          </ul>
+
+          {{-- Footer --}}
+          <div class="border-top text-center py-2 d-none" id="notif-footer" style="background: var(--theme-surface, #fff);">
+            <small>
+              <a href="{{ route('usuarios.index') }}" class="text-decoration-none me-3" style="font-size: 0.8rem;">
+                <i class="bi bi-people me-1"></i>Módulo Usuarios
+              </a>
+              <a href="{{ route('actividades.index') }}" class="text-decoration-none" style="font-size: 0.8rem;">
+                <i class="bi bi-clock-history me-1"></i>Actividades
+              </a>
+            </small>
+          </div>
+        </div>
       </li>
+
+
 
       <li class="nav-item dropdown">
         <a class="nav-link d-flex align-items-center profile-trigger dropdown-toggle"

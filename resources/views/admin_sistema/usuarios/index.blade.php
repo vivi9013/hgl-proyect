@@ -77,6 +77,14 @@
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
                             </a>
+                            <button type="button" id="btnSolicitudesPendientes"
+                                    class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm text-nowrap position-relative"
+                                    data-bs-toggle="modal" data-bs-target="#modalSolicitudesPendientes">
+                                <i class="fa fa-key me-1"></i>Solicitudes Pendientes
+                                @if($solicitudesPendientesCount > 0)
+                                    <span id="badgeSolicitudesPendientes" class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">{{ $solicitudesPendientesCount }}</span>
+                                @endif
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -248,6 +256,23 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal: Solicitudes de Recuperación de Contraseña --}}
+    <div class="modal fade" id="modalSolicitudesPendientes" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header bg-white border-0 pt-4 px-4 pb-0">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fa fa-key text-warning me-2"></i>Solicitudes de Recuperación de Contraseña
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 py-4" id="cuerpoSolicitudesPendientes">
+                    <div class="text-center text-muted py-4"><i class="fa fa-spinner fa-spin"></i> Cargando...</div>
+                </div>
             </div>
         </div>
     </div>

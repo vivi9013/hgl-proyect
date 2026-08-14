@@ -12,7 +12,8 @@
           data-update-url="{{ route('password.update') }}" 
           data-dashboard-url="{{ url('/inicio') }}" 
           data-logout-url="{{ route('logout') }}"
-          data-url-cambiar-contra="{{ route('cambiar_contra.index') }}">
+          data-url-cambiar-contra="{{ route('cambiar_contra.index') }}"
+          data-url-recuperar-password="{{ route('recuperar_password.solicitar') }}">
         @csrf
         <div class="form-group">
             <div class="input-wrapper">
@@ -34,11 +35,11 @@
 
         <div class="login-checkbox">
             <div style="display: flex; align-items: center;">
-                <input type="checkbox" id="cambio" name="cambio">
-                <label for="cambio">Cambiar Contraseña</label>
+                <input type="checkbox" id="olvido" name="olvido">
+                <label for="olvido">Olvidé mi contraseña</label>
             </div>
 
-            <button type="submit" class="login-button">
+            <button type="submit" class="login-button" id="btnLoginSubmit">
                 Ingresar
             </button>
         </div>
