@@ -4,11 +4,10 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    // ── Elementos - Reporte Mensual de Entregas ──
+    // ── Elementos - Reporte Diario de Entregas ──
+    const almacen1 = $('#almacen1');
     const cmbArea = $('#cmbArea');
-    const cmbSubA = $('#cmbSubA');
-    const cmbMes1 = $('#cmbMes1');
-    const cmbAno1 = $('#cmbAno1');
+    const txtFecha1 = $('#txtFecha1');
     const btnImprimirEntregas = document.getElementById('btnImprimirEntregas');
 
     // ── Elementos - Concentrado CENDIS ──
@@ -21,12 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicializar Select2
     if (typeof $.fn.select2 !== 'undefined') {
+        almacen1.select2({ width: '100%' });
         cmbArea.select2({ width: '100%' });
-        cmbSubA.select2({ width: '100%' });
         areaAlmacen.select2({ width: '100%' });
         cmbArea2.select2({ 
             width: '100%',
-            placeholder: "Seleccione una o más áreas"
+            placeholder: "Seleccione una o más áreas asignadas"
         });
     }
 
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cargarAreasAbastecimiento();
     cargarAreasAlmacen();
 
-    // Función para cargar áreas de abastecimiento (Reporte 1)
+    // Función para cargar áreas asignadas (Abastecimiento)
     function cargarAreasAbastecimiento() {
         fetch('/reportes-inventario/areas-abastecimiento', {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
@@ -54,23 +53,27 @@ document.addEventListener('DOMContentLoaded', function () {
             cmbArea2.trigger('change');
         })
         .catch(error => {
-            console.error('Error al cargar áreas de abastecimiento:', error);
-            mostrarError('No se pudieron cargar las áreas de abastecimiento.');
+            console.error('Error al cargar áreas asignadas:', error);
+            mostrarError('No se pudieron cargar las áreas asignadas.');
         });
     }
 
-    // Función para cargar áreas de almacén (Reporte 2)
+    // Función para cargar áreas de almacén
     function cargarAreasAlmacen() {
         fetch('/reportes-inventario/areas-almacen', {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
         .then(response => response.json())
         .then(data => {
+            almacen1.empty().append('<option value="">Seleccione...</option>');
             areaAlmacen.empty().append('<option value="">Seleccione...</option>');
             data.forEach(item => {
-                const option = new Option(item.nombre, item.id_area_almacen);
-                areaAlmacen.append(option);
+                const option1 = new Option(item.nombre, item.id_area_almacen);
+                const option2 = new Option(item.nombre, item.id_area_almacen);
+                almacen1.append(option1);
+                areaAlmacen.append(option2);
             });
+            almacen1.trigger('change');
             areaAlmacen.trigger('change');
         })
         .catch(error => {
@@ -79,38 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── 2. Lógica de Subáreas Dependientes (Reporte 1) ──
-    cmbArea.on('change', function () {
-        const idArea = cmbArea.val();
-        if (!idArea) {
-            cmbSubA.empty().append('<option value="">Seleccione...</option>').prop('disabled', true).trigger('change');
-            validarFormulario1();
-            return;
-        }
-
-        cmbSubA.prop('disabled', true).empty().append('<option value="">Cargando...</option>').trigger('change');
-
-        fetch(`/reportes-inventario/subareas/${idArea}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            cmbSubA.empty().append('<option value="">Seleccione...</option>');
-            data.forEach(item => {
-                const option = new Option(item.nombre, item.id_subarea_abastecimiento);
-                cmbSubA.append(option);
-            });
-            cmbSubA.prop('disabled', false).trigger('change');
-            validarFormulario1();
-        })
-        .catch(error => {
-            console.error('Error al cargar subáreas:', error);
-            cmbSubA.empty().append('<option value="">Error al cargar</option>').trigger('change');
-            validarFormulario1();
-        });
-    });
-
-    // ── 3. Lógica de Checkbox "Seleccionar Todas" (Reporte 2) ──
+    // ── 2. Lógica de Checkbox "Seleccionar Todas" (Reporte 2) ──
     if (chkSelectAllAreas) {
         chkSelectAllAreas.addEventListener('change', function () {
             const selectAll = chkSelectAllAreas.checked;
@@ -136,14 +108,13 @@ document.addEventListener('DOMContentLoaded', function () {
         validarFormulario2();
     });
 
-    // ── 4. Validación de Formularios (Habilitación de Botones) ──
+    // ── 3. Validación de Formularios (Habilitación de Botones) ──
     function validarFormulario1() {
+        const almacen = almacen1.val();
         const area = cmbArea.val();
-        const subarea = cmbSubA.val();
-        const mes = cmbMes1.val();
-        const ano = cmbAno1.val();
+        const fecha = txtFecha1.val();
 
-        const valido = area && subarea && mes && ano && ano > 0;
+        const valido = almacen && area && fecha;
         btnImprimirEntregas.disabled = !valido;
     }
 
@@ -158,32 +129,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Listeners para validación en Reporte 1
-    cmbSubA.on('change', validarFormulario1);
-    cmbMes1.on('change', validarFormulario1);
-    cmbAno1.on('input change', validarFormulario1);
+    almacen1.on('change', validarFormulario1);
+    cmbArea.on('change', validarFormulario1);
+    txtFecha1.on('input change', validarFormulario1);
 
     // Listeners para validación en Reporte 2
     areaAlmacen.on('change', validarFormulario2);
     cmbMes2.on('change', validarFormulario2);
     cmbAno2.on('input change', validarFormulario2);
 
-    // ── 5. Procesamiento de Impresión con SweetAlert2 ──
+    // ── 4. Procesamiento de Impresión con SweetAlert2 ──
 
-    // Botón Imprimir Entregas
+    // Botón Imprimir Entregas Diarias
     if (btnImprimirEntregas) {
         btnImprimirEntregas.addEventListener('click', function (e) {
             e.preventDefault();
             if (btnImprimirEntregas.disabled) return;
 
+            const almacenVal = almacen1.val();
             const areaVal = cmbArea.val();
-            const subareaVal = cmbSubA.val();
-            const mesVal = cmbMes1.val();
-            const anoVal = cmbAno1.val();
+            const fechaVal = txtFecha1.val();
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: '¿Confirmar Impresión?',
-                    text: 'Se abrirá el Reporte Mensual de Entregas en una nueva pestaña.',
+                    text: 'Se abrirá el Reporte Diario de Entregas en una nueva pestaña.',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#0d6efd',
@@ -192,12 +162,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const url = `/reportes-inventario/imprimir-entregas?A=${areaVal}&S=${subareaVal}&M=${mesVal}&AN1=${anoVal}`;
+                        const url = `/reportes-inventario/imprimir-entregas?AA=${almacenVal}&A=${areaVal}&F=${fechaVal}`;
                         window.open(url, '_blank');
                     }
                 });
             } else {
-                const url = `/reportes-inventario/imprimir-entregas?A=${areaVal}&S=${subareaVal}&M=${mesVal}&AN1=${anoVal}`;
+                const url = `/reportes-inventario/imprimir-entregas?AA=${almacenVal}&A=${areaVal}&F=${fechaVal}`;
                 window.open(url, '_blank');
             }
         });

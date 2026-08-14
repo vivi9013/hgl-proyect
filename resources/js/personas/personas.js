@@ -1,18 +1,13 @@
 /**
  * personas.js — Lógica AJAX para el catálogo de Personas
- * Incluye: paginación asíncrona, búsqueda reactiva, toggle status,
- * toggle estudiante, carga dinámica de municipios y SweetAlert2.
+ * Incluye: toggle status, toggle estudiante (delegación de eventos),
+ * carga dinámica de municipios, modal de edición y SweetAlert2.
+ * La paginación y búsqueda AJAX son manejadas por tabla-interactiva.js.
  */
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Referencias DOM ──────────────────────────────────────────────────────
-    const tbody               = document.getElementById('cuerpoTablaPersonas');
-    const infoPaginacion      = document.getElementById('infoPaginacionPersonas');
-    const contenedorPaginacion = document.getElementById('paginacionPersonas');
-    const searchInput         = document.getElementById('filtro-buscar');
-
-    // Alertas de sesión (SweetAlert2)
+    // ── Alertas de sesión (SweetAlert2) ─────────────────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
     const alertaExito  = document.getElementById('alertaExito');
 
@@ -41,12 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const municipioSel = document.getElementById('municipio_sel');
 
     if (estadoSel) {
-        // Cargar estados al abrir el modal
-        fetch('/personas/municipios?estado=', {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).catch(() => {}); // Silenciar si la ruta no devuelve estados
-
-        // Cargar estados desde la BD al abrir modal
         const modalEl = document.getElementById('modalAltaPersona');
         if (modalEl) {
             modalEl.addEventListener('show.bs.modal', function () {
@@ -62,10 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function cargarEstados(selectEstado, selectMunicipio) {
-        // Los estados se cargan desde el endpoint de municipios pasando 'estado' vacío
-        // Alternativa: usar un endpoint dedicado. Por ahora, hacemos una petición AJAX
-        // al listado de personas para obtener los estados únicos.
-        // En su lugar, usamos el truco de llamar a la misma URL con un parámetro especial.
         fetch('/personas/municipios?estado=__estados__', {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         })
@@ -104,177 +89,212 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Motor de paginación AJAX ─────────────────────────────────────────────
-    function cargarPagina(numeroPagina = 1) {
-        if (!tbody) return;
+    // ── D. TOGGLE STATUS — delegación de eventos ─────────────────────────────
+    document.addEventListener('click', function (e) {
+        const boton = e.target.closest('.btn-toggle-status');
+        if (!boton) return;
 
-        const buscar = searchInput ? searchInput.value : '';
-        tbody.style.opacity = '0.5';
+        const id     = boton.dataset.id;
+        const nombre = boton.dataset.nombre ?? '';
+        const icono  = boton.querySelector('i');
+        const esActivo = icono && icono.classList.contains('text-success');
+        const accion = esActivo ? 'desactivar' : 'activar';
 
-        fetch(`/personas?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
+        const runFetch = () => {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            fetch(`/personas/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ title: 'Actualizado', text: data.message, icon: 'success', timer: 1400, showConfirmButton: false });
+                    }
+                    document.querySelector('[data-tabla-interactiva]')
+                        ?.dispatchEvent(new CustomEvent('filtros:aplicar', { bubbles: true }));
+                }
+            })
+            .catch(err => console.error(err));
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} persona?`,
+                text: `"${nombre}" será ${accion}da en el sistema.`,
+                icon: esActivo ? 'warning' : 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Sí, ${accion}`,
+                cancelButtonText: 'Cancelar'
+            }).then(result => { if (result.isConfirmed) runFetch(); });
+        } else {
+            if (confirm(`¿${accion} a "${nombre}"?`)) runFetch();
+        }
+    });
+
+    // ── D.2 TOGGLE ESTUDIANTE — delegación de eventos ─────────────────────────
+    document.addEventListener('click', function (e) {
+        const boton = e.target.closest('.btn-toggle-estudiante');
+        if (!boton) return;
+
+        const id     = boton.dataset.id;
+        const nombre = boton.dataset.nombre ?? '';
+        const icono  = boton.querySelector('i');
+        const esEstudiante = icono && icono.classList.contains('text-primary');
+        const accion = esEstudiante ? 'quitar el rol de estudiante a' : 'asignar el rol de estudiante a';
+
+        const runFetch = () => {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            fetch(`/personas/${id}/estudiante`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ title: 'Actualizado', text: data.message, icon: 'success', timer: 1400, showConfirmButton: false });
+                    }
+                    document.querySelector('[data-tabla-interactiva]')
+                        ?.dispatchEvent(new CustomEvent('filtros:aplicar', { bubbles: true }));
+                }
+            })
+            .catch(err => console.error(err));
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '¿Cambiar rol de estudiante?',
+                text: `Se va a ${accion} "${nombre}".`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => { if (result.isConfirmed) runFetch(); });
+        } else {
+            if (confirm(`¿${accion} "${nombre}"?`)) runFetch();
+        }
+    });
+
+    // ── Modal Editar Persona — delegación de eventos ─────────────────────────
+    document.addEventListener('click', function (e) {
+        const boton = e.target.closest('.btn-editar-persona');
+        if (!boton) return;
+
+        const id = boton.dataset.id;
+        const formEdit = document.getElementById('formEditarPersona');
+        if (!formEdit) return;
+
+        formEdit.action = `/personas/${id}`;
+
+        fetch(`/personas/${id}/edit`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             }
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Error de servidor');
-            return response.json();
-        })
+        .then(r => r.json())
         .then(data => {
-            tbody.style.opacity = '1';
-            tbody.innerHTML = data.html;
+            if (data.success) {
+                const p = data.persona;
+                document.getElementById('edit_nombre').value     = p.nombre || '';
+                document.getElementById('edit_ap_paterno').value = p.ap_paterno || '';
+                document.getElementById('edit_ap_materno').value = p.ap_materno || '';
+                document.getElementById('edit_fecha_nac').value  = p.fecha_nac || '';
+                document.getElementById('edit_sexo').value       = p.sexo || 'M';
+                document.getElementById('edit_ecivil').value     = p.ecivil || 'Soltero(a)';
+                document.getElementById('edit_telefono').value   = p.telefono || '';
+                document.getElementById('edit_rfc').value        = p.rfc || '';
+                document.getElementById('edit_curp').value       = p.curp || '';
+                document.getElementById('edit_e_mail').value     = p.e_mail || '';
+                document.getElementById('edit_colonia').value    = p.colonia || '';
+                document.getElementById('edit_calle').value      = p.calle || '';
+                document.getElementById('edit_numero').value     = p.numero || '';
 
-            if (infoPaginacion)       infoPaginacion.textContent = data.info;
-            if (contenedorPaginacion) {
-                contenedorPaginacion.innerHTML = data.links;
-                asignarEventosEnlaces();
+                const editEstado    = document.getElementById('edit_estado');
+                const editMunicipio = document.getElementById('edit_municipio');
+
+                if (editEstado) {
+                    editEstado.innerHTML = '<option value="">-- Seleccionar --</option>';
+                    Object.keys(data.estados).forEach(st => {
+                        const opt = document.createElement('option');
+                        opt.value = st;
+                        opt.textContent = st;
+                        if (st === p.estado) opt.selected = true;
+                        editEstado.appendChild(opt);
+                    });
+                }
+
+                if (editMunicipio) {
+                    editMunicipio.innerHTML = '<option value="">-- Seleccionar --</option>';
+                    Object.keys(data.municipios).forEach(mun => {
+                        const opt = document.createElement('option');
+                        opt.value = mun;
+                        opt.textContent = mun;
+                        if (mun === p.municipio) opt.selected = true;
+                        editMunicipio.appendChild(opt);
+                    });
+                }
+
+                const modalEl = document.getElementById('modalEditarPersona');
+                if (modalEl && typeof bootstrap !== 'undefined') {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
             }
-
-            enlazarEventosAcciones();
         })
-        .catch(err => {
-            tbody.style.opacity = '1';
-            console.error('Error paginando personas:', err);
+        .catch(err => console.error('Error al cargar persona:', err));
+    });
+
+    // ── Cambio de estado en el modal de edición ──
+    const editEstadoSel    = document.getElementById('edit_estado');
+    const editMunicipioSel = document.getElementById('edit_municipio');
+    if (editEstadoSel) {
+        editEstadoSel.addEventListener('change', function () {
+            cargarMunicipios(this.value, editMunicipioSel);
         });
     }
+    // ── Carga dinámica de municipios en la vista de edición estática ─────────
+    const estadoEdit    = document.getElementById('estado_edit');
+    const municipioEdit = document.getElementById('municipio_edit');
 
-    function asignarEventosEnlaces() {
-        if (!contenedorPaginacion) return;
-        contenedorPaginacion.querySelectorAll('a.page-link').forEach(enlace => {
-            enlace.addEventListener('click', function (e) {
-                e.preventDefault();
-                const urlObj = new URL(this.href);
-                const pg = urlObj.searchParams.get('page');
-                if (pg) cargarPagina(pg);
+    if (estadoEdit && municipioEdit) {
+        estadoEdit.addEventListener('change', function () {
+            const estado = this.value;
+            if (!estado) return;
+
+            const valorActualMunicipio = municipioEdit.value;
+            municipioEdit.innerHTML = '<option value="">Cargando...</option>';
+
+            fetch(`/personas/municipios?estado=${encodeURIComponent(estado)}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                municipioEdit.innerHTML = '<option value="">-- Seleccionar --</option>';
+                Object.entries(data).forEach(([key, val]) => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = val;
+                    if (val === valorActualMunicipio) opt.selected = true;
+                    municipioEdit.appendChild(opt);
+                });
+            })
+            .catch(() => {
+                municipioEdit.innerHTML = '<option value="">Error al cargar municipios</option>';
             });
         });
     }
-
-    // ── Acciones en tabla: toggle status y toggle estudiante ─────────────────
-    function enlazarEventosAcciones() {
-
-        // ── Toggle Status ──
-        document.querySelectorAll('.btn-toggle-status').forEach(btn => {
-            const nuevo = btn.cloneNode(true);
-            btn.parentNode.replaceChild(nuevo, btn);
-
-            nuevo.addEventListener('click', function () {
-                const id  = this.getAttribute('data-id');
-                const row = this.closest('tr');
-                const nombre = row.querySelector('td:nth-child(3)')?.textContent.trim() ?? '';
-                const esInactivo = row.classList.contains('text-muted');
-                const accion = esInactivo ? 'activar' : 'desactivar';
-
-                const runFetch = () => {
-                    const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-                    fetch(`/personas/${id}/status`, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': csrf,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Actualizado', text: data.message, icon: 'success', timer: 1400, showConfirmButton: false });
-                            }
-                            const pgActiva = contenedorPaginacion?.querySelector('.page-item.active .page-link');
-                            cargarPagina(pgActiva ? parseInt(pgActiva.textContent) : 1);
-                        }
-                    })
-                    .catch(err => console.error(err));
-                };
-
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} persona?`,
-                        text: `"${nombre}" será ${accion}da en el sistema.`,
-                        icon: esInactivo ? 'question' : 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: `Sí, ${accion}`,
-                        cancelButtonText: 'Cancelar'
-                    }).then(result => { if (result.isConfirmed) runFetch(); });
-                } else {
-                    if (confirm(`¿${accion} a "${nombre}"?`)) runFetch();
-                }
-            });
-        });
-
-        // ── Toggle Estudiante ──
-        document.querySelectorAll('.btn-toggle-estudiante').forEach(btn => {
-            const nuevo = btn.cloneNode(true);
-            btn.parentNode.replaceChild(nuevo, btn);
-
-            nuevo.addEventListener('click', function () {
-                const id  = this.getAttribute('data-id');
-                const row = this.closest('tr');
-                const nombre = row.querySelector('td:nth-child(3)')?.textContent.trim() ?? '';
-                const icono  = this.querySelector('i');
-                const esEstudiante = icono && icono.classList.contains('text-primary');
-                const accion = esEstudiante ? 'quitar el rol de estudiante a' : 'asignar el rol de estudiante a';
-
-                const runFetch = () => {
-                    const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-                    fetch(`/personas/${id}/estudiante`, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': csrf,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({ title: 'Actualizado', text: data.message, icon: 'success', timer: 1400, showConfirmButton: false });
-                            }
-                            const pgActiva = contenedorPaginacion?.querySelector('.page-item.active .page-link');
-                            cargarPagina(pgActiva ? parseInt(pgActiva.textContent) : 1);
-                        }
-                    })
-                    .catch(err => console.error(err));
-                };
-
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: '¿Cambiar rol de estudiante?',
-                        text: `Se va a ${accion} "${nombre}".`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, cambiar',
-                        cancelButtonText: 'Cancelar'
-                    }).then(result => { if (result.isConfirmed) runFetch(); });
-                } else {
-                    if (confirm(`¿${accion} "${nombre}"?`)) runFetch();
-                }
-            });
-        });
-    }
-
-    // ── Debounce de búsqueda ─────────────────────────────────────────────────
-    function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => cargarPagina(1), 350));
-    }
-
-    // ── Carga inicial: la tabla y la paginación ya vienen renderizadas por el
-    // servidor (SSR); solo se enlazan los eventos de acciones y de los links.
-    enlazarEventosAcciones();
-    asignarEventosEnlaces();
 });

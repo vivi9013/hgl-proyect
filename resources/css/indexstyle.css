@@ -69,31 +69,45 @@
     margin-bottom: 0 !important;
 }
 
-.module-card a {
-    display: inline-flex !important;
-    align-items: center;
+/* Enlace envolvente de toda la tarjeta */
+.module-card-link {
+    cursor: pointer;
+    display: block;
+    height: 100%;
+    text-decoration: none !important;
+}
+
+.module-card-link:hover .module-card {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15) !important;
+    border-color: #000000 !important;
+}
+
+.module-card-link:hover .icon-opacity {
+    transform: scale(1.2) rotate(8deg);
+    opacity: 0.90;
+}
+
+/* Etiqueta inferior "Ingresar al Módulo" - ancho completo, centrado */
+.module-card .module-footer-label {
+    display: flex !important;
     justify-content: center;
-    gap: 8px;
-    padding: 0.35rem 0.85rem !important;
-    border-radius: 4px !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    transition: all 0.2s ease !important;
-    text-decoration: none;
-    width: fit-content !important;
+    width: 100%;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    background-color: rgba(255, 255, 255, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
 }
 
-.module-card a:hover {
-    background-color: rgba(255, 255, 255, 0.3) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
-    transform: translateY(-1px);
+.module-card-link:hover .module-footer-label {
+    background-color: rgba(255, 255, 255, 0.32);
 }
 
-.module-card a span {
-    font-size: 0.8rem !important;
-}
 
 /* Colores personalizados para coincidir con la foto */
 .bg-info {

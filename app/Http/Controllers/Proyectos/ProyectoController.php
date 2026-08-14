@@ -16,6 +16,26 @@ class ProyectoController extends Controller
      */
     public function index(Request $request)
     {
+        $proyectos = $this->queryProyectos($request)->paginate(10);
+
+        // Si es AJAX, retornamos JSON con la tabla renderizada
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html'  => view('admin_sistema.proyectos.partials.tabla', compact('proyectos'))->render(),
+                'links' => $proyectos->links('pagination::bootstrap-4')->render(),
+                'total' => $proyectos->total(),
+                'info'  => "Mostrando " . ($proyectos->firstItem() ?? 0) . " a " . ($proyectos->lastItem() ?? 0) . " de " . $proyectos->total() . " registros"
+            ]);
+        }
+
+        return view('admin_sistema.proyectos.index', compact('proyectos'));
+    }
+
+    /**
+     * Construye el query base con filtro buscar, withCount de módulos activos y orden.
+     */
+    private function queryProyectos(Request $request)
+    {
         $buscar = $request->get('buscar');
 
         $query = Proyecto::withCount(['modulos' => function ($q) {
@@ -23,23 +43,10 @@ class ProyectoController extends Controller
         }])->orderBy('id_proyecto', 'desc');
 
         if (!empty($buscar)) {
-            $buscarLimpiado = trim($buscar);
-            $query->where('proyecto', 'like', '%' . $buscarLimpiado . '%');
+            $query->where('proyecto', 'like', '%' . trim($buscar) . '%');
         }
 
-        $proyectos = $query->paginate(10);
-
-        // Si es AJAX, retornamos JSON con la tabla renderizada
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'html' => view('admin_sistema.proyectos.partials.tabla', compact('proyectos'))->render(),
-                'links' => $proyectos->links('pagination::bootstrap-4')->render(),
-                'total' => $proyectos->total(),
-                'info' => "Mostrando " . ($proyectos->firstItem() ?? 0) . " a " . ($proyectos->lastItem() ?? 0) . " de " . $proyectos->total() . " registros"
-            ]);
-        }
-
-        return view('admin_sistema.proyectos.index', compact('proyectos'));
+        return $query;
     }
 
     /**
@@ -163,19 +170,11 @@ class ProyectoController extends Controller
     }
 
     /**
-     * Muestra la vista de reportes.
+     * Genera la vista imprimible de proyectos, respetando el filtro buscar activo.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        return view('admin_sistema.proyectos.analitica.reportes.index');
-    }
-
-    /**
-     * Genera la vista imprimible de proyectos.
-     */
-    public function imprimir()
-    {
-        $proyectos = Proyecto::orderBy('proyecto', 'asc')->get();
+        $proyectos = $this->queryProyectos($request)->get();
         return view('admin_sistema.proyectos.analitica.reportes.impresion', compact('proyectos'));
     }
 

@@ -6,7 +6,7 @@
 
 @section('report_subheader')
     <div style="margin-bottom: 20px; font-size: 11px;">
-        <p><strong>Área de Almacén:</strong> {{ $area ? $area->nombre : 'Todas las Áreas' }}</p>
+        <p><strong>Área:</strong> {{ $area ? $area->nombre : 'Todas las Áreas' }}</p>
         <p><strong>Niveles de stock incluidos:</strong> 
             @if(empty($niveles))
                 Todos los niveles

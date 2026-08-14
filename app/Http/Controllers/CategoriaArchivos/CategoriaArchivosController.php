@@ -84,13 +84,20 @@ class CategoriaArchivosController extends Controller
     }
 
     /**
-     * Muestra el formulario para editar una categoría.
+     * Muestra o retorna los datos para editar una categoría.
      */
-    public function editar($id)
+    public function editar(Request $request, $id)
     {
         $categoria = CategoArchivo::findOrFail($id);
 
-        return view('admin_formatos.categoria_archivos.editar', compact('categoria'));
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'   => true,
+                'categoria' => $categoria
+            ]);
+        }
+
+        return redirect()->route('categoria_archivos.index');
     }
 
     /**
@@ -111,6 +118,7 @@ class CategoriaArchivosController extends Controller
         if ($existe) {
             return redirect()->back()
                 ->withInput()
+                ->with('hasEditFormErrors', $id)
                 ->withErrors(['categoria' => 'Esta categoría ya se encuentra registrada con otra clave.']);
         }
 
@@ -144,31 +152,31 @@ class CategoriaArchivosController extends Controller
     }
 
     /**
-     * Muestra la vista de opciones de reportes del módulo.
+     * Genera el reporte de impresión filtrado (premium print-friendly HTML).
+     * Regla de negocio conservada: solo categorías activo=1 con al menos un archivo activo.
+     * Agrega el filtro buscar del índice sobre el nombre de la categoría.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        return view('admin_formatos.categoria_archivos.analitica.reportes.index');
-    }
+        $buscar = trim($request->get('buscar', ''));
 
-    /**
-     * Genera el reporte de impresión de categorías (premium print-friendly HTML).
-     */
-    public function imprimir()
-    {
-        // Replicamos la lógica legacy INNER JOIN:
-        // Solo categorías activas que tienen al menos un archivo activo asignado.
-        $categorias = CategoArchivo::where('activo', 1)
-            ->whereHas('archivos', function ($query) {
-                $query->where('activo', 1);
+        $query = CategoArchivo::where('activo', 1)
+            ->whereHas('archivos', function ($q) {
+                $q->where('activo', 1);
             })
-            ->withCount(['archivos' => function ($query) {
-                $query->where('activo', 1);
+            ->withCount(['archivos' => function ($q) {
+                $q->where('activo', 1);
             }])
-            ->orderBy('categoria', 'asc')
-            ->get();
+            ->orderBy('categoria', 'asc');
 
-        return view('admin_formatos.categoria_archivos.analitica.reportes.impresion', compact('categorias'));
+        if ($buscar !== '') {
+            $query->where('categoria', 'like', '%' . $buscar . '%');
+        }
+
+        $categorias = $query->get();
+
+        return view('admin_formatos.categoria_archivos.analitica.reportes.impresion',
+            compact('categorias', 'buscar'));
     }
 
     /**

@@ -26,7 +26,7 @@
                 <a href="#" class="dropdown-clear-all text-decoration-none text-primary small fw-semibold">Limpiar todo</a>
             </div>
             
-            <div class="dropdown-body">
+            <div class="dropdown-body" style="max-height: 220px; overflow-y: auto;">
                 {{ $slot }}
             </div>
             

@@ -16,14 +16,12 @@ class UsuarioController extends Controller
     /**
      * Muestra el catálogo principal de usuarios.
      */
-    public function index(Request $request)
+    /**
+     * Aplica el filtro de búsqueda a la query de usuarios.
+     */
+    private function aplicarFiltro($query, Request $request)
     {
         $buscar = $request->get('buscar');
-
-        $query = User::with(['persona', 'perfil'])
-            ->join('personas', 'usuarios.id_persona', '=', 'personas.id')
-            ->select('usuarios.*')
-            ->orderBy('usuarios.id', 'desc');
 
         if (!empty($buscar)) {
             $buscarLimpiado = trim($buscar);
@@ -39,6 +37,30 @@ class UsuarioController extends Controller
                   });
             });
         }
+
+        $perfil = $request->input('perfil');
+        if (!empty($perfil)) {
+            $perfilArr = is_array($perfil) ? $perfil : explode(',', $perfil);
+            $perfilArr = array_filter(array_map('trim', $perfilArr));
+            if (!empty($perfilArr)) {
+                $query->whereIn('usuarios.id_perfil', $perfilArr);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Muestra el catálogo principal de usuarios.
+     */
+    public function index(Request $request)
+    {
+        $query = User::with(['persona', 'perfil'])
+            ->join('personas', 'usuarios.id_persona', '=', 'personas.id')
+            ->select('usuarios.*')
+            ->orderBy('usuarios.id', 'desc');
+
+        $this->aplicarFiltro($query, $request);
 
         $usuarios = $query->paginate(10);
 
@@ -211,25 +233,20 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Muestra la vista del índice de reportes.
+     * Genera la lista imprimible de usuarios, respetando el filtro de búsqueda activo.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        return view('admin_sistema.usuarios.analitica.reportes.index');
-    }
-
-    /**
-     * Genera la lista imprimible de usuarios.
-     */
-    public function imprimir()
-    {
-        $usuarios = User::with(['persona', 'perfil'])
+        $query = User::with(['persona', 'perfil'])
             ->join('personas', 'usuarios.id_persona', '=', 'personas.id')
+            ->select('usuarios.*')
             ->orderBy('personas.ap_paterno')
             ->orderBy('personas.ap_materno')
-            ->orderBy('personas.nombre')
-            ->select('usuarios.*')
-            ->get();
+            ->orderBy('personas.nombre');
+
+        $this->aplicarFiltro($query, $request);
+
+        $usuarios = $query->get();
 
         return view('admin_sistema.usuarios.analitica.reportes.impresion', compact('usuarios'));
     }

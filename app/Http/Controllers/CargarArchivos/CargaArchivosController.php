@@ -20,28 +20,7 @@ class CargaArchivosController extends Controller
             ->orderBy('categoria', 'asc')
             ->get(['id_catego_archivos', 'categoria']);
 
-        // Captura de variables para el filtro dinámico
-        $categoriaFiltro = $request->input('categoria', []);
-        $buscar = $request->get('buscar');
-
-        $query = CargaArchivo::with('categoria')
-            ->orderBy('id_archivo', 'desc');
-
-        // Aplicar filtro por categorías seleccionadas (dropdown de checkboxes)
-        if (!empty($categoriaFiltro)) {
-            $query->whereIn('id_catego', $categoriaFiltro);
-        }
-
-        // Aplicar término de búsqueda si existe
-        if (!empty($buscar)) {
-            $buscarLimpiado = trim($buscar);
-            $query->where(function ($q) use ($buscarLimpiado) {
-                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
-                  ->orWhere('descripcion_archivo', 'like', '%' . $buscarLimpiado . '%');
-            });
-        }
-
-        $archivos = $query->paginate(10);
+        $archivos = $this->buildQuery($request)->paginate(10);
 
         // Si la petición viene por AJAX, retornamos JSON con el HTML compilado
         if ($request->ajax() || $request->wantsJson()) {
@@ -94,10 +73,10 @@ class CargaArchivosController extends Controller
             'id_catego'           => $request->tipo,
             'version_archivo'     => $request->version,
             'descripcion_archivo' => $request->desc,
-            'fecha_registro'      => now()->toDateString(), 
-            'hora_registro'       => now()->toTimeString(),  
+            'fecha_registro'      => now()->toDateString(),
+            'hora_registro'       => now()->toTimeString(),
             'activo'              => 1,
-            'usuario'             => auth()->user()->usuario ?? 'sistema', 
+            'usuario'             => auth()->user()->usuario ?? 'sistema',
         ]);
 
         // 3. Redireccionar de vuelta con un mensaje de éxito
@@ -107,11 +86,11 @@ class CargaArchivosController extends Controller
     }
 
     public function revisarexistencia(Request $request)
-    {   
+    {
         // Verificación de disponibilidad por Nombre, Versión y Categoría
-        $nombre = $request->query('nombre');
+        $nombre  = $request->query('nombre');
         $version = $request->query('version');
-        $tipo = $request->query('tipo');
+        $tipo    = $request->query('tipo');
 
         if (!$nombre || !$version || !$tipo) {
             return response()->json(['disponible' => false, 'error' => 'Faltan parámetros']);
@@ -126,24 +105,27 @@ class CargaArchivosController extends Controller
         return response()->json(['disponible' => !$existe]);
     }
 
-    public function editar($id)
+    public function editar(Request $request, $id)
     {
-        $archivo = CargaArchivo::findOrFail($id);
-        $categorias = CategoArchivo::where('activo', 1)
-            ->orderBy('categoria', 'asc')
-            ->get(['id_catego_archivos', 'categoria']);
+        $archivo = CargaArchivo::with('categoria')->findOrFail($id);
 
-        return view('admin_formatos.carga_archivos.editar', compact('archivo', 'categorias'));
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'archivo' => $archivo,
+            ]);
+        }
+
+        return redirect()->route('carga_archivos.index');
     }
 
     public function actualizar(Request $request, $id)
     {
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'nombre'  => [
                 'required',
                 'string',
                 'max:255',
-                // Validación única compuesta: nombre + version_archivo dentro de la misma categoría, ignorando el registro actual
                 Rule::unique('carga_archivos', 'nombre')->where(function ($query) use ($request) {
                     return $query->where('version_archivo', $request->version)
                                  ->where('id_catego', $request->tipo);
@@ -155,6 +137,13 @@ class CargaArchivosController extends Controller
         ], [
             'nombre.unique' => 'Ya existe un archivo con este mismo nombre y versión en esta categoría.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('hasEditFormErrors', $id);
+        }
 
         $archivo = CargaArchivo::findOrFail($id);
         $archivo->update([
@@ -191,7 +180,7 @@ class CargaArchivosController extends Controller
             return redirect()->back()->withErrors(['error' => 'La categoría del archivo no es válida.']);
         }
 
-        $rutaRelativa = $archivo->ruta_fisica; // Obtiene "formats/carpeta/archivo.pdf"
+        $rutaRelativa = $archivo->ruta_fisica;  // Obtiene "formats/carpeta/archivo.pdf"
         $nombreFisico = $archivo->nombre_fisico; // Obtiene "archivo.pdf"
 
         if (!$rutaRelativa) {
@@ -206,36 +195,23 @@ class CargaArchivosController extends Controller
             ->with('success', 'El archivo PDF se ha subido correctamente.');
     }
 
-    public function reportes()
-    {
-        $categorias = CategoArchivo::where('activo', 1)
-            ->orderBy('categoria', 'asc')
-            ->get();
-
-        return view('admin_formatos.carga_archivos.analitica.reportes.index', compact('categorias'));
-    }
-
+    /**
+     * Impresión filtrada: reutiliza buildQuery() para reflejar exactamente
+     * los filtros activos del índice (categoria[] + buscar).
+     */
     public function imprimirReporte(Request $request)
     {
-        $request->validate([
-            'tipo' => 'nullable|integer|exists:catego_archivos,id_catego_archivos'
-        ]);
+        $categoriaFiltro = $request->input('categoria', []);
 
-        if ($request->filled('tipo')) {
-            $categoria = CategoArchivo::findOrFail($request->tipo);
-            $archivos = CargaArchivo::where('id_catego', $request->tipo)
-                ->where('activo', 1)
-                ->orderBy('id_archivo', 'asc')
-                ->get();
-        } else {
-            $categoria = null;
-            $archivos = CargaArchivo::with('categoria')
-                ->where('activo', 1)
-                ->orderBy('id_archivo', 'asc')
-                ->get();
-        }
+        // Colección de modelos CategoArchivo para los IDs seleccionados (vacía si no se filtró)
+        $categoriasSeleccionadas = !empty($categoriaFiltro)
+            ? CategoArchivo::whereIn('id_catego_archivos', (array) $categoriaFiltro)->get()
+            : collect();
 
-        return view('admin_formatos.carga_archivos.analitica.reportes.impresion', compact('categoria', 'archivos'));
+        $archivos = $this->buildQuery($request)->limit(500)->get();
+
+        return view('admin_formatos.carga_archivos.analitica.reportes.impresion',
+            compact('archivos', 'categoriasSeleccionadas'));
     }
 
     public function graficas()
@@ -251,5 +227,39 @@ class CargaArchivosController extends Controller
             ->get();
 
         return view('admin_formatos.carga_archivos.analitica.graficas', compact('categorias'));
+    }
+
+    // ─── PRIVADOS ─────────────────────────────────────────────────────────────
+
+    /**
+     * Construye la consulta base con los filtros categoria[] y buscar.
+     * Reutilizada por index() (paginada) e imprimirReporte() (limitada).
+     *
+     * @param  Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function buildQuery(Request $request)
+    {
+        $categoriaFiltro = $request->input('categoria', []);
+        $buscar          = $request->get('buscar');
+
+        $query = CargaArchivo::with('categoria')
+            ->orderBy('id_archivo', 'desc');
+
+        // Filtro por categorías seleccionadas (dropdown de checkboxes)
+        if (!empty($categoriaFiltro)) {
+            $query->whereIn('id_catego', (array) $categoriaFiltro);
+        }
+
+        // Filtro por término de búsqueda (encapsulado en closure)
+        if (!empty($buscar)) {
+            $buscarLimpiado = trim($buscar);
+            $query->where(function ($q) use ($buscarLimpiado) {
+                $q->where('nombre', 'like', '%' . $buscarLimpiado . '%')
+                  ->orWhere('descripcion_archivo', 'like', '%' . $buscarLimpiado . '%');
+            });
+        }
+
+        return $query;
     }
 }

@@ -107,8 +107,8 @@ textarea {
     color: #ffffff !important;
 }
 
-.usuarios-index .btn-light,
-.usuarios-edit .btn-light {
+.usuarios-index .btn-light:not(.dropdown-toggle),
+.usuarios-edit .btn-light:not(.dropdown-toggle) {
     background-color: #ffffff !important;
     border: 2px solid #d1d5db !important;
     color: #4b5563 !important;
@@ -117,11 +117,21 @@ textarea {
     transition: all 0.2s ease-in-out;
 }
 
-.usuarios-index .btn-light:hover,
-.usuarios-edit .btn-light:hover {
+.usuarios-index .btn-light:not(.dropdown-toggle):hover,
+.usuarios-edit .btn-light:not(.dropdown-toggle):hover {
     background-color: #f3f4f6 !important;
     border-color: #9ca3af !important;
     color: #000000 !important;
+}
+
+/* ── Estilos de Filtro Dropdown para alinearse con los Inputs (8px radius) ── */
+[data-rol="filtro-dropdown"] .btn {
+    border-radius: 8px !important;
+    border: 1px solid #d1d5db !important;
+    padding: 0.25rem 0.75rem !important;
+    height: 31px !important;
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
 }
 
 /* ── Tablas (todas las vistas) ── */

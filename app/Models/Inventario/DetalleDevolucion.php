@@ -29,13 +29,15 @@ class DetalleDevolucion extends Model
         'id_devolucion',
         'id_insumo',
         'cantidad',
+        'fecha_caducidad',
     ];
 
     /**
      * Cast de atributos.
      */
     protected $casts = [
-        'cantidad' => 'integer',
+        'cantidad'        => 'integer',
+        'fecha_caducidad' => 'date',
     ];
 
     // ── Relaciones ─────────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ControlInsumos\InsumoImpresora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class InsumoImpresoraController extends Controller
 {
@@ -15,39 +16,7 @@ class InsumoImpresoraController extends Controller
     // ─── INDEX ───────────────────────────────────────────────────────────────
     public function index(Request $request)
     {
-        $buscar      = trim($request->get('buscar', ''));
-        $familia     = $request->input('familia', []);   // [] | ['Tóner'] | ['Cartucho', 'Cinta'] …
-        $status      = $request->input('status', []);    // [] | ['1'] | ['0'] | ['1','0']
-        $fechaInicio = $request->get('fecha_inicio', '');
-        $fechaFin    = $request->get('fecha_fin', '');
-
-        $query = InsumoImpresora::orderBy('id_insumo_impresora', 'desc');
-
-        if (!empty($buscar)) {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('modelo',             'like', "%{$buscar}%")
-                  ->orWhere('color',              'like', "%{$buscar}%")
-                  ->orWhere('familia',            'like', "%{$buscar}%")
-                  ->orWhere('modelos_compatibles','like', "%{$buscar}%");
-            });
-        }
-
-        if (!empty($familia)) {
-            $query->whereIn('familia', (array) $familia);
-        }
-
-        if (!empty($status)) {
-            $query->whereIn('activo', array_map('intval', $status));
-        }
-
-        if (!empty($fechaInicio)) {
-            $query->where('fecha', '>=', $fechaInicio);
-        }
-
-        if (!empty($fechaFin)) {
-            $query->where('fecha', '<=', $fechaFin);
-        }
-
+        $query = $this->aplicarFiltros($request);
         $insumos = $query->paginate(10);
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -68,17 +37,66 @@ class InsumoImpresoraController extends Controller
         ]);
     }
 
+    // ─── FILTROS COMPARTIDOS (index + imprimir) ───────────────────────────────
+    private function aplicarFiltros(Request $request)
+    {
+        $buscar      = trim($request->get('buscar', ''));
+        $familia     = $request->input('familia', []);
+        $status      = $request->input('status', []);
+        $fechaInicio = $request->get('fecha_inicio', '');
+        $fechaFin    = $request->get('fecha_fin', '');
+
+        $query = InsumoImpresora::orderBy('id_insumo_impresora', 'desc');
+
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('modelo',             'like', "%{$buscar}%")
+                  ->orWhere('color',              'like', "%{$buscar}%")
+                  ->orWhere('familia',            'like', "%{$buscar}%")
+                  ->orWhere('modelos_compatibles','like', "%{$buscar}%");
+            });
+        }
+
+        if (!empty($familia)) {
+            $query->whereIn('familia', (array) $familia);
+        }
+
+        if (count((array) $status) > 0) {
+            $query->whereIn('activo', array_map('intval', (array) $status));
+        }
+
+        if (!empty($fechaInicio)) {
+            $query->where('fecha', '>=', $fechaInicio);
+        }
+
+        if (!empty($fechaFin)) {
+            $query->where('fecha', '<=', $fechaFin);
+        }
+
+        return $query;
+    }
+
 
     // ─── GUARDAR ─────────────────────────────────────────────────────────────
     public function guardar(Request $request)
     {
         $request->validate([
-            'modelo'             => 'required|string|max:100',
+            'modelo'             => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('insumos_impresoras', 'modelo')->where(function ($query) use ($request) {
+                    return $query->where('color', trim($request->color))
+                                 ->where('familia', trim($request->familia));
+                }),
+            ],
             'color'              => 'required|string|max:50',
             'familia'            => 'required|string|max:50',
             'modelos_compatibles'=> 'nullable|string|max:500',
             'tiempo_uso'         => 'nullable|string|max:100',
             'hojas_uso_total'    => 'nullable|integer|min:1',
+        ], [
+            'modelo.unique' => 'Este insumo (modelo, color y tipo) ya se encuentra registrado en el sistema.',
         ]);
 
         InsumoImpresora::create([
@@ -92,7 +110,7 @@ class InsumoImpresoraController extends Controller
             'activo'             => 1,
             'fecha'              => now()->toDateString(),
             'hora'               => now()->toTimeString(),
-            'usuario'            => Auth::id(),
+            'id_usuario'         => Auth::id(),
         ]);
 
         return redirect()
@@ -118,12 +136,24 @@ class InsumoImpresoraController extends Controller
         $insumo = InsumoImpresora::findOrFail($id);
 
         $request->validate([
-            'modelo'             => 'required|string|max:100',
+            'modelo'             => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('insumos_impresoras', 'modelo')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('color', trim($request->color))
+                                     ->where('familia', trim($request->familia));
+                    })
+                    ->ignore($id, 'id_insumo_impresora'),
+            ],
             'color'              => 'required|string|max:50',
             'familia'            => 'required|string|max:50',
             'modelos_compatibles'=> 'nullable|string|max:500',
             'tiempo_uso'         => 'nullable|string|max:100',
             'hojas_uso_total'    => 'nullable|integer|min:1',
+        ], [
+            'modelo.unique' => 'Ya existe otro insumo registrado con este mismo modelo, color y tipo.',
         ]);
 
         $insumo->update([
@@ -135,7 +165,7 @@ class InsumoImpresoraController extends Controller
             'hojas_uso_total'    => $request->hojas_uso_total,
             'fecha'              => now()->toDateString(),
             'hora'               => now()->toTimeString(),
-            'usuario'            => Auth::id(),
+            'id_usuario'         => Auth::id(),
         ]);
 
         return redirect()
@@ -150,7 +180,7 @@ class InsumoImpresoraController extends Controller
         $insumo->activo = ($insumo->activo == 1) ? 0 : 1;
         $insumo->fecha  = now()->toDateString();
         $insumo->hora   = now()->toTimeString();
-        $insumo->usuario = Auth::id();
+        $insumo->id_usuario = Auth::id();
         $insumo->save();
 
         return response()->json([
@@ -180,10 +210,10 @@ class InsumoImpresoraController extends Controller
         return response()->json($insumos);
     }
 
-    // ─── REPORTE (impresión) ─────────────────────────────────────────────────
-    public function imprimir()
+    // ─── REPORTE (impresión) ──────────────────────────────────────────
+    public function imprimir(Request $request)
     {
-        $insumos = InsumoImpresora::orderBy('modelo')->get();
+        $insumos = $this->aplicarFiltros($request)->orderBy('modelo')->get();
         return view('control_insumos.insumos_impresoras.analitica.reportes.impresion', compact('insumos'));
     }
 }

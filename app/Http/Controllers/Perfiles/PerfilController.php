@@ -12,15 +12,11 @@ use Illuminate\Support\Facades\DB;
 class PerfilController extends Controller
 {
     /**
-     * Muestra la lista de perfiles.
+     * Aplica el filtro de búsqueda a la query de perfiles.
      */
-    public function index(Request $request)
+    private function aplicarFiltro($query, Request $request)
     {
         $buscar = $request->get('buscar');
-
-        $query = Perfil::withCount(['modulos' => function ($q) {
-            $q->where('activo', 1);
-        }])->orderBy('id', 'desc');
 
         if (!empty($buscar)) {
             $buscarLimpiado = trim($buscar);
@@ -29,6 +25,20 @@ class PerfilController extends Controller
                   ->orWhere('descripcion', 'like', '%' . $buscarLimpiado . '%');
             });
         }
+
+        return $query;
+    }
+
+    /**
+     * Muestra la lista de perfiles.
+     */
+    public function index(Request $request)
+    {
+        $query = Perfil::withCount(['modulos' => function ($q) {
+            $q->where('activo', 1);
+        }])->orderBy('id', 'desc');
+
+        $this->aplicarFiltro($query, $request);
 
         $perfiles = $query->paginate(10);
 
@@ -182,19 +192,16 @@ class PerfilController extends Controller
     }
 
     /**
-     * Muestra la vista de reportes.
+     * Genera la vista imprimible de perfiles, respetando el filtro de búsqueda activo.
      */
-    public function reportes()
+    public function imprimir(Request $request)
     {
-        return view('admin_sistema.perfiles.analitica.reportes.index');
-    }
+        $query = Perfil::orderBy('nombre', 'asc');
 
-    /**
-     * Genera la vista imprimible de perfiles.
-     */
-    public function imprimir()
-    {
-        $perfiles = Perfil::orderBy('nombre', 'asc')->get();
+        $this->aplicarFiltro($query, $request);
+
+        $perfiles = $query->get();
+
         return view('admin_sistema.perfiles.analitica.reportes.impresion', compact('perfiles'));
     }
 

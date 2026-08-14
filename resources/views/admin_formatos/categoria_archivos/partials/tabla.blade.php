@@ -4,9 +4,11 @@
             {{ ($categorias->currentPage() - 1) * $categorias->perPage() + $loop->iteration }}
         </td>
         <td class="text-center">
-            <a href="{{ route('categoria_archivos.edit', $cat->id_catego_archivos) }}"
+            <a href="#"
+               class="btn-editar-categoria text-primary"
+               data-id="{{ $cat->id_catego_archivos }}"
                title="Editar">
-                <i class="fa fa-pencil-square-o text-primary fs-5" aria-hidden="true"></i>
+                <i class="fa fa-pencil-square-o fs-5" aria-hidden="true"></i>
             </a>
         </td>
         <td class="fw-semibold">{{ $cat->categoria }}</td>

@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Inventario;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventario\Motivo;
+use App\Traits\GestionaCatalogoSimple;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MotivoController extends Controller
 {
+    use GestionaCatalogoSimple;
+
     /**
      * Muestra el listado paginado de motivos de devolución.
-     * Aplica filtro de búsqueda si se envía el parámetro 'buscar'.
      */
     public function index(Request $request)
     {
@@ -64,7 +66,6 @@ class MotivoController extends Controller
     public function editar($id)
     {
         $motivo = Motivo::findOrFail($id);
-
         return view('inventario.motivos.editar', compact('motivo'));
     }
 
@@ -85,7 +86,6 @@ class MotivoController extends Controller
             'modificar.in'         => 'El valor de Modificar Stock debe ser Si o No.',
         ]);
 
-        // Excluir el registro actual de la verificación de duplicados
         if (Motivo::existeDescripcion($request->descripcion, (int) $id)) {
             return redirect()->back()
                 ->withInput()
@@ -110,20 +110,11 @@ class MotivoController extends Controller
     public function cambiarStatus($id)
     {
         $motivo = Motivo::findOrFail($id);
-
-        $motivo->activo         = $motivo->activo == 1 ? 0 : 1;
-        $motivo->fecha_registro = now()->toDateString();
-        $motivo->hora_registro  = now()->toTimeString();
-        $motivo->id_usuario     = Auth::id() ?? 1;
-        $motivo->save();
-
-        return redirect()->route('motivos.index')
-            ->with('exitog', 'El estado del motivo se ha actualizado.');
+        return $this->alternarEstadoCatalogo($motivo, 'motivos.index', 'El estado del motivo se ha actualizado.');
     }
 
     /**
      * AJAX: verifica si una descripción ya existe en el catálogo.
-     * Devuelve JSON { disponible: bool }.
      */
     public function verificar(Request $request)
     {
@@ -144,9 +135,7 @@ class MotivoController extends Controller
     public function imprimir(Request $request)
     {
         $buscar  = $request->get('buscar', '');
-        $motivos = Motivo::filtradoPor($buscar)
-            ->orderBy('id_motivo', 'desc')
-            ->get();
+        $motivos = Motivo::filtradoPor($buscar)->orderBy('id_motivo', 'desc')->get();
 
         return view('inventario.motivos.reporte_impresion', compact('motivos', 'buscar'));
     }

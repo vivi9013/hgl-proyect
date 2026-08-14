@@ -1,8 +1,33 @@
 @extends('layouts.reporte_base')
 
+@php
+    // Construir título dinámico según filtros activos
+    $mapasSexo = ['M' => 'Masculino', 'F' => 'Femenino'];
+    $partesSexo = collect($sexoFiltro ?? [])
+        ->map(fn($s) => $mapasSexo[$s] ?? $s)
+        ->filter()
+        ->values();
+
+    $partesEstado = collect($estadoFiltro ?? [])
+        ->filter()
+        ->values();
+
+    $mapasStatus = ['1' => 'Activo', '0' => 'Inactivo'];
+    $partesStatus = collect($statusFiltro ?? [])
+        ->map(fn($st) => $mapasStatus[$st] ?? $st)
+        ->filter()
+        ->values();
+
+    $partesTitulo = $partesSexo->merge($partesEstado)->merge($partesStatus);
+
+    $tituloDinamico = $partesTitulo->isNotEmpty()
+        ? 'LISTADO DE PERSONAS — ' . $partesTitulo->map(fn($p) => strtoupper($p))->implode(' — ')
+        : 'LISTA COMPLETA DE PERSONAS';
+@endphp
+
 @section('title', 'Reporte - Listado de Personas')
 
-@section('report_title', 'LISTA COMPLETA DE PERSONAS')
+@section('report_title', $tituloDinamico)
 
 @section('content')
 <table>

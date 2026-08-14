@@ -61,7 +61,13 @@
     </div>
 
     {{-- Tabla principal --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('proyectos.index') }}"
+         data-tbody-target="cuerpoTablaProyectos"
+         data-info-target="infoPaginacionProyectos"
+         data-paginacion-target="paginacionProyectos"
+         data-btn-imprimir="#btnImprimirProyectos">
         <div class="col-12">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
@@ -91,7 +97,10 @@
                                class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-bar-chart me-1"></i>Gráficas
                             </a>
-                            <a href="{{ route('proyectos.reportes') }}"
+                            <a id="btnImprimirProyectos"
+                               href="{{ route('proyectos.imprimir') }}"
+                               target="_blank"
+                               rel="noopener"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
                             </a>

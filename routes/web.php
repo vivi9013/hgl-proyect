@@ -164,7 +164,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('perfiles')->middleware('modulo:2')->name('perfiles.')->controller(PerfilController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -179,7 +178,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('usuarios')->middleware('modulo:3')->name('usuarios.')->controller(UsuarioController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -193,8 +191,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('modulos')->middleware('modulo:4')->name('modulos.')->controller(ModuloController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
-        Route::get('/reportes/imprimir/{tipo?}', 'imprimir')->name('reportes.imprimir');
+        Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/categoria-preview', 'categoriaPreview')->name('categoria_preview');
         Route::get('/{id}/edit', 'editar')->name('edit');
@@ -209,7 +206,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('personas')->middleware('modulo:5')->name('personas.')->controller(PersonaController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/municipios', 'municipios')->name('municipios');
@@ -227,7 +223,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::patch('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
         Route::patch('/{id}/colapsar', 'cambiarColapsar')->name('colapsar');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
         Route::get('/graficas', 'graficas')->name('graficas');
@@ -237,7 +232,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
     Route::prefix('proyectos')->middleware('modulo:14')->name('proyectos.')->controller(ProyectoController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/guardar', 'guardar')->name('store');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
         Route::get('/verificar', 'verificar')->name('verificar');
@@ -433,14 +427,15 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
     });
 
-    // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 51) ──
-    Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:51')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
-        Route::get('/',                  'index')        ->name('index');
-        Route::post('/guardar',          'guardar')      ->name('store');
-        Route::get('/{id}/edit',         'editar')       ->name('edit');
-        Route::put('/{id}',              'actualizar')   ->name('update');
-        Route::patch('/{id}/cancelar',   'cancelar')     ->name('cancelar');
-        Route::get('/reportes/imprimir', 'imprimir')     ->name('imprimir');
+    // ── Control Insumos: Movimientos de Insumos (Entradas/Salidas) (ID: 50) ──
+    Route::prefix('control-insumos/movimientos-insumos')->middleware('modulo:50')->name('movimientos_insumos.')->controller(MovimientoInsumoController::class)->group(function () {
+        Route::get('/',                  'index')          ->name('index');
+        Route::post('/guardar',          'guardar')        ->name('store');
+        Route::get('/{id}/edit',         'editar')         ->name('edit');
+        Route::put('/{id}',              'actualizar')     ->name('update');
+        Route::patch('/{id}/cancelar',   'cancelar')       ->name('cancelar');
+        Route::get('/exportar-excel',    'exportarExcel')  ->name('exportar_excel');
+        Route::get('/reportes/imprimir', 'imprimir')       ->name('imprimir');
     });
 
     // ── Admin Formatos: Buscador de Archivos (ID: 26) ────────────────────────
@@ -448,7 +443,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/', 'index')->name('index');
         Route::get('/filtrar', 'filtrar')->name('filtrar');
         Route::get('/descargar/{id}', 'descargar')->name('descargar');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/imprimir', 'imprimirReporte')->name('imprimir');
     });
 
@@ -462,7 +456,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::put('/actualizar/{id}', 'actualizar')->name('update');
         Route::get('/cargar/{id}', 'cargar')->name('cargar');
         Route::post('/subir-archivo/{id}', 'subirArchivo')->name('subir_archivo');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/imprimir', 'imprimirReporte')->name('imprimir');
         Route::get('/graficas', 'graficas')->name('graficas');
     });
@@ -474,7 +467,6 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::get('/{id}/edit', 'editar')->name('edit');
         Route::put('/{id}', 'actualizar')->name('update');
         Route::patch('/{id}/status', 'cambiarStatus')->name('status');
-        Route::get('/reportes', 'reportes')->name('reportes');
         Route::get('/reportes/impresion', 'imprimir')->name('imprimir');
         Route::get('/verificar', 'verificar')->name('verificar');
     });
@@ -498,6 +490,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/{id}/finalizar', 'finalizar')->name('finalizar');      // Finalizar devolución
         Route::get('/{id}/comprobante', 'comprobante')->name('comprobante'); // Comprobante PDF
         Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status'); // Alternar estado
+        Route::get('/exportar-excel', 'exportarExcel')->name('exportar_excel'); // Exportar Excel XLSX
     });
 
     Route::prefix('detalle-devoluciones')->middleware('modulo:30')->name('detalle_devoluciones.')->controller(DetalleDevolucionController::class)->group(function () {
@@ -535,6 +528,8 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/', 'guardar')->name('store');
         Route::get('/buscar-insumos', 'buscarInsumos')->name('buscar_insumos');
         Route::get('/consultar-stock', 'consultarStock')->name('consultar_stock');
+        Route::get('/historial-area-asignada', 'historialPorAreaAsignada')->name('historial_area_asignada');
+        Route::get('/exportar-excel', 'exportarExcel')->name('exportar_excel');
         Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status');
         Route::get('/reporte/imprimir', 'imprimir')->name('imprimir');
     });

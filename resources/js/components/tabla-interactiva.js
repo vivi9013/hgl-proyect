@@ -19,6 +19,12 @@
  * Filtros por checkbox:
  *   data-filtro="<nombre_param>"  → checkbox; value = valor a enviar
  *   Múltiples checkboxes del mismo nombre se concatenan con coma.
+ *
+ * Filtro de rango de fechas:
+ *   data-rol="fecha-rango"        → input con Flatpickr activo; se leen fecha_inicio/fecha_fin
+ *
+ * Evento emitido tras cada carga:
+ *   tabla-interactiva:actualizado → CustomEvent en cont con { detail: { total } }
  */
 /**
  * tabla-interactiva.js — JS compartido para módulos de tabla con paginación AJAX.
@@ -192,6 +198,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const k = chk.dataset.filtro;
                 f[k] = f[k] ? `${f[k]},${chk.value}` : chk.value;
             });
+
+            // Rango de fechas (Flatpickr) — respeta offset de zona horaria local
+            const inputFecha = cont.querySelector('[data-rol="fecha-rango"]');
+            if (inputFecha?._flatpickr) {
+                const fechas = inputFecha._flatpickr.selectedDates;
+                if (fechas.length >= 1) {
+                    f.fecha_inicio = new Date(fechas[0].getTime() - fechas[0].getTimezoneOffset() * 60000).toISOString().split('T')[0];
+                }
+                if (fechas.length >= 2) {
+                    f.fecha_fin = new Date(fechas[1].getTime() - fechas[1].getTimezoneOffset() * 60000).toISOString().split('T')[0];
+                }
+            }
+
             return f;
         }
 
@@ -219,9 +238,26 @@ document.addEventListener('DOMContentLoaded', () => {
         function cargar(extra = {}) {
             if (!tbody) return;
 
-            const url    = new URL(cont.dataset.endpoint, location.origin);
-            const params = { buscar: buscar?.value?.trim() ?? '', ...recolectarFiltros(), ...extra };
-            Object.entries(params).forEach(([k, v]) => v && url.searchParams.set(k, v));
+            const url = new URL(cont.dataset.endpoint, location.origin);
+
+            // buscar (escalar)
+            const q = buscar?.value?.trim() ?? '';
+            if (q) url.searchParams.set('buscar', q);
+
+            // filtros de checkboxes: valor puede ser "1,2,3" → enviar como k[]=1&k[]=2&k[]=3
+            // para que Laravel reciba $request->input('k') como array real
+            const filtros = recolectarFiltros();
+            Object.entries(filtros).forEach(([k, v]) => {
+                if (!v) return;
+                if (v.includes(',')) {
+                    v.split(',').forEach(val => url.searchParams.append(`${k}[]`, val));
+                } else {
+                    url.searchParams.set(k, v);
+                }
+            });
+
+            // params extra (page, etc.)
+            Object.entries(extra).forEach(([k, v]) => v && url.searchParams.set(k, v));
 
             tbody.style.opacity    = '0.4';
             tbody.style.transition = 'opacity 0.2s';
@@ -242,6 +278,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Re-vincular links de paginación después de actualizar
                     vincularPaginacion();
                     actualizarEnlaceImpresion();
+
+                    // Notificar al módulo para que actualice su propio badge
+                    cont.dispatchEvent(new CustomEvent('tabla-interactiva:actualizado', {
+                        bubbles: true,
+                        detail: { total: d.total ?? null },
+                    }));
                 })
                 .catch(() => { tbody.style.opacity = '1'; });
         }
@@ -276,6 +318,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (buscar) buscar.value = '';
             cargar();
         });
+
+        // Cambio en rango de fechas (Flatpickr lo dispara via input.dispatchEvent)
+        cont.querySelector('[data-rol="fecha-rango"]')
+            ?.addEventListener('change', () => cargar());
 
         // Paginación e impresión inicial (SSR)
         vincularPaginacion();

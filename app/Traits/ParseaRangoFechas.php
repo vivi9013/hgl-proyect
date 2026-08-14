@@ -7,30 +7,6 @@ use Carbon\Carbon;
 trait ParseaRangoFechas
 {
     /**
-     * Normaliza una fecha individual retornando [fechaFormatDb, fechaOriginal].
-     *
-     * @param string|null $fecha
-     * @return array
-     */
-    public function normalizarFecha($fecha)
-    {
-        if (empty($fecha)) {
-            return [null, ''];
-        }
-
-        try {
-            if (strpos($fecha, '/') !== false) {
-                $fechaDb = Carbon::createFromFormat('d/m/Y', $fecha)->format('Y-m-d');
-            } else {
-                $fechaDb = Carbon::parse($fecha)->format('Y-m-d');
-            }
-            return [$fechaDb, $fecha];
-        } catch (\Exception $e) {
-            return [null, $fecha];
-        }
-    }
-
-    /**
      * Parsea y normaliza un rango de fechas (inicio y fin) enviado desde las peticiones HTTP.
      * Soporta formatos 'd/m/Y' e ISO ('Y-m-d').
      *

@@ -1,8 +1,15 @@
 @extends('layouts.reporte_base')
 
-@section('title', 'Reporte - Categoría de Archivos')
+@php
+    // Calcular títulos: si $buscar no está vacío, agregar sufijo
+    $sufijo       = ($buscar !== '') ? ' — Filtrado: "' . $buscar . '"' : '';
+    $tituloPage   = 'Reporte - Categoría de Archivos' . $sufijo;
+    $tituloReport = 'LISTA COMPLETA DE LA CATEGORIZACIÓN DE ARCHIVOS' . strtoupper($sufijo);
+@endphp
 
-@section('report_title', 'LISTA COMPLETA DE LA CATEGORIZACIÓN DE ARCHIVOS')
+@section('title', $tituloPage)
+
+@section('report_title', $tituloReport)
 
 @section('content')
 <table>

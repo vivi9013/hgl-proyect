@@ -62,92 +62,93 @@
                                     }
                                 @endphp
                                 <div class="col-12 col-sm-6 col-md-4 col-lg-3 module-container">
-                                    <div class="card {{ $colorClass }} text-white h-100 border-0 shadow-sm position-relative overflow-hidden module-card" style="min-height: 120px;">
-                                        <div class="card-body d-flex flex-column justify-content-between p-3">
-                                            <!-- Ícono decorativo de fondo -->
-                                            <div class="icon-opacity">
-                                                <i class="{{ $modulo->icono }}"></i>
-                                            </div>
-                                            
-                                            <!-- Contenido del texto -->
-                                            <div class="pe-5">
-                                                <h6 class="fw-bold mb-1 text-white module-title" style="font-size: 0.95rem; line-height: 1.3;">
-                                                    {{ $modulo->nombre }}
-                                                </h6>
-                                                <p class="mb-0 text-white module-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                    {{ $modulo->descripcion }}
-                                                </p>
-                                            </div>
-                                            
-                                            <!-- Botón de ingreso -->
-                                            <div class="mt-3">
-                                                @php
-                                                    $routeMap = [
-                                                        'mBuscaArchivos' => 'busca_archivos.index',
-                                                        'mCargaArchivos' => 'carga_archivos.index',
-                                                        'mCategoArchivos' => 'categoria_archivos.index',
-                                                        'mPermisosArchivo' => 'trabajador_categorias.index',
-                                                        'mRXestudios' => 'rx.index',
-                                                        'mRXespecialidad' => 'rx_especialidades.index',
-                                                        'mRXmedicos' => 'rx_medicos.index',
-                                                        'mEstReportesRX' => 'rx_estadisticas.index',
-                                                        'mAreasAlmacen' => 'areas_almacen.index',
-                                                        'mComputadoras' => 'computadoras.index',
-                                                        'mMobiliario' => 'mobiliario.index',
-                                                        'mAreaSurtimiento' => 'areas_surtimiento.index',
-                                                        'mCumpleanos' => 'cumpleanos.index',
-                                                        'mBajasInsumos' => 'bajas_insumos.index',
-                                                        'mDevoluciones' => 'devoluciones.index',
-                                                        'mEntradaInsumosCendis' => 'entradas_cendis.index',
-                                                        'mInsumos' => 'insumos.index',
-                                                        'mInsumosArea' => 'insumos_area.index',
-                                                        'mMotivos' => 'motivos.index',
-                                                        'mReportes' => 'reportes_inventario.index',
-                                                        'mPedidosRecibidos' => 'pedidos_recibidos.index',
-                                                        'mCategoModulos' => 'categoria_modulos.index',
-                                                        'mUsuarios' => 'usuarios.index',
-                                                        'mConfiguracion' => 'configuracion_sistema.index',
-                                                        'mModulos' => 'modulos.index',
-                                                        'mPerfiles' => 'perfiles.index',
-                                                        'mPersonas' => 'personas.index',
-                                                        'mProyectos' => 'proyectos.index',
-                                                        'mImpresoras' => 'impresoras.index',
-                                                        'mRegActividades' => 'actividades.index',
-                                                        'mMonitores' => 'monitores.index',
-                                                        'mTipoMobiliario' => 'tipo_mobiliario.index',
-                                                        'mDepartamentos' => 'departamentos.index',
-                                                        'mPuestos' => 'puestos.index',
-                                                        'mSedes' => 'sedes.index',
-                                                        'mTipoTrabajador' => 'tipo_trabajador.index',
-                                                        'mTrabajadores' => 'trabajadores.index',
-                                                        'mAlmacenSubAreas' => 'almacen_subareas.index',
-                                                        'mAlmacenSubarea' => 'almacen_subareas.index',
-                                                        'mAreaAbastecimiento' => 'areas_abastecimiento.index',
-                                                        'mAreasAbastecimiento' => 'areas_abastecimiento.index',
-                                                        'mSubareaAbastecimiento' => 'subareas_abastecimiento.index',
-                                                        'mSubareasAbastecimiento' => 'subareas_abastecimiento.index',
-                                                        'mInsumosImpresoras' => 'insumos_impresoras.index',
-                                                        'mMovimientosInsumos' => 'movimientos_insumos.index',
-                                                        'mSoporteArea'       => 'soporte_area.index',
-                                                        'mSolicitarServicio' => 'solicitar_servicio.index',
-                                                        'mPlantillasPedidos' => 'plantillas_pedido.index',
-                                                        'mPlantillasPedido'  => 'plantillas_pedido.index',
-                                                        'mPlantillaPedido'   => 'plantillas_pedido.index',
-                                                        'mPedidoInsumos'     => 'pedido_insumos.index',
-                                                        'mPedidoInsumosDif'  => 'pedido_insumos_dif.index',
-                                                    ];
-                                                    $carpeta = trim($modulo->carpeta);
-                                                    $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])
-                                                        ? route($routeMap[$carpeta])
-                                                        : url($modulo->carpeta);
-                                                @endphp
-                                                <a href="{{ $href }}" class="text-white text-decoration-none d-flex align-items-center justify-content-between py-1 px-2 rounded bg-black bg-opacity-20 border border-white border-opacity-10" style="font-size: 0.8rem; transition: background 0.15s;">
-                                                    <span>Ingresar al Módulo</span>
-                                                    <i class="fa fa-arrow-circle-right"></i>
-                                                </a>
+                                    @php
+                                        $routeMap = [
+                                            'mBuscaArchivos' => 'busca_archivos.index',
+                                            'mCargaArchivos' => 'carga_archivos.index',
+                                            'mCategoArchivos' => 'categoria_archivos.index',
+                                            'mPermisosArchivo' => 'trabajador_categorias.index',
+                                            'mRXestudios' => 'rx.index',
+                                            'mRXespecialidad' => 'rx_especialidades.index',
+                                            'mRXmedicos' => 'rx_medicos.index',
+                                            'mEstReportesRX' => 'rx_estadisticas.index',
+                                            'mAreasAlmacen' => 'areas_almacen.index',
+                                            'mComputadoras' => 'computadoras.index',
+                                            'mMobiliario' => 'mobiliario.index',
+                                            'mAreaSurtimiento' => 'areas_surtimiento.index',
+                                            'mCumpleanos' => 'cumpleanos.index',
+                                            'mBajasInsumos' => 'bajas_insumos.index',
+                                            'mDevoluciones' => 'devoluciones.index',
+                                            'mEntradaInsumosCendis' => 'entradas_cendis.index',
+                                            'mInsumos' => 'insumos.index',
+                                            'mInsumosArea' => 'insumos_area.index',
+                                            'mMotivos' => 'motivos.index',
+                                            'mReportes' => 'reportes_inventario.index',
+                                            'mPedidosRecibidos' => 'pedidos_recibidos.index',
+                                            'mCategoModulos' => 'categoria_modulos.index',
+                                            'mUsuarios' => 'usuarios.index',
+                                            'mConfiguracion' => 'configuracion_sistema.index',
+                                            'mModulos' => 'modulos.index',
+                                            'mPerfiles' => 'perfiles.index',
+                                            'mPersonas' => 'personas.index',
+                                            'mProyectos' => 'proyectos.index',
+                                            'mImpresoras' => 'impresoras.index',
+                                            'mRegActividades' => 'actividades.index',
+                                            'mMonitores' => 'monitores.index',
+                                            'mTipoMobiliario' => 'tipo_mobiliario.index',
+                                            'mDepartamentos' => 'departamentos.index',
+                                            'mPuestos' => 'puestos.index',
+                                            'mSedes' => 'sedes.index',
+                                            'mTipoTrabajador' => 'tipo_trabajador.index',
+                                            'mTrabajadores' => 'trabajadores.index',
+                                            'mAlmacenSubAreas' => 'almacen_subareas.index',
+                                            'mAlmacenSubarea' => 'almacen_subareas.index',
+                                            'mAreaAbastecimiento' => 'areas_abastecimiento.index',
+                                            'mAreasAbastecimiento' => 'areas_abastecimiento.index',
+                                            'mSubareaAbastecimiento' => 'subareas_abastecimiento.index',
+                                            'mSubareasAbastecimiento' => 'subareas_abastecimiento.index',
+                                            'mInsumosImpresoras' => 'insumos_impresoras.index',
+                                            'mMovimientosInsumos' => 'movimientos_insumos.index',
+                                            'mSoporteArea'       => 'soporte_area.index',
+                                            'mSolicitarServicio' => 'solicitar_servicio.index',
+                                            'mPlantillasPedidos' => 'plantillas_pedido.index',
+                                            'mPlantillasPedido'  => 'plantillas_pedido.index',
+                                            'mPlantillaPedido'   => 'plantillas_pedido.index',
+                                            'mPedidoInsumos'     => 'pedido_insumos.index',
+                                            'mPedidoInsumosDif'  => 'pedido_insumos_dif.index',
+                                        ];
+                                        $carpeta = trim($modulo->carpeta);
+                                        $href = isset($routeMap[$carpeta]) && Route::has($routeMap[$carpeta])
+                                            ? route($routeMap[$carpeta])
+                                            : url($modulo->carpeta);
+                                    @endphp
+                                    <a href="{{ $href }}" class="text-decoration-none d-block h-100 module-card-link">
+                                        <div class="card {{ $colorClass }} text-white h-100 border-0 shadow-sm position-relative overflow-hidden module-card" style="min-height: 120px;">
+                                            <div class="card-body d-flex flex-column justify-content-between p-3">
+                                                <!-- Ícono decorativo de fondo -->
+                                                <div class="icon-opacity">
+                                                    <i class="{{ $modulo->icono }}"></i>
+                                                </div>
+
+                                                <!-- Contenido del texto -->
+                                                <div class="pe-5">
+                                                    <h6 class="fw-bold mb-1 text-white module-title" style="font-size: 0.95rem; line-height: 1.3;">
+                                                        {{ $modulo->nombre }}
+                                                    </h6>
+                                                    <p class="mb-0 text-white module-desc" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                        {{ $modulo->descripcion }}
+                                                    </p>
+                                                </div>
+
+                                                <!-- Pie de tarjeta -->
+                                                <div class="mt-auto pt-3">
+                                                    <span class="module-footer-label">
+                                                        Ingresar al Módulo &nbsp;<i class="fa fa-arrow-circle-right"></i>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             @endforeach
                         </div>

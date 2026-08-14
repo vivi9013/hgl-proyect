@@ -15,9 +15,34 @@ class PersonaController extends Controller
      */
     public function index(Request $request)
     {
-        $buscar = $request->get('buscar');
+        $personas = $this->queryPersonas($request)->orderBy('id', 'desc')->paginate(10);
 
-        $query = Persona::orderBy('id', 'desc');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'html'  => view('admin_sistema.personas.partials.tabla', compact('personas'))->render(),
+                'links' => $personas->links('pagination::bootstrap-4')->render(),
+                'total' => $personas->total(),
+                'info'  => 'Mostrando ' . ($personas->firstItem() ?? 0) . ' a ' . ($personas->lastItem() ?? 0) . ' de ' . $personas->total() . ' registros',
+            ]);
+        }
+
+        $estados = DB::table('estados')->orderBy('estado')->pluck('estado', 'estado');
+
+        return view('admin_sistema.personas.index', compact('personas', 'estados'));
+    }
+
+    /**
+     * Construye la query base de personas aplicando los filtros activos.
+     * Compartida entre index() e imprimir().
+     */
+    private function queryPersonas(Request $request)
+    {
+        $buscar       = $request->get('buscar');
+        $sexoFiltro   = (array) $request->input('sexo', []);
+        $estadoFiltro = (array) $request->input('estado', []);
+        $statusFiltro = (array) $request->input('status', []);
+
+        $query = Persona::query();
 
         if (!empty($buscar)) {
             $b = trim($buscar);
@@ -31,18 +56,19 @@ class PersonaController extends Controller
             });
         }
 
-        $personas = $query->paginate(10);
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'html'  => view('admin_sistema.personas.partials.tabla', compact('personas'))->render(),
-                'links' => $personas->links('pagination::bootstrap-4')->render(),
-                'total' => $personas->total(),
-                'info'  => 'Mostrando ' . ($personas->firstItem() ?? 0) . ' a ' . ($personas->lastItem() ?? 0) . ' de ' . $personas->total() . ' registros',
-            ]);
+        if (!empty($sexoFiltro)) {
+            $query->whereIn('sexo', $sexoFiltro);
         }
 
-        return view('admin_sistema.personas.index', compact('personas'));
+        if (!empty($estadoFiltro)) {
+            $query->whereIn('estado', $estadoFiltro);
+        }
+
+        if (!empty($statusFiltro)) {
+            $query->whereIn('activo', $statusFiltro);
+        }
+
+        return $query;
     }
 
     /**
@@ -108,6 +134,15 @@ class PersonaController extends Controller
             ->where('estado', $persona->estado)
             ->orderBy('municipio')
             ->pluck('municipio', 'municipio');
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success'    => true,
+                'persona'    => $persona,
+                'estados'    => $estados,
+                'municipios' => $municipios
+            ]);
+        }
 
         return view('admin_sistema.personas.editar', compact('persona', 'estados', 'municipios'));
     }
@@ -224,35 +259,21 @@ class PersonaController extends Controller
     }
 
     /**
-     * Muestra la vista de reportes.
-     */
-    public function reportes()
-    {
-        $estados = DB::table('estados')->orderBy('estado')->pluck('estado', 'estado');
-        return view('admin_sistema.personas.analitica.reportes.index', compact('estados'));
-    }
-
-    /**
      * Genera la vista imprimible del reporte de personas.
+     * El orden es alfabético (ap_paterno, nombre), distinto al del índice.
      */
     public function imprimir(Request $request)
     {
-        $sexo = $request->get('sexo');
-        $estado = $request->get('estado');
+        $sexoFiltro   = (array) $request->input('sexo', []);
+        $estadoFiltro = (array) $request->input('estado', []);
+        $statusFiltro = (array) $request->input('status', []);
 
-        $query = Persona::orderBy('ap_paterno')->orderBy('nombre');
+        $personas = $this->queryPersonas($request)
+            ->orderBy('ap_paterno')
+            ->orderBy('nombre')
+            ->get();
 
-        if ($sexo && in_array($sexo, ['M', 'F'])) {
-            $query->where('sexo', $sexo);
-        }
-        if ($estado) {
-            $query->where('estado', $estado);
-        }
-
-        $personas = $query->get();
-        $estados  = DB::table('estados')->orderBy('estado')->pluck('estado', 'estado');
-
-        return view('admin_sistema.personas.analitica.reportes.impresion', compact('personas', 'estados', 'sexo', 'estado'));
+        return view('admin_sistema.personas.analitica.reportes.impresion', compact('personas', 'sexoFiltro', 'estadoFiltro', 'statusFiltro'));
     }
 
     /**

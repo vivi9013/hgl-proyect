@@ -15,7 +15,7 @@
             <th class="center" style="width:80px;">Rendimiento</th>
             <th class="center" style="width:70px;">Tiempo Uso</th>
             <th class="center" style="width:50px;">Stock</th>
-            <th class="center" style="width:60px;">Status</th>
+
         </tr>
     </thead>
     <tbody>
@@ -28,11 +28,11 @@
                 <td class="center">{{ $insumo->hojas_uso_total ? number_format($insumo->hojas_uso_total).' h.' : '—' }}</td>
                 <td class="center">{{ $insumo->tiempo_uso ?: '—' }}</td>
                 <td class="center">{{ $insumo->stock }}</td>
-                <td class="center">{{ $insumo->activo ? 'Activo' : 'Inactivo' }}</td>
+
             </tr>
         @empty
             <tr>
-                <td colspan="8" style="text-align:center; padding:12px; color:#666;">
+                <td colspan="7" style="text-align:center; padding:12px; color:#666;">
                     No se encontraron insumos registrados.
                 </td>
             </tr>

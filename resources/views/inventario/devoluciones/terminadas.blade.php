@@ -20,19 +20,20 @@
 
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
-    {{-- ── Buscador + Filtros ── --}}
+    {{-- ── Buscador + Filtros + Botón Excel ── --}}
     <div class="row mb-4 align-items-end g-3">
-        <div class="col-12 col-md-9">
+        <div class="col-12">
             <form method="GET" action="{{ route('devoluciones.terminadas') }}" id="formBuscarTerminadas">
                 <div class="row g-2 align-items-end">
-                    <div class="col-12 col-md-6 position-relative">
+                    {{-- Buscador por folio / área --}}
+                    <div class="col-12 col-md-3 position-relative">
                         <label for="inputBuscarTerm" class="form-label small fw-bold mb-1 text-dark">
                             <i class="fa fa-search me-1"></i>Buscar:
                         </label>
                         <div class="input-group" style="border: 1.5px solid #000; border-radius: 10px; overflow: hidden;">
                             <input type="text" name="buscar" id="inputBuscarTerm"
                                    class="form-control bg-light border-0"
-                                   placeholder="Buscar por folio o área..."
+                                   placeholder="Buscar por folio..."
                                    value="{{ $buscar }}"
                                    autocomplete="off"
                                    style="font-size: 0.9rem; box-shadow: none;">
@@ -46,26 +47,80 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
+
+                    {{-- Filtro por Área --}}
+                    <div class="col-6 col-md-2">
+                        <label for="filtro_area_term" class="form-label small fw-bold mb-1 text-dark">
+                            <i class="fa fa-building me-1"></i>Área:
+                        </label>
+                        <select name="id_area_abastecimiento" id="filtro_area_term"
+                                class="form-select bg-light border-0"
+                                style="font-size: 0.9rem;"
+                                onchange="this.form.submit()">
+                            <option value="">Todas las Áreas</option>
+                            @foreach($areasAbastecimiento as $area)
+                                <option value="{{ $area->id_area_abastecimiento }}"
+                                    {{ $filtroArea == $area->id_area_abastecimiento ? 'selected' : '' }}>
+                                    {{ $area->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Filtro por Motivo --}}
+                    <div class="col-6 col-md-2">
+                        <label for="filtro_motivo_term" class="form-label small fw-bold mb-1 text-dark">
+                            <i class="fa fa-tag me-1"></i>Motivo:
+                        </label>
+                        <select name="id_motivo" id="filtro_motivo_term"
+                                class="form-select bg-light border-0"
+                                style="font-size: 0.9rem;"
+                                onchange="this.form.submit()">
+                            <option value="">Todos los Motivos</option>
+                            @foreach($motivos as $motivo)
+                                <option value="{{ $motivo->id_motivo }}"
+                                    {{ $filtroMotivo == $motivo->id_motivo ? 'selected' : '' }}>
+                                    {{ $motivo->descripcion }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Fecha Inicio --}}
+                    <div class="col-6 col-md-2">
                         <label for="fecha_inicio_term" class="form-label small fw-bold mb-1 text-dark">
                             <i class="fa fa-calendar me-1"></i>Fecha Inicio:
                         </label>
                         <input type="date" name="fecha_inicio" id="fecha_inicio_term"
                                class="form-control bg-light" value="{{ $fechaInit }}">
                     </div>
-                    <div class="col-6 col-md-3">
+
+                    {{-- Fecha Fin --}}
+                    <div class="col-6 col-md-2">
                         <label for="fecha_fin_term" class="form-label small fw-bold mb-1 text-dark">
                             <i class="fa fa-calendar me-1"></i>Fecha Fin:
                         </label>
-                        <div class="input-group">
-                            <input type="date" name="fecha_fin" id="fecha_fin_term"
-                                   class="form-control bg-light" value="{{ $fechaFin }}">
-                            @if($buscar || $fechaInit || $fechaFin)
-                                <a href="{{ route('devoluciones.terminadas') }}" class="btn btn-outline-secondary" title="Limpiar">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            @endif
-                        </div>
+                        <input type="date" name="fecha_fin" id="fecha_fin_term"
+                               class="form-control bg-light" value="{{ $fechaFin }}">
+                    </div>
+
+                    {{-- Botones Aplicar / Limpiar + Excel --}}
+                    <div class="col-12 col-md-1 d-flex gap-1 align-items-end justify-content-md-end">
+                        <button type="submit" class="btn btn-dark btn-sm" title="Aplicar filtros">
+                            <i class="fa fa-filter"></i>
+                        </button>
+                        @if($buscar || $fechaInit || $fechaFin || $filtroMotivo || $filtroArea)
+                            <a href="{{ route('devoluciones.terminadas') }}" class="btn btn-outline-secondary btn-sm" title="Limpiar todos los filtros">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        @endif
+                        <button type="button"
+                                class="btn btn-outline-success btn-sm rounded-pill"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalExportarExcelTerminadas"
+                                title="Exportar a Excel">
+                            <i class="fa fa-file-excel-o"></i>
+                        </button>
                     </div>
                 </div>
             </form>
@@ -155,8 +210,135 @@
     </div>
 
 </div>
+
+{{-- ── Modal: Exportar a Excel (reutiliza filtros activos de la vista terminadas) ── --}}
+<div class="modal fade" id="modalExportarExcelTerminadas" tabindex="-1" aria-labelledby="modalExportarExcelTerminadasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header bg-success text-white border-0 py-3 px-4 rounded-top-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa fa-file-excel-o fs-5"></i>
+                    <h5 class="modal-title fw-bold mb-0" id="modalExportarExcelTerminadasLabel">
+                        Exportar Formato de Devolución
+                    </h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form action="{{ route('devoluciones.exportar_excel') }}" method="GET">
+                {{-- Propaga el filtro de búsqueda activo --}}
+                @if($buscar)
+                    <input type="hidden" name="buscar" value="{{ $buscar }}">
+                @endif
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">
+                        Se exportarán las devoluciones terminadas con los filtros aplicados actualmente.
+                        Las <strong>fechas son obligatorias</strong>.
+                    </p>
+                    <div class="row g-3">
+                        {{-- Área / Departamento individual --}}
+                        <div class="col-12">
+                            <label for="excel_id_area_term" class="form-label fw-bold small">
+                                Área / Departamento: <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <select name="id_area_abastecimiento" id="excel_id_area_term" class="form-select bg-light">
+                                <option value="">Todas las Áreas</option>
+                                @foreach($areasAbastecimiento as $area)
+                                    <option value="{{ $area->id_area_abastecimiento }}"
+                                        {{ $filtroArea == $area->id_area_abastecimiento ? 'selected' : '' }}>
+                                        {{ $area->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Motivos con selección múltiple --}}
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold small mb-0">
+                                    Motivos de Devolución: <span class="text-muted fw-normal">(opcional)</span>
+                                </label>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none me-2" style="font-size: 0.78rem;" id="btnMarcarTodosMotivos">
+                                        Seleccionar todos
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-muted" style="font-size: 0.78rem;" id="btnDesmarcarTodosMotivos">
+                                        Desmarcar todos
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="border rounded p-2 bg-white" style="max-height: 150px; overflow-y: auto;">
+                                @foreach($motivos as $motivo)
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input check-motivo-excel"
+                                               type="checkbox"
+                                               name="motivos[]"
+                                               value="{{ $motivo->id_motivo }}"
+                                               id="check_motivo_{{ $motivo->id_motivo }}"
+                                               {{ empty($filtroMotivo) || $filtroMotivo == $motivo->id_motivo ? 'checked' : '' }}>
+                                        <label class="form-check-label small" for="check_motivo_{{ $motivo->id_motivo }}" style="cursor: pointer;">
+                                            {{ $motivo->descripcion }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <small class="text-muted" style="font-size: 0.74rem;">
+                                Marca las razones que deseas incluir en el reporte de Excel.
+                            </small>
+                        </div>
+                        {{-- Fechas --}}
+                        <div class="col-6">
+                            <label for="excel_fecha_inicio_term" class="form-label fw-bold small">
+                                Fecha Inicio: <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   name="fecha_inicio"
+                                   id="excel_fecha_inicio_term"
+                                   class="form-control bg-light"
+                                   value="{{ $fechaInit }}"
+                                   required>
+                        </div>
+                        <div class="col-6">
+                            <label for="excel_fecha_fin_term" class="form-label fw-bold small">
+                                Fecha Fin: <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   name="fecha_fin"
+                                   id="excel_fecha_fin_term"
+                                   class="form-control bg-light"
+                                   value="{{ $fechaFin }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success text-white">
+                        <i class="fa fa-download me-1"></i>Descargar Excel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
     @vite(['resources/css/inventario/devoluciones/devoluciones.css', 'resources/js/inventario/devoluciones/devoluciones.js'])
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnMarcarMotivos = document.getElementById('btnMarcarTodosMotivos');
+            const btnDesmarcarMotivos = document.getElementById('btnDesmarcarTodosMotivos');
+            if (btnMarcarMotivos) {
+                btnMarcarMotivos.addEventListener('click', function () {
+                    document.querySelectorAll('.check-motivo-excel').forEach(cb => cb.checked = true);
+                });
+            }
+            if (btnDesmarcarMotivos) {
+                btnDesmarcarMotivos.addEventListener('click', function () {
+                    document.querySelectorAll('.check-motivo-excel').forEach(cb => cb.checked = false);
+                });
+            }
+        });
+    </script>
 @endpush

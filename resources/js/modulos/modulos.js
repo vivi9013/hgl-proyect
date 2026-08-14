@@ -227,150 +227,86 @@ document.addEventListener('DOMContentLoaded', function () {
         cargarSubmodulosCategoria();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // C. TABLA: PAGINACIÓN ASÍNCRONA Y BÚSQUEDA
-    // ─────────────────────────────────────────────────────────────────────────
-    const cuerpoTabla = document.getElementById('cuerpoTablaModulos');
-    const infoPaginacionElemento = document.getElementById('infoPaginacionModulos');
-    const contenedorPaginas = document.getElementById('paginacionModulos');
-    const entradaBusqueda = document.getElementById('filtro-buscar');
+    // ───────────────────────────────────────────────────────────────────────────
+    // D. ALTERNAR ESTADO (checkbox .btn-alternar-estado en la tabla — delegación global)
+    // Nota: tabla-interactiva.js maneja paginación y búsqueda AJAX.
+    // ───────────────────────────────────────────────────────────────────────────
+    document.addEventListener('change', function (e) {
+        const casilla = e.target.closest('.btn-alternar-estado');
+        if (!casilla) return;
 
-    function cargarPagina(numeroPagina = 1) {
-        if (!cuerpoTabla) return;
+        const idRegistro   = casilla.dataset.id;
+        const nombreModulo = casilla.dataset.nombre ?? '';
+        // checked ya cambió antes del evento: si ahora está checked, el estado ANTERIOR era 0 (inactivo)
+        const estabaActivo = casilla.checked ? 0 : 1;
+        const accionTexto  = estabaActivo === 1 ? 'desactivar' : 'activar';
 
-        const textoBusqueda = entradaBusqueda ? entradaBusqueda.value.trim() : '';
-        cuerpoTabla.style.opacity = '0.4';
-        cuerpoTabla.style.transition = 'opacity 0.2s';
+        const ejecutarAccion = () => {
+            const tokenCsrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            fetch(`/modulos/${idRegistro}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': tokenCsrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(respuesta => respuesta.json())
+            .then(datos => {
+                if (datos.success) {
+                    // Refrescar la tabla via tabla-interactiva.js
+                    document.querySelector('[data-tabla-interactiva]')
+                        ?.dispatchEvent(new CustomEvent('filtros:aplicar', { bubbles: true }));
 
-        fetch(`/modulos?buscar=${encodeURIComponent(textoBusqueda)}&page=${numeroPagina}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(respuesta => {
-            if (!respuesta.ok) throw new Error('Error en el servidor');
-            return respuesta.json();
-        })
-        .then(datos => {
-            cuerpoTabla.style.opacity = '1';
-            cuerpoTabla.innerHTML = datos.html;
-
-            if (infoPaginacionElemento)    infoPaginacionElemento.textContent = datos.info;
-            if (contenedorPaginas)  {
-                contenedorPaginas.innerHTML = datos.links;
-                asignarEventosPaginacion();
-            }
-
-            enlazarAlternarEstado();
-        })
-        .catch(error => {
-            cuerpoTabla.style.opacity = '1';
-            console.error('[modulos] Error al paginar:', error);
-        });
-    }
-
-    function asignarEventosPaginacion() {
-        if (!contenedorPaginas) return;
-        contenedorPaginas.querySelectorAll('a.page-link').forEach(enlace => {
-            enlace.addEventListener('click', function (e) {
-                e.preventDefault();
-                const url = new URL(this.href);
-                const pagina = url.searchParams.get('page');
-                if (pagina) cargarPagina(pagina);
-            });
-        });
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // D. ALTERNAR ESTADO (botones .btn-alternar-estado en la tabla)
-    // ─────────────────────────────────────────────────────────────────────────
-    function enlazarAlternarEstado() {
-        document.querySelectorAll('.btn-alternar-estado').forEach(boton => {
-            const clon = boton.cloneNode(true);
-            boton.parentNode.replaceChild(clon, boton);
-
-            clon.addEventListener('click', function (e) {
-                e.preventDefault();
-                const idRegistro = this.dataset.id;
-                const fila = this.closest('tr');
-                const nombreModulo = fila?.querySelector('.col-nombre-modulo')?.textContent.trim() ?? '';
-                const estaActivo = fila?.classList.contains('text-muted') ? 0 : 1;
-                const accionTexto = estaActivo === 1 ? 'desactivar' : 'activar';
-
-                const ejecutarAccion = () => {
-                    const tokenCsrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-                    fetch(`/modulos/${idRegistro}/status`, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': tokenCsrf,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(respuesta => respuesta.json())
-                    .then(datos => {
-                        if (datos.success) {
-                            const paginaActiva = contenedorPaginas
-                                ?.querySelector('.page-item.active .page-link')
-                                ?.textContent?.trim() ?? '1';
-                            cargarPagina(paginaActiva);
-
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    title: '¡Estado actualizado!',
-                                    text: datos.message,
-                                    icon: 'success',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            }
-                        }
-                    })
-                    .catch(() => {
-                        if (typeof Swal !== 'undefined') {
-                            Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
-                        }
-                    });
-                };
-
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: `¿${accionTexto.charAt(0).toUpperCase() + accionTexto.slice(1)} módulo?`,
-                        text: `"${nombreModulo}" será ${accionTexto}do del sistema.`,
-                        icon: estaActivo === 1 ? 'warning' : 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: `Sí, ${accionTexto}`,
-                        cancelButtonText: 'Cancelar'
-                    }).then(resultado => { if (resultado.isConfirmed) ejecutarAccion(); });
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: '¡Estado actualizado!',
+                            text: datos.message,
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
                 } else {
-                    if (confirm(`¿${accionTexto} el módulo "${nombreModulo}"?`)) ejecutarAccion();
+                    // Revertir si el servidor devolvió error lógico
+                    casilla.checked = !casilla.checked;
+                }
+            })
+            .catch(() => {
+                // Revertir visualmente en error de red
+                casilla.checked = !casilla.checked;
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
                 }
             });
-        });
-    }
-
-    // Retardo para la entrada de búsqueda
-    function demorarEjecucion(funcion, milisegundos) {
-        let temporizador;
-        return function (...argumentos) {
-            clearTimeout(temporizador);
-            temporizador = setTimeout(() => funcion.apply(this, argumentos), milisegundos);
         };
-    }
 
-    if (entradaBusqueda) {
-        entradaBusqueda.addEventListener('input', demorarEjecucion(() => cargarPagina(1), 320));
-    }
-
-    // Inicialización: la tabla y la paginación ya vienen renderizadas por el servidor (SSR),
-    // solo se enlazan los eventos de acciones y de los links de paginación existentes.
-    enlazarAlternarEstado();
-    if (cuerpoTabla) {
-        asignarEventosPaginacion();
-    }
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: `¿${accionTexto.charAt(0).toUpperCase() + accionTexto.slice(1)} módulo?`,
+                text: `"${nombreModulo}" será ${accionTexto}do del sistema.`,
+                icon: estabaActivo === 1 ? 'warning' : 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: `Sí, ${accionTexto}`,
+                cancelButtonText: 'Cancelar'
+            }).then(resultado => {
+                if (resultado.isConfirmed) {
+                    ejecutarAccion();
+                } else {
+                    // Cancelado: revertir el checkbox
+                    casilla.checked = !casilla.checked;
+                }
+            });
+        } else {
+            if (confirm(`¿${accionTexto} el módulo "${nombreModulo}"?`)) {
+                ejecutarAccion();
+            } else {
+                casilla.checked = !casilla.checked;
+            }
+        }
+    });
 
     // ─────────────────────────────────────────────────────────────────────────
     // D.2 FORMULARIO DE TOGGLE ESTADO EN VISTA DE EDICIÓN

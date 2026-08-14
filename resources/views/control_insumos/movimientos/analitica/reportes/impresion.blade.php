@@ -21,7 +21,6 @@
             <th class="center" style="width:50px;">Cant.</th>
             <th>Proveedor</th>
             <th class="center" style="width:70px;">Fecha</th>
-            <th class="center" style="width:60px;">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -47,11 +46,10 @@
                     @endif
                 </td>
                 <td class="center">{{ \Carbon\Carbon::parse($mov->fecha_movimiento)->format('d/m/Y') }}</td>
-                <td class="center">{{ $mov->activo ? 'Activo' : 'Cancelado' }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="7" style="text-align:center; padding:12px; color:#666;">
+                <td colspan="6" style="text-align:center; padding:12px; color:#666;">
                     No se encontraron movimientos registrados.
                 </td>
             </tr>

@@ -16,9 +16,10 @@ class DetalleDevolucionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_devolucion' => 'required|integer|exists:devoluciones,id_devolucion',
-            'id_insumo'     => 'required|integer|exists:insumos,id_insumo',
-            'cantidad'      => 'required|integer|min:1',
+            'id_devolucion'   => 'required|integer|exists:devoluciones,id_devolucion',
+            'id_insumo'       => 'required|integer|exists:insumos,id_insumo',
+            'cantidad'        => 'required|integer|min:1',
+            'fecha_caducidad' => 'nullable|date',
         ], [
             'id_devolucion.required' => 'La devolución es requerida.',
             'id_devolucion.exists'   => 'La devolución no existe.',
@@ -26,6 +27,7 @@ class DetalleDevolucionController extends Controller
             'id_insumo.exists'       => 'El insumo seleccionado no existe.',
             'cantidad.required'      => 'La cantidad es requerida.',
             'cantidad.min'           => 'La cantidad debe ser al menos 1.',
+            'fecha_caducidad.date'   => 'La fecha de caducidad no tiene un formato válido.',
         ]);
 
         $devolucion = Devolucion::findOrFail($request->id_devolucion);
@@ -47,9 +49,10 @@ class DetalleDevolucionController extends Controller
         }
 
         DetalleDevolucion::create([
-            'id_devolucion' => $request->id_devolucion,
-            'id_insumo'     => $request->id_insumo,
-            'cantidad'      => $request->cantidad,
+            'id_devolucion'   => $request->id_devolucion,
+            'id_insumo'       => $request->id_insumo,
+            'cantidad'        => $request->cantidad,
+            'fecha_caducidad' => $request->fecha_caducidad ?: null,
         ]);
 
         if ($request->ajax()) {
@@ -75,12 +78,16 @@ class DetalleDevolucionController extends Controller
         $detalle = DetalleDevolucion::findOrFail($id);
 
         $request->validate([
-            'cantidad' => 'required|integer|min:1',
+            'cantidad'        => 'required|integer|min:1',
+            'fecha_caducidad' => 'nullable|date',
         ]);
 
-        $detalle->update([
-            'cantidad' => $request->cantidad,
-        ]);
+        $datosActualizar = ['cantidad' => $request->cantidad];
+        if ($request->has('fecha_caducidad')) {
+            $datosActualizar['fecha_caducidad'] = $request->fecha_caducidad ?: null;
+        }
+
+        $detalle->update($datosActualizar);
 
         if ($request->ajax()) {
             return response()->json([

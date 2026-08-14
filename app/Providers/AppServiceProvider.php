@@ -25,6 +25,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        \Illuminate\Support\Facades\View::composer('layouts.sidebar', function ($view) {
+            $areasSidebar = \App\Models\Inventario\AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+            $view->with('areasSidebar', $areasSidebar);
+        });
+
         // ── Límite de peticiones en el Login (Doble Capa de Protección) ───────
         // Regla 1: 5 intentos por minuto por combinación de (Usuario + IP).
         // Regla 2: 8 intentos por minuto globales por IP (previene escaneo de múltiples usuarios).

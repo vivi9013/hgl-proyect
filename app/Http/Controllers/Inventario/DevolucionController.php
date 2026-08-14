@@ -12,13 +12,17 @@ use App\Models\Inventario\Insumo;
 use App\Models\Inventario\InsumoArea;
 use App\Models\Inventario\Motivo;
 use App\Traits\ParseaRangoFechas;
+use App\Traits\AjustaStockInsumoArea;
+use App\Traits\BuscaInsumosAjax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DevolucionFormatoExport;
 
 class DevolucionController extends Controller
 {
-    use ParseaRangoFechas;
+    use ParseaRangoFechas, AjustaStockInsumoArea, BuscaInsumosAjax;
 
     private const PER_PAGE = 10;
 
@@ -93,7 +97,7 @@ class DevolucionController extends Controller
         $devolucion = Devolucion::create([
             'id_usuario_registro'      => Auth::id() ?? 1,
             'id_area_almacen'          => $request->id_area_almacen,
-            'id_area_abastecimiento'   => $request->id_area_abastecimiento ?? null,
+            'id_area_abastecimiento'   => $request->id_area_abastecimiento,
             'id_subarea_abastecimiento'=> $request->id_subarea_abastecimiento ?? null,
             'fecha_devolucion'         => now()->toDateString(),
             'hora_devolucion'          => now()->toTimeString(),
@@ -160,7 +164,7 @@ class DevolucionController extends Controller
         });
 
         return redirect()
-            ->route('devoluciones.comprobante', $devolucion->id_devolucion)
+            ->route('devoluciones.detalle', $devolucion->id_devolucion)
             ->with('exitog', "La devolución DEV-{$devolucion->id_devolucion} ha sido finalizada correctamente.");
     }
 
@@ -208,9 +212,11 @@ class DevolucionController extends Controller
      */
     public function terminadas(Request $request)
     {
-        $buscar    = $request->get('buscar', '');
-        $fechaInit = $request->get('fecha_inicio', '');
-        $fechaFin  = $request->get('fecha_fin', '');
+        $buscar       = $request->get('buscar', '');
+        $fechaInit    = $request->get('fecha_inicio', '');
+        $fechaFin     = $request->get('fecha_fin', '');
+        $filtroMotivo = $request->get('id_motivo', '');
+        $filtroArea   = $request->get('id_area_abastecimiento', '');
 
         [$fechaInitDb, $fechaFinDb, $errorMsg] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
@@ -225,6 +231,14 @@ class DevolucionController extends Controller
             $fechaFin = $fechaFinDb;
         }
 
+        $motivos = Motivo::where('activo', 1)->orderBy('descripcion')->get();
+
+        try {
+            $areasAbastecimiento = AreaAbastecimiento::orderBy('nombre')->get();
+        } catch (\Exception $e) {
+            $areasAbastecimiento = collect();
+        }
+
         $query = Devolucion::with(['areaAlmacen', 'areaAbastecimiento', 'usuario.persona', 'motivo'])
             ->where('status', 'Terminado')
             ->orderBy('id_devolucion', 'desc');
@@ -232,8 +246,17 @@ class DevolucionController extends Controller
         if (!empty($buscar)) {
             $query->where(function ($q) use ($buscar) {
                 $q->where('id_devolucion', 'LIKE', "%{$buscar}%")
-                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"));
+                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"))
+                  ->orWhereHas('areaAbastecimiento', fn($q3) => $q3->where('nombre', 'LIKE', "%{$buscar}%"));
             });
+        }
+
+        if (!empty($filtroMotivo)) {
+            $query->where('id_motivo', $filtroMotivo);
+        }
+
+        if (!empty($filtroArea)) {
+            $query->where('id_area_abastecimiento', $filtroArea);
         }
 
         if ($fechaInitDb) $query->whereDate('fecha_devolucion', '>=', $fechaInitDb);
@@ -242,7 +265,7 @@ class DevolucionController extends Controller
         $devoluciones = $query->paginate(self::PER_PAGE)->withQueryString();
 
         return view('inventario.devoluciones.terminadas', compact(
-            'devoluciones', 'buscar', 'fechaInit', 'fechaFin'
+            'devoluciones', 'motivos', 'areasAbastecimiento', 'buscar', 'fechaInit', 'fechaFin', 'filtroMotivo', 'filtroArea'
         ));
     }
 
@@ -314,49 +337,66 @@ class DevolucionController extends Controller
     }
 
     /**
-     * Búsqueda AJAX de insumos para autocompletado.
+     * Exporta el Formato de Devolución y Medicamento Caducado a Excel (.xlsx).
+     * Solo exporta devoluciones con status = 'Terminado' (mismos filtros que la vista terminadas).
      */
-    public function buscarInsumos(Request $request)
+    public function exportarExcel(Request $request)
     {
-        $termino = $request->get('q', '');
-        $all     = $request->boolean('all', false);
+        $request->validate([
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date',
+        ], [
+            'fecha_inicio.required' => 'La fecha de inicio es obligatoria.',
+            'fecha_fin.required'    => 'La fecha de fin es obligatoria.',
+        ]);
 
-        if (!$all && strlen($termino) < 2) {
-            return response()->json([]);
-        }
+        $buscar        = $request->get('buscar', '');
+        $fechaInit     = $request->get('fecha_inicio', '');
+        $fechaFin      = $request->get('fecha_fin', '');
+        $filtroMotivos = $request->get('motivos', $request->get('id_motivo', []));
+        $filtroArea    = $request->get('id_area_abastecimiento', '');
 
-        $query = Insumo::where('activo', 1);
+        [$fechaInitDb, $fechaFinDb] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
-        if (strlen($termino) >= 1) {
-            $query->where(function ($q) use ($termino) {
-                $q->where('descripcion', 'LIKE', "%{$termino}%")
-                  ->orWhere('clave', 'LIKE', "%{$termino}%");
+        $query = Devolucion::with(['detalles.insumo', 'motivo', 'areaAlmacen', 'areaAbastecimiento', 'usuario.persona'])
+            ->where('status', 'Terminado')
+            ->orderBy('fecha_devolucion', 'asc')
+            ->orderBy('hora_devolucion', 'asc');
+
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('id_devolucion', 'LIKE', "%{$buscar}%")
+                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"))
+                  ->orWhereHas('areaAbastecimiento', fn($q3) => $q3->where('nombre', 'LIKE', "%{$buscar}%"));
             });
         }
 
-        $insumos = $query->select('id_insumo', 'clave', 'descripcion', 'tipo')
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get();
+        if (!empty($filtroMotivos)) {
+            if (is_array($filtroMotivos)) {
+                $query->whereIn('id_motivo', $filtroMotivos);
+            } else {
+                $query->where('id_motivo', $filtroMotivos);
+            }
+        }
 
-        return response()->json($insumos);
-    }
+        if (!empty($filtroArea)) {
+            $query->where('id_area_abastecimiento', $filtroArea);
+        }
 
-    /**
-     * Incrementa o decremente la existencia de stock en un InsumoArea.
-     *
-     * @param InsumoArea $insumoArea
-     * @param int $cantidad
-     * @param string $operacion 'sumar' | 'restar'
-     * @return void
-     */
-    private function ajustarStockInsumoArea(InsumoArea $insumoArea, int $cantidad, string $operacion = 'sumar')
-    {
-        $stockActual = (int) $insumoArea->stock;
-        $nuevoStock  = ($operacion === 'sumar') ? ($stockActual + $cantidad) : ($stockActual - $cantidad);
+        if ($fechaInitDb) {
+            $query->whereDate('fecha_devolucion', '>=', $fechaInitDb);
+        }
+        if ($fechaFinDb) {
+            $query->whereDate('fecha_devolucion', '<=', $fechaFinDb);
+        }
 
-        $insumoArea->update([
-            'stock' => (string) max(0, $nuevoStock)
-        ]);
+        $devoluciones = $query->get();
+
+        $filename = 'Formato_Devolucion_Medicamento_Caducado_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(
+            new DevolucionFormatoExport($devoluciones, $fechaInit, $fechaFin),
+            $filename
+        );
     }
 }

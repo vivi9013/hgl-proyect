@@ -35,13 +35,20 @@
                     {{-- Selección de Área --}}
                     <div class="mb-4">
                         <label for="area_almacen_reporte" class="form-label fw-bold">
-                            Área de Almacén: <span class="text-danger">*</span>
+                            Área a Consultar: <span class="text-danger">*</span>
                         </label>
                         <select id="area_almacen_reporte" class="form-select border-dark" onchange="llenarListaReporte()">
                             <option value="">-- Seleccionar Área --</option>
-                            @foreach($areasAlmacen as $area)
-                                <option value="{{ $area->id_area_almacen }}">{{ $area->nombre }}</option>
-                            @endforeach
+                            <optgroup label="Áreas de Almacén">
+                                @foreach($areasAlmacen as $area)
+                                    <option value="{{ $area->id_area_almacen }}">{{ $area->nombre }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="Áreas Asignadas (Abastecimiento)">
+                                @foreach($areasAbastecimiento as $areaAbast)
+                                    <option value="{{ $areaAbast->id_area_abastecimiento }}">{{ $areaAbast->nombre }}</option>
+                                @endforeach
+                            </optgroup>
                         </select>
                     </div>
 
@@ -126,17 +133,17 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-bordered table-insumos-area align-middle mb-0">
+                        <table class="table table-hover table-bordered table-insumos-area align-middle mb-0" style="width: 100%; font-size: 0.85rem;">
                             <thead class="table-dark">
                                 <tr>
-                                    <th class="text-center" style="width: 50px;">#</th>
-                                    <th class="text-center">Clave</th>
+                                    <th class="text-center" style="width: 45px;">#</th>
+                                    <th class="text-center" style="width: 130px;">Clave</th>
                                     <th>Descripción</th>
-                                    <th class="text-center">Tipo</th>
-                                    <th class="text-center">Área</th>
-                                    <th class="text-center" style="width: 100px;">Stock</th>
-                                    <th class="text-center" style="width: 110px;">Fondo Fijo</th>
-                                    <th class="text-center" style="width: 90px;">%</th>
+                                    <th class="text-center" style="width: 140px;">Tipo</th>
+                                    <th class="text-center" style="width: 130px;">Área</th>
+                                    <th class="text-center" style="width: 70px;">Stock</th>
+                                    <th class="text-center" style="width: 70px;">Fondo</th>
+                                    <th class="text-center" style="width: 70px;">%</th>
                                 </tr>
                             </thead>
                             <tbody id="tablaReporteCuerpo">
@@ -148,6 +155,10 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- Paginador Dinámico JS --}}
+                    <div id="paginadorReporte" class="d-flex justify-content-between align-items-center border-top pt-3 mt-3" style="display: none !important;">
                     </div>
                 </div>
             </div>

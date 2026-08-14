@@ -1,5 +1,6 @@
 /**
- * Lógica Javascript para el catálogo de Perfiles (JSON AJAX Render)
+ * Lógica Javascript para el catálogo de Perfiles.
+ * Paginación/búsqueda delegada a tabla-interactiva.js.
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -8,15 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingSpinner = document.getElementById('loadingSpinner');
     const btnGuardar = document.getElementById('btnGuardar');
 
-    // === ELEMENTOS DE PAGINACIÓN ===
-    const tbody = document.getElementById('cuerpoTablaPerfiles');
-    const infoPaginacion = document.getElementById('infoPaginacionPerfiles');
-    const contenedorPaginacion = document.getElementById('paginacionPerfiles');
-    const searchInput = document.getElementById('filtro-buscar');
-
-    // 1. Mostrar SweetAlert2 si existen los divs de alerta de sesión
+    // ─────────────────────────────────────────────────────────────────────────
+    // 1. ALERTAS SWEETALERT2 DE SESIÓN
+    // ─────────────────────────────────────────────────────────────────────────
     const alertaExitog = document.getElementById('alertaExitog');
-    const alertaExito = document.getElementById('alertaExito');
+    const alertaExito  = document.getElementById('alertaExito');
 
     if (alertaExitog && typeof Swal !== 'undefined') {
         Swal.fire({
@@ -38,7 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 2. Verificación de disponibilidad de nombre en tiempo real (AJAX)
+    // ─────────────────────────────────────────────────────────────────────────
+    // 2. VERIFICACIÓN DE DISPONIBILIDAD DE NOMBRE DE PERFIL (AJAX)
+    // ─────────────────────────────────────────────────────────────────────────
     if (inputNombre && feedbackDisponibilidad && loadingSpinner && btnGuardar) {
         let timeoutId;
 
@@ -90,163 +89,70 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 3. MOTOR DE PAGINACIÓN ASÍNCRONA (AJAX)
-    function cargarPagina(numeroPagina = 1) {
-        if (!tbody) return;
+    // ─────────────────────────────────────────────────────────────────────────
+    // 3. ALTERNAR ESTADO (AJAX) — delegación en document
+    // ─────────────────────────────────────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        const boton = e.target.closest('.btn-toggle-status');
+        if (!boton) return;
 
-        const buscar = searchInput ? searchInput.value : '';
+        e.preventDefault();
 
-        tbody.style.opacity = '0.5';
+        const id     = boton.dataset.id;
+        const nombre = boton.dataset.nombre || '';
+        const row    = boton.closest('tr');
+        const esInactivo  = row?.classList.contains('text-muted');
+        const activo      = esInactivo ? 0 : 1;
+        const accion      = activo === 1 ? 'desactivar' : 'activar';
+        const confirmText = activo === 1 ? 'Sí, desactivar' : 'Sí, activar';
+        const iconType    = activo === 1 ? 'warning' : 'question';
 
-        fetch(`/perfiles?buscar=${encodeURIComponent(buscar)}&page=${numeroPagina}`, {
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Error en la respuesta del servidor');
-            return response.json();
-        })
-        .then(data => {
-            tbody.style.opacity = '1';
-            tbody.innerHTML = data.html;
-
-            if (infoPaginacion) {
-                infoPaginacion.textContent = data.info;
-            }
-            if (contenedorPaginacion) {
-                contenedorPaginacion.innerHTML = data.links;
-                asignarEventosEnlaces();
-            }
-
-            // Re-enlazar listeners de acciones en las nuevas filas
-            enlazarEventosAcciones();
-        })
-        .catch(err => {
-            tbody.style.opacity = '1';
-            console.error('Error paginando el módulo:', err);
-        });
-    }
-
-    function asignarEventosEnlaces() {
-        if (!contenedorPaginacion) return;
-        const enlaces = contenedorPaginacion.querySelectorAll('a.page-link');
-        
-        enlaces.forEach(enlace => {
-            enlace.addEventListener('click', function (e) {
-                e.preventDefault();
-                const urlObj = new URL(this.href);
-                const paginaDestino = urlObj.searchParams.get('page');
-                if (paginaDestino) {
-                    cargarPagina(paginaDestino);
+        const ejecutar = () => {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            fetch(`/perfiles/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': csrf,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
-            });
-        });
-    }
-
-    // 4. Configurar listeners de status
-    function enlazarEventosAcciones() {
-        // Status Toggle
-        const toggleStatusLinks = document.querySelectorAll('.btn-toggle-status');
-        toggleStatusLinks.forEach(link => {
-            const nuevoLink = link.cloneNode(true);
-            link.parentNode.replaceChild(nuevoLink, link);
-
-            nuevoLink.addEventListener('click', function (e) {
-                e.preventDefault();
-                const id = this.getAttribute('data-id');
-                const url = `/perfiles/${id}/status`;
-                
-                // Extraer el nombre del perfil del renglón correspondiente
-                const row = this.closest('tr');
-                const nombre = row.querySelector('td:nth-child(4)').textContent.trim();
-                const esInactivo = row.classList.contains('text-muted');
-                const activo = esInactivo ? 0 : 1;
-
-                const accion = (activo === 1) ? 'desactivar' : 'activar';
-                const confirmBtnText = (activo === 1) ? 'Sí, desactivar' : 'Sí, activar';
-                const iconType = (activo === 1) ? 'warning' : 'question';
-
-                const runFetch = () => {
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                    fetch(url, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => {
-                        if (!res.ok) throw new Error('Error al actualizar el estado');
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    title: '¡Operación Satisfactoria!',
-                                    text: data.message,
-                                    icon: 'success',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            }
-                            
-                            // Recargar página actual
-                            const elPaginaActiva = contenedorPaginacion?.querySelector('.page-item.active .page-link');
-                            const paginaActiva = elPaginaActiva ? parseInt(elPaginaActiva.textContent) : 1;
-                            cargarPagina(paginaActiva);
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        if (typeof Swal !== 'undefined') Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
-                    });
-                };
-
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: `¿Desea ${accion} el perfil?`,
-                        text: `El perfil "${nombre}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema y podría limitar accesos.`,
-                        icon: iconType,
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: confirmBtnText,
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            runFetch();
-                        }
-                    });
-                } else {
-                    if (confirm(`¿Está seguro de que desea ${accion} el perfil "${nombre}"?`)) {
-                        runFetch();
+            })
+            .then(r => { if (!r.ok) throw new Error('Error al actualizar el estado'); return r.json(); })
+            .then(data => {
+                if (data.success) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: '¡Operación Satisfactoria!',
+                            text: data.message,
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     }
+
+                    // Refrescar tabla manteniendo el filtro activo
+                    document.querySelector('[data-tabla-interactiva]')
+                        ?.dispatchEvent(new CustomEvent('filtros:aplicar', { bubbles: true }));
                 }
+            })
+            .catch(() => {
+                if (typeof Swal !== 'undefined') Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
             });
-        });
-    }
-
-    // Debounce de búsqueda
-    function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
         };
-    }
 
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(function () {
-            cargarPagina(1);
-        }, 300));
-    }
-
-    // Carga inicial: la tabla y la paginación ya vienen renderizadas por el servidor (SSR),
-    // solo se enlazan los eventos de acciones y de los links de paginación existentes.
-    enlazarEventosAcciones();
-    asignarEventosEnlaces();
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: `¿Desea ${accion} el perfil?`,
+                text: `El perfil "${nombre}" será ${activo === 1 ? 'desactivado' : 'activado'} en el sistema y podría limitar accesos.`,
+                icon: iconType,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: confirmText,
+                cancelButtonText: 'Cancelar'
+            }).then(result => { if (result.isConfirmed) ejecutar(); });
+        } else {
+            if (confirm(`¿Está seguro de que desea ${accion} el perfil "${nombre}"?`)) ejecutar();
+        }
+    });
 });

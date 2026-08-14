@@ -181,7 +181,13 @@
 
 
     {{-- Área Principal: Tabla de Registros --}}
-    <div class="row g-4">
+    <div class="row g-4"
+         data-tabla-interactiva
+         data-endpoint="{{ route('modulos.index') }}"
+         data-tbody-target="cuerpoTablaModulos"
+         data-info-target="infoPaginacionModulos"
+         data-paginacion-target="paginacionModulos"
+         data-btn-imprimir="#btnImprimirModulos">
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-3">
@@ -211,7 +217,9 @@
                                class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-bar-chart me-1"></i>Gráficas
                             </a>
-                            <a href="{{ route('modulos.reportes') }}"
+                            <a id="btnImprimirModulos"
+                               href="{{ route('modulos.imprimir') }}"
+                               target="_blank" rel="noopener"
                                class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm text-nowrap">
                                 <i class="fa fa-file-pdf-o me-1 text-danger"></i>Reportes
                             </a>

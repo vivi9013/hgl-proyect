@@ -150,4 +150,27 @@ class InsumoArea extends Model
     {
         return $this->belongsTo(AreaAlmacen::class, 'id_area_almacen', 'id_area_almacen');
     }
+
+    /**
+     * Scope para filtrar la consulta por uno o varios niveles de stock.
+     */
+    public function scopeConNivelStock($query, array $niveles)
+    {
+        if (empty($niveles)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($niveles) {
+            foreach ($niveles as $nivel) {
+                match ($nivel) {
+                    'muy_bajo'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / NULLIF(fondo_fijo, 0)) BETWEEN 0 AND 24'),
+                    'bajo'       => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / NULLIF(fondo_fijo, 0)) BETWEEN 25 AND 49'),
+                    'regular'    => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / NULLIF(fondo_fijo, 0)) BETWEEN 50 AND 74'),
+                    'suficiente' => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / NULLIF(fondo_fijo, 0)) BETWEEN 75 AND 100'),
+                    'excedido'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / NULLIF(fondo_fijo, 0)) > 100'),
+                    default      => null,
+                };
+            }
+        });
+    }
 }

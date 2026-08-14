@@ -51,6 +51,13 @@
                     </button>
                 </form>
             </div>
+        @elseif($devolucion->status === 'Terminado')
+            <div class="d-flex gap-2 align-items-center">
+                <a href="{{ route('devoluciones.comprobante', $devolucion->id_devolucion) }}" target="_blank" class="btn btn-outline-primary rounded-pill shadow-sm"
+                   style="font-size: 0.85rem; font-weight: 700; padding: 0.5rem 1.4rem;">
+                    <i class="fa fa-print me-1"></i>Imprimir Comprobante
+                </a>
+            </div>
         @endif
     </div>
 
@@ -100,11 +107,12 @@
                                    autocomplete="off">
                             {{-- Input oculto necesario para enviar el identificador único del insumo seleccionado al backend. --}}
                             <input type="hidden" name="id_insumo" id="id_insumo_detalle">
+                            <input type="hidden" id="modal_id_area_almacen_detalle" value="{{ $devolucion->id_area_almacen }}">
                             {{-- Contenedor flotante que el script de JavaScript poblará con sugerencias AJAX al escribir en el input. --}}
                             <div id="sugerenciasDetalle" class="list-group position-absolute w-100"
                                  style="z-index:1060; display:none; max-height:200px; overflow-y:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             </div>
-                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/devoluciones/buscar-insumos'" :columna-extra="'none'" />
+                            <x-panel-claves :input-id="'buscarInsumoDetalle'" :panel-id="'panelClavesDetalle'" :endpoint="'/devoluciones/buscar-insumos'" :columna-extra="'stock'" :area-input-id="'modal_id_area_almacen_detalle'" />
                             @error('id_insumo')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
@@ -125,6 +133,21 @@
                                    value="{{ old('cantidad') }}"
                                    required>
                             @error('cantidad')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Fecha de Caducidad --}}
+                        <div class="mb-3">
+                            <label for="fecha_caducidad_detalle" class="form-label fw-bold small">
+                                Fecha de Caducidad: <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <input type="date"
+                                   name="fecha_caducidad"
+                                   id="fecha_caducidad_detalle"
+                                   class="form-control @error('fecha_caducidad') is-invalid @enderror"
+                                   value="{{ old('fecha_caducidad') }}">
+                            @error('fecha_caducidad')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -162,6 +185,7 @@
                                     <th>Clave</th>
                                     <th>Descripción</th>
                                     <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Caducidad</th>
                                     @if($devolucion->status === 'En proceso')
                                         <th class="text-center pe-4">Acción</th>
                                     @endif
@@ -180,6 +204,9 @@
                                         </td>
                                         <td>{{ $detalle->insumo->descripcion ?? '—' }}</td>
                                         <td class="text-center fw-bold">{{ $detalle->cantidad }}</td>
+                                        <td class="text-center">
+                                            {{ $detalle->fecha_caducidad ? \Carbon\Carbon::parse($detalle->fecha_caducidad)->format('d/m/Y') : '—' }}
+                                        </td>
                                         @if($devolucion->status === 'En proceso')
                                             <td class="text-center pe-4">
                                                 {{-- Botón de eliminación del detalle. Los atributos data-* envían metadatos que JS lee para confirmar la acción vía AJAX. --}}
@@ -198,8 +225,8 @@
                                 {{-- @empty se activa si la relación detalles de la devolución no contiene elementos vinculados. --}}
                                 @empty
                                     <tr id="filaVacia">
-                                        {{-- El operador condicional ternario expande la celda a 5 columnas si se puede editar, o 4 si ya está cerrado. --}}
-                                        <td colspan="{{ $devolucion->status === 'En proceso' ? 5 : 4 }}" class="text-center text-muted py-4">
+                                        {{-- El operador condicional ternario expande la celda a 6 columnas si se puede editar, o 5 si ya está cerrado. --}}
+                                        <td colspan="{{ $devolucion->status === 'En proceso' ? 6 : 5 }}" class="text-center text-muted py-4">
                                             <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
                                             No hay insumos agregados todavía.
                                             @if($devolucion->status === 'En proceso')

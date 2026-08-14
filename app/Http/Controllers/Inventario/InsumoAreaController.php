@@ -6,25 +6,39 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventario\InsumoArea;
 use App\Models\Inventario\Insumo;
 use App\Models\Inventario\AreaAlmacen;
+use App\Models\Inventario\AreaAbastecimiento;
+use App\Models\Inventario\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Traits\BuscaInsumosAjax;
 
 class InsumoAreaController extends Controller
 {
+    use BuscaInsumosAjax;
     /**
      * Muestra el listado de insumos por área con el formulario de asignación.
      */
     public function index(Request $request)
     {
-        $buscar       = $request->get('buscar', '');
-        $filtroArea   = $request->get('id_area_almacen', '');
+        $buscar          = $request->get('buscar', '');
+        $filtroArea       = $request->get('id_area_abastecimiento', $request->get('id_area_almacen', ''));
+        $filtroCategoria  = $request->get('id_categoria', '');
 
-        $query = InsumoArea::with(['insumo', 'areaAlmacen'])
+        $query = InsumoArea::with(['insumo.areaAbastecimiento', 'insumo.categoria', 'areaAlmacen'])
             ->whereHas('insumo', fn($q) => $q->where('activo', 1))
             ->orderBy('id_insumo_area', 'desc');
 
         if (!empty($filtroArea)) {
-            $query->where('id_area_almacen', $filtroArea);
+            $query->where(function ($q) use ($filtroArea) {
+                $q->whereHas('insumo', fn($q2) => $q2->where('id_area_abastecimiento', $filtroArea))
+                  ->orWhere('id_area_almacen', $filtroArea);
+            });
+        }
+
+        if (!empty($filtroCategoria)) {
+            $query->whereHas('insumo', function ($q) use ($filtroCategoria) {
+                $q->where('id_categoria', $filtroCategoria);
+            });
         }
 
         if (!empty($buscar)) {
@@ -34,11 +48,13 @@ class InsumoAreaController extends Controller
             });
         }
 
-        $insumosArea  = $query->paginate(15)->withQueryString();
-        $areasAlmacen = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
+        $insumosArea         = $query->paginate(15)->withQueryString();
+        $areasAlmacen        = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
+        $areasAbastecimiento = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+        $categorias          = Categoria::orderBy('nombre_categoria')->get();
 
         return view('inventario.insumos_area.index', compact(
-            'insumosArea', 'areasAlmacen', 'buscar', 'filtroArea'
+            'insumosArea', 'areasAlmacen', 'areasAbastecimiento', 'categorias', 'buscar', 'filtroArea', 'filtroCategoria'
         ));
     }
 
@@ -48,10 +64,11 @@ class InsumoAreaController extends Controller
     public function guardar(Request $request)
     {
         $request->validate([
-            'id_insumo'       => 'required|integer',
-            'id_area_almacen' => 'required|integer',
-            'fondo_fijo'      => 'required|integer|min:1',
-            'stock'           => 'required|integer|min:0',
+            'id_insumo'              => 'required|integer',
+            'id_area_almacen'        => 'required|integer',
+            'id_area_abastecimiento' => 'nullable|integer',
+            'fondo_fijo'             => 'required|integer|min:1',
+            'stock'                  => 'required|integer|min:0',
         ], [
             'id_insumo.required'       => 'Debe seleccionar un insumo.',
             'id_area_almacen.required' => 'Debe seleccionar un área de almacén.',
@@ -61,15 +78,26 @@ class InsumoAreaController extends Controller
             'stock.min'                => 'El stock no puede ser negativo.',
         ]);
 
-        // Verificar duplicado: el mismo insumo no puede estar asignado dos veces al mismo área
-        $existe = InsumoArea::where('id_insumo', $request->id_insumo)
-            ->where('id_area_almacen', $request->id_area_almacen)
-            ->exists();
+        // Verificar duplicado: el mismo insumo puede asignarse a la misma área de almacén si cambia el Área Asignada (abastecimiento)
+        $queryExiste = InsumoArea::where('id_insumo', $request->id_insumo)
+            ->where('id_area_almacen', $request->id_area_almacen);
 
-        if ($existe) {
+        if ($request->filled('id_area_abastecimiento')) {
+            $queryExiste->whereHas('insumo', function ($q) use ($request) {
+                $q->where('id_area_abastecimiento', $request->id_area_abastecimiento);
+            });
+        }
+
+        if ($queryExiste->exists()) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['id_insumo' => 'Este insumo ya se encuentra asignado al área seleccionada.']);
+        }
+
+        if ($request->filled('id_area_abastecimiento')) {
+            Insumo::where('id_insumo', $request->id_insumo)->update([
+                'id_area_abastecimiento' => $request->id_area_abastecimiento
+            ]);
         }
 
         InsumoArea::create([
@@ -101,9 +129,10 @@ class InsumoAreaController extends Controller
     public function actualizar(Request $request, $id)
     {
         $request->validate([
-            'id_area_almacen' => 'required|integer',
-            'stock'           => 'required|integer|min:0',
-            'fondo_fijo'      => 'required|integer|min:1',
+            'id_area_almacen'        => 'required|integer',
+            'id_area_abastecimiento' => 'nullable|integer',
+            'stock'                  => 'required|integer|min:0',
+            'fondo_fijo'             => 'required|integer|min:1',
         ], [
             'id_area_almacen.required' => 'Debe seleccionar un área de almacén.',
             'stock.required'           => 'El stock es obligatorio.',
@@ -114,18 +143,27 @@ class InsumoAreaController extends Controller
 
         $insumoArea = InsumoArea::findOrFail($id);
 
-        // Verificar que el nuevo área no genere un duplicado (solo si cambia de área)
-        if ($insumoArea->id_area_almacen != $request->id_area_almacen) {
-            $existe = InsumoArea::where('id_insumo', $insumoArea->id_insumo)
-                ->where('id_area_almacen', $request->id_area_almacen)
-                ->where('id_insumo_area', '!=', $id)
-                ->exists();
+        // Verificar que el nuevo área no genere un duplicado
+        $queryExiste = InsumoArea::where('id_insumo', $insumoArea->id_insumo)
+            ->where('id_area_almacen', $request->id_area_almacen)
+            ->where('id_insumo_area', '!=', $id);
 
-            if ($existe) {
-                return redirect()->back()
-                    ->withInput()
-                    ->withErrors(['id_area_almacen' => 'Este insumo ya está asignado al área seleccionada.']);
-            }
+        if ($request->filled('id_area_abastecimiento')) {
+            $queryExiste->whereHas('insumo', function ($q) use ($request) {
+                $q->where('id_area_abastecimiento', $request->id_area_abastecimiento);
+            });
+        }
+
+        if ($queryExiste->exists()) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['id_area_almacen' => 'Este insumo ya está asignado al área seleccionada.']);
+        }
+
+        if ($request->filled('id_area_abastecimiento')) {
+            Insumo::where('id_insumo', $insumoArea->id_insumo)->update([
+                'id_area_abastecimiento' => $request->id_area_abastecimiento
+            ]);
         }
 
         $insumoArea->update([
@@ -196,21 +234,7 @@ class InsumoAreaController extends Controller
      */
     public function buscarInsumosCatalog(Request $request)
     {
-        $buscar = $request->get('q', '');
-        $all = $request->boolean('all', false);
-
-        if (!$all && strlen($buscar) < 2) {
-            return response()->json([]);
-        }
-
-        $insumos = Insumo::where('activo', 1)
-            ->when($buscar, fn($q) => $q->where('clave', 'LIKE', "%{$buscar}%")
-                ->orWhere('descripcion', 'LIKE', "%{$buscar}%"))
-            ->orderBy('clave')
-            ->when(!$all, fn($q) => $q->limit(20))
-            ->get(['id_insumo', 'clave', 'descripcion', 'tipo']);
-
-        return response()->json($insumos);
+        return $this->buscarInsumos($request);
     }
 
 
@@ -221,7 +245,9 @@ class InsumoAreaController extends Controller
     public function reportes(Request $request)
     {
         $areasAlmacen = AreaAlmacen::where('activo', 1)->orderBy('nombre')->get();
-        return view('inventario.insumos_area.reportes', compact('areasAlmacen'));
+        $areasAbastecimiento = AreaAbastecimiento::where('activo', 1)->orderBy('nombre')->get();
+
+        return view('inventario.insumos_area.reportes', compact('areasAlmacen', 'areasAbastecimiento'));
     }
 
     /**
@@ -229,44 +255,39 @@ class InsumoAreaController extends Controller
      */
     public function obtenerReporteDatos(Request $request)
     {
-        $idArea   = $request->get('id_area_almacen', 0);
-        $niveles  = $request->get('niveles', []); // array: ['muy_bajo','bajo','regular','suficiente','excedido']
+        $areaId  = $request->get('area_id', $request->get('id_area_abastecimiento', $request->get('id_area_almacen', 0)));
+        $niveles = $request->get('niveles', []); // array: ['muy_bajo','bajo','regular','suficiente','excedido']
 
-        if (!$idArea) {
+        if (!$areaId) {
             return response()->json(['ok' => false, 'mensaje' => 'Área no especificada.']);
         }
 
-        $query = InsumoArea::with(['insumo', 'areaAlmacen'])
-            ->whereHas('insumo', fn($q) => $q->where('activo', 1))
-            ->where('id_area_almacen', $idArea);
+        $query = InsumoArea::with(['insumo.areaAbastecimiento', 'areaAlmacen'])
+            ->whereHas('insumo', fn($q) => $q->where('activo', 1));
+
+        // Buscar insumos que coincidan por área de almacén o por área de abastecimiento/asignación
+        $query->where(function ($q) use ($areaId) {
+            $q->where('id_area_almacen', $areaId)
+              ->orWhereHas('insumo', function ($q2) use ($areaId) {
+                  $q2->where('id_area_abastecimiento', $areaId);
+              });
+        });
 
         // Filtrado por niveles de porcentaje (stock*100/fondo_fijo)
-        if (!empty($niveles)) {
-            $query->where(function ($q) use ($niveles) {
-                foreach ($niveles as $nivel) {
-                    match ($nivel) {
-                        'muy_bajo'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 0 AND 24'),
-                        'bajo'       => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 25 AND 49'),
-                        'regular'    => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 50 AND 74'),
-                        'suficiente' => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 75 AND 100'),
-                        'excedido'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) > 100'),
-                        default      => null,
-                    };
-                }
-            });
-        }
+        $query->conNivelStock($niveles);
 
         $insumos = $query->get()->map(function ($ia) {
             $stock      = $ia->stock;
             $ff         = $ia->fondo_fijo;
             $porcentaje = $ff > 0 ? round(($stock * 100) / $ff, 1) : 0;
+            $nombreArea = $ia->insumo->areaAbastecimiento->nombre ?? $ia->areaAlmacen->nombre ?? '—';
 
             return [
                 'id_insumo_area' => $ia->id_insumo_area,
                 'clave'          => $ia->insumo->clave ?? '—',
                 'descripcion'    => $ia->insumo->descripcion ?? '—',
                 'tipo'           => $ia->insumo->tipo ?? '—',
-                'area'           => $ia->areaAlmacen->nombre ?? '—',
+                'area'           => $nombreArea,
                 'stock'          => $stock,
                 'fondo_fijo'     => $ff,
                 'porcentaje'     => $porcentaje,
@@ -288,34 +309,30 @@ class InsumoAreaController extends Controller
      */
     public function imprimir(Request $request)
     {
-        $idArea  = $request->get('id_area_almacen', 0);
+        $areaId  = $request->get('area_id', $request->get('id_area_almacen', 0));
         $niveles = $request->get('niveles', []);
 
-        $query = InsumoArea::with(['insumo', 'areaAlmacen'])
+        $query = InsumoArea::with(['insumo.areaAbastecimiento', 'areaAlmacen'])
             ->whereHas('insumo', fn($q) => $q->where('activo', 1));
 
-        if ($idArea) {
-            $query->where('id_area_almacen', $idArea);
-        }
-
-        if (!empty($niveles)) {
-            $query->where(function ($q) use ($niveles) {
-                foreach ($niveles as $nivel) {
-                    match ($nivel) {
-                        'muy_bajo'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 0 AND 24'),
-                        'bajo'       => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 25 AND 49'),
-                        'regular'    => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 50 AND 74'),
-                        'suficiente' => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) BETWEEN 75 AND 100'),
-                        'excedido'   => $q->orWhereRaw('(CAST(stock AS DECIMAL(10,2)) * 100 / fondo_fijo) > 100'),
-                        default      => null,
-                    };
-                }
+        if ($areaId) {
+            $query->where(function ($q) use ($areaId) {
+                $q->where('id_area_almacen', $areaId)
+                  ->orWhereHas('insumo', function ($q2) use ($areaId) {
+                      $q2->where('id_area_abastecimiento', $areaId);
+                  });
             });
         }
 
+        $query->conNivelStock($niveles);
+
         $insumos = $query->orderBy('id_insumo_area')->get();
 
-        $area = $idArea ? AreaAlmacen::find($idArea) : null;
+        // Resolver nombre del área (puede ser de almacén o de abastecimiento)
+        $area = null;
+        if ($areaId) {
+            $area = AreaAlmacen::find($areaId) ?? AreaAbastecimiento::find($areaId);
+        }
 
         return view('inventario.insumos_area.reporte_impresion', compact('insumos', 'area', 'niveles'));
     }
