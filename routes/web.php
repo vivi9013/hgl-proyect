@@ -490,6 +490,7 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/{id}/finalizar', 'finalizar')->name('finalizar');      // Finalizar devolución
         Route::get('/{id}/comprobante', 'comprobante')->name('comprobante'); // Comprobante PDF
         Route::get('/{id}/toggle-status', 'toggleStatus')->name('toggle_status'); // Alternar estado
+        Route::get('/exportar-excel', 'exportarExcel')->name('exportar_excel'); // Exportar Excel XLSX
     });
 
     Route::prefix('detalle-devoluciones')->middleware('modulo:30')->name('detalle_devoluciones.')->controller(DetalleDevolucionController::class)->group(function () {

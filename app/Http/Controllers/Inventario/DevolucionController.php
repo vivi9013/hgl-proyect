@@ -17,6 +17,8 @@ use App\Traits\BuscaInsumosAjax;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DevolucionFormatoExport;
 
 class DevolucionController extends Controller
 {
@@ -210,9 +212,11 @@ class DevolucionController extends Controller
      */
     public function terminadas(Request $request)
     {
-        $buscar    = $request->get('buscar', '');
-        $fechaInit = $request->get('fecha_inicio', '');
-        $fechaFin  = $request->get('fecha_fin', '');
+        $buscar       = $request->get('buscar', '');
+        $fechaInit    = $request->get('fecha_inicio', '');
+        $fechaFin     = $request->get('fecha_fin', '');
+        $filtroMotivo = $request->get('id_motivo', '');
+        $filtroArea   = $request->get('id_area_abastecimiento', '');
 
         [$fechaInitDb, $fechaFinDb, $errorMsg] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
@@ -227,6 +231,14 @@ class DevolucionController extends Controller
             $fechaFin = $fechaFinDb;
         }
 
+        $motivos = Motivo::where('activo', 1)->orderBy('descripcion')->get();
+
+        try {
+            $areasAbastecimiento = AreaAbastecimiento::orderBy('nombre')->get();
+        } catch (\Exception $e) {
+            $areasAbastecimiento = collect();
+        }
+
         $query = Devolucion::with(['areaAlmacen', 'areaAbastecimiento', 'usuario.persona', 'motivo'])
             ->where('status', 'Terminado')
             ->orderBy('id_devolucion', 'desc');
@@ -234,8 +246,17 @@ class DevolucionController extends Controller
         if (!empty($buscar)) {
             $query->where(function ($q) use ($buscar) {
                 $q->where('id_devolucion', 'LIKE', "%{$buscar}%")
-                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"));
+                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"))
+                  ->orWhereHas('areaAbastecimiento', fn($q3) => $q3->where('nombre', 'LIKE', "%{$buscar}%"));
             });
+        }
+
+        if (!empty($filtroMotivo)) {
+            $query->where('id_motivo', $filtroMotivo);
+        }
+
+        if (!empty($filtroArea)) {
+            $query->where('id_area_abastecimiento', $filtroArea);
         }
 
         if ($fechaInitDb) $query->whereDate('fecha_devolucion', '>=', $fechaInitDb);
@@ -244,7 +265,7 @@ class DevolucionController extends Controller
         $devoluciones = $query->paginate(self::PER_PAGE)->withQueryString();
 
         return view('inventario.devoluciones.terminadas', compact(
-            'devoluciones', 'buscar', 'fechaInit', 'fechaFin'
+            'devoluciones', 'motivos', 'areasAbastecimiento', 'buscar', 'fechaInit', 'fechaFin', 'filtroMotivo', 'filtroArea'
         ));
     }
 
@@ -315,7 +336,67 @@ class DevolucionController extends Controller
         ));
     }
 
+    /**
+     * Exporta el Formato de Devolución y Medicamento Caducado a Excel (.xlsx).
+     * Solo exporta devoluciones con status = 'Terminado' (mismos filtros que la vista terminadas).
+     */
+    public function exportarExcel(Request $request)
+    {
+        $request->validate([
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'required|date',
+        ], [
+            'fecha_inicio.required' => 'La fecha de inicio es obligatoria.',
+            'fecha_fin.required'    => 'La fecha de fin es obligatoria.',
+        ]);
 
+        $buscar        = $request->get('buscar', '');
+        $fechaInit     = $request->get('fecha_inicio', '');
+        $fechaFin      = $request->get('fecha_fin', '');
+        $filtroMotivos = $request->get('motivos', $request->get('id_motivo', []));
+        $filtroArea    = $request->get('id_area_abastecimiento', '');
 
+        [$fechaInitDb, $fechaFinDb] = $this->parsearRangoFechas($fechaInit, $fechaFin);
 
+        $query = Devolucion::with(['detalles.insumo', 'motivo', 'areaAlmacen', 'areaAbastecimiento', 'usuario.persona'])
+            ->where('status', 'Terminado')
+            ->orderBy('fecha_devolucion', 'asc')
+            ->orderBy('hora_devolucion', 'asc');
+
+        if (!empty($buscar)) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('id_devolucion', 'LIKE', "%{$buscar}%")
+                  ->orWhereHas('areaAlmacen', fn($q2) => $q2->where('nombre', 'LIKE', "%{$buscar}%"))
+                  ->orWhereHas('areaAbastecimiento', fn($q3) => $q3->where('nombre', 'LIKE', "%{$buscar}%"));
+            });
+        }
+
+        if (!empty($filtroMotivos)) {
+            if (is_array($filtroMotivos)) {
+                $query->whereIn('id_motivo', $filtroMotivos);
+            } else {
+                $query->where('id_motivo', $filtroMotivos);
+            }
+        }
+
+        if (!empty($filtroArea)) {
+            $query->where('id_area_abastecimiento', $filtroArea);
+        }
+
+        if ($fechaInitDb) {
+            $query->whereDate('fecha_devolucion', '>=', $fechaInitDb);
+        }
+        if ($fechaFinDb) {
+            $query->whereDate('fecha_devolucion', '<=', $fechaFinDb);
+        }
+
+        $devoluciones = $query->get();
+
+        $filename = 'Formato_Devolucion_Medicamento_Caducado_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        return Excel::download(
+            new DevolucionFormatoExport($devoluciones, $fechaInit, $fechaFin),
+            $filename
+        );
+    }
 }

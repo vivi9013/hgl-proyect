@@ -38,10 +38,15 @@ class ReporteInventarioController extends Controller
      */
     public function subareasAbastecimiento($idArea)
     {
-        $subareas = SubareaAbastecimiento::where('id_area_abastecimiento', $idArea)
-            ->where('activo', 1)
-            ->orderBy('nombre', 'asc')
-            ->get(['id_subarea_abastecimiento', 'nombre']);
+        $area = AreaAbastecimiento::find($idArea);
+        if (!$area) {
+            return response()->json([]);
+        }
+
+        $subareas = $area->subareas()
+            ->where('subareas_abastecimiento.activo', 1)
+            ->orderBy('subareas_abastecimiento.nombre', 'asc')
+            ->get(['subareas_abastecimiento.id_subarea_abastecimiento', 'subareas_abastecimiento.nombre']);
 
         return response()->json($subareas);
     }
@@ -59,82 +64,51 @@ class ReporteInventarioController extends Controller
     }
 
     /**
-     * Vista de impresión del Reporte Mensual de Entregas.
+     * Vista de impresión del Reporte Diario de Entregas de Insumos.
      */
     public function imprimirEntregas(Request $request)
     {
         $request->validate([
-            'A' => 'required|integer',  // id_area_abastecimiento
-            'S' => 'required|integer',  // id_subarea_abastecimiento
-            'M' => 'required|integer|between:1,12', // mes
-            'AN1' => 'required|integer', // año
+            'AA' => 'required|integer',  // id_area_almacen
+            'A'  => 'required|integer',  // id_area_abastecimiento
+            'F'  => 'required|date',     // fecha diaria (YYYY-MM-DD)
         ]);
 
-        $areaId = $request->get('A');
-        $subareaId = $request->get('S');
-        $mes = $request->get('M');
-        $ano = $request->get('AN1');
+        $almacenId = $request->get('AA');
+        $areaId    = $request->get('A');
+        $fecha     = $request->get('F');
 
-        $area = AreaAbastecimiento::findOrFail($areaId);
-        $subarea = SubareaAbastecimiento::findOrFail($subareaId);
+        $areaAlmacen = AreaAlmacen::findOrFail($almacenId);
+        $area        = AreaAbastecimiento::findOrFail($areaId);
 
-        // Mes en español
-        $nombreMes = FechaHelper::obtenerNombreMes($mes);
+        $fechaFormateada = \Carbon\Carbon::parse($fecha)->format('d/m/Y');
 
-        // Obtener id_almacen_subarea
-        $almacenSubarea = DB::table('almacen_subareas')
-            ->where('id_area_abastecimiento', $areaId)
-            ->where('id_subarea_abastecimiento', $subareaId)
-            ->first();
-
-        $almacenSubareaId = $almacenSubarea ? $almacenSubarea->id_almacen_subarea : 0;
-
-        // Query distinct insumos delivered in that month/year
-        $insumos = DB::table('detalle_pedidos as dp')
+        $query = DB::table('detalle_pedidos as dp')
+            ->join('pedidos as p', 'dp.id_pedido', '=', 'p.id_pedido')
             ->join('insumos as i', 'dp.id_insumo', '=', 'i.id_insumo')
-            ->join('pedidos as p', 'dp.id_pedido', '=', 'p.id_pedido')
-            ->leftJoin('detalle_almacen_subareas as das', function ($join) use ($almacenSubareaId) {
-                $join->on('das.id_insumo', '=', 'dp.id_insumo')
-                     ->where('das.id_almacen_subarea', '=', $almacenSubareaId);
-            })
-            ->whereMonth('p.fecha_entrega', $mes)
-            ->whereYear('p.fecha_entrega', $ano)
+            ->whereDate('p.fecha_entrega', $fecha)
+            ->where('p.id_area_almacen', $almacenId)
             ->where('p.id_area_abastecimiento', $areaId)
-            ->where('p.id_subarea_abastecimiento', $subareaId)
-            ->select('dp.id_insumo', 'das.fondo_fijo', 'i.clave', 'i.descripcion')
-            ->distinct()
-            ->orderBy('i.clave', 'asc')
-            ->get();
+            ->where('p.status', '!=', 'cancelado');
 
-        $insumoIds = $insumos->pluck('id_insumo')->toArray();
-
-        // Obtener entregas diarias agrupadas por insumo y día
-        $entregasDiarias = DB::table('detalle_pedidos as dp')
-            ->join('pedidos as p', 'dp.id_pedido', '=', 'p.id_pedido')
-            ->whereMonth('p.fecha_entrega', $mes)
-            ->whereYear('p.fecha_entrega', $ano)
-            ->where('p.id_area_abastecimiento', $areaId)
-            ->where('p.id_subarea_abastecimiento', $subareaId)
-            ->whereIn('dp.id_insumo', $insumoIds)
-            ->select('dp.id_insumo', DB::raw('DAY(p.fecha_entrega) as dia'), DB::raw('SUM(dp.surtido) as total_surtido'))
-            ->groupBy('dp.id_insumo', DB::raw('DAY(p.fecha_entrega)'))
-            ->get()
-            ->groupBy('id_insumo');
-
-        // Obtener total surtido de cada insumo en el mes
-        $totalesInsumo = DB::table('detalle_pedidos as dp')
-            ->join('pedidos as p', 'dp.id_pedido', '=', 'p.id_pedido')
-            ->whereMonth('p.fecha_entrega', $mes)
-            ->whereYear('p.fecha_entrega', $ano)
-            ->where('p.id_area_abastecimiento', $areaId)
-            ->where('p.id_subarea_abastecimiento', $subareaId)
-            ->whereIn('dp.id_insumo', $insumoIds)
-            ->select('dp.id_insumo', DB::raw('SUM(dp.surtido) as total'))
-            ->groupBy('dp.id_insumo')
-            ->pluck('total', 'id_insumo');
+        $entregas = $query->select(
+            'p.id_pedido',
+            'p.fecha_entrega',
+            'p.hora_entrega',
+            'i.clave',
+            'i.descripcion',
+            'dp.cantidad as solicitado',
+            'dp.surtido',
+            'dp.existencia',
+            'dp.fondo_fijo',
+            'dp.faltante'
+        )
+        ->orderBy('p.id_pedido', 'asc')
+        ->orderBy('i.clave', 'asc')
+        ->get();
 
         return view('inventario.reportes.analitica.reportes.entregas', compact(
-            'area', 'subarea', 'mes', 'nombreMes', 'ano', 'insumos', 'entregasDiarias', 'totalesInsumo'
+            'areaAlmacen', 'area', 'fecha', 'fechaFormateada', 'entregas'
         ));
     }
 

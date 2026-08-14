@@ -18,6 +18,8 @@ use App\Traits\ConsultaStockInsumoArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BajasPorAreaExport;
 
 class BajaInsumoController extends Controller
 {
@@ -476,8 +478,8 @@ class BajaInsumoController extends Controller
             'id_area_abastecimiento' => 'nullable|integer|exists:areasabastecimiento,id_area_abastecimiento',
             'id_area_surtimiento'    => 'nullable|integer',
             'id_categoria'           => 'nullable|integer|exists:categorias,id_categoria',
-            'fecha_inicio'           => 'nullable|date',
-            'fecha_fin'              => 'nullable|date',
+            'fecha_inicio'           => 'required|date',
+            'fecha_fin'              => 'required|date',
         ]);
 
         // Obtiene el área de abastecimiento o, como alternativa, el área de surtimiento.
@@ -563,22 +565,13 @@ class BajaInsumoController extends Controller
 
         // Construye el nombre del archivo usando la fecha y hora actuales.
         // El operador '.' concatena varias cadenas para formar un solo nombre.
-        $filename = 'Reporte_Bajas_Por_Area_Asignada_' . date('Y-m-d_H-i-s') . '.xls';
+        $filename = 'Reporte_Bajas_Por_Area_Asignada_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        // Genera la descarga del reporte directamente como respuesta.
-        // streamDownload() permite enviar el contenido sin tener que crear primero un archivo físico.
-        return response()->streamDownload(function () use ($bajasPorArea, $areaSeleccionada, $fechaInit, $fechaFin) {
-            // Renderiza la vista que contiene el contenido del reporte y lo envía como texto.
-            echo view('inventario.bajas_insumos.exportar_excel', compact('bajasPorArea', 'areaSeleccionada', 'fechaInit', 'fechaFin'))->render();
-        // Indica el nombre del archivo que recibirá el usuario y las cabeceras de la respuesta.
-        }, $filename, [
-            // Indica que el contenido se debe tratar como un archivo compatible con Excel.
-            'Content-Type'        => 'application/vnd.ms-excel; charset=utf-8',
-            // Indica que el navegador debe descargar el contenido usando el nombre generado.
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            // Evita que el navegador utilice una respuesta almacenada en caché.
-            'Cache-Control'       => 'max-age=0',
-        ]);
+        // Genera la descarga del archivo XLSX real a partir de la vista Blade
+        return Excel::download(
+            new BajasPorAreaExport($bajasPorArea, $areaSeleccionada, $fechaInit, $fechaFin),
+            $filename
+        );
     }
 
     // Recibe el ID de la baja que se quiere cambiar de estado.

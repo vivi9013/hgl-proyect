@@ -296,6 +296,83 @@
     </div>
 </div>
 
+{{-- ── Modal: Exportar Formato de Devolución a Excel ── --}}
+<div class="modal fade" id="modalExportarExcelDevoluciones" tabindex="-1" aria-labelledby="modalExportarExcelDevolucionesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header bg-success text-white border-0 py-3 px-4 rounded-top-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa fa-file-excel-o fs-5"></i>
+                    <h5 class="modal-title fw-bold mb-0" id="modalExportarExcelDevolucionesLabel">
+                        Exportar Formato de Devolución
+                    </h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form action="{{ route('devoluciones.exportar_excel') }}" method="GET">
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">
+                        Selecciona los filtros para generar el <strong>Formato de Devolución y Medicamento Caducado</strong> en Excel (.xlsx).
+                    </p>
+                    <div class="row g-3">
+                        {{-- Área / Departamento --}}
+                        <div class="col-12">
+                            <label for="excel_id_area_abastecimiento" class="form-label fw-bold small">
+                                Área / Departamento: <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <select name="id_area_abastecimiento" id="excel_id_area_abastecimiento" class="form-select bg-light">
+                                <option value="">Todas las Áreas</option>
+                                @foreach($areasAbastecimiento as $area)
+                                    <option value="{{ $area->id_area_abastecimiento }}">
+                                        {{ $area->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Motivo de Devolución --}}
+                        <div class="col-12">
+                            <label for="excel_id_motivo" class="form-label fw-bold small">
+                                Motivo de Devolución: <span class="text-muted fw-normal">(opcional)</span>
+                            </label>
+                            <select name="id_motivo" id="excel_id_motivo" class="form-select bg-light">
+                                <option value="">Todos los Motivos</option>
+                                @foreach($motivos as $motivo)
+                                    <option value="{{ $motivo->id_motivo }}">
+                                        {{ $motivo->descripcion }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Rango de Fechas Obligatorio --}}
+                        <div class="col-6">
+                            <label for="excel_fecha_inicio_dev" class="form-label fw-bold small">
+                                Fecha Inicio: <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" name="fecha_inicio" id="excel_fecha_inicio_dev" class="form-control bg-light" value="{{ $fechaInit }}" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="excel_fecha_fin_dev" class="form-label fw-bold small">
+                                Fecha Fin: <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" name="fecha_fin" id="excel_fecha_fin_dev" class="form-control bg-light" value="{{ $fechaFin }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 py-3 px-4 rounded-bottom-3 d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success text-white">
+                        <i class="fa fa-download me-1"></i>Descargar Excel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @if ($errors->any())
     <script>
         document.addEventListener('DOMContentLoaded', function () {

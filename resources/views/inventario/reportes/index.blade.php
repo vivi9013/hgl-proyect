@@ -18,55 +18,37 @@
     <hr class="my-4" style="border-top: 1.5px solid #e2e8f0; opacity: 1;">
 
     <div class="row">
-        {{-- ── SECCIÓN 1: Reporte Mensual de Entregas ── --}}
+        {{-- ── SECCIÓN 1: Reporte Diario de Entregas ── --}}
         <div class="col-12 col-lg-6">
             <div class="report-section">
                 <h2 class="report-section-title">
-                    <i class="fa fa-print me-2"></i>Reporte Mensual de Entregas
+                    <i class="fa fa-print me-2"></i>Reporte Diario de Entregas
                 </h2>
                 <p class="text-muted small mb-4">
-                    Obtenga un desglose diario detallado de los insumos entregados en un área y subárea de abastecimiento durante el mes seleccionado.
+                    Obtenga un desglose diario detallado de los insumos entregados por área de almacén y área asignada en la fecha seleccionada.
                 </p>
 
                 <form id="formEntregas">
+                    {{-- Área de Almacén --}}
                     <div class="mb-3">
-                        <label for="cmbArea" class="form-label fw-bold">Área de Abastecimiento:</label>
+                        <label for="almacen1" class="form-label fw-bold">Área de Almacén:</label>
+                        <select id="almacen1" class="form-select" style="width: 100%;">
+                            <option value="">Cargando...</option>
+                        </select>
+                    </div>
+
+                    {{-- Área Asignada --}}
+                    <div class="mb-3">
+                        <label for="cmbArea" class="form-label fw-bold">Área Asignada:</label>
                         <select id="cmbArea" class="form-select" style="width: 100%;">
                             <option value="">Cargando...</option>
                         </select>
                     </div>
 
+                    {{-- Fecha Diaria --}}
                     <div class="mb-3">
-                        <label for="cmbSubA" class="form-label fw-bold">Subárea de Abastecimiento:</label>
-                        <select id="cmbSubA" class="form-select" style="width: 100%;" disabled>
-                            <option value="">Seleccione primero un área...</option>
-                        </select>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 col-sm-6 mb-3">
-                            <label for="cmbMes1" class="form-label fw-bold">Mes:</label>
-                            <select id="cmbMes1" class="form-select">
-                                <option value="">Seleccione...</option>
-                                <option value="1" {{ date('n') == 1 ? 'selected' : '' }}>Enero</option>
-                                <option value="2" {{ date('n') == 2 ? 'selected' : '' }}>Febrero</option>
-                                <option value="3" {{ date('n') == 3 ? 'selected' : '' }}>Marzo</option>
-                                <option value="4" {{ date('n') == 4 ? 'selected' : '' }}>Abril</option>
-                                <option value="5" {{ date('n') == 5 ? 'selected' : '' }}>Mayo</option>
-                                <option value="6" {{ date('n') == 6 ? 'selected' : '' }}>Junio</option>
-                                <option value="7" {{ date('n') == 7 ? 'selected' : '' }}>Julio</option>
-                                <option value="8" {{ date('n') == 8 ? 'selected' : '' }}>Agosto</option>
-                                <option value="9" {{ date('n') == 9 ? 'selected' : '' }}>Septiembre</option>
-                                <option value="10" {{ date('n') == 10 ? 'selected' : '' }}>Octubre</option>
-                                <option value="11" {{ date('n') == 11 ? 'selected' : '' }}>Noviembre</option>
-                                <option value="12" {{ date('n') == 12 ? 'selected' : '' }}>Diciembre</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-sm-6 mb-3">
-                            <label for="cmbAno1" class="form-label fw-bold">Año:</label>
-                            <input type="number" id="cmbAno1" class="form-control" value="{{ date('Y') }}" min="2000" max="{{ date('Y') + 5 }}">
-                        </div>
+                        <label for="txtFecha1" class="form-label fw-bold">Fecha del Reporte:</label>
+                        <input type="date" id="txtFecha1" class="form-control" value="{{ date('Y-m-d') }}">
                     </div>
 
                     <div class="mt-4 text-end">
@@ -85,7 +67,7 @@
                     <i class="fa fa-print me-2"></i>Concentrado CENDIS
                 </h2>
                 <p class="text-muted small mb-4">
-                    Obtenga un consolidado mensual por almacén general y múltiples áreas de abastecimiento seleccionadas, listando el consumo mensual.
+                    Obtenga un consolidado mensual por área de almacén y múltiples áreas asignadas seleccionadas, listando el consumo mensual.
                 </p>
 
                 <form id="formConcentrado">
@@ -98,7 +80,7 @@
 
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label for="cmbArea2" class="form-label fw-bold mb-0">Áreas de Abastecimiento:</label>
+                            <label for="cmbArea2" class="form-label fw-bold mb-0">Áreas Asignadas:</label>
                             <div class="form-check mb-0">
                                 <input class="form-check-input" type="checkbox" id="chkSelectAllAreas">
                                 <label class="form-check-label small fw-bold" for="chkSelectAllAreas">

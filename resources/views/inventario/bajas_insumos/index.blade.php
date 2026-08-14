@@ -570,11 +570,11 @@
                         {{-- Rango de Fechas --}}
                         <div class="col-6">
                             <label for="excel_fecha_inicio" class="form-label fw-bold">Fecha Inicio:</label>
-                            <input type="date" name="fecha_inicio" id="excel_fecha_inicio" class="form-control bg-light" value="{{ $fechaInit }}">
+                            <input type="date" name="fecha_inicio" id="excel_fecha_inicio" class="form-control bg-light" value="{{ $fechaInit }}" required>
                         </div>
                         <div class="col-6">
                             <label for="excel_fecha_fin" class="form-label fw-bold">Fecha Fin:</label>
-                            <input type="date" name="fecha_fin" id="excel_fecha_fin" class="form-control bg-light" value="{{ $fechaFin }}">
+                            <input type="date" name="fecha_fin" id="excel_fecha_fin" class="form-control bg-light" value="{{ $fechaFin }}" required>
                         </div>
                     </div>
                 </div>
