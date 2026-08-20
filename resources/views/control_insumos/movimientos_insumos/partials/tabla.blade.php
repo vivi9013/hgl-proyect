@@ -36,12 +36,12 @@
 
             {{-- Acciones --}}
             <td class="text-center">
-                @include('control_insumos.movimientos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'acciones'])
+                @include('control_insumos.movimientos_insumos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'acciones'])
             </td>
 
             {{-- Tipo --}}
             <td class="text-center">
-                @include('control_insumos.movimientos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'tipo'])
+                @include('control_insumos.movimientos_insumos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'tipo'])
             </td>
 
             {{-- Insumo: modelo en bold + color · familia en muted --}}
@@ -65,17 +65,17 @@
 
             {{-- Proveedor --}}
             <td>
-                @include('control_insumos.movimientos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'proveedor'])
+                @include('control_insumos.movimientos_insumos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'proveedor'])
             </td>
 
             {{-- Fecha --}}
             <td class="text-center">
-                @include('control_insumos.movimientos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'fecha'])
+                @include('control_insumos.movimientos_insumos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'fecha'])
             </td>
 
             {{-- Estado --}}
             <td class="text-center">
-                @include('control_insumos.movimientos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'estado'])
+                @include('control_insumos.movimientos_insumos.partials.celdas-movimiento', ['row' => $row, 'celda' => 'estado'])
             </td>
 
         </tr>

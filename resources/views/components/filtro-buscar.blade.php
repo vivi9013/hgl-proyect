@@ -12,6 +12,7 @@
     <input type="search" 
            id="{{ $id }}"
            data-rol="buscar"
+           autocomplete="off"
            class="form-control form-control-sm bg-light border-0"
            placeholder="{{ $placeholder }}"
            style="height: 31px; font-size: 0.875rem;">

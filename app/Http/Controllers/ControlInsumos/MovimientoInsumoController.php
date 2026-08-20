@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ControlInsumos;
 
+use App\Exports\MovimientosInsumosExport;
 use App\Http\Controllers\Controller;
 use App\Models\ControlInsumos\InsumoImpresora;
 use App\Models\ControlInsumos\MovimientoInsumo;
@@ -9,6 +10,7 @@ use App\Models\ControlInsumos\MovimientoInsumo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MovimientoInsumoController extends Controller
 {
@@ -56,7 +58,7 @@ class MovimientoInsumoController extends Controller
             $filas = $query->paginate(15);
 
             return response()->json([
-                'html'  => view('control_insumos.movimientos.partials.tabla', [
+                'html'  => view('control_insumos.movimientos_insumos.partials.tabla', [
                     'movimientos' => $filas,
                     'soloCuerpo'  => true,
                 ])->render(),
@@ -71,7 +73,7 @@ class MovimientoInsumoController extends Controller
         // ── Carga inicial ────────────────────────────────────────────────────
         $movimientos = $query->paginate(15);
         $insumos     = InsumoImpresora::where('activo', 1)->orderBy('modelo')->get();
-        return view('control_insumos.movimientos.index', [
+        return view('control_insumos.movimientos_insumos.index', [
             'movimientos'       => $movimientos,
             'insumos'           => $insumos,
             'conceptosEntrada'  => self::CONCEPTOS_ENTRADA,
@@ -345,22 +347,12 @@ class MovimientoInsumoController extends Controller
         $movimientos = $query->get();
 
         // Construye el nombre del archivo con fecha y hora para evitar colisiones.
-        $filename = 'Reporte_Movimientos_Insumos_' . date('Y-m-d_H-i-s') . '.xls';
+        $filename = 'Reporte_Movimientos_Insumos_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        // Transmite el HTML directamente como descarga sin escribir archivo en disco.
-        return response()->streamDownload(function () use ($movimientos, $fechaInicio, $fechaFin) {
-            echo view(
-                'control_insumos.movimientos.exportar_excel',
-                compact('movimientos', 'fechaInicio', 'fechaFin')
-            )->render();
-        }, $filename, [
-            // Indica al navegador que interprete el contenido como Excel.
-            'Content-Type'        => 'application/vnd.ms-excel; charset=utf-8',
-            // Fuerza la descarga con el nombre generado.
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            // Evita que el navegador use una versión en caché del archivo.
-            'Cache-Control'       => 'max-age=0',
-        ]);
+        return Excel::download(
+            new MovimientosInsumosExport($movimientos, $fechaInicio, $fechaFin),
+            $filename
+        );
     }
 
     // ─── REPORTE (impresión) ─────────────────────────────────────────────────
@@ -398,7 +390,7 @@ class MovimientoInsumoController extends Controller
 
         $movimientos = $query->get();
 
-        return view('control_insumos.movimientos.analitica.reportes.impresion',
+        return view('control_insumos.movimientos_insumos.analitica.reportes.impresion',
             compact('movimientos', 'tipo'));
     }
 }

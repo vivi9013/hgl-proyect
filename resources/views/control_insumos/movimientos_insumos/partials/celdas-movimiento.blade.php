@@ -8,7 +8,7 @@
 
     Uso en la config de columnas:
       'tipo'       => 'personalizado',
-      'vista'      => 'control_insumos.movimientos.partials.celdas-movimiento',
+      'vista'      => 'control_insumos.movimientos_insumos.partials.celdas-movimiento',
       'vista_datos' => ['celda' => '<nombre>'],
 --}}
 @switch($celda)

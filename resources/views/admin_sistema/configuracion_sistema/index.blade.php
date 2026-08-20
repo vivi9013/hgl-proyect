@@ -127,7 +127,7 @@
                                     <i class="fa fa-key me-1 text-dark"></i> Contraseña inicial
                                 </label>
                                 <div class="input-group">
-                                    <input type="text" name="contra" id="contra"
+                                    <input type="password" name="contra" id="contra"
                                            class="form-control @error('contra') is-invalid @enderror"
                                            value="{{ old('contra', $config->contra) }}"
                                            placeholder="Contraseña de reset" required>

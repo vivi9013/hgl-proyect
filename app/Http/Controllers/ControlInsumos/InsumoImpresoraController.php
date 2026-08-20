@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\ControlInsumos;
 
+use App\Exports\InsumosImpresorasExport;
 use App\Http\Controllers\Controller;
 use App\Models\ControlInsumos\InsumoImpresora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InsumoImpresoraController extends Controller
 {
@@ -218,18 +220,9 @@ class InsumoImpresoraController extends Controller
     {
         // Reutiliza el mismo helper de filtros que comparten index() e imprimir().
         $insumos  = $this->aplicarFiltros($request)->orderBy('modelo')->get();
-        $filename = 'Reporte_Catalogo_Insumos_' . date('Y-m-d_H-i-s') . '.xls';
+        $filename = 'Reporte_Catalogo_Insumos_' . date('Y-m-d_H-i-s') . '.xlsx';
 
-        return response()->streamDownload(function () use ($insumos) {
-            echo view(
-                'control_insumos.insumos_impresoras.exportar_excel',
-                compact('insumos')
-            )->render();
-        }, $filename, [
-            'Content-Type'        => 'application/vnd.ms-excel; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control'       => 'max-age=0',
-        ]);
+        return Excel::download(new InsumosImpresorasExport($insumos), $filename);
     }
 
     // ─── REPORTE (impresión) ──────────────────────────────────────────

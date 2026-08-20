@@ -411,7 +411,7 @@
                 {{-- Tabla de movimientos --}}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        @include('control_insumos.movimientos.partials.tabla')
+                        @include('control_insumos.movimientos_insumos.partials.tabla')
                     </table>
                 </div>
 

@@ -5,6 +5,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     // === SELECTORES GLOBAL DE ESTADOS (MEMORIA) ===
     const categoriasSeleccionadas = new Set();
+    // Flag para saber si ya se inicializó la memoria desde el DOM inicial
+    let memoriaInicializada = false;
 
     // El formulario y contenedor de inputs
     const formAsignar = document.getElementById('formAsignarCategorias');
@@ -44,12 +46,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────────────────
     function inicializarMemoriaDesdeDOM() {
         if (!tbody) return;
-        // Captura el estado cargado inicialmente por Laravel
-        tbody.querySelectorAll('.chk-permiso').forEach(chk => {
-            if (chk.checked) categoriasSeleccionadas.add(chk.value);
-        });
+
+        // Prioridad 1: leer la lista completa de IDs asignados que el servidor inyectó
+        // en el atributo data-ids del elemento #categoriasAsignadasIniciales.
+        // Esto evita depender de qué página está visible en el momento de inicializar.
+        const contenedorIds = document.getElementById('categoriasAsignadasIniciales');
+        if (contenedorIds) {
+            try {
+                const ids = JSON.parse(contenedorIds.dataset.ids || '[]');
+                ids.forEach(id => categoriasSeleccionadas.add(String(id)));
+            } catch (e) { /* JSON malformado — caer al método fallback */ }
+        }
+
+        // Prioridad 2 (fallback): si no existe el elemento, leer los checkboxes visibles
+        if (categoriasSeleccionadas.size === 0) {
+            tbody.querySelectorAll('.chk-permiso').forEach(chk => {
+                if (chk.checked) categoriasSeleccionadas.add(chk.value);
+            });
+        }
+
+        memoriaInicializada = true;
+        // Sincronizar visualmente la página actual con el Set recién construido
+        sincronizarCheckboxesVisuales();
         actualizarContadorInterfaz();
     }
+
 
     function actualizarContadorInterfaz() {
         if (contador) contador.textContent = categoriasSeleccionadas.size;
@@ -157,12 +178,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 contenedorPaginacion.innerHTML = datos.links;
                 asignarEventosEnlaces(cargarPaginaAsignacion);
             }
-            // Sincronizar UI con la memoria virtual y volver a registrar listeners
+            // El Set ya fue inicializado con TODOS los IDs asignados desde el arranque.
+            // Solo sincronizamos el estado visual de la página recién inyectada.
             sincronizarCheckboxesVisuales();
             enlazarEventosCheckboxes();
         })
         .catch(() => { tbody.style.opacity = '1'; });
     }
+
+
 
     // Listener de filtro (debounce) — solo activo en la vista de asignación; en el índice tabla-interactiva.js se encarga
     if (filtroBuscar) {

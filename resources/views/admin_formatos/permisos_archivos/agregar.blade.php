@@ -75,6 +75,11 @@
                     {{-- Contenedor oculto para inyección dinámica del formulario --}}
                     <div id="inputsDestinoOcultos"></div>
 
+                    {{-- IDs de categorías ya asignadas (para inicializar el Set en JS sin depender de la página actual) --}}
+                    <div id="categoriasAsignadasIniciales"
+                         data-ids="{{ $trabajador->categorias->pluck('id_catego_archivos')->toJson() }}"
+                         style="display:none;"></div>
+
                     {{-- Pie: info + paginación + guardar --}}
                     <div class="px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-3 border-top">
                         <div class="text-muted small" id="infoPaginacion">
