@@ -170,10 +170,14 @@ class SoporteAreaController extends Controller
                 'personas.id',
                 DB::raw("CONCAT(personas.ap_paterno, ' ', personas.ap_materno, ' ', personas.nombre) AS nombre_completo"),
                 'personas.activo',
-                DB::raw('(SELECT COUNT(id) FROM soporte_area WHERE soporte_area.id_persona = personas.id) AS cantidad_areas')
+                DB::raw('COUNT(soporte_area.id) AS cantidad_areas'),
+                DB::raw("GROUP_CONCAT(areas.area ORDER BY areas.area SEPARATOR ', ') AS nombres_areas")
             )
             ->join('trabajadores', 'personas.id', '=', 'trabajadores.id_persona')
+            ->leftJoin('soporte_area', 'soporte_area.id_persona', '=', 'personas.id')
+            ->leftJoin('areas', 'soporte_area.id_area', '=', 'areas.id')
             ->where('trabajadores.activo', 1)
+            ->groupBy('personas.id', 'personas.ap_paterno', 'personas.ap_materno', 'personas.nombre', 'personas.activo')
             ->orderByDesc('personas.activo')
             ->orderBy('personas.ap_paterno')
             ->orderBy('personas.ap_materno')

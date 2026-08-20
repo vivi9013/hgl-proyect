@@ -17,4 +17,16 @@ class SoporteArea extends Model
         'activo',
         'usuario',
     ];
+
+    // ─── Relaciones ──────────────────────────────────────────────────────────────
+
+    public function persona()
+    {
+        return $this->belongsTo(Persona::class, 'id_persona');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'id_area');
+    }
 }

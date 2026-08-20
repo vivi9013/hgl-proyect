@@ -110,6 +110,8 @@
                                             'mInsumosImpresoras' => 'insumos_impresoras.index',
                                             'mMovimientosInsumos' => 'movimientos_insumos.index',
                                             'mSoporteArea'       => 'soporte_area.index',
+                                            'mAreasServicio'     => 'soporte_area.index',
+                                            'mTipoServicio'      => 'tipo_servicio.index',
                                             'mSolicitarServicio' => 'solicitar_servicio.index',
                                             'mTomarServicios'    => 'tomar_servicios.index',
                                             'mPlantillasPedidos' => 'plantillas_pedido.index',

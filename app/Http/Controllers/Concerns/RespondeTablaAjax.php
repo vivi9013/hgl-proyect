@@ -24,10 +24,15 @@ trait RespondeTablaAjax
         }
 
         return response()->json([
-            'html'  => view($vistaPartial, $datosVista)->render(),
-            'links' => $paginador->links('pagination::bootstrap-4')->render(),
-            'total' => $paginador->total(),
-            'info'  => 'Mostrando '
+            'html'         => view($vistaPartial, $datosVista)->render(),
+            'links'        => $paginador->toArray()['links'],
+            'links_html'   => $paginador->links('pagination::bootstrap-4')->render(),
+            'total'        => $paginador->total(),
+            'current_page' => $paginador->currentPage(),
+            'last_page'    => $paginador->lastPage(),
+            'first_item'   => $paginador->firstItem() ?? 0,
+            'last_item'    => $paginador->lastItem() ?? 0,
+            'info'         => 'Mostrando '
                 . ($paginador->firstItem() ?? 0)
                 . ' a '
                 . ($paginador->lastItem() ?? 0)

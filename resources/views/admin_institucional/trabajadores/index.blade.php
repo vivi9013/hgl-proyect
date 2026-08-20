@@ -186,9 +186,9 @@
                         Mostrando {{ $trabajadores->firstItem() ?? 0 }} a {{ $trabajadores->lastItem() ?? 0 }} de {{ $trabajadores->total() }} registros
                     </div>
                     <nav aria-label="Paginacion de trabajadores">
-                        <ul class="pagination mb-0" id="contenedorPaginacion">
-                            {{-- Sincronizado por JavaScript --}}
-                        </ul>
+                        <div id="contenedorPaginacion">
+                            {{ $trabajadores->links('pagination::bootstrap-4') }}
+                        </div>
                     </nav>
                 </div>
 

@@ -1,0 +1,49 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   tipo_servicio.css — Estilos del módulo Soporte Técnico / Tipo de Servicio
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Celda de servicio: texto largo con truncado elegante */
+.celda-servicio {
+    max-width: 420px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Expandir texto al pasar el mouse */
+tr:hover .celda-servicio {
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Badge de estado interactivo */
+#cuerpoTabla .badge.btn-toggle-status {
+    font-size: 0.78rem;
+    min-width: 78px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+#cuerpoTabla .badge.btn-toggle-status:hover {
+    opacity: 0.8;
+}
+
+/* Textarea del formulario */
+#fServicio,
+#fServicioEdit {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Feedback de duplicado */
+.feedback-duplicado {
+    font-size: 0.82rem;
+    margin-top: 3px;
+}
+
+/* Botón de guardar deshabilitado */
+#btnGuardar:disabled,
+#btnGuardarEdit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}

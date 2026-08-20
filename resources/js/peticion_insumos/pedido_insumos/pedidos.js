@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Estado local de la lista de insumos en el modal de creación
     let listaInsumos = [];
     let insumoSeleccionadoTemp = null;
-    let debounceTimer = null;
+    let debounceTimerTabla  = null;
+    let debounceTimerInsumo = null;
+    let abortControllerTabla = null; // Bug 10: AbortController para cargarTabla
 
     // ── Utilidad: Escapado HTML para prevenir XSS ──
     function escapeHtml(str) {
@@ -56,6 +58,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function cargarTabla(page = 1) {
         if (!containerTabla) return;
 
+        // Bug 10: cancelar petición anterior si aún no ha resuelto
+        if (abortControllerTabla) {
+            abortControllerTabla.abort();
+        }
+        abortControllerTabla = new AbortController();
+
         const params = new URLSearchParams({
             page: page,
             buscar: inputBuscar ? inputBuscar.value.trim() : '',
@@ -65,45 +73,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         fetch(`/peticion-insumos/pedidos?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            signal: abortControllerTabla.signal
         })
         .then(response => response.json())
         .then(data => {
             containerTabla.innerHTML = data.html ?? data;
-            actualizarPaginador();
+
+            const elDesde = document.getElementById('pag-desde');
+            const elHasta = document.getElementById('pag-hasta');
+            const elTotal = document.getElementById('pag-total');
+
+            if (elDesde) elDesde.textContent = data.first_item ?? 0;
+            if (elHasta) elHasta.textContent = data.last_item ?? 0;
+            if (elTotal) elTotal.textContent = data.total ?? 0;
+
+            if (window.renderPaginacion && data.links) {
+                window.renderPaginacion(data.links, 'paginador-pedidos', cargarTabla);
+            }
         })
-        .catch(err => console.error('Error al cargar la tabla:', err));
+        .catch(err => {
+            if (err.name !== 'AbortError') {
+                console.error('Error al cargar la tabla:', err);
+            }
+        });
     }
 
-    function actualizarPaginador() {
-        const pageData = document.getElementById('ajax-pagination-data');
-        if (!pageData) return;
-
-        const current = parseInt(pageData.dataset.currentPage);
-        const last    = parseInt(pageData.dataset.lastPage);
-        const total   = parseInt(pageData.dataset.total);
-        const from    = parseInt(pageData.dataset.from);
-        const to      = parseInt(pageData.dataset.to);
-
-        document.getElementById('pag-desde').textContent = from;
-        document.getElementById('pag-hasta').textContent = to;
-        document.getElementById('pag-total').textContent = total;
-
-        if (window.renderPaginacion) {
-            window.renderPaginacion('paginador-pedidos', current, last, (targetPage) => {
-                cargarTabla(targetPage);
-            });
-        }
+    // Inicializar la tabla y el paginador al cargar la página
+    if (containerTabla) {
+        cargarTabla(1);
     }
-
-    // Inicializar paginador al cargar la página
-    actualizarPaginador();
 
     // Eventos de Filtros Reactivos
     if (inputBuscar) {
         inputBuscar.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => cargarTabla(1), 300);
+            clearTimeout(debounceTimerTabla);
+            debounceTimerTabla = setTimeout(() => cargarTabla(1), 300);
         });
     }
 
@@ -144,13 +149,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ── 2b. Cambio de Almacén → Refrescar stock/fondo_fijo de insumos ya agregados ──
+    if (selectAlmacen) {
+        selectAlmacen.addEventListener('change', function () {
+            const idAlmacen = this.value;
+            if (!idAlmacen || listaInsumos.length === 0) return;
+
+            const peticiones = listaInsumos.map((item) =>
+                fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(item.clave)}&id_area_almacen=${idAlmacen}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    // Buscar el insumo exacto por id_insumo en los resultados
+                    const encontrado = data.find(d => d.id_insumo === item.id_insumo);
+                    if (encontrado) {
+                        item.existencia = encontrado.existencia;
+                        item.fondo_fijo = encontrado.fondo_fijo;
+                    }
+                })
+                .catch(() => { /* ignorar fallos individuales */ })
+            );
+
+            Promise.all(peticiones).then(() => renderTablaModal());
+        });
+    }
+
     // ── 3. Autocompletado Reactivo de Insumos ──
     if (inputBuscarInsumo) {
         inputBuscarInsumo.addEventListener('input', function () {
             const term = this.value.trim();
             const idAlmacen = selectAlmacen ? selectAlmacen.value : null;
 
-            clearTimeout(debounceTimer);
+            clearTimeout(debounceTimerInsumo);
 
             if (term.length < 2) {
                 dropdownResult.style.display = 'none';
@@ -159,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            debounceTimer = setTimeout(() => {
+            debounceTimerInsumo = setTimeout(() => {
                 fetch(`/peticion-insumos/pedidos/autocompletar-insumo?term=${encodeURIComponent(term)}&id_area_almacen=${idAlmacen}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
@@ -248,6 +279,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
 
+            // Aviso no bloqueante si la cantidad supera el fondo fijo
+            const fondoFijoRef = insumoSeleccionadoTemp ? insumoSeleccionadoTemp.fondo_fijo : 0;
+            const cantidadFinal = indexExistente !== -1 ? listaInsumos[indexExistente].cantidad : cantidad;
+            if (fondoFijoRef > 0 && cantidadFinal > fondoFijoRef) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cantidad excede el Fondo Fijo',
+                    text: `La cantidad solicitada (${cantidadFinal}) supera el fondo fijo establecido (${fondoFijoRef}). Puede continuar, pero verifique con el área de almacén.`,
+                    confirmButtonColor: '#000000',
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            }
+
             // Reset campos
             inputBuscarInsumo.value = '';
             inputCantidadInsumo.value = 1;
@@ -259,6 +304,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── 5. Cargar desde Plantilla ──
+
+    /**
+     * Carga las subáreas del área seleccionada y retorna una Promise que resuelve
+     * cuando el select ya está repoblado (permite encadenar la asignación de subárea).
+     */
+    function cargarSubareasPara(idArea) {
+        return new Promise((resolve) => {
+            if (!idArea || !selectSubarea) {
+                resolve();
+                return;
+            }
+            selectSubarea.innerHTML = '<option value="">Cargando subáreas...</option>';
+            fetch(`/peticion-insumos/pedidos/subareas?id_area_abastecimiento=${idArea}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(subs => {
+                let options = '<option value="">-- Todas / General --</option>';
+                subs.forEach(sub => {
+                    options += `<option value="${sub.id_subarea_abastecimiento}">${sub.nombre}</option>`;
+                });
+                selectSubarea.innerHTML = options;
+                resolve(subs);
+            })
+            .catch(() => {
+                selectSubarea.innerHTML = '<option value="">-- Todas / General --</option>';
+                resolve([]);
+            });
+        });
+    }
+
     if (btnCargarPlantilla) {
         btnCargarPlantilla.addEventListener('click', function () {
             const idPlantilla = selectPlantilla ? selectPlantilla.value : '';
@@ -272,14 +348,25 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(res => res.json())
             .then(data => {
-                if (data.id_area_abastecimiento && selectArea) {
-                    selectArea.value = data.id_area_abastecimiento;
-                    selectArea.dispatchEvent(new Event('change'));
-                }
+                // 1. Asignar área de almacén
                 if (data.id_area_almacen && selectAlmacen) {
                     selectAlmacen.value = data.id_area_almacen;
                 }
 
+                // 2. Cargar subáreas del área y esperar a que el select esté listo
+                const idArea = data.id_area_abastecimiento;
+                const promesaSubareas = idArea && selectArea
+                    ? (selectArea.value = idArea, cargarSubareasPara(idArea))
+                    : Promise.resolve();
+
+                promesaSubareas.then(() => {
+                    // 3. Asignar subárea una vez que el select está repoblado
+                    if (data.id_subarea_abastecimiento && selectSubarea) {
+                        selectSubarea.value = data.id_subarea_abastecimiento;
+                    }
+                });
+
+                // 4. Cargar insumos de la plantilla
                 if (data.insumos && data.insumos.length > 0) {
                     listaInsumos = data.insumos.map(item => ({
                         id_insumo: item.id_insumo,
@@ -300,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
             })
-            .catch(err => {
+            .catch(() => {
                 mostrarAlertaError('Error al obtener los insumos de la plantilla.');
             });
         });
@@ -351,9 +438,26 @@ document.addEventListener('DOMContentLoaded', function () {
         tbodyPedido.addEventListener('input', function (e) {
             if (e.target.classList.contains('input-item-cant')) {
                 const idx = parseInt(e.target.dataset.index);
-                const val = parseInt(e.target.value) || 1;
+                // Bug 8: forzar mínimo 1, rechazar negativos y cero
+                let val = parseInt(e.target.value);
+                if (isNaN(val) || val < 1) {
+                    val = 1;
+                    e.target.value = 1;
+                }
                 if (listaInsumos[idx]) {
                     listaInsumos[idx].cantidad = val;
+                    // Bug 5: aviso no bloqueante si supera fondo_fijo en edición inline
+                    const ff = listaInsumos[idx].fondo_fijo;
+                    if (ff > 0 && val > ff) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Cantidad excede el Fondo Fijo',
+                            text: `La cantidad (${val}) supera el fondo fijo (${ff}). Puede continuar.`,
+                            confirmButtonColor: '#000000',
+                            timer: 3500,
+                            timerProgressBar: true
+                        });
+                    }
                 }
             }
         });
@@ -379,6 +483,31 @@ document.addEventListener('DOMContentLoaded', function () {
         if (alertError) {
             alertError.classList.add('d-none');
         }
+    }
+
+    // ── Bug 7: Resetear el estado del modal al cerrarse sin guardar ──
+    const modalCrearEl = document.getElementById('modalCrearPedido');
+    if (modalCrearEl) {
+        modalCrearEl.addEventListener('hidden.bs.modal', function () {
+            listaInsumos = [];
+            insumoSeleccionadoTemp = null;
+            renderTablaModal();
+            ocultarAlertaError();
+
+            // Resetear selects a su estado inicial
+            if (selectArea)      selectArea.value = '';
+            if (selectSubarea)   selectSubarea.innerHTML = '<option value="">-- Todas / General --</option>';
+            if (selectAlmacen)   selectAlmacen.value = '';
+            if (selectPlantilla) selectPlantilla.value = '';
+            if (inputBuscarInsumo) {
+                inputBuscarInsumo.value = '';
+                if (dropdownResult) {
+                    dropdownResult.style.display = 'none';
+                    dropdownResult.innerHTML = '';
+                }
+            }
+            if (inputCantidadInsumo) inputCantidadInsumo.value = 1;
+        });
     }
 
     // ── 6. Guardar Pedido (Borrador o Enviado a CENDIS) ──
@@ -415,11 +544,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Deshabilitar el botón de envío para prevenir doble clic
-        const esEnvio = statusDestino === 'terminado';
-        if (esEnvio && btnEnviarPedido) {
-            btnEnviarPedido.disabled = true;
-            btnEnviarPedido.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Enviando...';
+        // Bug 9: Deshabilitar el botón que disparó la acción para prevenir doble clic
+        const esEnvio  = statusDestino === 'terminado';
+        const btnOrigen = esEnvio ? btnEnviarPedido : btnGuardarBorrador;
+        if (btnOrigen) {
+            btnOrigen.disabled = true;
+            btnOrigen.innerHTML = esEnvio
+                ? '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Enviando...'
+                : '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Guardando...';
         }
 
         fetch('/peticion-insumos/pedidos/guardar', {
@@ -431,7 +563,15 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
+        .then(async res => {
+            const data = await res.json();
+            if (res.status === 422 && data.errors) {
+                const primerCampo = Object.keys(data.errors)[0];
+                const primerMensaje = data.errors[primerCampo][0];
+                return { success: false, message: primerMensaje };
+            }
+            return data;
+        })
         .then(data => {
             if (data.success) {
                 // Cerrar modal
@@ -456,14 +596,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 mostrarAlertaError(data.message || 'Ocurrió un error al guardar el pedido.');
             }
         })
-        .catch(err => {
+        .catch(() => {
             mostrarAlertaError('Error de red al guardar el pedido.');
         })
         .finally(() => {
-            // Restaurar el botón de envío en cualquier caso
-            if (esEnvio && btnEnviarPedido) {
-                btnEnviarPedido.disabled = false;
-                btnEnviarPedido.innerHTML = '<i class="bi bi-send"></i> Enviar Pedido';
+            // Restaurar el botón que disparó la acción en cualquier caso
+            if (btnOrigen) {
+                btnOrigen.disabled = false;
+                btnOrigen.innerHTML = esEnvio
+                    ? '<i class="bi bi-send"></i> Enviar Pedido'
+                    : '<i class="bi bi-save me-1"></i>Guardar Borrador';
             }
         });
     }

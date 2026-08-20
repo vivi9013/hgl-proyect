@@ -32,12 +32,16 @@ class PedidoInsumoController extends Controller
         $fechaFin   = $request->get('fecha_fin', '');
 
         $query = Pedido::with(['areaAbastecimiento', 'subareaAbastecimiento', 'areaAlmacen', 'usuario.persona', 'detalles.insumo'])
+            ->where('origen', 'normal')
             ->orderBy('id_pedido', 'desc');
 
         if (!empty($buscar)) {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('id_pedido', 'LIKE', "%{$buscar}%")
-                  ->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
+            $buscarLimpio = ltrim($buscar, '#');
+            $query->where(function ($q) use ($buscar, $buscarLimpio) {
+                if ($buscarLimpio !== '') {
+                    $q->orWhere('id_pedido', 'LIKE', "%{$buscarLimpio}%");
+                }
+                $q->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('subareaAbastecimiento', fn($sq) => $sq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('areaAlmacen', fn($alq) => $alq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('usuario.persona', fn($uq) =>
@@ -94,9 +98,14 @@ class PedidoInsumoController extends Controller
     public function subareasPorArea(Request $request)
     {
         $idArea = $request->get('id_area_abastecimiento');
-        
+
+        // Devolver array vacío si no se proporcionó un área
+        if (empty($idArea)) {
+            return response()->json([]);
+        }
+
         $subareas = SubareaAbastecimiento::where('activo', 1)
-            ->when($idArea, fn($q) => $q->whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea)))
+            ->whereHas('relacionArea', fn($rq) => $rq->where('id_area_abastecimiento', $idArea))
             ->orderBy('nombre')
             ->get(['id_subarea_abastecimiento', 'nombre', 'siglas']);
 
@@ -157,7 +166,7 @@ class PedidoInsumoController extends Controller
      */
     public function insumosPlantilla(int $idPlantilla)
     {
-        $plantilla = PlantillaPedido::with('detalles.insumo')->find($idPlantilla);
+        $plantilla = PlantillaPedido::with('detalles.insumo')->where('activo', 1)->find($idPlantilla);
 
         if (!$plantilla) {
             return response()->json(['error' => 'Plantilla no encontrada'], 404);
@@ -202,7 +211,21 @@ class PedidoInsumoController extends Controller
     {
         $request->validate([
             'id_area_abastecimiento'    => 'required|integer|exists:areas_abastecimiento,id_area_abastecimiento,activo,1',
-            'id_subarea_abastecimiento' => 'nullable|integer|exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+            'id_subarea_abastecimiento' => [
+                'nullable',
+                'integer',
+                'exists:subareas_abastecimiento,id_subarea_abastecimiento,activo,1',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value && $request->id_area_abastecimiento) {
+                        $pertenece = SubareaAbastecimiento::where('id_subarea_abastecimiento', $value)
+                            ->whereHas('relacionArea', fn($q) => $q->where('id_area_abastecimiento', $request->id_area_abastecimiento))
+                            ->exists();
+                        if (!$pertenece) {
+                            $fail('La subárea seleccionada no pertenece al área de abastecimiento elegida.');
+                        }
+                    }
+                }
+            ],
             'id_area_almacen'           => 'required|integer|exists:areas_almacen,id_area_almacen,activo,1',
             'status'                    => 'required|in:borrador,terminado',
             'insumos'                   => 'required|array|min:1',
@@ -231,6 +254,7 @@ class PedidoInsumoController extends Controller
                 'fecha_registro'           => $now->toDateString(),
                 'hora_registro'            => $now->toTimeString(),
                 'status'                   => $request->status, // 'borrador' o 'terminado' (enviado)
+                'origen'                   => 'normal',
                 'activo'                   => 1,
                 'id_usuario'               => Auth::id() ?? abort(500, 'Usuario no autenticado.'),
                 'porcentaje_entrega'       => 0.00,
