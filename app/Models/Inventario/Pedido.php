@@ -40,6 +40,7 @@ class Pedido extends Model
         'fecha_registro',
         'hora_registro',
         'status',
+        'origen',
         'activo',
         'id_usuario',
         'id_persona_entrega',

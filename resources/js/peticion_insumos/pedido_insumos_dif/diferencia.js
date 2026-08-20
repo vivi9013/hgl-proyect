@@ -294,31 +294,24 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(data => {
             containerHistorial.innerHTML = data.html ?? data;
-            actualizarPaginadorHistorial();
-        });
+
+            const elDesde = document.getElementById('pag-desde');
+            const elHasta = document.getElementById('pag-hasta');
+            const elTotal = document.getElementById('pag-total');
+
+            if (elDesde) elDesde.textContent = data.first_item ?? 0;
+            if (elHasta) elHasta.textContent = data.last_item ?? 0;
+            if (elTotal) elTotal.textContent = data.total ?? 0;
+
+            if (window.renderPaginacion && data.links) {
+                window.renderPaginacion(data.links, 'paginador-historial', cargarHistorial);
+            }
+        })
+        .catch(err => console.error('Error al cargar historial:', err));
     }
 
-    function actualizarPaginadorHistorial() {
-        const pageData = document.getElementById('ajax-pagination-data');
-        if (!pageData) return;
-
-        const current = parseInt(pageData.dataset.currentPage);
-        const last    = parseInt(pageData.dataset.lastPage);
-        const total   = parseInt(pageData.dataset.total);
-        const from    = parseInt(pageData.dataset.from);
-        const to      = parseInt(pageData.dataset.to);
-
-        document.getElementById('pag-desde').textContent = from;
-        document.getElementById('pag-hasta').textContent = to;
-        document.getElementById('pag-total').textContent = total;
-
-        if (window.renderPaginacion) {
-            window.renderPaginacion('paginador-historial', current, last, (targetPage) => {
-                cargarHistorial(targetPage);
-            });
-        }
+    if (containerHistorial) {
+        cargarHistorial(1);
     }
-
-    actualizarPaginadorHistorial();
 
 });

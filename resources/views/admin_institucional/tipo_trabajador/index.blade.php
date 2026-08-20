@@ -155,9 +155,9 @@
                         Mostrando {{ $tipos->firstItem() ?? 0 }} a {{ $tipos->lastItem() ?? 0 }} de {{ $tipos->total() }} registros
                     </div>
                     <nav aria-label="Paginacion de tipos de trabajador">
-                        <ul class="pagination mb-0" id="contenedorPaginacion">
-                            {{-- Sincronizado por JavaScript --}}
-                        </ul>
+                        <div id="contenedorPaginacion">
+                            {{ $tipos->links('pagination::bootstrap-4') }}
+                        </div>
                     </nav>
                 </div>
 

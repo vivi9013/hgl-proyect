@@ -79,7 +79,18 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             containerTabla.innerHTML = data.html ?? data;
-            actualizarPaginador();
+
+            const elDesde = document.getElementById('pag-desde');
+            const elHasta = document.getElementById('pag-hasta');
+            const elTotal = document.getElementById('pag-total');
+
+            if (elDesde) elDesde.textContent = data.first_item ?? 0;
+            if (elHasta) elHasta.textContent = data.last_item ?? 0;
+            if (elTotal) elTotal.textContent = data.total ?? 0;
+
+            if (window.renderPaginacion && data.links) {
+                window.renderPaginacion(data.links, 'paginador-pedidos', cargarTabla);
+            }
         })
         .catch(err => {
             if (err.name !== 'AbortError') {
@@ -88,29 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function actualizarPaginador() {
-        const pageData = document.getElementById('ajax-pagination-data');
-        if (!pageData) return;
-
-        const current = parseInt(pageData.dataset.currentPage);
-        const last    = parseInt(pageData.dataset.lastPage);
-        const total   = parseInt(pageData.dataset.total);
-        const from    = parseInt(pageData.dataset.from);
-        const to      = parseInt(pageData.dataset.to);
-
-        document.getElementById('pag-desde').textContent = from;
-        document.getElementById('pag-hasta').textContent = to;
-        document.getElementById('pag-total').textContent = total;
-
-        if (window.renderPaginacion) {
-            window.renderPaginacion('paginador-pedidos', current, last, (targetPage) => {
-                cargarTabla(targetPage);
-            });
-        }
+    // Inicializar la tabla y el paginador al cargar la página
+    if (containerTabla) {
+        cargarTabla(1);
     }
-
-    // Inicializar paginador al cargar la página
-    actualizarPaginador();
 
     // Eventos de Filtros Reactivos
     if (inputBuscar) {

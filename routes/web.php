@@ -36,6 +36,7 @@ use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
 use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
 use App\Http\Controllers\SoporteTecnico\SoporteAreaController;
 use App\Http\Controllers\SoporteTecnico\SolicitarServicioController;
+use App\Http\Controllers\SoporteTecnico\TipoServicioController;
 use App\Http\Controllers\Departamentos\DepartamentoController;
 use App\Http\Controllers\Puestos\PuestoController;
 use App\Http\Controllers\Sedes\SedeController;
@@ -80,8 +81,10 @@ Route::get('/mRegActividades', fn() => redirect()->route('actividades.index'));
 Route::get('/mImpresoras', fn() => redirect()->route('impresoras.index'));
 Route::get('/mMonitores', fn() => redirect()->route('monitores.index'));
 Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'));
-Route::get('/mSoporteArea', fn() => redirect()->route('soporte_area.index'));
-Route::get('/MsoporteArea', fn() => redirect()->route('soporte_area.index'));
+Route::get('/mSoporteArea',    fn() => redirect()->route('soporte_area.index'));
+Route::get('/MsoporteArea',    fn() => redirect()->route('soporte_area.index'));
+Route::get('/mAreasServicio',  fn() => redirect()->route('soporte_area.index'));
+Route::get('/mTipoServicio',   fn() => redirect()->route('tipo_servicio.index'));
 Route::get('/mSolicitarServicio', fn() => redirect()->route('solicitar_servicio.index'));
 Route::get('/mDepartamentos', fn() => redirect()->route('departamentos.index'));
 Route::get('/mPuestos', fn() => redirect()->route('puestos.index'));
@@ -679,6 +682,20 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
             Route::get('/{id}/asignar',            'asignarAreas')   ->name('asignar');
             Route::post('/{id}/sincronizar',       'sincronizarAreas')->name('sincronizar');
             Route::patch('/{id}/status',           'cambiarStatus')  ->name('status');
+        });
+
+    // ── Soporte Técnico: Tipo de Servicio (mTipoServicio) (ID: 20) ──────────
+    Route::prefix('soporte-tecnico/tipo-servicio')
+        ->middleware('modulo:20')
+        ->name('tipo_servicio.')
+        ->controller(TipoServicioController::class)
+        ->group(function () {
+            Route::get('/',                     'index')        ->name('index');
+            Route::post('/',                    'store')        ->name('store');
+            Route::put('/{id}',                 'update')       ->name('update');
+            Route::patch('/{id}/status',        'cambiarStatus')->name('status');
+            Route::get('/verificar',            'verificar')    ->name('verificar');
+            Route::get('/reportes/imprimir',    'imprimir')     ->name('imprimir');
         });
 
     // Subgrupo: Estadísticas y Reportes RX

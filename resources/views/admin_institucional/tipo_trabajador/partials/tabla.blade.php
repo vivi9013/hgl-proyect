@@ -1,15 +1,3 @@
-{{-- Datos de transporte ocultos para el Javascript --}}
-<tr id="datosPaginacionTransporte" style="display: none;"
-    data-total="{{ $tipos->total() }}"
-    data-info="Mostrando {{ $tipos->firstItem() ?? 0 }} a {{ $tipos->lastItem() ?? 0 }} de {{ $tipos->total() }} registros">
-    <td>
-        <div id="htmlLinksPaginacion">
-            {{-- Renderiza los enlaces nativos de Bootstrap --}}
-            {{ $tipos->links('pagination::bootstrap-4') }}
-        </div>
-    </td>
-</tr>
-
 {{-- Cuerpo real de la Tabla --}}
 @forelse($tipos as $t)
     <tr class="{{ $t->activo == 0 ? 'text-muted opacity-75' : '' }}">

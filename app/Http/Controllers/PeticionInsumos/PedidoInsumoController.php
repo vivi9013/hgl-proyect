@@ -32,13 +32,16 @@ class PedidoInsumoController extends Controller
         $fechaFin   = $request->get('fecha_fin', '');
 
         $query = Pedido::with(['areaAbastecimiento', 'subareaAbastecimiento', 'areaAlmacen', 'usuario.persona', 'detalles.insumo'])
+            ->where('origen', 'normal')
             ->orderBy('id_pedido', 'desc');
 
         if (!empty($buscar)) {
             $buscarLimpio = ltrim($buscar, '#');
             $query->where(function ($q) use ($buscar, $buscarLimpio) {
-                $q->where('id_pedido', 'LIKE', "%{$buscarLimpio}%")
-                  ->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
+                if ($buscarLimpio !== '') {
+                    $q->orWhere('id_pedido', 'LIKE', "%{$buscarLimpio}%");
+                }
+                $q->orWhereHas('areaAbastecimiento', fn($aq) => $aq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('subareaAbastecimiento', fn($sq) => $sq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('areaAlmacen', fn($alq) => $alq->where('nombre', 'LIKE', "%{$buscar}%"))
                   ->orWhereHas('usuario.persona', fn($uq) =>
@@ -251,6 +254,7 @@ class PedidoInsumoController extends Controller
                 'fecha_registro'           => $now->toDateString(),
                 'hora_registro'            => $now->toTimeString(),
                 'status'                   => $request->status, // 'borrador' o 'terminado' (enviado)
+                'origen'                   => 'normal',
                 'activo'                   => 1,
                 'id_usuario'               => Auth::id() ?? abort(500, 'Usuario no autenticado.'),
                 'porcentaje_entrega'       => 0.00,

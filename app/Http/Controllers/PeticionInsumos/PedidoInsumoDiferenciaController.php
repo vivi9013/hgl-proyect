@@ -33,6 +33,7 @@ class PedidoInsumoDiferenciaController extends Controller
 
         // Historial reciente de pedidos por diferencia
         $pedidos = Pedido::with(['areaAbastecimiento', 'subareaAbastecimiento', 'areaAlmacen', 'usuario.persona'])
+            ->where('origen', 'diferencia')
             ->orderBy('id_pedido', 'desc')
             ->paginate(10)
             ->withQueryString();
@@ -171,6 +172,7 @@ class PedidoInsumoDiferenciaController extends Controller
                 'fecha_registro'           => $now->toDateString(),
                 'hora_registro'            => $now->toTimeString(),
                 'status'                   => $request->status, // 'terminado' (enviado a CENDIS) o 'borrador'
+                'origen'                   => 'diferencia',
                 'activo'                   => 1,
                 'id_usuario'               => Auth::id() ?: 1,
                 'porcentaje_entrega'       => 0.00,
