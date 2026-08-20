@@ -30,7 +30,6 @@ function cerrarModal(id) {
 
 // ─── VISTA INDEX: generar solicitud ──────────────────────────────────────────
 function initIndex() {
-    // Clic en una tarjeta de área: abre el modal de nueva solicitud
     document.querySelectorAll('.btn-generar-solicitud').forEach(btn => {
         btn.addEventListener('click', function () {
             const idArea     = this.dataset.idArea;
@@ -52,7 +51,6 @@ function initIndex() {
         });
     });
 
-    // Submit del form de nueva solicitud
     const formSolicitud = document.getElementById('form-solicitud');
     if (formSolicitud) {
         formSolicitud.addEventListener('submit', function (e) {
@@ -63,12 +61,23 @@ function initIndex() {
 }
 
 function guardarSolicitud(form) {
+    const desc = form.querySelector('[name="descripcion"]')?.value.trim();
+    if (!desc || desc.length < 10) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Descripción muy corta',
+            text: 'Por favor detalla el problema con al menos 10 caracteres.',
+            confirmButtonColor: '#000'
+        });
+        return;
+    }
+
     const data    = new FormData(form);
     const btnSend = form.querySelector('[type="submit"]');
 
     if (btnSend) {
         btnSend.disabled = true;
-        btnSend.textContent = 'Enviando...';
+        btnSend.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Enviando...';
     }
 
     const storeUrl = (window.routes && window.routes.store) ? window.routes.store : '/solicitar-servicio/guardar';
@@ -90,16 +99,18 @@ function guardarSolicitud(form) {
                 title: '¡Solicitud generada!',
                 text : res.message,
                 confirmButtonColor: '#000',
-            }).then(() => location.reload());
+            }).then(() => {
+                window.location.href = (window.routes && window.routes.seguimiento) ? window.routes.seguimiento : '/solicitar-servicio/seguimiento';
+            });
         } else {
-            Swal.fire({ icon: 'error', title: 'Error', text: res.error ?? 'No se pudo generar la solicitud.', confirmButtonColor: '#000' });
+            Swal.fire({ icon: 'error', title: 'Error', text: res.error ?? (res.message ?? 'No se pudo generar la solicitud.'), confirmButtonColor: '#000' });
         }
     })
     .catch(() => Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'Revisa tu conexión e intenta de nuevo.', confirmButtonColor: '#000' }))
     .finally(() => {
         if (btnSend) {
             btnSend.disabled    = false;
-            btnSend.textContent = 'Generar Solicitud';
+            btnSend.innerHTML   = '<i class="fa fa-paper-plane me-1"></i> Generar Solicitud';
         }
     });
 }
@@ -137,11 +148,19 @@ function cargarSeguimiento(pagina) {
         const contenedor = document.getElementById('contenedor-tabla');
         if (contenedor) contenedor.innerHTML = res.html;
 
-        if (window.renderPaginacion) {
-            window.renderPaginacion(JSON.parse(res.links.match(/"links":(\[.*?\])/)?.[1] ?? '[]'),
-                                    'paginador-seguimiento',
-                                    cargarSeguimiento);
+        const paginador = document.getElementById('paginador-seguimiento');
+        if (paginador && res.links) {
+            paginador.innerHTML = res.links;
+            paginador.querySelectorAll('a.page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
+                    const p = urlParams.get('page');
+                    if (p) cargarSeguimiento(p);
+                });
+            });
         }
+
         const info = document.getElementById('info-registros');
         if (info) info.textContent = res.info ?? '';
 
@@ -167,6 +186,13 @@ function bindSeguimientoActions() {
         btn.addEventListener('click', function () {
             const id = this.dataset.id;
             liberarServicio(id);
+        });
+    });
+
+    document.querySelectorAll('[data-accion="cancelar"]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+            cancelarServicio(id);
         });
     });
 }
@@ -204,11 +230,19 @@ function cargarHistorial(pagina) {
         const contenedor = document.getElementById('contenedor-tabla');
         if (contenedor) contenedor.innerHTML = res.html;
 
-        if (window.renderPaginacion) {
-            window.renderPaginacion(JSON.parse(res.links.match(/"links":(\[.*?\])/)?.[1] ?? '[]'),
-                                    'paginador-historial',
-                                    cargarHistorial);
+        const paginador = document.getElementById('paginador-historial');
+        if (paginador && res.links) {
+            paginador.innerHTML = res.links;
+            paginador.querySelectorAll('a.page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
+                    const p = urlParams.get('page');
+                    if (p) cargarHistorial(p);
+                });
+            });
         }
+
         const info = document.getElementById('info-registros');
         if (info) info.textContent = res.info ?? '';
 
@@ -243,19 +277,26 @@ function verDetalle(id) {
         setTexto('modal-det-area',        d.area);
         setTexto('modal-det-descripcion', d.descripcion);
         setTexto('modal-det-fecha-pet',   d.fecha_peticion + ' ' + d.hora_peticion);
+        setTexto('modal-det-estatus',     d.estatus_final);
 
         setTexto('modal-det-servidor',    d.nombre_servidor);
-        setTexto('modal-det-ext',         d.ext_servidor);
-        setTexto('modal-det-fecha-tom',   d.fecha_tomado !== '—' ? d.fecha_tomado + ' ' + d.hora_tomado : '—');
+        setTexto('modal-det-ext',         'Ext: ' + (d.ext_servidor || '—'));
+        setTexto('modal-det-fecha-tom',   d.fecha_tomado !== '—' ? d.fecha_tomado + ' ' + d.hora_tomado : 'Aún no tomado');
 
-        setTexto('modal-det-fecha-ter',   d.fecha_termino !== '—' ? d.fecha_termino + ' ' + d.hora_termino : '—');
-        setTexto('modal-det-clasificacion', d.clasificacion);
-        setTexto('modal-det-accion',      d.accion_realizada);
-        setTexto('modal-det-tipo',        d.tipo_servicio);
+        setTexto('modal-det-equipo',      d.inventario ? (d.inventario + ' (' + (d.descripcion_mobiliario || 'Sin detalles') + ')') : 'Sin equipo específico');
+        setTexto('modal-det-fecha-ter',   d.fecha_termino !== '—' ? d.fecha_termino + ' ' + d.hora_termino : 'Pendiente');
+        setTexto('modal-det-tipo',        d.tipo_servicio || 'Soporte General');
+        setTexto('modal-det-accion',      d.accion_realizada || 'En espera de resolución técnica.');
 
         actualizarIndicador('ind-pendiente', d.pendiente);
         actualizarIndicador('ind-proceso',   d.proceso);
         actualizarIndicador('ind-terminado', d.terminado);
+        actualizarIndicador('ind-liberado',  d.liberado);
+
+        const btnPrint = document.getElementById('modal-btn-imprimir-hoja');
+        if (btnPrint) {
+            btnPrint.href = `/tomar-servicios/hoja-servicio/${d.id}`;
+        }
 
         abrirModal('modal-detalle-servicio');
     })
@@ -270,9 +311,7 @@ function setTexto(id, texto) {
 function actualizarIndicador(id, activo) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.className = activo
-        ? 'badge badge-estado badge-terminado'
-        : 'badge badge-estado badge-pendiente';
+    el.className = activo ? 'fw-bold text-success' : 'fw-bold text-muted';
     el.textContent = activo ? '✓' : '○';
 }
 
@@ -280,12 +319,12 @@ function actualizarIndicador(id, activo) {
 function liberarServicio(id) {
     Swal.fire({
         title            : 'Liberar Servicio',
-        text             : '¿Confirmas que el servicio fue resuelto y deseas liberarlo?',
-        icon             : 'warning',
+        text             : '¿Confirmas que el servicio fue resuelto satisfactoriamente y deseas liberarlo?',
+        icon             : 'question',
         showCancelButton : true,
-        confirmButtonColor: '#000',
+        confirmButtonColor: '#198754',
         cancelButtonColor : '#6c757d',
-        confirmButtonText : 'Sí, liberar',
+        confirmButtonText : 'Sí, liberar de conformidad',
         cancelButtonText  : 'Cancelar',
     }).then(result => {
         if (!result.isConfirmed) return;
@@ -304,12 +343,59 @@ function liberarServicio(id) {
             if (res.success) {
                 Swal.fire({
                     icon : 'success',
-                    title: '¡Liberado!',
+                    title: '¡Servicio Liberado!',
                     text : res.message,
                     confirmButtonColor: '#000',
                 }).then(() => cargarSeguimiento(paginaActualSeguimiento));
             } else {
                 Swal.fire({ icon: 'error', title: 'Error', text: res.error ?? 'No se pudo liberar el servicio.', confirmButtonColor: '#000' });
+            }
+        })
+        .catch(() => Swal.fire({ icon: 'error', title: 'Error de conexión', confirmButtonColor: '#000' }));
+    });
+}
+
+// ─── CANCELAR SERVICIO ────────────────────────────────────────────────────────
+function cancelarServicio(id) {
+    Swal.fire({
+        title             : 'Cancelar Solicitud #' + id,
+        text              : 'Ingresa el motivo de cancelación de esta solicitud:',
+        input             : 'text',
+        inputPlaceholder  : 'Ej. Se solucionó internamente / Ya no se requiere',
+        icon              : 'warning',
+        showCancelButton  : true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor : '#6c757d',
+        confirmButtonText : 'Sí, cancelar solicitud',
+        cancelButtonText  : 'Volver',
+        inputValidator    : (value) => {
+            if (!value || value.trim().length < 4) {
+                return 'Debes escribir un motivo de al menos 4 caracteres.';
+            }
+        }
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        fetch(`/solicitar-servicio/${id}/cancelar`, {
+            method : 'POST',
+            headers: {
+                'X-CSRF-TOKEN'    : document.querySelector('meta[name="csrf-token"]').content,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type'    : 'application/json',
+            },
+            body: JSON.stringify({ motivo: result.value }),
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                Swal.fire({
+                    icon : 'success',
+                    title: 'Cancelada',
+                    text : res.message,
+                    confirmButtonColor: '#000',
+                }).then(() => cargarSeguimiento(paginaActualSeguimiento));
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: res.error ?? 'No se pudo cancelar la solicitud.', confirmButtonColor: '#000' });
             }
         })
         .catch(() => Swal.fire({ icon: 'error', title: 'Error de conexión', confirmButtonColor: '#000' }));

@@ -115,11 +115,12 @@
                             </a>
                         @endif
                         <button type="button"
-                                class="btn btn-outline-success btn-sm rounded-pill"
+                                class="btn btn-success btn-sm fw-bold px-3"
+                                style="background: linear-gradient(135deg, #1a7a3c, #28a745); border: none; box-shadow: 0 3px 8px rgba(40,167,69,0.4); letter-spacing: 0.3px;"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalExportarExcelTerminadas"
                                 title="Exportar a Excel">
-                            <i class="fa fa-file-excel-o"></i>
+                            <i class="fa fa-file-excel-o me-1"></i> Excel
                         </button>
                     </div>
                 </div>

@@ -36,6 +36,7 @@ use App\Http\Controllers\ControlInsumos\InsumoImpresoraController;
 use App\Http\Controllers\ControlInsumos\MovimientoInsumoController;
 use App\Http\Controllers\SoporteTecnico\SoporteAreaController;
 use App\Http\Controllers\SoporteTecnico\SolicitarServicioController;
+use App\Http\Controllers\SoporteTecnico\TomarServicioController;
 use App\Http\Controllers\Departamentos\DepartamentoController;
 use App\Http\Controllers\Puestos\PuestoController;
 use App\Http\Controllers\Sedes\SedeController;
@@ -83,6 +84,7 @@ Route::get('/mTipoMobiliario', fn() => redirect()->route('tipo_mobiliario.index'
 Route::get('/mSoporteArea', fn() => redirect()->route('soporte_area.index'));
 Route::get('/MsoporteArea', fn() => redirect()->route('soporte_area.index'));
 Route::get('/mSolicitarServicio', fn() => redirect()->route('solicitar_servicio.index'));
+Route::get('/mTomarServicios', fn() => redirect()->route('tomar_servicios.index'));
 Route::get('/mDepartamentos', fn() => redirect()->route('departamentos.index'));
 Route::get('/mPuestos', fn() => redirect()->route('puestos.index'));
 Route::get('/mSedes', fn() => redirect()->route('sedes.index'));
@@ -747,11 +749,28 @@ Route::middleware(['auth', EvitarRetrocesoMiddleware::class])->group(function ()
         Route::post('/guardar',              'store')          ->name('store');
         Route::get('/seguimiento',           'seguimiento')    ->name('seguimiento');
         Route::get('/historial',             'historial')      ->name('historial');
+        Route::post('/{id}/cancelar',        'cancelar')       ->name('cancelar');
         Route::post('/{id}/liberar',         'liberar')        ->name('liberar');
         Route::get('/{id}/detalles',         'detalles')       ->name('detalles');
         Route::get('/reportes',              'reportes')       ->name('reportes');
         Route::get('/reportes/imprimir',     'imprimirReporte')->name('imprimir');
         Route::get('/graficas',              'graficas')       ->name('graficas');
+    });
+
+    // ── Soporte Técnico: Tomar Servicio (mTomarServicios) ─────────────────────
+    Route::prefix('tomar-servicios')->name('tomar_servicios.')->controller(TomarServicioController::class)->group(function () {
+        Route::get('/',                                'index')                 ->name('index');
+        Route::post('/{id}/tomar',                     'tomar')                 ->name('tomar');
+        Route::get('/mis-servicios',                   'misServicios')          ->name('mis_servicios');
+        Route::get('/mobiliario-area/{idArea}',        'obtenerMobiliarioArea') ->name('mobiliario_area');
+        Route::post('/{id}/concluir',                  'concluir')              ->name('concluir');
+        Route::post('/{id}/reasignar',                 'reasignar')             ->name('reasignar');
+        Route::get('/por-liberar',                     'porLiberar')            ->name('por_liberar');
+        Route::post('/{id}/liberar',                   'liberarSoporte')        ->name('liberar');
+        Route::post('/{id}/ajustar-fechas',            'ajustarFechas')         ->name('ajustar_fechas');
+        Route::get('/historial',                       'historial')             ->name('historial');
+        Route::get('/hoja-servicio/{id}',              'hojaServicio')          ->name('hoja_servicio');
+        Route::get('/reportes',                        'reportes')              ->name('reportes');
     });
 });
 

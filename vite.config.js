@@ -148,6 +148,12 @@ export default defineConfig({
                 // Pedido por Diferencia Assets
                 'resources/css/peticion_insumos/pedido_insumos_dif/diferencia.css',
                 'resources/js/peticion_insumos/pedido_insumos_dif/diferencia.js',
+                // Soporte Técnico: Solicitar Servicio
+                'resources/css/soporte_tecnico/solicitar_servicio/solicitar_servicio.css',
+                'resources/js/soporte_tecnico/solicitar_servicio/solicitar_servicio.js',
+                // Soporte Técnico: Tomar Servicios
+                'resources/css/soporte_tecnico/tomar_servicios/tomar_servicios.css',
+                'resources/js/soporte_tecnico/tomar_servicios/tomar_servicios.js',
             ],
             refresh: true,
         }),

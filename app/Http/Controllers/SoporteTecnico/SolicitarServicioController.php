@@ -41,6 +41,11 @@ class SolicitarServicioController extends Controller
         $request->validate([
             'descripcion' => 'required|string|min:10|max:2000',
             'id_area'     => 'required|integer|exists:areas,id',
+        ], [
+            'descripcion.required' => 'Debes describir el problema o servicio requerido.',
+            'descripcion.min'      => 'La descripción debe tener al menos 10 caracteres para mayor claridad.',
+            'id_area.required'     => 'Debes seleccionar el área correspondiente.',
+            'id_area.exists'       => 'El área seleccionada no es válida.',
         ]);
 
         $user      = Auth::user();
@@ -58,52 +63,84 @@ class SolicitarServicioController extends Controller
             'trabajadores.id_sede',
             'sedes.nombre   AS nombre_sede',
             'sedes.abreviatura AS abre_sede',
-            'sedes.id       AS id_sede_real',
+            'sedes.id       AS id_sede_real'
         )
         ->join('trabajadores',  'personas.id', '=', 'trabajadores.id_persona')
         ->join('departamentos', 'trabajadores.id_departamento', '=', 'departamentos.id')
         ->join('sedes',         'trabajadores.id_sede',         '=', 'sedes.id')
         ->where('personas.id', $personaId)
+        ->where('trabajadores.activo', 1)
         ->first();
 
         if (!$datosPersona) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'No se encontraron los datos del trabajador.'], 422);
+            // Fallback si no tiene registro activo en trabajadores: buscar persona directamente
+            $personaSimple = Persona::find($personaId);
+            if (!$personaSimple) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['error' => 'No se encontraron los datos del usuario en el sistema.'], 422);
+                }
+                return back()->withErrors(['general' => 'No se encontraron los datos del usuario en el sistema.']);
             }
-            return back()->withErrors(['general' => 'No se encontraron los datos del trabajador.']);
+
+            $nombreCompleto = trim($personaSimple->nombre . ' ' . $personaSimple->ap_paterno . ' ' . $personaSimple->ap_materno);
+            $sexo = $personaSimple->sexo ?? 'M';
+
+            // Datos por defecto o primer departamento/sede disponible
+            $primerDep = Departamento::first();
+            $primerSede = Sede::first();
+
+            $idDepartamento = $primerDep ? $primerDep->id : 1;
+            $nombreDepartamento = $primerDep ? $primerDep->nombre : 'General';
+            $extTelefonica = $primerDep ? ($primerDep->extension ?? 'S/Ext') : 'S/Ext';
+            $nombreSede = $primerSede ? $primerSede->nombre : 'Principal';
+            $abreSede = $primerSede ? $primerSede->abreviatura : 'PRIN';
+            $idSede = $primerSede ? $primerSede->id : 1;
+        } else {
+            $nombreCompleto = $datosPersona->nombre_completo;
+            $sexo = $datosPersona->sexo;
+            $idDepartamento = $datosPersona->id_departamento;
+            $nombreDepartamento = $datosPersona->nombre_departamento;
+            $extTelefonica = $datosPersona->extension ?? 'S/Ext';
+            $nombreSede = $datosPersona->nombre_sede;
+            $abreSede = $datosPersona->abre_sede;
+            $idSede = $datosPersona->id_sede_real;
         }
 
-        Servicio::create([
+        $servicio = Servicio::create([
             'id_usc'               => $user->id,
             'id_personaSolicitante'=> $personaId,
             'fecha_peticion'       => $ahora->toDateString(),
             'hora_peticion'        => $ahora->toTimeString(),
-            'id_departamento'      => $datosPersona->id_departamento,
-            'departamento'         => $datosPersona->nombre_departamento,
+            'id_departamento'      => $idDepartamento,
+            'departamento'         => $nombreDepartamento,
             'descripcion_servicio' => trim($request->descripcion),
             'id_area'              => $request->id_area,
             'pendiente'            => 1,
             'proceso'              => 0,
             'terminado'            => 0,
             'liberado'             => 0,
-            'nombre_solicitante'   => $datosPersona->nombre_completo,
-            'sexo_solicitante'     => $datosPersona->sexo,
-            'ext_telefonica'       => $datosPersona->extension,
-            'sede'                 => $datosPersona->nombre_sede,
-            'abre_sede'            => $datosPersona->abre_sede,
-            'id_sede'              => $datosPersona->id_sede_real,
+            'nombre_solicitante'   => $nombreCompleto,
+            'sexo_solicitante'     => $sexo,
+            'ext_telefonica'       => $extTelefonica,
+            'sede'                 => $nombreSede,
+            'abre_sede'            => $abreSede,
+            'id_sede'              => $idSede,
             'modificado'           => 0,
-            'modificadox'          => 'Nadie',
-            'motivo_modificado'    => 'Ninguno',
-            'fecha_modificado'     => '0000-00-00',
-            'hora_modificado'      => '00:00:00',
+            'modificadox'          => null,
+            'motivo_modificado'    => null,
+            'fecha_modificado'     => null,
+            'hora_modificado'      => null,
         ]);
 
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Solicitud generada correctamente.']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud #' . $servicio->id . ' generada correctamente.',
+                'folio'   => $servicio->id
+            ]);
         }
 
-        return redirect()->route('solicitar_servicio.index')->with('exitog', 'Solicitud generada correctamente.');
+        return redirect()->route('solicitar_servicio.seguimiento')->with('exitog', 'Solicitud #' . $servicio->id . ' generada correctamente.');
     }
 
     // ─── SEGUIMIENTO — Listado de servicios activos (sin liberar) ────────────────
@@ -112,16 +149,21 @@ class SolicitarServicioController extends Controller
         $personaId = Auth::user()->id_persona;
         $buscar    = trim($request->get('buscar', ''));
 
-        $query = Servicio::with('area')
+        $query = Servicio::with(['area', 'servidor'])
             ->where('id_personaSolicitante', $personaId)
             ->where('liberado', 0)
+            ->where(function ($q) {
+                $q->whereNull('estatus_final')
+                  ->orWhere('estatus_final', '!=', 'Cancelado');
+            })
             ->orderByDesc('id');
 
         if ($buscar !== '') {
             $query->where(function ($q) use ($buscar) {
                 $q->where('descripcion_servicio', 'like', "%{$buscar}%")
                   ->orWhereHas('area', fn ($a) => $a->where('area', 'like', "%{$buscar}%"))
-                  ->orWhere('id', 'like', "%{$buscar}%");
+                  ->orWhere('id', 'like', "%{$buscar}%")
+                  ->orWhere('nombre_servidor', 'like', "%{$buscar}%");
             });
         }
 
@@ -147,9 +189,12 @@ class SolicitarServicioController extends Controller
         $personaId = Auth::user()->id_persona;
         $buscar    = trim($request->get('buscar', ''));
 
-        $query = Servicio::with('area')
+        $query = Servicio::with(['area', 'servidor'])
             ->where('id_personaSolicitante', $personaId)
-            ->whereIn('estatus_final', ['Liberado', 'Cancelado'])
+            ->where(function ($q) {
+                $q->where('liberado', 1)
+                  ->orWhere('estatus_final', 'Cancelado');
+            })
             ->orderByDesc('id');
 
         if ($buscar !== '') {
@@ -157,7 +202,8 @@ class SolicitarServicioController extends Controller
                 $q->where('descripcion_servicio', 'like', "%{$buscar}%")
                   ->orWhereHas('area', fn ($a) => $a->where('area', 'like', "%{$buscar}%"))
                   ->orWhere('id', 'like', "%{$buscar}%")
-                  ->orWhere('estatus_final', 'like', "%{$buscar}%");
+                  ->orWhere('estatus_final', 'like', "%{$buscar}%")
+                  ->orWhere('nombre_servidor', 'like', "%{$buscar}%");
             });
         }
 
@@ -177,6 +223,40 @@ class SolicitarServicioController extends Controller
         return view('soporte_tecnico.solicitar_servicio.historial', compact('servicios'));
     }
 
+    // ─── CANCELAR — Cancelar solicitud pendiente por parte del solicitante ───────
+    public function cancelar(Request $request, int $id)
+    {
+        $personaId = Auth::user()->id_persona;
+        $servicio  = Servicio::where('id', $id)
+                             ->where('id_personaSolicitante', $personaId)
+                             ->firstOrFail();
+
+        // Solo se puede cancelar si sigue en estado pendiente y nadie lo ha tomado
+        if ($servicio->proceso == 1 || $servicio->terminado == 1 || $servicio->liberado == 1) {
+            return response()->json([
+                'error' => 'No se puede cancelar la solicitud porque ya ha sido tomada o atendida por el personal técnico.'
+            ], 422);
+        }
+
+        $motivo = trim($request->input('motivo', 'Cancelado por el solicitante'));
+        $ahora = now();
+
+        $servicio->update([
+            'pendiente'         => 0,
+            'estatus_final'     => 'Cancelado',
+            'liberado'          => 1,
+            'liberadox'         => 'Cliente (Cancelado)',
+            'fecha_finaliza'    => $ahora->toDateString(),
+            'hora_finaliza'     => $ahora->toTimeString(),
+            'motivo_modificado' => $motivo,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'La solicitud #' . $id . ' ha sido cancelada correctamente.'
+        ]);
+    }
+
     // ─── LIBERAR — Marca el servicio como liberado por el cliente ────────────────
     public function liberar(Request $request, int $id)
     {
@@ -187,64 +267,77 @@ class SolicitarServicioController extends Controller
 
         // Solo se puede liberar si está terminado
         if (!$servicio->terminado) {
-            return response()->json(['error' => 'El servicio aún no ha sido terminado.'], 422);
+            return response()->json(['error' => 'El servicio aún no ha sido concluido por el área de soporte.'], 422);
         }
 
         $ahora = now();
         $servicio->update([
-            'liberado'     => 1,
-            'estatus_final'=> 'Liberado',
+            'liberado'      => 1,
+            'estatus_final' => 'Liberado',
             'fecha_finaliza'=> $ahora->toDateString(),
             'hora_finaliza' => $ahora->toTimeString(),
-            'liberadox'    => 'Cliente',
+            'liberadox'     => 'Cliente',
         ]);
 
-        return response()->json(['success' => true, 'message' => 'El servicio ha sido liberado correctamente.']);
+        return response()->json(['success' => true, 'message' => 'El servicio #' . $id . ' ha sido liberado de conformidad.']);
     }
 
     // ─── DETALLES — Retorna info completa de un servicio para los modales ────────
     public function detalles(int $id)
     {
         $personaId = Auth::user()->id_persona;
-        $servicio  = Servicio::with('area')
+        $servicio  = Servicio::with(['area', 'mobiliario'])
                               ->where('id_personaSolicitante', $personaId)
                               ->findOrFail($id);
 
         return response()->json([
             'id'                  => $servicio->id,
             'area'                => $servicio->area ? $servicio->area->area : '—',
+            'area_color'          => $servicio->area ? ($servicio->area->color ?? 'bg-dark') : 'bg-dark',
             'descripcion'         => $servicio->descripcion_servicio,
             'fecha_peticion'      => $servicio->fecha_peticion
                                      ? \Carbon\Carbon::parse($servicio->fecha_peticion)->format('d-m-Y')
                                      : '—',
             'hora_peticion'       => $servicio->hora_peticion
-                                     ? \Carbon\Carbon::parse($servicio->hora_peticion)->format('h:i a')
+                                     ? \Carbon\Carbon::parse($servicio->hora_peticion)->format('h:i A')
                                      : '—',
-            'nombre_servidor'     => $servicio->nombre_servidor ?? 'El servicio aún no ha sido elegido',
+            'nombre_servidor'     => $servicio->nombre_servidor ?? 'Pendiente de asignación',
             'ext_servidor'        => $this->obtenerExtServidor($servicio->id_personaServidor),
             'fecha_tomado'        => $servicio->fecha_tomado
                                      ? \Carbon\Carbon::parse($servicio->fecha_tomado)->format('d-m-Y')
                                      : '—',
             'hora_tomado'         => $servicio->hora_tomado
-                                     ? \Carbon\Carbon::parse($servicio->hora_tomado)->format('h:i a')
+                                     ? \Carbon\Carbon::parse($servicio->hora_tomado)->format('h:i A')
                                      : '—',
             'fecha_termino'       => $servicio->fecha_termino
                                      ? \Carbon\Carbon::parse($servicio->fecha_termino)->format('d-m-Y')
                                      : '—',
             'hora_termino'        => $servicio->hora_termino
-                                     ? \Carbon\Carbon::parse($servicio->hora_termino)->format('h:i a')
+                                     ? \Carbon\Carbon::parse($servicio->hora_termino)->format('h:i A')
+                                     : '—',
+            'fecha_finaliza'      => $servicio->fecha_finaliza
+                                     ? \Carbon\Carbon::parse($servicio->fecha_finaliza)->format('d-m-Y')
+                                     : '—',
+            'hora_finaliza'       => $servicio->hora_finaliza
+                                     ? \Carbon\Carbon::parse($servicio->hora_finaliza)->format('h:i A')
                                      : '—',
             'clasificacion'       => $servicio->clasificacion_servicio ?? '—',
             'accion_realizada'    => $servicio->accion_realizada ?? '—',
             'tipo_servicio'       => $servicio->tipo_servicio ?? '—',
+            'inventario'          => $servicio->inventario ?? 'Sin equipo específico',
+            'descripcion_mobiliario' => $servicio->descripcion_mobiliario ?? '—',
             'pendiente'           => (bool) $servicio->pendiente,
             'proceso'             => (bool) $servicio->proceso,
             'terminado'           => (bool) $servicio->terminado,
+            'liberado'            => (bool) $servicio->liberado,
+            'estatus_final'       => $servicio->estatus_final ?? ($servicio->liberado ? 'Liberado' : ($servicio->terminado ? 'Terminado' : ($servicio->proceso ? 'En Proceso' : 'Pendiente'))),
+            'liberadox'           => $servicio->liberadox ?? '—',
+            'dias_transcurridos'  => $servicio->dias_transcurridos,
         ]);
     }
 
     /**
-     * Obtiene la extensión del técnico de soporte desde la tabla de trabajadores.
+     * Obtiene la extensión del técnico de soporte desde la tabla de departamentos del trabajador.
      */
     private function obtenerExtServidor(?int $idPersonaServidor): string
     {
@@ -280,7 +373,9 @@ class SolicitarServicioController extends Controller
 
         // Filtro de estado
         if ($estado === 'activos') {
-            $query->where('liberado', 0);
+            $query->where('liberado', 0)->where(function ($q) {
+                $q->whereNull('estatus_final')->orWhere('estatus_final', '!=', 'Cancelado');
+            });
         } elseif ($estado === 'liberados') {
             $query->where('estatus_final', 'Liberado');
         } elseif ($estado === 'cancelados') {
@@ -307,7 +402,7 @@ class SolicitarServicioController extends Controller
 
         // Estadísticas generales
         $total     = Servicio::where('id_personaSolicitante', $personaId)->count();
-        $activos   = Servicio::where('id_personaSolicitante', $personaId)->where('liberado', 0)->count();
+        $activos   = Servicio::where('id_personaSolicitante', $personaId)->where('liberado', 0)->where(fn($q)=>$q->whereNull('estatus_final')->orWhere('estatus_final','!=','Cancelado'))->count();
         $liberados = Servicio::where('id_personaSolicitante', $personaId)->where('estatus_final', 'Liberado')->count();
         $cancelados= Servicio::where('id_personaSolicitante', $personaId)->where('estatus_final', 'Cancelado')->count();
 

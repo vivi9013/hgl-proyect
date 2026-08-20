@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\Persona;
 use App\Models\Departamento;
 use App\Models\Sede;
+use App\Models\Mobiliario;
 
 class Servicio extends Model
 {
@@ -18,23 +19,19 @@ class Servicio extends Model
     protected $fillable = [
         'id_usc',
         'id_personaSolicitante',
+        'nombre_solicitante',
+        'sexo_solicitante',
         'fecha_peticion',
         'hora_peticion',
         'id_departamento',
         'departamento',
-        'descripcion_servicio',
-        'id_area',
-        'pendiente',
-        'proceso',
-        'terminado',
-        'liberado',
-        'estatus_final',
-        'nombre_solicitante',
-        'sexo_solicitante',
         'ext_telefonica',
-        'sede',
-        'abre_sede',
-        'id_sede',
+        'id_mobiliario',
+        'inventario',
+        'descripcion_mobiliario',
+        'descripcion_servicio',
+        'accion_realizada',
+        'id_uss',
         'id_personaServidor',
         'nombre_servidor',
         'sexo_servidor',
@@ -44,11 +41,20 @@ class Servicio extends Model
         'hora_termino',
         'fecha_finaliza',
         'hora_finaliza',
-        'liberadox',
+        'pendiente',
+        'proceso',
+        'terminado',
+        'liberado',
+        'estatus_final',
+        'finaliza',
         'clasificacion_servicio',
-        'accion_realizada',
+        'id_area',
         'id_tipo_servicio',
         'tipo_servicio',
+        'sede',
+        'abre_sede',
+        'id_sede',
+        'liberadox',
         'modificado',
         'modificadox',
         'motivo_modificado',
@@ -73,6 +79,53 @@ class Servicio extends Model
         return $this->belongsTo(Persona::class, 'id_personaServidor');
     }
 
+    public function mobiliario()
+    {
+        return $this->belongsTo(Mobiliario::class, 'id_mobiliario');
+    }
+
+    public function tipoServicioRel()
+    {
+        return $this->belongsTo(TipoServicio::class, 'id_tipo_servicio');
+    }
+
+    public function departamentoRel()
+    {
+        return $this->belongsTo(Departamento::class, 'id_departamento');
+    }
+
+    public function sedeRel()
+    {
+        return $this->belongsTo(Sede::class, 'id_sede');
+    }
+
+    // ─── Scopes de Consulta ──────────────────────────────────────────────────────
+
+    public function scopePendientes($query)
+    {
+        return $query->where('pendiente', 1)
+                     ->where('proceso', 0)
+                     ->where('liberado', 0);
+    }
+
+    public function scopeEnProceso($query)
+    {
+        return $query->where('proceso', 1)
+                     ->where('terminado', 0)
+                     ->where('liberado', 0);
+    }
+
+    public function scopeTerminados($query)
+    {
+        return $query->where('terminado', 1)
+                     ->where('liberado', 0);
+    }
+
+    public function scopeLiberados($query)
+    {
+        return $query->where('liberado', 1);
+    }
+
     // ─── Accessors ───────────────────────────────────────────────────────────────
 
     /**
@@ -89,5 +142,45 @@ class Servicio extends Model
         } catch (\Exception $e) {
             return 0;
         }
+    }
+
+    /**
+     * Etiqueta de estado legible para la interfaz.
+     */
+    public function getEstadoTextoAttribute(): string
+    {
+        if ($this->estatus_final === 'Cancelado') {
+            return 'Cancelado';
+        }
+        if ($this->liberado == 1) {
+            return 'Liberado';
+        }
+        if ($this->terminado == 1) {
+            return 'Terminado (Por Liberar)';
+        }
+        if ($this->proceso == 1) {
+            return 'En Proceso';
+        }
+        return 'Pendiente';
+    }
+
+    /**
+     * Clase de badge CSS según estado.
+     */
+    public function getEstadoBadgeClassAttribute(): string
+    {
+        if ($this->estatus_final === 'Cancelado') {
+            return 'bg-danger text-white';
+        }
+        if ($this->liberado == 1) {
+            return 'bg-success text-white';
+        }
+        if ($this->terminado == 1) {
+            return 'bg-primary text-white';
+        }
+        if ($this->proceso == 1) {
+            return 'bg-warning text-dark';
+        }
+        return 'bg-secondary text-white';
     }
 }
