@@ -1,25 +1,4 @@
 @forelse ($archivos as $index => $archivo)
-    @php
-        // Sanitizar y verificar existencia física idéntico al sistema legacy
-        $carpetaSanitizada = trim($archivo->categoria->categoria);
-        $carpetaSanitizada = str_replace(
-            ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ'],
-            ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N'],
-            $carpetaSanitizada
-        );
-
-        $nombreSanitizado = trim($archivo->nombre);
-        $nombreSanitizado = str_replace(
-            ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ'],
-            ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N'],
-            $nombreSanitizado
-        );
-        $nombreSanitizado .= '.pdf';
-
-        $rutaCompleta1 = storage_path("app/formats/{$carpetaSanitizada}/{$nombreSanitizado}");
-        
-        $existe = file_exists($rutaCompleta1);
-    @endphp
     <tr>
         <td class="ps-4 fw-medium text-secondary">
             {{ ($archivos->currentPage() - 1) * $archivos->perPage() + $loop->iteration }}
@@ -37,9 +16,14 @@
             <span class="fw-bold text-dark">{{ $archivo->version_archivo ?: '1' }}</span>
         </td>
         <td class="text-center pe-4">
-            @if ($existe)
-                <a href="{{ route('busca_archivos.descargar', $archivo->id_archivo) }}" class="btn btn-sm btn-primary-gradient px-3.5 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center gap-1.5">
-                    <i class="fa fa-download"></i> <span>Descargar</span>
+            @if ($archivo->existe_fisico)
+                <a href="{{ route('busca_archivos.descargar', $archivo->id_archivo) }}" class="btn btn-sm btn-primary-gradient px-3.5 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center gap-1.5" title="Descargar {{ strtoupper($archivo->extension) }}">
+                    @if(in_array($archivo->extension, ['doc', 'docx']))
+                        <i class="fa fa-file-word-o"></i>
+                    @else
+                        <i class="fa fa-file-pdf-o"></i>
+                    @endif
+                    <span>Descargar</span>
                 </a>
             @else
                 <span class="fa-stack text-secondary opacity-50" title="Archivo físico no disponible en el servidor">

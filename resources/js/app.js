@@ -4,4 +4,5 @@ window.bootstrap = bootstrap;
 import './index';
 import './helpers';
 import './components/tabla-interactiva';
+import './notificaciones';
 

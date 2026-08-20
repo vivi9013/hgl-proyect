@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Persona;
 use App\Models\Perfil;
 use App\Models\Configuracion;
+use App\Models\SolicitudReseteoPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -89,7 +90,9 @@ class UsuarioController extends Controller
         $config = Configuracion::first();
         $defaultPassword = $config ? $config->contra : '123456';
 
-        return view('admin_sistema.usuarios.index', compact('usuarios', 'personasSinUsuario', 'perfiles', 'defaultPassword'));
+        $solicitudesPendientesCount = SolicitudReseteoPassword::where('estado', 'pendiente')->count();
+
+        return view('admin_sistema.usuarios.index', compact('usuarios', 'personasSinUsuario', 'perfiles', 'defaultPassword', 'solicitudesPendientesCount'));
     }
 
     /**
@@ -189,12 +192,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Restablece la contraseña del usuario a la contraseña por defecto.
+     * Restablece la contraseña de un usuario al valor por defecto de la configuración.
      */
-    public function restablecerPassword($id)
+    private function resetearPasswordDefault(User $usuario): void
     {
-        $usuario = User::findOrFail($id);
-
         $config = Configuracion::first();
         $defaultPassword = $config ? $config->contra : '123456';
 
@@ -204,11 +205,105 @@ class UsuarioController extends Controller
         $usuario->hora = now()->toTimeString();
         $usuario->usuario = Auth::id() ?? 1;
         $usuario->save();
+    }
+
+    /**
+     * Restablece la contraseña del usuario a la contraseña por defecto.
+     */
+    public function restablecerPassword($id)
+    {
+        $usuario = User::findOrFail($id);
+        $this->resetearPasswordDefault($usuario);
 
         return response()->json([
             'success' => true,
             'message' => 'La contraseña se ha restablecido al valor por defecto correctamente.'
         ]);
+    }
+
+    /**
+     * Devuelve el HTML de la bandeja de solicitudes pendientes (para el modal).
+     */
+    public function solicitudesPendientes()
+    {
+        $solicitudes = SolicitudReseteoPassword::with('usuario.persona')
+            ->where('estado', 'pendiente')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'html'  => view('admin_sistema.usuarios.partials.solicitudes', compact('solicitudes'))->render(),
+            'total' => $solicitudes->count(),
+        ]);
+    }
+
+    /**
+     * Aprueba una solicitud: restablece la contraseña y marca la solicitud como resuelta.
+     */
+    public function aprobarSolicitud($id)
+    {
+        $solicitud = SolicitudReseteoPassword::findOrFail($id);
+
+        if ($solicitud->estado !== 'pendiente' || !$solicitud->id_usuario) {
+            return response()->json(['success' => false, 'message' => 'Esta solicitud ya no está disponible.']);
+        }
+
+        DB::transaction(function () use ($solicitud) {
+            $usuario = User::findOrFail($solicitud->id_usuario);
+            $this->resetearPasswordDefault($usuario);
+
+            $solicitud->update([
+                'estado'         => 'aprobada',
+                'revisado_por'   => Auth::id() ?? 1,
+                'fecha_revision' => now()->toDateString(),
+                'hora_revision'  => now()->toTimeString(),
+            ]);
+
+            DB::table('actividades')->insert([
+                'descripcion' => "Aprobación de solicitud de recuperación de contraseña para el usuario '{$usuario->nombre_usuario}'.",
+                'filtro'     => 'Recuperación de Contraseña',
+                'fecha'      => now()->toDateString(),
+                'hora'       => now()->toTimeString(),
+                'id_persona' => $usuario->id_persona,
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'La contraseña se ha restablecido al valor por defecto correctamente.'
+        ]);
+    }
+
+    /**
+     * Rechaza una solicitud pendiente.
+     */
+    public function rechazarSolicitud(Request $request, $id)
+    {
+        $solicitud = SolicitudReseteoPassword::findOrFail($id);
+
+        if ($solicitud->estado !== 'pendiente') {
+            return response()->json(['success' => false, 'message' => 'Esta solicitud ya no está disponible.']);
+        }
+
+        DB::transaction(function () use ($solicitud, $request) {
+            $solicitud->update([
+                'estado'         => 'rechazada',
+                'revisado_por'   => Auth::id() ?? 1,
+                'nota_revision'  => $request->input('nota'),
+                'fecha_revision' => now()->toDateString(),
+                'hora_revision'  => now()->toTimeString(),
+            ]);
+
+            DB::table('actividades')->insert([
+                'descripcion' => "Rechazo de solicitud de recuperación de contraseña para el usuario '{$solicitud->nombre_usuario}'.",
+                'filtro'     => 'Recuperación de Contraseña',
+                'fecha'      => now()->toDateString(),
+                'hora'       => now()->toTimeString(),
+                'id_persona' => $solicitud->id_usuario ? User::find($solicitud->id_usuario)?->id_persona : null,
+            ]);
+        });
+
+        return response()->json(['success' => true, 'message' => 'La solicitud se ha rechazado.']);
     }
 
     /**

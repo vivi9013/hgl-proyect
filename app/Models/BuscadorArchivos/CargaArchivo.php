@@ -41,11 +41,35 @@ class CargaArchivo extends Model
     }
 
     /**
-     * Obtiene el nombre del archivo sanitizado con extensión .pdf
+     * Obtiene el nombre del archivo sanitizado detectando la extensión física existente (.pdf, .docx, .doc).
+     * Por defecto retorna .pdf si aún no ha sido subido.
      */
     public function getNombreFisicoAttribute()
     {
-        return $this->sanearString($this->nombre) . '.pdf';
+        $baseName = $this->sanearString($this->nombre);
+        if (!$this->categoria) {
+            return $baseName . '.pdf';
+        }
+
+        $carpeta = $this->sanearString($this->categoria->categoria);
+        $extensions = ['pdf', 'docx', 'doc'];
+
+        foreach ($extensions as $ext) {
+            $path = "formats/{$carpeta}/{$baseName}.{$ext}";
+            if (Storage::disk('local')->exists($path)) {
+                return "{$baseName}.{$ext}";
+            }
+        }
+
+        return $baseName . '.pdf';
+    }
+
+    /**
+     * Obtiene la extensión en minúsculas del archivo físico.
+     */
+    public function getExtensionAttribute()
+    {
+        return strtolower(pathinfo($this->nombre_fisico, PATHINFO_EXTENSION));
     }
 
     /**

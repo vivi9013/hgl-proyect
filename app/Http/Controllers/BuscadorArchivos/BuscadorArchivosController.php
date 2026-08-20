@@ -97,7 +97,7 @@ class BuscadorArchivosController extends Controller
 
         $rutaRelativa   = $archivo->ruta_fisica;
         $nombreDescarga = $archivo->nombre_fisico;
-        $pathReal       = storage_path("app/{$rutaRelativa}");
+        $pathReal       = Storage::disk('local')->path($rutaRelativa);
 
         if (!Storage::disk('local')->exists($rutaRelativa)) {
             Log::warning("Archivo no encontrado: {$pathReal}");
